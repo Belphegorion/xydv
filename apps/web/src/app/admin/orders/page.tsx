@@ -347,7 +347,10 @@ function AdminOrdersContent() {
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center font-mono text-[var(--text-muted)] uppercase">
+                  <td
+                    colSpan={8}
+                    className="py-12 text-center font-mono text-[var(--text-muted)] uppercase"
+                  >
                     No orders found matching active criteria.
                   </td>
                 </tr>
@@ -418,7 +421,7 @@ function AdminOrdersContent() {
                           <button
                             type="button"
                             onClick={() => setInvoiceOrder(o)}
-                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] dark:hover:text-[#e8ff00] active:scale-[0.97]"
+                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] dark:hover:text-[#e8ff00]"
                             title="Print Invoice"
                             aria-label={`Print invoice for order #${shortId}`}
                           >
@@ -516,14 +519,20 @@ function AdminOrdersContent() {
                     {selectedOrder.shippingAddress?.line1 || selectedOrder.shippingAddress?.street}
                   </p>
                   {selectedOrder.shippingAddress?.line2 && (
-                    <p className="text-[var(--text-secondary)]">{selectedOrder.shippingAddress.line2}</p>
+                    <p className="text-[var(--text-secondary)]">
+                      {selectedOrder.shippingAddress.line2}
+                    </p>
                   )}
                   <p className="text-[var(--text-secondary)]">
                     {selectedOrder.shippingAddress?.city},{' '}
                     {selectedOrder.shippingAddress?.postalCode}
                   </p>
-                  <p className="text-[var(--text-secondary)]">{selectedOrder.shippingAddress?.country}</p>
-                  <p className="mt-1 text-[var(--text-muted)]">Tel: {selectedOrder.shippingAddress?.phone}</p>
+                  <p className="text-[var(--text-secondary)]">
+                    {selectedOrder.shippingAddress?.country}
+                  </p>
+                  <p className="mt-1 text-[var(--text-muted)]">
+                    Tel: {selectedOrder.shippingAddress?.phone}
+                  </p>
                 </div>
 
                 <div>
@@ -535,15 +544,21 @@ function AdminOrdersContent() {
                   </p>
                   <p className="text-[var(--text-secondary)]">
                     Payment ID:{' '}
-                    <span className="text-[var(--text-primary)] dark:text-[#e8ff00]">{selectedOrder.razorpayPaymentId || '—'}</span>
+                    <span className="text-[var(--text-primary)] dark:text-[#e8ff00]">
+                      {selectedOrder.razorpayPaymentId || '—'}
+                    </span>
                   </p>
                   <p className="text-[var(--text-secondary)]">
                     Order ID:{' '}
-                    <span className="text-[var(--text-primary)]">{selectedOrder.razorpayOrderId || '—'}</span>
+                    <span className="text-[var(--text-primary)]">
+                      {selectedOrder.razorpayOrderId || '—'}
+                    </span>
                   </p>
                   <p className="text-[var(--text-secondary)]">
                     Status:{' '}
-                    <span className="font-bold text-[var(--text-primary)]">{selectedOrder.paymentStatus}</span>
+                    <span className="font-bold text-[var(--text-primary)]">
+                      {selectedOrder.paymentStatus}
+                    </span>
                   </p>
 
                   {selectedOrder.refundId && (
@@ -584,10 +599,14 @@ function AdminOrdersContent() {
                                   className="h-9 w-8 rounded-none border border-[var(--border)] object-cover"
                                 />
                               )}
-                              <span className="font-medium text-[var(--text-primary)]">{item.name}</span>
+                              <span className="font-medium text-[var(--text-primary)]">
+                                {item.name}
+                              </span>
                             </div>
                           </td>
-                          <td className="px-3 py-2.5 font-mono text-[var(--text-secondary)]">{item.sku}</td>
+                          <td className="px-3 py-2.5 font-mono text-[var(--text-secondary)]">
+                            {item.sku}
+                          </td>
                           <td className="px-3 py-2.5 font-mono text-[var(--text-secondary)]">
                             {item.color} / {item.size}
                           </td>
@@ -914,7 +933,9 @@ function AdminOrdersContent() {
 export default function AdminOrdersPage() {
   return (
     <Suspense
-      fallback={<div className="p-8 font-mono text-xs text-[var(--text-muted)]">Loading orders...</div>}
+      fallback={
+        <div className="p-8 font-mono text-xs text-[var(--text-muted)]">Loading orders...</div>
+      }
     >
       <AdminOrdersContent />
     </Suspense>

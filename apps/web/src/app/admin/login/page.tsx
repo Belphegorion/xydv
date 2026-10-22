@@ -49,7 +49,9 @@ export default function AdminLoginPage() {
         <div className="mb-8">
           <div className="mb-2.5 flex items-center gap-2.5">
             <BrandLogo size={32} showWordmark={false} />
-            <span className="font-mono text-xl font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00]">XYDV</span>
+            <span className="font-mono text-xl font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00]">
+              XYDV
+            </span>
             <span className="h-4 w-[1px] bg-[var(--border)]" />
             <span className="font-mono text-xs tracking-widest text-[var(--text-muted)] uppercase">
               ADMIN ACCESS
@@ -87,7 +89,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@xydv.com"
-                className="h-11 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] py-3 pr-4 pl-10 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] dark:focus:border-[#e8ff00] focus:ring-1 focus:ring-[var(--text-primary)] dark:focus:ring-[#e8ff00] focus:outline-none"
+                className="h-11 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] py-3 pr-4 pl-10 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:ring-1 focus:ring-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00] dark:focus:ring-[#e8ff00]"
               />
             </div>
           </div>
@@ -111,7 +113,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="h-11 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] py-3 pr-4 pl-10 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] dark:focus:border-[#e8ff00] focus:ring-1 focus:ring-[var(--text-primary)] dark:focus:ring-[#e8ff00] focus:outline-none"
+                className="h-11 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] py-3 pr-4 pl-10 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:ring-1 focus:ring-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00] dark:focus:ring-[#e8ff00]"
               />
             </div>
           </div>
@@ -119,7 +121,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="btn-tactile flex w-full items-center justify-center gap-2 rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a] py-3.5 font-mono text-xs font-bold tracking-widest uppercase transition-colors duration-120 hover:opacity-90 active:scale-[0.97] disabled:opacity-50"
+            className="btn-tactile flex w-full items-center justify-center gap-2 rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] py-3.5 font-mono text-xs font-bold tracking-widest text-[var(--bg)] uppercase transition-colors duration-120 hover:opacity-90 active:scale-[0.97] disabled:opacity-50 dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]"
           >
             {isLoading && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

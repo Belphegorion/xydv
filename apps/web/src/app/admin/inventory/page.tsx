@@ -237,7 +237,7 @@ function AdminInventoryContent() {
               setThreshold(Math.max(1, Number(e.target.value)));
               setPage(1);
             }}
-            className="w-20 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-2 py-1.5 text-center font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00] dark:text-[#e8ff00]"
+            className="w-20 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-2 py-1.5 text-center font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:text-[#e8ff00] dark:focus:border-[#e8ff00]"
           />
           <span className="font-mono text-[10px] text-[var(--text-muted)]">units</span>
         </div>
@@ -271,7 +271,10 @@ function AdminInventoryContent() {
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center font-mono text-[var(--text-muted)] uppercase">
+                  <td
+                    colSpan={8}
+                    className="py-12 text-center font-mono text-[var(--text-muted)] uppercase"
+                  >
                     No variant inventory matching criteria.
                   </td>
                 </tr>
@@ -306,9 +309,13 @@ function AdminInventoryContent() {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)]">{item.size}</td>
+                    <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)]">
+                      {item.size}
+                    </td>
 
-                    <td className="px-4 py-3 font-mono text-[var(--text-secondary)]">₹{item.price}</td>
+                    <td className="px-4 py-3 font-mono text-[var(--text-secondary)]">
+                      ₹{item.price}
+                    </td>
 
                     <td className="px-4 py-3 font-mono">
                       <div className="flex items-center gap-2">
@@ -415,7 +422,9 @@ function AdminInventoryContent() {
               <div>
                 <p className="mb-2 font-mono text-xs text-[var(--text-secondary)]">
                   Product:{' '}
-                  <span className="font-bold text-[var(--text-primary)]">{editingItem.productName}</span>
+                  <span className="font-bold text-[var(--text-primary)]">
+                    {editingItem.productName}
+                  </span>
                 </p>
                 <p className="mb-4 font-mono text-xs text-[var(--text-secondary)]">
                   Variant:{' '}
@@ -433,7 +442,7 @@ function AdminInventoryContent() {
                   required
                   value={newStock}
                   onChange={(e) => setNewStock(Math.max(0, Number(e.target.value)))}
-                  className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-3 font-mono text-sm font-bold text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00] dark:text-[#e8ff00]"
+                  className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-3 font-mono text-sm font-bold text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:text-[#e8ff00] dark:focus:border-[#e8ff00]"
                 />
               </div>
 
@@ -465,7 +474,9 @@ export default function AdminInventoryPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-8 font-mono text-xs text-[var(--text-muted)]">Loading inventory matrix...</div>
+        <div className="p-8 font-mono text-xs text-[var(--text-muted)]">
+          Loading inventory matrix...
+        </div>
       }
     >
       <AdminInventoryContent />

@@ -318,7 +318,10 @@ export default function AdminCustomersPage() {
                 </tr>
               ) : customers.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center font-mono text-[var(--text-muted)] uppercase">
+                  <td
+                    colSpan={8}
+                    className="py-12 text-center font-mono text-[var(--text-muted)] uppercase"
+                  >
                     No customers found matching filter criteria.
                   </td>
                 </tr>
@@ -372,7 +375,9 @@ export default function AdminCustomersPage() {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[var(--text-muted)]">{c.orderCount}</td>
+                      <td className="px-4 py-3 font-mono text-[var(--text-muted)]">
+                        {c.orderCount}
+                      </td>
 
                       <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)]">
                         ₹{c.totalSpent.toFixed(2)}
@@ -406,7 +411,9 @@ export default function AdminCustomersPage() {
                               }
                               className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] dark:hover:text-[#e8ff00]"
                               title={c.role === 'admin' ? 'Demote to Customer' : 'Promote to Admin'}
-                              aria-label={c.role === 'admin' ? 'Demote to Customer' : 'Promote to Admin'}
+                              aria-label={
+                                c.role === 'admin' ? 'Demote to Customer' : 'Promote to Admin'
+                              }
                             >
                               <ShieldCheck size={16} />
                             </button>
@@ -510,7 +517,9 @@ export default function AdminCustomersPage() {
                   </span>
                   <span
                     className={`mt-1 inline-block font-mono text-xs font-bold uppercase ${
-                      customerDetail.user.isBlocked ? 'text-[#ff3b3b]' : 'text-[#15803d] dark:text-[#22c55e]'
+                      customerDetail.user.isBlocked
+                        ? 'text-[#ff3b3b]'
+                        : 'text-[#15803d] dark:text-[#22c55e]'
                     }`}
                   >
                     {customerDetail.user.isBlocked ? 'Suspended' : 'Active Account'}
@@ -557,7 +566,10 @@ export default function AdminCustomersPage() {
                     <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-elevated)]">
                       {customerDetail.orders.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="py-6 text-center font-mono text-[var(--text-muted)]">
+                          <td
+                            colSpan={6}
+                            className="py-6 text-center font-mono text-[var(--text-muted)]"
+                          >
                             No orders placed by this account yet.
                           </td>
                         </tr>

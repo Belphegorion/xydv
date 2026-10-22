@@ -85,7 +85,9 @@ export function ConfirmDialog({
           </button>
         </div>
 
-        <p className="mb-6 font-sans text-xs leading-relaxed text-[var(--text-secondary)]">{description}</p>
+        <p className="mb-6 font-sans text-xs leading-relaxed text-[var(--text-secondary)]">
+          {description}
+        </p>
 
         <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] pt-4">
           <button
@@ -104,7 +106,7 @@ export function ConfirmDialog({
             className={`btn-tactile inline-flex items-center justify-center gap-2 rounded-none px-5 py-2 font-mono text-xs font-bold tracking-wider uppercase transition-colors active:scale-[0.97] ${
               isDestructive
                 ? 'border border-[#ff3b3b] bg-[#ff3b3b] text-white hover:bg-[#ff3b3b]/90'
-                : 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a] hover:opacity-90'
+                : 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]'
             }`}
           >
             {isLoading && (

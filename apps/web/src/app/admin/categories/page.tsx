@@ -190,16 +190,26 @@ export default function AdminCategoriesPage() {
                 </tr>
               ) : categories.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center font-mono text-[var(--text-muted)] uppercase">
+                  <td
+                    colSpan={5}
+                    className="py-12 text-center font-mono text-[var(--text-muted)] uppercase"
+                  >
                     No categories defined yet.
                   </td>
                 </tr>
               ) : (
                 categories.map((c) => (
-                  <tr key={c._id || c.slug} className="transition-colors hover:bg-[var(--bg-elevated)]">
-                    <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)]">{c.name}</td>
+                  <tr
+                    key={c._id || c.slug}
+                    className="transition-colors hover:bg-[var(--bg-elevated)]"
+                  >
+                    <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)]">
+                      {c.name}
+                    </td>
 
-                    <td className="px-4 py-3 font-mono text-[var(--text-primary)] dark:text-[#e8ff00]">/{c.slug}</td>
+                    <td className="px-4 py-3 font-mono text-[var(--text-primary)] dark:text-[#e8ff00]">
+                      /{c.slug}
+                    </td>
 
                     <td className="max-w-xs truncate px-4 py-3 text-[var(--text-secondary)]">
                       {c.description || '—'}

@@ -61,7 +61,7 @@ export default function AdminDashboardPage() {
       {/* Top Header & Range Filters */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-xl sm:text-2xl font-bold tracking-wider text-[var(--text-primary)] uppercase">
+          <h2 className="font-mono text-xl font-bold tracking-wider text-[var(--text-primary)] uppercase sm:text-2xl">
             Commerce Analytics & Telemetry
           </h2>
           <p className="mt-0.5 font-mono text-xs text-[var(--text-muted)]">
@@ -79,7 +79,7 @@ export default function AdminDashboardPage() {
                 onClick={() => setPeriod(p)}
                 className={`btn-tactile rounded-none px-3 py-1.5 tracking-wider uppercase transition-colors active:scale-[0.97] ${
                   period === p
-                    ? 'bg-[var(--text-primary)] text-[var(--bg)] dark:bg-[#e8ff00] dark:text-[#0a0a0a] font-bold shadow-sm'
+                    ? 'bg-[var(--text-primary)] font-bold text-[var(--bg)] shadow-sm dark:bg-[#e8ff00] dark:text-[#0a0a0a]'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
               >
@@ -134,7 +134,7 @@ export default function AdminDashboardPage() {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {/* Total Revenue */}
-        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-sm">
+        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 shadow-sm sm:p-5">
           <div className="mb-2 flex items-center justify-between text-[var(--text-muted)]">
             <span className="font-mono text-[10px] tracking-wider uppercase">Total Revenue</span>
             <CurrencyInr size={18} className="text-[#15803d] dark:text-[#e8ff00]" />
@@ -148,7 +148,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Total Orders */}
-        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-sm">
+        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 shadow-sm sm:p-5">
           <div className="mb-2 flex items-center justify-between text-[var(--text-muted)]">
             <span className="font-mono text-[10px] tracking-wider uppercase">Total Orders</span>
             <Receipt size={18} className="text-[#0284c7] dark:text-[#38bdf8]" />
@@ -156,11 +156,13 @@ export default function AdminDashboardPage() {
           <div className="font-mono text-2xl font-bold text-[var(--text-primary)]">
             {data ? data.totalOrders.toLocaleString() : '—'}
           </div>
-          <span className="mt-1 block font-mono text-[9px] text-[var(--text-muted)]">In selected period</span>
+          <span className="mt-1 block font-mono text-[9px] text-[var(--text-muted)]">
+            In selected period
+          </span>
         </div>
 
         {/* Total Customers */}
-        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-sm">
+        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 shadow-sm sm:p-5">
           <div className="mb-2 flex items-center justify-between text-[var(--text-muted)]">
             <span className="font-mono text-[10px] tracking-wider uppercase">Active Customers</span>
             <Users size={18} className="text-[var(--text-secondary)]" />
@@ -174,12 +176,16 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Low Stock Alerts */}
-        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-sm">
+        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 shadow-sm sm:p-5">
           <div className="mb-2 flex items-center justify-between text-[var(--text-muted)]">
             <span className="font-mono text-[10px] tracking-wider uppercase">Low Stock SKUs</span>
             <Warning
               size={18}
-              className={data && data.lowStockCount > 0 ? 'text-[#ff3b3b]' : 'text-[#15803d] dark:text-[#22c55e]'}
+              className={
+                data && data.lowStockCount > 0
+                  ? 'text-[#ff3b3b]'
+                  : 'text-[#15803d] dark:text-[#22c55e]'
+              }
             />
           </div>
           <div className="font-mono text-2xl font-bold text-[var(--text-primary)]">
@@ -191,7 +197,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Storefront Traffic / Page Views */}
-        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-sm">
+        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 shadow-sm sm:p-5">
           <div className="mb-2 flex items-center justify-between text-[var(--text-muted)]">
             <span className="font-mono text-[10px] tracking-wider uppercase">Page Views</span>
             <Eye size={18} className="text-[var(--text-secondary)]" />
@@ -205,7 +211,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Conversion Rate */}
-        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-sm">
+        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4 shadow-sm sm:p-5">
           <div className="mb-2 flex items-center justify-between text-[var(--text-muted)]">
             <span className="font-mono text-[10px] tracking-wider uppercase">Conversion Rate</span>
             <Percent size={18} className="text-[#15803d] dark:text-[#22c55e]" />
@@ -248,7 +254,7 @@ export default function AdminDashboardPage() {
             <div className="space-y-2.5">
               <Link
                 href="/admin/products?action=new"
-                className="btn-tactile flex items-center justify-between rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] dark:hover:border-[#e8ff00]/40 active:scale-[0.97]"
+                className="btn-tactile flex items-center justify-between rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97] dark:hover:border-[#e8ff00]/40"
               >
                 <div className="flex items-center gap-2.5">
                   <Plus size={16} className="text-[var(--text-primary)] dark:text-[#e8ff00]" />

@@ -185,7 +185,9 @@ export default function AdminSettingsPage() {
                 Free Shipping Threshold (₹)
               </label>
               <div className="relative">
-                <span className="absolute top-2.5 left-3 font-mono text-xs text-[var(--text-muted)]">₹</span>
+                <span className="absolute top-2.5 left-3 font-mono text-xs text-[var(--text-muted)]">
+                  ₹
+                </span>
                 <input
                   type="number"
                   min="0"
@@ -210,7 +212,9 @@ export default function AdminSettingsPage() {
                 Standard Shipping Fee (₹)
               </label>
               <div className="relative">
-                <span className="absolute top-2.5 left-3 font-mono text-xs text-[var(--text-muted)]">₹</span>
+                <span className="absolute top-2.5 left-3 font-mono text-xs text-[var(--text-muted)]">
+                  ₹
+                </span>
                 <input
                   type="number"
                   min="0"
@@ -378,7 +382,9 @@ export default function AdminSettingsPage() {
 
         {/* Save Bar */}
         <div className="flex items-center justify-between border-t border-[var(--border)] pt-5">
-          <span className={`font-mono text-xs ${isDirty ? 'text-[#b45309] dark:text-[#f59e0b]' : 'text-[var(--text-muted)]'}`}>
+          <span
+            className={`font-mono text-xs ${isDirty ? 'text-[#b45309] dark:text-[#f59e0b]' : 'text-[var(--text-muted)]'}`}
+          >
             {isDirty ? '● Unsaved changes detected' : 'All parameters synchronized'}
           </span>
 

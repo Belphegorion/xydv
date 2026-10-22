@@ -54,9 +54,15 @@ export function AdminSidebar({
       {/* Brand Header */}
       <div>
         <div className="flex h-16 items-center justify-between border-b border-[var(--border)] px-5">
-          <Link href="/admin" className="group flex items-center gap-2.5" aria-label="XYDV Admin Control">
+          <Link
+            href="/admin"
+            className="group flex items-center gap-2.5"
+            aria-label="XYDV Admin Control"
+          >
             <BrandLogo size={28} showWordmark={false} />
-            <span className="font-mono text-sm font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00]">XYDV</span>
+            <span className="font-mono text-sm font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00]">
+              XYDV
+            </span>
             <span className="h-3 w-[1px] bg-[var(--border)]" />
             <span className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase transition-colors group-hover:text-[var(--text-primary)]">
               ADMIN CONTROL
@@ -92,7 +98,7 @@ export function AdminSidebar({
                 onClick={onCloseMobile}
                 className={`group flex items-center justify-between px-3 py-2.5 font-mono text-xs tracking-wider uppercase transition-[background-color,color] duration-150 ${
                   isActive
-                    ? 'border-l-2 border-[var(--text-primary)] dark:border-[#e8ff00] bg-[var(--bg-elevated)] text-[var(--text-primary)] font-bold'
+                    ? 'border-l-2 border-[var(--text-primary)] bg-[var(--bg-elevated)] font-bold text-[var(--text-primary)] dark:border-[#e8ff00]'
                     : 'border-l-2 border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]'
                 }`}
               >
@@ -100,7 +106,9 @@ export function AdminSidebar({
                   <Icon
                     size={18}
                     className={
-                      isActive ? 'text-[var(--text-primary)] dark:text-[#e8ff00]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-primary)]'
+                      isActive
+                        ? 'text-[var(--text-primary)] dark:text-[#e8ff00]'
+                        : 'text-[var(--text-muted)] group-hover:text-[var(--text-primary)]'
                     }
                   />
                   <span>{item.label}</span>

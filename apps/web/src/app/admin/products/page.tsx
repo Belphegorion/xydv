@@ -559,7 +559,10 @@ function AdminProductsContent() {
                 </tr>
               ) : products.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center font-mono text-[var(--text-muted)] uppercase">
+                  <td
+                    colSpan={6}
+                    className="py-12 text-center font-mono text-[var(--text-muted)] uppercase"
+                  >
                     No products found matching active filters.
                   </td>
                 </tr>
@@ -574,7 +577,10 @@ function AdminProductsContent() {
                   const totalStock = (p.variants || []).reduce((acc, v) => acc + (v.stock || 0), 0);
 
                   return (
-                    <tr key={p._id || p.id} className="transition-colors hover:bg-[var(--bg-elevated)]">
+                    <tr
+                      key={p._id || p.id}
+                      className="transition-colors hover:bg-[var(--bg-elevated)]"
+                    >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className="relative h-12 w-10 flex-shrink-0 overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-elevated)]">
@@ -585,13 +591,19 @@ function AdminProductsContent() {
                             />
                           </div>
                           <div>
-                            <p className="font-mono text-xs font-bold text-[var(--text-primary)]">{p.name}</p>
-                            <p className="font-mono text-[10px] text-[var(--text-muted)]">slug: {p.slug}</p>
+                            <p className="font-mono text-xs font-bold text-[var(--text-primary)]">
+                              {p.name}
+                            </p>
+                            <p className="font-mono text-[10px] text-[var(--text-muted)]">
+                              slug: {p.slug}
+                            </p>
                           </div>
                         </div>
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[var(--text-secondary)] uppercase">{p.category}</td>
+                      <td className="px-4 py-3 font-mono text-[var(--text-secondary)] uppercase">
+                        {p.category}
+                      </td>
 
                       <td className="px-4 py-3 font-mono">
                         <span className="font-bold text-[var(--text-primary)]">₹{p.price}</span>
@@ -859,7 +871,7 @@ function AdminProductsContent() {
                           setIsDirty(true);
                           setIsPublished(e.target.checked);
                         }}
-                        className="h-4 w-4 cursor-pointer rounded-none border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] accent-[var(--text-primary)] focus:ring-0 dark:accent-[#e8ff00] dark:text-[#e8ff00]"
+                        className="h-4 w-4 cursor-pointer rounded-none border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] accent-[var(--text-primary)] focus:ring-0 dark:text-[#e8ff00] dark:accent-[#e8ff00]"
                       />
                       <span className="font-mono text-xs text-[var(--text-primary)] uppercase">
                         Published (Storefront Visible)
@@ -1012,7 +1024,9 @@ function AdminProductsContent() {
 
                       <div className="flex items-center gap-2">
                         <div className="flex-1">
-                          <label className="block text-[10px] text-[var(--text-muted)]">Color</label>
+                          <label className="block text-[10px] text-[var(--text-muted)]">
+                            Color
+                          </label>
                           <input
                             type="text"
                             value={v.color || ''}
@@ -1053,7 +1067,9 @@ function AdminProductsContent() {
 
                       <div className="flex items-center justify-between gap-2 pt-2 sm:justify-end sm:pt-0">
                         <div>
-                          <label className="block text-[10px] text-[var(--text-muted)]">Price (₹)</label>
+                          <label className="block text-[10px] text-[var(--text-muted)]">
+                            Price (₹)
+                          </label>
                           <input
                             type="number"
                             min={0}
@@ -1143,7 +1159,9 @@ function AdminProductsContent() {
 export default function AdminProductsPage() {
   return (
     <Suspense
-      fallback={<div className="p-8 font-mono text-xs text-[var(--text-muted)]">Loading catalog...</div>}
+      fallback={
+        <div className="p-8 font-mono text-xs text-[var(--text-muted)]">Loading catalog...</div>
+      }
     >
       <AdminProductsContent />
     </Suspense>

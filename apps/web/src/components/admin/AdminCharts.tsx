@@ -266,7 +266,9 @@ export function TopProductsChart({ data }: { data: TopProduct[] }) {
         <h3 className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
           Top Selling Velocity
         </h3>
-        <span className="font-mono text-[10px] text-[var(--text-muted)] uppercase">Units & Revenue</span>
+        <span className="font-mono text-[10px] text-[var(--text-muted)] uppercase">
+          Units & Revenue
+        </span>
       </div>
 
       <div className="space-y-3.5">
@@ -287,7 +289,7 @@ export function TopProductsChart({ data }: { data: TopProduct[] }) {
               </div>
               <div className="h-2 w-full overflow-hidden rounded-none border border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
                 <div
-                  className="h-full bg-[var(--text-primary)] dark:bg-white transition-[width] duration-300"
+                  className="h-full bg-[var(--text-primary)] transition-[width] duration-300 dark:bg-white"
                   style={{ width: `${widthPct}%` }}
                 />
               </div>
