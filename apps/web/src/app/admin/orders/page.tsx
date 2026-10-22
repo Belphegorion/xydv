@@ -1,0 +1,873 @@
+/* eslint-disable @next/next/no-img-element */
+'use client';
+
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import {
+  MagnifyingGlass,
+  Printer,
+  ArrowClockwise,
+  Eye,
+  CheckCircle,
+  Warning,
+  X,
+  CreditCard,
+  Truck,
+  ArrowCounterClockwise,
+} from '@phosphor-icons/react';
+import { api } from '../../../lib/api';
+import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
+import type { Order, OrderStatus } from '@vertex/types';
+
+function AdminOrdersContent() {
+  const searchParams = useSearchParams();
+  const statusParam = searchParams.get('status');
+
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState(statusParam || 'all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  useEffect(() => {
+    const s = searchParams.get('status');
+    setStatusFilter(s || 'all');
+  }, [searchParams]);
+
+  // Selected order for detail view
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [newStatus, setNewStatus] = useState<OrderStatus>('processing');
+  const [trackingNumber, setTrackingNumber] = useState('');
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+  // Refund dialog state
+  const [refundOrderTarget, setRefundOrderTarget] = useState<Order | null>(null);
+  const [refundReason, setRefundReason] = useState('Customer return requested');
+  const [isRefunding, setIsRefunding] = useState(false);
+
+  // Printable invoice modal state
+  const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
+  const invoiceRef = useRef<HTMLDivElement>(null);
+
+  const fetchOrders = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const queryParams: Record<string, string | number | boolean> = {
+        page,
+        limit: 15,
+      };
+      if (search.trim()) queryParams.search = search.trim();
+      if (statusFilter !== 'all') queryParams.status = statusFilter;
+      if (startDate) {
+        const datePart = startDate.includes('T') ? startDate.split('T')[0] : startDate;
+        const [y, m, d] = datePart.split('-').map(Number);
+        const startLocal = new Date(y, m - 1, d, 0, 0, 0, 0);
+        queryParams.startDate = startLocal.toISOString();
+      }
+      if (endDate) {
+        const datePart = endDate.includes('T') ? endDate.split('T')[0] : endDate;
+        const [y, m, d] = datePart.split('-').map(Number);
+        const endLocal = new Date(y, m - 1, d, 23, 59, 59, 999);
+        queryParams.endDate = endLocal.toISOString();
+      }
+
+      const res = await api.get<{
+        data: Order[];
+        total: number;
+        totalPages: number;
+      }>('/admin/orders', { params: queryParams });
+
+      setOrders(res.data);
+      setTotal(res.total);
+      setTotalPages(res.totalPages);
+    } catch (err: any) {
+      setFeedback({ type: 'error', message: err.message || 'Failed to fetch customer orders' });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, search, statusFilter, startDate, endDate]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const handleOpenDetail = (order: Order) => {
+    setSelectedOrder(order);
+    setNewStatus(order.status);
+    setTrackingNumber(order.trackingNumber || '');
+  };
+
+  const handleUpdateStatus = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isUpdatingStatus) return;
+    if (!selectedOrder) return;
+
+    setIsUpdatingStatus(true);
+    try {
+      const res = await api.patch<{ data: Order }>(
+        `/admin/orders/${selectedOrder._id}/status`,
+        {
+          status: newStatus,
+          trackingNumber: trackingNumber.trim() || undefined,
+        },
+      );
+
+      setSelectedOrder(res.data);
+      setFeedback({
+        type: 'success',
+        message: `Order #${selectedOrder._id.slice(-6)} status updated to "${newStatus}".`,
+      });
+      fetchOrders();
+    } catch (err: any) {
+      setFeedback({ type: 'error', message: err.message || 'Failed to update order status' });
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleExecuteRefund = async () => {
+    if (isRefunding) return;
+    if (!refundOrderTarget) return;
+
+    setIsRefunding(true);
+    try {
+      await api.post(`/admin/orders/${refundOrderTarget._id}/refund`, {
+        reason: refundReason.trim(),
+      });
+      setFeedback({
+        type: 'success',
+        message: `Order #${refundOrderTarget._id.slice(-6)} refunded successfully and inventory restored.`,
+      });
+      setRefundOrderTarget(null);
+      if (selectedOrder?._id === refundOrderTarget._id) {
+        setSelectedOrder(null);
+      }
+      fetchOrders();
+    } catch (err: any) {
+      setFeedback({ type: 'error', message: err.message || 'Refund processing failed' });
+    } finally {
+      setIsRefunding(false);
+    }
+  };
+
+  const handlePrintInvoice = () => {
+    window.print();
+  };
+
+  const getStatusBadge = (status: OrderStatus) => {
+    const config: Record<string, { bg: string; text: string }> = {
+      delivered: { bg: 'bg-[#22c55e]/15', text: 'text-[#22c55e]' },
+      shipped: { bg: 'bg-[#38bdf8]/15', text: 'text-[#38bdf8]' },
+      processing: { bg: 'bg-[#e8ff00]/15', text: 'text-[#e8ff00]' },
+      confirmed: { bg: 'bg-[#f59e0b]/15', text: 'text-[#f59e0b]' },
+      pending: { bg: 'bg-[#a0a0a0]/15', text: 'text-[#a0a0a0]' },
+      cancelled: { bg: 'bg-[#ff3b3b]/15', text: 'text-[#ff3b3b]' },
+    };
+    const c = config[status.toLowerCase()] || config.pending;
+    return (
+      <span
+        className={`inline-flex items-center rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${c.bg} ${c.text}`}
+      >
+        {status}
+      </span>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="font-mono text-xl font-bold uppercase tracking-wider text-[#f5f5f5]">
+            Order Fulfillment & Invoicing
+          </h2>
+          <p className="font-mono text-xs text-[#71717a] mt-0.5">
+            Track customer shipments, process status updates, print invoices and issue Razorpay refunds ({total} total orders)
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={fetchOrders}
+          className="inline-flex items-center gap-2 rounded border border-[#1f1f1f] bg-[#111111] px-3.5 py-2 font-mono text-xs uppercase tracking-wider text-[#a0a0a0] hover:text-[#f5f5f5] hover:border-[#333333] transition-colors active:scale-[0.97]"
+        >
+          <ArrowClockwise size={14} className={isLoading ? 'animate-spin' : ''} />
+          <span>Refresh Queue</span>
+        </button>
+      </div>
+
+      {/* Notifications */}
+      {feedback && (
+        <div
+          className={`flex items-center justify-between rounded border p-3 font-mono text-xs ${
+            feedback.type === 'success'
+              ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#22c55e]'
+              : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {feedback.type === 'success' ? <CheckCircle size={16} /> : <Warning size={16} />}
+            <span>{feedback.message}</span>
+          </div>
+          <button type="button" onClick={() => setFeedback(null)} className="p-1 hover:opacity-70">
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* Filters Toolbar */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5">
+        {/* Search */}
+        <div className="relative">
+          <MagnifyingGlass size={16} className="pointer-events-none absolute left-3 top-3 text-[#71717a]" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Search order ID, user, phone..."
+            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pl-9 pr-3 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
+          />
+        </div>
+
+        {/* Status Filter */}
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1);
+          }}
+          className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+        >
+          <option value="all">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="processing">Processing</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+
+        {/* Start Date */}
+        <div>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+              setPage(1);
+            }}
+            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+            title="Start Date"
+          />
+        </div>
+
+        {/* End Date */}
+        <div>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => {
+              setEndDate(e.target.value);
+              setPage(1);
+            }}
+            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+            title="End Date"
+          />
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <div className="overflow-hidden rounded border border-[#1f1f1f] bg-[#111111]">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left font-sans text-xs">
+            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono uppercase tracking-wider text-[#a0a0a0]">
+              <tr>
+                <th className="py-3 px-4">Order Ref</th>
+                <th className="py-3 px-4">Date</th>
+                <th className="py-3 px-4">Recipient</th>
+                <th className="py-3 px-4">Items</th>
+                <th className="py-3 px-4">Amount</th>
+                <th className="py-3 px-4">Payment</th>
+                <th className="py-3 px-4">Fulfillment</th>
+                <th className="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#1f1f1f]">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-[#71717a]">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#e8ff00] border-t-transparent" />
+                      <span className="font-mono text-xs uppercase">Loading Orders Queue...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : orders.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-[#71717a] font-mono uppercase">
+                    No orders found matching active criteria.
+                  </td>
+                </tr>
+              ) : (
+                orders.map((o) => {
+                  const itemCount = (o.items || []).reduce((acc, i) => acc + (i.quantity || 0), 0);
+                  const shortId = o._id.slice(-6).toUpperCase();
+                  const customerName =
+                    o.shippingAddress?.fullName || (o.userId as any)?.name || 'Guest Checkout';
+
+                  return (
+                    <tr key={o._id} className="hover:bg-[#141414] transition-colors">
+                      <td className="py-3 px-4 font-mono font-bold text-[#e8ff00]">
+                        #{shortId}
+                      </td>
+
+                      <td className="py-3 px-4 font-mono text-[#a0a0a0]">
+                        {new Date(o.createdAt).toLocaleDateString()}
+                      </td>
+
+                      <td className="py-3 px-4">
+                        <p className="font-medium text-[#f5f5f5] truncate max-w-[140px]">
+                          {customerName}
+                        </p>
+                        <p className="font-mono text-[10px] text-[#71717a] truncate max-w-[140px]">
+                          {o.shippingAddress?.city}, {o.shippingAddress?.country}
+                        </p>
+                      </td>
+
+                      <td className="py-3 px-4 font-mono text-[#a0a0a0]">
+                        {itemCount} units ({o.items?.length || 0} SKUs)
+                      </td>
+
+                      <td className="py-3 px-4 font-mono font-bold text-[#f5f5f5]">
+                        ₹{o.total.toFixed(2)}
+                      </td>
+
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-block font-mono text-[10px] uppercase font-bold ${
+                            o.paymentStatus === 'captured'
+                              ? 'text-[#22c55e]'
+                              : o.paymentStatus === 'refunded'
+                              ? 'text-[#ff3b3b]'
+                              : 'text-[#f59e0b]'
+                          }`}
+                        >
+                          {o.paymentStatus}
+                        </span>
+                      </td>
+
+                      <td className="py-3 px-4">
+                        {getStatusBadge(o.status)}
+                      </td>
+
+                      <td className="py-3 px-4 text-right">
+                        <div className="inline-flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenDetail(o)}
+                            className="rounded p-1.5 text-[#a0a0a0] hover:bg-[#1f1f1f] hover:text-[#f5f5f5] transition-colors"
+                            title="Inspect Details"
+                          >
+                            <Eye size={16} />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setInvoiceOrder(o)}
+                            className="rounded p-1.5 text-[#a0a0a0] hover:bg-[#1f1f1f] hover:text-[#e8ff00] transition-colors"
+                            title="Print Invoice"
+                          >
+                            <Printer size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Bar */}
+        <div className="flex items-center justify-between border-t border-[#1f1f1f] px-4 py-3 font-mono text-xs text-[#a0a0a0]">
+          <span>
+            Page {page} of {totalPages} ({total} orders)
+          </span>
+          <div className="inline-flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 uppercase text-[#f5f5f5] disabled:opacity-30 active:scale-[0.97]"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 uppercase text-[#f5f5f5] disabled:opacity-30 active:scale-[0.97]"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Order Detail & Fulfillment Modal */}
+      {selectedOrder && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 shadow-2xl text-[#f5f5f5]">
+            <div className="flex items-center justify-between border-b border-[#1f1f1f] pb-4 mb-6">
+              <div>
+                <div className="flex items-center gap-3">
+                  <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-[#e8ff00]">
+                    Order #{selectedOrder._id.slice(-6).toUpperCase()}
+                  </h3>
+                  {getStatusBadge(selectedOrder.status)}
+                </div>
+                <p className="font-mono text-[10px] text-[#71717a] mt-0.5">
+                  Placed on {new Date(selectedOrder.createdAt).toLocaleString()}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setInvoiceOrder(selectedOrder)}
+                  className="inline-flex items-center gap-1.5 rounded border border-[#1f1f1f] bg-[#181818] px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-[#f5f5f5] hover:border-[#e8ff00]"
+                >
+                  <Printer size={14} />
+                  <span>Invoice</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrder(null)}
+                  className="p-1 text-[#71717a] hover:text-[#f5f5f5]"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {/* Customer & Shipping Summary */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded border border-[#1f1f1f] bg-[#0a0a0a] p-4 text-xs font-mono">
+                <div>
+                  <span className="text-[#71717a] block uppercase text-[10px] mb-1">
+                    Shipping Destination
+                  </span>
+                  <p className="font-bold text-[#f5f5f5]">
+                    {selectedOrder.shippingAddress?.fullName}
+                  </p>
+                  <p className="text-[#a0a0a0]">
+                    {selectedOrder.shippingAddress?.line1 || selectedOrder.shippingAddress?.street}
+                  </p>
+                  {selectedOrder.shippingAddress?.line2 && (
+                    <p className="text-[#a0a0a0]">{selectedOrder.shippingAddress.line2}</p>
+                  )}
+                  <p className="text-[#a0a0a0]">
+                    {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.postalCode}
+                  </p>
+                  <p className="text-[#a0a0a0]">{selectedOrder.shippingAddress?.country}</p>
+                  <p className="text-[#71717a] mt-1">Tel: {selectedOrder.shippingAddress?.phone}</p>
+                </div>
+
+                <div>
+                  <span className="text-[#71717a] block uppercase text-[10px] mb-1">
+                    Payment Gateway Details
+                  </span>
+                  <p className="text-[#a0a0a0]">
+                    Method: <span className="text-[#f5f5f5]">Razorpay Authorized</span>
+                  </p>
+                  <p className="text-[#a0a0a0]">
+                    Payment ID:{' '}
+                    <span className="text-[#e8ff00]">{selectedOrder.razorpayPaymentId || '—'}</span>
+                  </p>
+                  <p className="text-[#a0a0a0]">
+                    Order ID: <span className="text-[#f5f5f5]">{selectedOrder.razorpayOrderId || '—'}</span>
+                  </p>
+                  <p className="text-[#a0a0a0]">
+                    Status: <span className="font-bold text-[#f5f5f5]">{selectedOrder.paymentStatus}</span>
+                  </p>
+
+                  {selectedOrder.refundId && (
+                    <div className="mt-2 rounded border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-2 text-[11px] text-[#ff3b3b]">
+                      Refund ID: {selectedOrder.refundId}
+                      {selectedOrder.refundReason && <p>Reason: {selectedOrder.refundReason}</p>}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Items Table */}
+              <div>
+                <h4 className="font-mono text-xs uppercase tracking-wider text-[#a0a0a0] mb-2">
+                  Line Items
+                </h4>
+                <div className="overflow-hidden rounded border border-[#1f1f1f]">
+                  <table className="w-full text-left font-sans text-xs">
+                    <thead className="bg-[#181818] font-mono text-[10px] uppercase text-[#71717a] border-b border-[#1f1f1f]">
+                      <tr>
+                        <th className="py-2.5 px-3">Item</th>
+                        <th className="py-2.5 px-3">SKU</th>
+                        <th className="py-2.5 px-3">Variant</th>
+                        <th className="py-2.5 px-3 text-right">Price</th>
+                        <th className="py-2.5 px-3 text-right">Qty</th>
+                        <th className="py-2.5 px-3 text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1f1f1f] bg-[#0a0a0a]">
+                      {selectedOrder.items?.map((item, idx) => (
+                        <tr key={idx}>
+                          <td className="py-2.5 px-3">
+                            <div className="flex items-center gap-2.5">
+                              {item.image && (
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  className="h-9 w-8 object-cover rounded border border-[#222222]"
+                                />
+                              )}
+                              <span className="font-medium text-[#f5f5f5]">{item.name}</span>
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-3 font-mono text-[#a0a0a0]">{item.sku}</td>
+                          <td className="py-2.5 px-3 font-mono text-[#a0a0a0]">
+                            {item.color} / {item.size}
+                          </td>
+                          <td className="py-2.5 px-3 font-mono text-right text-[#a0a0a0]">
+                            ₹{item.price}
+                          </td>
+                          <td className="py-2.5 px-3 font-mono text-right text-[#f5f5f5]">
+                            {item.quantity}
+                          </td>
+                          <td className="py-2.5 px-3 font-mono text-right font-bold text-[#f5f5f5]">
+                            ₹{(item.price * item.quantity).toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Totals Summary */}
+                <div className="mt-3 flex justify-end font-mono text-xs">
+                  <div className="w-64 space-y-1.5 rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3">
+                    <div className="flex justify-between text-[#71717a]">
+                      <span>Subtotal:</span>
+                      <span>₹{selectedOrder.subtotal?.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-[#71717a]">
+                      <span>Shipping:</span>
+                      <span>₹{selectedOrder.shipping?.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-[#71717a]">
+                      <span>Tax:</span>
+                      <span>₹{selectedOrder.tax?.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between border-t border-[#1f1f1f] pt-1.5 font-bold text-[#e8ff00] text-sm">
+                      <span>Total Paid:</span>
+                      <span>₹{selectedOrder.total?.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Update & Actions */}
+              <div className="rounded border border-[#1f1f1f] bg-[#141414] p-4 space-y-4">
+                <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#e8ff00]">
+                  Fulfillment Status & Logistics
+                </h4>
+
+                <form onSubmit={handleUpdateStatus} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block font-mono text-[10px] uppercase text-[#a0a0a0] mb-1">
+                      Order Status
+                    </label>
+                    {(() => {
+                      const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+                        pending: ['confirmed', 'cancelled'],
+                        confirmed: ['processing', 'cancelled'],
+                        processing: ['shipped', 'cancelled'],
+                        shipped: ['delivered', 'cancelled'],
+                        delivered: [],
+                        cancelled: [],
+                      };
+                      const nextTransitions = ALLOWED_TRANSITIONS[selectedOrder.status] || [];
+                      const isTerminal = nextTransitions.length === 0;
+
+                      return (
+                        <select
+                          value={newStatus}
+                          disabled={isTerminal}
+                          onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
+                          className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none disabled:opacity-50"
+                        >
+                          <option value={selectedOrder.status}>
+                            {selectedOrder.status.toUpperCase()} {isTerminal ? '(TERMINAL)' : '(CURRENT)'}
+                          </option>
+                          {nextTransitions.map((st) => (
+                            <option key={st} value={st}>
+                              Advance to {st.toUpperCase()}
+                            </option>
+                          ))}
+                        </select>
+                      );
+                    })()}
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-[10px] uppercase text-[#a0a0a0] mb-1">
+                      Tracking Number
+                    </label>
+                    <input
+                      type="text"
+                      value={trackingNumber}
+                      onChange={(e) => setTrackingNumber(e.target.value)}
+                      placeholder="e.g. FEDEX-98124018"
+                      className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="flex items-end">
+                    <button
+                      type="submit"
+                      disabled={isUpdatingStatus || selectedOrder.status === 'delivered' || selectedOrder.status === 'cancelled'}
+                      className="w-full rounded border border-[#e8ff00] bg-[#e8ff00] py-2 font-mono text-xs font-bold uppercase text-[#0a0a0a] hover:bg-[#e8ff00]/90 disabled:opacity-50 active:scale-[0.97]"
+                    >
+                      {isUpdatingStatus ? 'Updating...' : 'Save Fulfillment'}
+                    </button>
+                  </div>
+                </form>
+
+                {/* Refund Action */}
+                {selectedOrder.paymentStatus !== 'refunded' && (
+                  <div className="pt-3 border-t border-[#1f1f1f] flex items-center justify-between">
+                    <div>
+                      <p className="font-mono text-xs text-[#a0a0a0]">
+                        Need to issue a full payment refund?
+                      </p>
+                      <p className="font-sans text-[11px] text-[#71717a]">
+                        Calls Razorpay Refund API and restores reserved item stock automatically.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setRefundOrderTarget(selectedOrder)}
+                      className="rounded border border-[#ff3b3b]/40 bg-[#ff3b3b]/10 px-3.5 py-1.5 font-mono text-xs font-bold uppercase text-[#ff3b3b] hover:bg-[#ff3b3b] hover:text-white transition-colors active:scale-[0.97]"
+                    >
+                      Issue Refund
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Printable Invoice Modal */}
+      {invoiceOrder && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="my-8 w-full max-w-2xl rounded border border-[#1f1f1f] bg-[#ffffff] p-8 text-[#0a0a0a] shadow-2xl print:m-0 print:p-0 print:border-none">
+            <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#e4e4e7] print:hidden">
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#0a0a0a]">
+                Print Preview: Invoice #{invoiceOrder._id.slice(-6).toUpperCase()}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrintInvoice}
+                  className="inline-flex items-center gap-1.5 rounded bg-[#0a0a0a] px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider text-[#ffffff] hover:bg-[#333333]"
+                >
+                  <Printer size={15} />
+                  <span>Print Document</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInvoiceOrder(null)}
+                  className="p-1 text-[#71717a] hover:text-[#0a0a0a]"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Document Body */}
+            <div id="printable-invoice" ref={invoiceRef} className="space-y-6 font-sans text-xs">
+              <style>{`
+                @media print {
+                  body * {
+                    visibility: hidden !important;
+                  }
+                  #printable-invoice, #printable-invoice * {
+                    visibility: visible !important;
+                  }
+                  #printable-invoice {
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 100% !important;
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                    padding: 24px !important;
+                  }
+                }
+              `}</style>
+              <div className="flex justify-between items-start border-b border-[#e4e4e7] pb-6">
+                <div>
+                  <h1 className="font-mono text-2xl font-bold tracking-widest text-[#0a0a0a]">
+                    XYDV
+                  </h1>
+                  <p className="font-mono text-[10px] uppercase text-[#71717a]">
+                    High Performance Technical Apparel
+                  </p>
+                  <p className="text-[#52525b] mt-2">support@xydv.com</p>
+                </div>
+                <div className="text-right font-mono">
+                  <h2 className="text-lg font-bold text-[#0a0a0a]">COMMERCIAL INVOICE</h2>
+                  <p className="text-[#71717a]">
+                    INV-{invoiceOrder._id.slice(-8).toUpperCase()}
+                  </p>
+                  <p className="text-[#71717a]">
+                    Date: {new Date(invoiceOrder.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Billed To */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-mono text-[10px] font-bold uppercase text-[#71717a] mb-1">
+                    Billed & Shipped To:
+                  </h3>
+                  <p className="font-bold text-[#0a0a0a]">
+                    {invoiceOrder.shippingAddress?.fullName}
+                  </p>
+                  <p className="text-[#52525b]">
+                    {invoiceOrder.shippingAddress?.line1 || invoiceOrder.shippingAddress?.street}
+                  </p>
+                  {invoiceOrder.shippingAddress?.line2 && (
+                    <p className="text-[#52525b]">{invoiceOrder.shippingAddress.line2}</p>
+                  )}
+                  <p className="text-[#52525b]">
+                    {invoiceOrder.shippingAddress?.city}, {invoiceOrder.shippingAddress?.postalCode}
+                  </p>
+                  <p className="text-[#52525b]">{invoiceOrder.shippingAddress?.country}</p>
+                  <p className="text-[#71717a] mt-1">Tel: {invoiceOrder.shippingAddress?.phone}</p>
+                </div>
+
+                <div className="text-right font-mono text-[11px]">
+                  <h3 className="text-[10px] font-bold uppercase text-[#71717a] mb-1">
+                    Payment Status:
+                  </h3>
+                  <p className="font-bold uppercase text-[#15803d]">
+                    {invoiceOrder.paymentStatus}
+                  </p>
+                  <p className="text-[#71717a]">
+                    Transaction Ref: {invoiceOrder.razorpayPaymentId || 'N/A'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Line items table */}
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b-2 border-[#0a0a0a] font-mono text-[10px] uppercase">
+                    <th className="py-2">Description</th>
+                    <th className="py-2">SKU</th>
+                    <th className="py-2 text-right">Price</th>
+                    <th className="py-2 text-right">Qty</th>
+                    <th className="py-2 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#e4e4e7]">
+                  {invoiceOrder.items?.map((item, idx) => (
+                    <tr key={idx}>
+                      <td className="py-2 font-medium">
+                        {item.name} ({item.color} - {item.size})
+                      </td>
+                      <td className="py-2 font-mono text-[#71717a]">{item.sku}</td>
+                      <td className="py-2 font-mono text-right">₹{item.price.toFixed(2)}</td>
+                      <td className="py-2 font-mono text-right">{item.quantity}</td>
+                      <td className="py-2 font-mono text-right font-bold">
+                        ₹{(item.price * item.quantity).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Totals */}
+              <div className="flex justify-end pt-4 border-t border-[#e4e4e7] font-mono text-xs">
+                <div className="w-48 space-y-1.5">
+                  <div className="flex justify-between text-[#71717a]">
+                    <span>Subtotal:</span>
+                    <span>₹{invoiceOrder.subtotal?.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-[#71717a]">
+                    <span>Shipping:</span>
+                    <span>₹{invoiceOrder.shipping?.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-[#71717a]">
+                    <span>Taxes:</span>
+                    <span>₹{invoiceOrder.tax?.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between border-t-2 border-[#0a0a0a] pt-1.5 text-sm font-bold text-[#0a0a0a]">
+                    <span>Total:</span>
+                    <span>₹{invoiceOrder.total?.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Legal Notice */}
+              <div className="pt-8 border-t border-[#e4e4e7] text-center font-mono text-[9px] text-[#71717a] uppercase">
+                Thank you for your order • Official XYDV High-Performance Guarantee
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Refund Confirmation Modal */}
+      <ConfirmDialog
+        isOpen={Boolean(refundOrderTarget)}
+        title="Execute Payment Refund"
+        description={`Are you sure you want to refund ₹${refundOrderTarget?.total.toFixed(2)} for Order #${refundOrderTarget?._id.slice(-6).toUpperCase()}? This will issue a payment refund through Razorpay and automatically restore product stock.`}
+        confirmText="Confirm Refund"
+        isDestructive={true}
+        isLoading={isRefunding}
+        onConfirm={handleExecuteRefund}
+        onCancel={() => setRefundOrderTarget(null)}
+      />
+    </div>
+  );
+}
+
+export default function AdminOrdersPage() {
+  return (
+    <Suspense fallback={<div className="p-8 font-mono text-xs text-[#71717a]">Loading orders...</div>}>
+      <AdminOrdersContent />
+    </Suspense>
+  );
+}

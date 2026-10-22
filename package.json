@@ -1,0 +1,30 @@
+{
+  "name": "vertex-fashion",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "clean": "npm run clean --workspace=@vertex/web",
+    "predev": "npm run clean",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,css,md}\"",
+    "type-check": "turbo type-check",
+    "seed:admin": "npm run seed:admin --workspace=@vertex/api",
+    "test": "node tests/runner.mjs && node --test tests/m3-empirical-design-system-challenge.test.mjs tests/collection-showcase.test.mjs tests/loading-screens.test.mjs tests/boundary-stress.test.mjs tests/brand-assets-tab-icons.test.mjs tests/navbar-scroll-transparency.test.mjs tests/new-routes-verification.test.mjs tests/admin-panel-verification.test.mjs tests/backend-audit-remediation.test.mjs"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4",
+    "typescript": "^5.7.3",
+    "prettier": "^3.4.2"
+  },
+  "packageManager": "npm@11.13.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

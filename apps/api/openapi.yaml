@@ -1,0 +1,634 @@
+openapi: 3.0.3
+info:
+  title: XYDV Activewear E-Commerce API
+  description: High-performance, production-grade REST API backend for the XYDV technical division apparel storefront and admin panel.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+  - url: https://api.vertex-fashion.com
+    description: Production gateway
+
+paths:
+  /health:
+    get:
+      summary: System health check
+      responses:
+        '200':
+          description: Service is healthy and database is connected
+
+  /api/auth/register:
+    post:
+      summary: Register a new customer account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name: { type: string }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Validation error
+        '409':
+          description: Email already in use
+
+  /api/auth/login:
+    post:
+      summary: Authenticate customer or admin with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Authenticated successfully, returns accessToken and sets refreshToken cookie
+        '401':
+          description: Invalid email or password
+        '403':
+          description: Account suspended
+
+  /api/auth/refresh:
+    post:
+      summary: Rotate refresh token and issue new access token
+      responses:
+        '200':
+          description: New token pair issued
+        '401':
+          description: Expired or revoked token
+
+  /api/auth/logout:
+    post:
+      summary: Revoke refresh token and clear auth cookies
+      responses:
+        '200':
+          description: Logged out successfully
+
+  /api/auth/forgot-password:
+    post:
+      summary: Request password reset token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200':
+          description: Password reset instructions sent
+
+  /api/auth/reset-password:
+    post:
+      summary: Reset password with token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token: { type: string }
+                password: { type: string, minLength: 8 }
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Invalid or expired reset token
+
+  /api/auth/me:
+    get:
+      summary: Get currently authenticated user profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile data
+
+  /api/products:
+    get:
+      summary: List and search products with filtering and pagination
+      parameters:
+        - name: category
+          in: query
+          schema: { type: string }
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: minPrice
+          in: query
+          schema: { type: number }
+        - name: maxPrice
+          in: query
+          schema: { type: number }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [newest, price-asc, price-desc, popular, bestseller, rating] }
+        - name: inStock
+          in: query
+          schema: { type: boolean }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Filtered product catalog
+
+  /api/products/categories:
+    get:
+      summary: Aggregated category list with product counts and price ranges
+      responses:
+        '200':
+          description: Category summary cards
+
+  /api/products/{slug}:
+    get:
+      summary: Retrieve single product by slug or ObjectId
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Full product details with variants
+        '404':
+          description: Product not found
+
+  /api/products/{slug}/reviews:
+    get:
+      summary: Fetch verified customer reviews for product
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Customer reviews
+    post:
+      summary: Submit verified customer review
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating, title, body]
+              properties:
+                rating: { type: integer, minimum: 1, maximum: 5 }
+                title: { type: string }
+                body: { type: string }
+      responses:
+        '201':
+          description: Review created
+
+  /api/orders/razorpay/create-order:
+    post:
+      summary: Create Razorpay checkout order with inventory reservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required: [productId, quantity]
+                    properties:
+                      productId: { type: string }
+                      sku: { type: string }
+                      quantity: { type: integer, minimum: 1 }
+                shippingAddress:
+                  type: object
+                  required: [fullName, city, postalCode, phone]
+                  properties:
+                    fullName: { type: string }
+                    line1: { type: string }
+                    city: { type: string }
+                    state: { type: string }
+                    postalCode: { type: string }
+                    country: { type: string, default: 'IN' }
+                    phone: { type: string }
+      responses:
+        '200':
+          description: Razorpay order generated with authoritative amounts
+
+  /api/orders/create-order:
+    post:
+      summary: (Deprecated Alias) Create Razorpay checkout order
+      deprecated: true
+      description: Legacy alias for /api/orders/razorpay/create-order
+      responses:
+        '200':
+          description: Razorpay order generated with authoritative amounts
+
+  /api/orders/create-payment-intent:
+    post:
+      summary: (Deprecated Alias) Create payment intent
+      deprecated: true
+      description: Legacy alias for /api/orders/razorpay/create-order
+      responses:
+        '200':
+          description: Razorpay order generated with authoritative amounts
+
+  /api/orders/razorpay/verify-payment:
+    post:
+      summary: Verify Razorpay HMAC signature and settle order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [razorpayOrderId, razorpayPaymentId, razorpaySignature]
+              properties:
+                orderId: { type: string }
+                razorpayOrderId: { type: string }
+                razorpayPaymentId: { type: string }
+                razorpaySignature: { type: string }
+      responses:
+        '200':
+          description: Payment verified successfully
+        '400':
+          description: Invalid signature or mismatched parameter lengths
+        '404':
+          description: Order not found
+
+  /api/orders:
+    post:
+      summary: Place direct authenticated order
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Order placed
+    get:
+      summary: List user purchase history
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Order history
+
+  /api/orders/{id}:
+    get:
+      summary: Get order details by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Order details
+        '404':
+          description: Order not found
+
+  /api/users/me:
+    get:
+      summary: Get user profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Profile details
+    patch:
+      summary: Update user profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Profile updated
+
+  /api/users/me/addresses:
+    post:
+      summary: Add shipping address to address book
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Address added
+
+  /api/users/me/addresses/{id}:
+    delete:
+      summary: Remove shipping address from address book
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Address deleted
+
+  /api/webhooks/razorpay:
+    post:
+      summary: Handle Razorpay webhook events with HMAC verification and idempotency
+      parameters:
+        - name: x-razorpay-signature
+          in: header
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Webhook received and processed idempotently
+
+  /api/admin/track-view:
+    post:
+      summary: Lightweight storefront telemetry tracking
+      responses:
+        '200':
+          description: Page view recorded
+
+  /api/admin/upload:
+    post:
+      summary: Upload product media assets
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Media uploaded
+
+  /api/admin/products:
+    get:
+      summary: Admin catalog search and pagination
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Products list
+    post:
+      summary: Create new catalog product
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Product created
+
+  /api/admin/products/{id}:
+    get:
+      summary: Admin product detail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Product details
+    patch:
+      summary: Update product
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Product updated
+    delete:
+      summary: Delete product
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Product deleted
+
+  /api/admin/categories:
+    get:
+      summary: Admin categories list
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Categories list
+    post:
+      summary: Create category
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Category created
+
+  /api/admin/categories/{id}:
+    patch:
+      summary: Update category
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Category updated
+    delete:
+      summary: Delete category
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Category deleted
+
+  /api/admin/orders:
+    get:
+      summary: Admin orders list with search, status and date filtering
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Orders list
+
+  /api/admin/orders/{id}:
+    get:
+      summary: Admin order detail view
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Order details
+
+  /api/admin/orders/{id}/status:
+    patch:
+      summary: Update order status
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Status updated
+
+  /api/admin/orders/{id}/refund:
+    post:
+      summary: Issue gateway refund and restock inventory
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Refund processed
+
+  /api/admin/inventory:
+    get:
+      summary: Real-time inventory table with pagination
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Inventory matrix
+
+  /api/admin/inventory/low-stock:
+    get:
+      summary: Low-stock alerts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Low-stock items
+
+  /api/admin/inventory/{productId}/variants/{sku}:
+    patch:
+      summary: Update variant stock count
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: sku
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Stock adjusted
+
+  /api/admin/customers:
+    get:
+      summary: Customers directory with total spend stats
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Customers list
+
+  /api/admin/customers/{id}:
+    get:
+      summary: Customer profile with order history
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Customer profile
+
+  /api/admin/customers/{id}/role:
+    patch:
+      summary: Update customer role (admin promote/demote)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Role updated
+
+  /api/admin/customers/{id}/block:
+    patch:
+      summary: Toggle customer block status
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Block status updated
+
+  /api/admin/analytics:
+    get:
+      summary: Analytics aggregation (revenue, conversion rates, order status breakdown)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Analytics dashboard metrics
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,30 @@
+# Vercel Deployment Ignore Configuration
+# Omit all files, tests, scripts, and internal tools not required for Vercel production build
+
+# Internal test suites, fixtures, and harnesses
+tests/
+TEST_INFRA.md
+TEST_READY.md
+
+# Automation and asset generation scripts
+scripts/
+
+# Agent configuration and internal prompts
+.agents/
+
+# Build caches & logs
+*.tsbuildinfo
+.turbo/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+.nyc_output/

@@ -1,0 +1,103 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { X, CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { EMIL_EASE } from '@/lib/motion';
+
+const MESSAGES = [
+  'FREE COMPLIMENTARY DISPATCH ON ORDERS OVER ₹150',
+  'RAZORPAY SECURED CHECKOUT — ZERO TRANSACTION FRICTION',
+  'XYDV SS26 TACTICAL DIVISION — LIMITED BATCH ALLOCATIONS',
+];
+
+export function AnnouncementBar() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    // Check localStorage dismissal
+    try {
+      const dismissed = localStorage.getItem('vertex-announcement-dismissed');
+      if (dismissed === 'true') {
+        setVisible(false);
+      }
+    } catch {
+      // LocalStorage unavailable
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % MESSAGES.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [visible]);
+
+  const handleDismiss = () => {
+    setVisible(false);
+    try {
+      localStorage.setItem('vertex-announcement-dismissed', 'true');
+    } catch {
+      // Ignore
+    }
+  };
+
+  if (!visible) return null;
+
+  return (
+    <div
+      role="region"
+      aria-label="Important store announcement"
+      className="bg-[#0a0a0a] text-[#f5f5f5] text-[9px] sm:text-[11px] font-mono font-bold tracking-[0.12em] sm:tracking-[0.2em] py-1.5 px-2 sm:px-4 relative z-50 flex items-center justify-between overflow-hidden border-b border-black/30 dark:border-white/10 select-none transition-colors"
+    >
+      {/* Mobile balance spacer (balances right 48px dismiss button) */}
+      <div className="w-12 sm:hidden shrink-0 pointer-events-none" aria-hidden="true" />
+
+      {/* Prev button (desktop only) */}
+      <button
+        onClick={() => setIndex((prev) => (prev - 1 + MESSAGES.length) % MESSAGES.length)}
+        aria-label="Previous announcement"
+        className="text-zinc-400 hover:text-white hidden sm:flex touch-target min-w-[48px] min-h-[48px] items-center justify-center transition-colors relative z-10 btn-tactile active:scale-[0.97]"
+      >
+        <CaretLeft size={13} weight="bold" />
+      </button>
+
+      {/* Cycling Message with AnimatePresence */}
+      <div className="flex-1 text-center truncate px-2 relative h-5 overflow-hidden flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={index}
+            initial={shouldReduceMotion ? { opacity: 0 } : { y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { y: -10, opacity: 0 }}
+            transition={{ duration: 0.22, ease: EMIL_EASE }}
+            className="absolute inset-x-0 truncate text-center block text-[9px] sm:text-[11px] leading-tight"
+          >
+            {MESSAGES[index]}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+
+      {/* Next and Close button */}
+      <div className="flex items-center gap-0.5 relative z-10">
+        <button
+          onClick={() => setIndex((prev) => (prev + 1) % MESSAGES.length)}
+          aria-label="Next announcement"
+          className="text-zinc-400 hover:text-white hidden sm:flex touch-target min-w-[48px] min-h-[48px] items-center justify-center transition-colors btn-tactile active:scale-[0.97]"
+        >
+          <CaretRight size={13} weight="bold" />
+        </button>
+        <button
+          onClick={handleDismiss}
+          aria-label="Dismiss announcement bar"
+          className="text-zinc-400 hover:text-white touch-target min-w-[48px] min-h-[48px] p-1.5 flex items-center justify-center transition-colors btn-tactile active:scale-[0.97]"
+        >
+          <X size={13} weight="bold" />
+        </button>
+      </div>
+    </div>
+  );
+}
