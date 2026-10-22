@@ -9,7 +9,6 @@ import {
   ShoppingBag,
   Trash,
   ArrowRight,
-  ShieldCheck,
   Check,
 } from '@phosphor-icons/react';
 import { useWishlistStore } from '@/store/wishlist';
@@ -17,6 +16,22 @@ import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
 import { getProductById } from '@/lib/catalog';
 import { EMIL_EASE } from '@/lib/motion';
+import { api } from '@/lib/api';
+
+interface ApiProductVariant {
+  _id?: string;
+  id?: string;
+  sku?: string;
+  colorName?: string;
+  colorHex?: string;
+  size?: string;
+  stock?: number;
+}
+
+interface ApiProductDetails {
+  category?: string;
+  variants?: ApiProductVariant[];
+}
 
 export default function WishlistPage() {
   const [mounted, setMounted] = useState(false);
@@ -27,10 +42,26 @@ export default function WishlistPage() {
 
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
+  const [liveProducts, setLiveProducts] = useState<Record<string, ApiProductDetails>>({});
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    items.forEach((item) => {
+      if (!getProductById(item.productId)) {
+        api
+          .get<{ data?: ApiProductDetails; product?: ApiProductDetails }>(
+            `/products/${encodeURIComponent(item.slug || item.productId)}`,
+          )
+          .then((res) => {
+            const prod = res?.data || res?.product;
+            if (prod) {
+              setLiveProducts((prev) => ({ ...prev, [item.productId]: prod }));
+            }
+          })
+          .catch(() => {});
+      }
+    });
+  }, [items]);
 
   if (!mounted) {
     return (
@@ -42,25 +73,52 @@ export default function WishlistPage() {
     );
   }
 
-  const handleMoveToBag = (productId: string) => {
+  const handleMoveToBag = async (productId: string) => {
     const item = items.find((i) => i.productId === productId);
     if (!item) return;
 
     const catalogProduct = getProductById(productId);
-    const size = selectedSizes[productId] || (catalogProduct?.category === 'accessories' ? 'OS' : 'M');
-    const variant = catalogProduct?.variants[0];
+    let liveProd = liveProducts[productId];
+
+    if (!catalogProduct && !liveProd) {
+      try {
+        const res = await api.get<{ data?: ApiProductDetails; product?: ApiProductDetails }>(
+          `/products/${encodeURIComponent(item.slug || productId)}`,
+        );
+        const fetched = res?.data || res?.product;
+        if (fetched) {
+          liveProd = fetched;
+          setLiveProducts((prev) => ({ ...prev, [productId]: fetched }));
+        }
+      } catch {
+        // Fallback gracefully if API is offline
+      }
+    }
+
+    const category = catalogProduct?.category || liveProd?.category;
+    const isAccessories = category === 'accessories';
+    const variants = catalogProduct?.variants || liveProd?.variants;
+    const defaultVariant = variants && variants.length > 0 ? variants[0] : undefined;
+
+    const size =
+      selectedSizes[productId] ||
+      (isAccessories
+        ? 'OS'
+        : defaultVariant?.size || 'M');
+
+    const matchingVariant = variants?.find((v) => v.size === size) || defaultVariant;
 
     addItem({
-      id: `${productId}_${variant?.sku || 'SKU'}_${size}`,
+      id: `${productId}_${matchingVariant?.sku || 'SKU'}_${size}`,
       productId: item.productId,
       slug: item.slug,
       name: item.name,
-      color: variant?.colorName || 'Void Obsidian',
-      colorHex: variant?.colorHex || '#0A0A0A',
+      color: matchingVariant?.colorName || 'Void Obsidian',
+      colorHex: matchingVariant?.colorHex || '#0A0A0A',
       size: size,
       price: item.price,
       image: item.image,
-      sku: variant?.sku || `${item.productId}-${size}`,
+      sku: matchingVariant?.sku || `${item.productId}-${size}`,
     });
 
     setAddedIds((prev) => ({ ...prev, [productId]: true }));
@@ -137,9 +195,20 @@ export default function WishlistPage() {
             <AnimatePresence>
               {items.map((item) => {
                 const catalogProduct = getProductById(item.productId);
-                const isAccessories = catalogProduct?.category === 'accessories';
-                const availableSizes = isAccessories ? ['OS'] : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-                const curSize = selectedSizes[item.productId] || (isAccessories ? 'OS' : 'M');
+                const liveProd = liveProducts[item.productId];
+                const isAccessories = (catalogProduct?.category || liveProd?.category) === 'accessories';
+                const availableSizes = isAccessories
+                  ? ['OS']
+                  : liveProd?.variants && liveProd.variants.length > 0
+                  ? Array.from(
+                      new Set(
+                        liveProd.variants
+                          .map((v) => v.size)
+                          .filter((s): s is string => Boolean(s)),
+                      ),
+                    )
+                  : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                const curSize = selectedSizes[item.productId] || (isAccessories ? 'OS' : (availableSizes[0] || 'M'));
                 const isAdded = Boolean(addedIds[item.productId]);
 
                 return (
