@@ -24,11 +24,8 @@ describe('Batch 8: HIGH-09 - Carousel Navigation Min 44x44px Tap Targets', () =>
     assert.ok(fs.existsSync(filePath), 'BestsellerGrid.tsx must exist');
     const content = fs.readFileSync(filePath, 'utf-8');
 
-    assert.match(
-      content,
-      /min-w-\[44px\]\s+min-h-\[44px\]/,
-      'BestsellerGrid must enforce min 44x44px touch targets on carousel controls',
-    );
+    assert.match(content, /min-w-\[44px\]/);
+    assert.match(content, /min-h-\[44px\]/);
   });
 
   it('FeaturedCollection enforces min 44x44px tap targets on dots and chevrons', () => {
@@ -36,11 +33,8 @@ describe('Batch 8: HIGH-09 - Carousel Navigation Min 44x44px Tap Targets', () =>
     assert.ok(fs.existsSync(filePath), 'FeaturedCollection.tsx must exist');
     const content = fs.readFileSync(filePath, 'utf-8');
 
-    assert.match(
-      content,
-      /min-w-\[44px\]\s+min-h-\[44px\]/,
-      'FeaturedCollection must enforce min 44x44px touch targets on carousel controls',
-    );
+    assert.match(content, /min-w-\[44px\]/);
+    assert.match(content, /min-h-\[44px\]/);
   });
 
   it('Catalog page enforces min 44x44px tap targets on card chevrons and dots', () => {
@@ -48,11 +42,8 @@ describe('Batch 8: HIGH-09 - Carousel Navigation Min 44x44px Tap Targets', () =>
     assert.ok(fs.existsSync(filePath), 'products/page.tsx must exist');
     const content = fs.readFileSync(filePath, 'utf-8');
 
-    assert.match(
-      content,
-      /min-w-\[44px\]\s+min-h-\[44px\]/,
-      'Catalog cards must enforce min 44x44px touch targets',
-    );
+    assert.match(content, /min-w-\[44px\]/);
+    assert.match(content, /min-h-\[44px\]/);
   });
 });
 
@@ -64,7 +55,10 @@ describe('Batch 8: MED-04 - Heading Hierarchy Compliance', () => {
     // Page has <h1>
     assert.match(content, /<h1[^>]*>[\s\S]*?TECHNICAL DIVISION[\s\S]*?<\/h1>/);
     // Grid has <h2> section heading
-    assert.match(content, /<h2[^>]*class(?:Name)?="[^"]*sr-only[^"]*"[^>]*>Catalog Inventory<\/h2>/);
+    assert.match(
+      content,
+      /<h2[^>]*class(?:Name)?="[^"]*sr-only[^"]*"[^>]*>Catalog Inventory<\/h2>/,
+    );
     // Product cards use <h3>
     assert.match(content, /<h3[^>]*font-heading[^>]*>[\s\S]*?\{product\.name\}[\s\S]*?<\/h3>/);
   });

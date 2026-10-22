@@ -27,9 +27,9 @@ export function NewsletterSection() {
   return (
     <section
       aria-label="Priority Drop Registration"
-      className="border-t border-[var(--border)] bg-[var(--bg-surface)] py-16 sm:py-24 px-4 sm:px-6 md:px-12 text-center"
+      className="border-t border-[var(--border)] bg-[var(--bg-surface)] px-4 py-16 text-center sm:px-6 sm:py-24 md:px-12"
     >
-      <div className="max-w-2xl mx-auto flex flex-col items-center">
+      <div className="mx-auto flex max-w-2xl flex-col items-center">
         {/* Eyebrow */}
         <div className="mb-6">
           <Badge variant="subtle" size="md" dot>
@@ -40,14 +40,15 @@ export function NewsletterSection() {
         {/* Heading */}
         <h2
           id="newsletter-heading"
-          className="text-[var(--text-primary)] text-3xl md:text-5xl font-bold uppercase tracking-tighter font-heading mb-4"
+          className="font-heading mb-4 text-3xl font-bold tracking-tighter text-[var(--text-primary)] uppercase md:text-5xl"
         >
           SECURE PRIORITY ALLOCATION
         </h2>
 
         {/* Subtitle */}
-        <p className="text-[var(--text-secondary)] text-xs md:text-sm font-sans max-w-lg mb-8 sm:mb-10 leading-relaxed">
-          Limited batch production. Subscribers receive private checkout links 1 hour prior to public drop release. Zero marketing noise.
+        <p className="mb-8 max-w-lg font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:mb-10 md:text-sm">
+          Limited batch production. Subscribers receive private checkout links 1 hour prior to
+          public drop release. Zero marketing noise.
         </p>
 
         {/* Form or Success State */}
@@ -58,15 +59,18 @@ export function NewsletterSection() {
               initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.2, ease: EMIL_EASE }}
-              className="flex items-center gap-3 p-4 bg-[var(--bg)] border border-[var(--border)] text-[#15803d] dark:text-[#22c55e]"
+              className="flex items-center gap-3 border border-[var(--border)] bg-[var(--bg)] p-4 text-[#15803d] dark:text-[#22c55e]"
             >
               <CheckCircle size={22} weight="fill" />
-              <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--text-primary)]">
+              <span className="font-mono text-xs font-bold tracking-widest text-[var(--text-primary)] uppercase">
                 COORDINATES LOGGED. WELCOME TO THE XYDV DIVISION.
               </span>
             </motion.div>
           ) : (
-            <form onSubmit={handleSubmit} className="w-full max-w-md flex flex-col sm:flex-row gap-2.5">
+            <form
+              onSubmit={handleSubmit}
+              className="flex w-full max-w-md flex-col gap-2.5 sm:flex-row"
+            >
               <label htmlFor="newsletter-email" className="sr-only">
                 Athlete Email Address
               </label>
@@ -77,14 +81,14 @@ export function NewsletterSection() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ATHLETE@DOMAIN.COM"
-                className="flex-1 min-h-[48px] bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] px-4 py-3.5 text-base sm:text-xs font-mono tracking-wider outline-none focus-visible:border-[var(--text-primary)] dark:focus-visible:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--text-primary)] dark:focus-visible:ring-[var(--accent)] transition-[border-color,box-shadow] duration-150 placeholder:text-[var(--text-muted)]"
+                className="min-h-[48px] flex-1 border border-[var(--border)] bg-[var(--bg)] px-4 py-3.5 font-mono text-base tracking-wider text-[var(--text-primary)] transition-[border-color,box-shadow] duration-150 outline-none placeholder:text-[var(--text-muted)] focus-visible:border-[var(--text-primary)] focus-visible:ring-1 focus-visible:ring-[var(--text-primary)] sm:text-xs dark:focus-visible:border-[var(--accent)] dark:focus-visible:ring-[var(--accent)]"
               />
               <Button
                 type="submit"
                 variant="volt"
                 size="md"
                 isLoading={isLoading}
-                className="w-full sm:w-auto min-h-[48px]"
+                className="min-h-[48px] w-full sm:w-auto"
                 icon={<ArrowRight size={14} weight="bold" />}
               >
                 REGISTER
@@ -94,7 +98,7 @@ export function NewsletterSection() {
         </AnimatePresence>
 
         {/* Policy Micro-Text */}
-        <p className="text-[var(--text-muted)] text-[10px] font-mono uppercase tracking-widest mt-6">
+        <p className="mt-6 font-mono text-[10px] tracking-widest text-[var(--text-muted)] uppercase">
           256-BIT ENCRYPTED / ONE-CLICK UNSUBSCRIBE ANYTIME
         </p>
       </div>

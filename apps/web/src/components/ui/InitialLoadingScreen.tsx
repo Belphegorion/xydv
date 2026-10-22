@@ -120,7 +120,7 @@ export function InitialLoadingScreen() {
           <div className="absolute bottom-6 left-6 font-mono text-[9px] tracking-[0.2em] text-[var(--text-muted)] opacity-60">
             SPEC // PERFORMANCE TEXTILE
           </div>
-          <div className="absolute bottom-6 right-6 font-mono text-[9px] tracking-[0.2em] text-[var(--text-muted)] opacity-60">
+          <div className="absolute right-6 bottom-6 font-mono text-[9px] tracking-[0.2em] text-[var(--text-muted)] opacity-60">
             STATUS: CALIBRATING
           </div>
 
@@ -142,7 +142,7 @@ export function InitialLoadingScreen() {
               aria-valuemin={0}
               aria-valuemax={100}
               aria-label="System calibration progress"
-              className="w-48 sm:w-56 h-[2px] bg-[var(--border)] relative overflow-hidden mb-3"
+              className="relative mb-3 h-[2px] w-48 overflow-hidden bg-[var(--border)] sm:w-56"
             >
               <motion.div
                 className="h-full bg-[var(--text-primary)] dark:bg-[var(--accent)]"
@@ -152,8 +152,9 @@ export function InitialLoadingScreen() {
             </div>
 
             {/* Telemetry and Metrics Readout */}
-            <div className="flex items-center justify-between w-48 sm:w-56 font-mono text-[10px] tracking-[0.2em] text-[var(--text-muted)] uppercase">
+            <div className="flex w-48 items-center justify-between font-mono text-[10px] tracking-[0.2em] text-[var(--text-muted)] uppercase sm:w-56">
               <span>XYDV // INIT</span>
+              {/* prettier-ignore */}
               <span aria-hidden="true" className="font-semibold text-[var(--text-primary)]">{progress}%</span>
             </div>
 
@@ -161,15 +162,15 @@ export function InitialLoadingScreen() {
             <p
               aria-live="polite"
               aria-atomic="true"
-              className="mt-4 font-mono text-[9px] tracking-[0.25em] text-[var(--text-muted)] uppercase h-4 text-center"
+              className="mt-4 h-4 text-center font-mono text-[9px] tracking-[0.25em] text-[var(--text-muted)] uppercase"
             >
               {progress < 30
                 ? 'INITIALIZING TEXTILE ARCHITECTURE'
                 : progress < 70
-                ? 'CALIBRATING PERFORMANCE MATRICES'
-                : progress < 100
-                ? 'SYNCHRONIZING DIVISION'
-                : 'SYSTEM DEPLOYED'}
+                  ? 'CALIBRATING PERFORMANCE MATRICES'
+                  : progress < 100
+                    ? 'SYNCHRONIZING DIVISION'
+                    : 'SYSTEM DEPLOYED'}
             </p>
           </div>
         </motion.aside>

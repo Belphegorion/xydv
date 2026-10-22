@@ -2,16 +2,17 @@ import { Router } from 'express';
 import { productController } from '../controllers/product.controller';
 import { requireAuth } from '../middleware/auth';
 import { validateRequest } from '../middleware/validateRequest';
-import { createReviewSchema, productQuerySchema, slugParamSchema } from '../validators/product.schema';
+import {
+  createReviewSchema,
+  productQuerySchema,
+  slugParamSchema,
+} from '../validators/product.schema';
 
 const router = Router();
 
 // GET /api/products/categories — category aggregation with counts and sample imagery
 // CRITICAL ORDERING: Must be defined BEFORE /:slug to prevent Express matching 'categories' as a slug!
-router.get(
-  '/categories',
-  productController.getCategories.bind(productController),
-);
+router.get('/categories', productController.getCategories.bind(productController));
 
 // GET /api/products — list with full 10-parameter query filtering
 router.get(

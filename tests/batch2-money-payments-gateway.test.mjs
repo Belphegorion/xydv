@@ -67,10 +67,7 @@ describe('Batch 2: CRIT-04 - Dynamic Order Price Calculation & Store Settings Sy
     path.join(apiDir, 'src', 'constants', 'commerce.ts'),
     'utf-8',
   );
-  const cartTypesSrc = fs.readFileSync(
-    path.join(typesDir, 'src', 'cart.ts'),
-    'utf-8',
-  );
+  const cartTypesSrc = fs.readFileSync(path.join(typesDir, 'src', 'cart.ts'), 'utf-8');
   const cartDrawerSrc = fs.readFileSync(
     path.join(webDir, 'src', 'components', 'store', 'CartDrawer.tsx'),
     'utf-8',

@@ -36,7 +36,10 @@ export function MetricTicker({
     if (shouldReduceMotion) {
       setDisplayValue(
         decimals > 0
-          ? value.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+          ? value.toLocaleString('en-US', {
+              minimumFractionDigits: decimals,
+              maximumFractionDigits: decimals,
+            })
           : value.toLocaleString('en-US'),
       );
       return;
@@ -53,7 +56,10 @@ export function MetricTicker({
     const unsubscribe = springVal.on('change', (latest) => {
       const formatted =
         decimals > 0
-          ? latest.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+          ? latest.toLocaleString('en-US', {
+              minimumFractionDigits: decimals,
+              maximumFractionDigits: decimals,
+            })
           : Math.round(latest).toLocaleString('en-US');
       setDisplayValue(formatted);
     });

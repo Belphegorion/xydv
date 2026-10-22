@@ -113,14 +113,18 @@ let server: Server | null = null;
 connectDB()
   .then(() => {
     server = app.listen(PORT, () => {
-      console.log(`\n🚀 XYDV API running on http://localhost:${PORT}`);
-      console.log(`   Environment: ${env.NODE_ENV}\n`);
+      logger.info(`XYDV API running on http://localhost:${PORT}`, {
+        port: PORT,
+        env: env.NODE_ENV,
+      });
       // Start background inventory hold reconciliation cleaner
       inventoryService.startReconciliationWorker();
     });
   })
   .catch((err) => {
-    console.error('❌ Failed to start XYDV API server:', err);
+    logger.error('Failed to start XYDV API server:', {
+      error: err instanceof Error ? err.message : String(err),
+    });
     process.exit(1);
   });
 
@@ -129,19 +133,19 @@ let isShuttingDown = false;
 const gracefulShutdown = async (signal: string) => {
   if (isShuttingDown) return;
   isShuttingDown = true;
-  console.log(`\n🛑 Received ${signal}. Starting graceful shutdown...`);
+  logger.info(`Received ${signal}. Starting graceful shutdown...`, { signal });
 
   inventoryService.stopReconciliationWorker();
 
   if (server) {
     server.close(async () => {
-      console.log('🔌 HTTP server closed.');
+      logger.info('HTTP server closed.');
       await disconnectDB();
       process.exit(0);
     });
 
     setTimeout(() => {
-      console.error('⚠️  Forced process exit after timeout');
+      logger.error('Forced process exit after timeout');
       process.exit(1);
     }, 10000).unref();
   } else {

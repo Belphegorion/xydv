@@ -1,14 +1,9 @@
 import { NextResponse } from 'next/server';
 
 const API_BASE_URL =
-  process.env.INTERNAL_API_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  'http://localhost:5000/api';
+  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ slug: string }> },
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const targetUrl = `${API_BASE_URL}/products/${encodeURIComponent(slug)}/reviews`;
 
@@ -42,10 +37,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ slug: string }> },
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const targetUrl = `${API_BASE_URL}/products/${encodeURIComponent(slug)}/reviews`;
 

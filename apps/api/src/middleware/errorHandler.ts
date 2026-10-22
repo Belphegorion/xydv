@@ -36,15 +36,11 @@ export function errorHandler(
   // 1. Zod Validation Errors
   if (err instanceof ZodError) {
     statusCode = 400;
-    const issueMessages = err.issues.map(
-      (issue) => `${issue.path.join('.')}: ${issue.message}`,
-    );
+    const issueMessages = err.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`);
     message = issueMessages.length ? issueMessages.join(', ') : 'Validation error';
   } else if (err.name === 'ZodError' && err.issues) {
     statusCode = 400;
-    const issueMessages = err.issues.map(
-      (issue) => `${issue.path.join('.')}: ${issue.message}`,
-    );
+    const issueMessages = err.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`);
     message = issueMessages.length ? issueMessages.join(', ') : 'Validation error';
   }
   // 2. Mongoose Validation Errors

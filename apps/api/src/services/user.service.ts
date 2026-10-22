@@ -85,7 +85,8 @@ export class UserService {
     }
 
     const wasDefault = user.addresses.some(
-      (addr: IAddress) => (addr._id?.toString() === addressId || addr.id === addressId) && addr.isDefault,
+      (addr: IAddress) =>
+        (addr._id?.toString() === addressId || addr.id === addressId) && addr.isDefault,
     );
 
     user.addresses = user.addresses.filter(

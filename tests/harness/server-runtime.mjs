@@ -66,7 +66,11 @@ export class ServerRuntimeSimulator {
         !Number.isInteger(item.quantity) ||
         item.quantity <= 0
       ) {
-        return { success: false, status: 400, error: `Invalid quantity for variant ${variant.sku}` };
+        return {
+          success: false,
+          status: 400,
+          error: `Invalid quantity for variant ${variant.sku}`,
+        };
       }
 
       const requestedQty = item.quantity;

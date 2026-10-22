@@ -184,7 +184,10 @@ describe('Admin Panel: Module 6 - Analytics, Telemetry & Conversion Rate', () =>
     const content = fs.readFileSync(adminServicePath, 'utf-8');
 
     assert.match(content, /getAnalytics\(/);
-    assert.match(content, /\$group:\s*\{\s*_id:\s*null,\s*total:\s*\{\s*\$sum:\s*'\$total'\s*\}\s*\}/);
+    assert.match(
+      content,
+      /\$group:\s*\{\s*_id:\s*null,\s*total:\s*\{\s*\$sum:\s*'\$total'\s*\}\s*\}/,
+    );
     assert.match(content, /conversionRate/);
   });
 });
@@ -240,42 +243,69 @@ describe('Admin Panel: Module 7 - Frontend Admin App Router & Design System', ()
   });
 
   it('7.4: Double-submit keystroke guards (FORM-01) are implemented across all mutation forms', () => {
-    const productsPage = fs.readFileSync(path.join(webDir, 'src', 'app', 'admin', 'products', 'page.tsx'), 'utf-8');
+    const productsPage = fs.readFileSync(
+      path.join(webDir, 'src', 'app', 'admin', 'products', 'page.tsx'),
+      'utf-8',
+    );
     assert.match(productsPage, /if \(isSaving\) return;/);
     assert.match(productsPage, /if \(isDeleting\) return;/);
     assert.match(productsPage, /if \(isUploading\) return;/);
 
-    const inventoryPage = fs.readFileSync(path.join(webDir, 'src', 'app', 'admin', 'inventory', 'page.tsx'), 'utf-8');
+    const inventoryPage = fs.readFileSync(
+      path.join(webDir, 'src', 'app', 'admin', 'inventory', 'page.tsx'),
+      'utf-8',
+    );
     assert.match(inventoryPage, /if \(isUpdatingStock\) return;/);
 
-    const ordersPage = fs.readFileSync(path.join(webDir, 'src', 'app', 'admin', 'orders', 'page.tsx'), 'utf-8');
+    const ordersPage = fs.readFileSync(
+      path.join(webDir, 'src', 'app', 'admin', 'orders', 'page.tsx'),
+      'utf-8',
+    );
     assert.match(ordersPage, /if \(isUpdatingStatus\) return;/);
     assert.match(ordersPage, /if \(isRefunding\) return;/);
 
-    const categoriesPage = fs.readFileSync(path.join(webDir, 'src', 'app', 'admin', 'categories', 'page.tsx'), 'utf-8');
+    const categoriesPage = fs.readFileSync(
+      path.join(webDir, 'src', 'app', 'admin', 'categories', 'page.tsx'),
+      'utf-8',
+    );
     assert.match(categoriesPage, /if \(isSaving\) return;/);
     assert.match(categoriesPage, /if \(isDeleting\) return;/);
 
-    const customersPage = fs.readFileSync(path.join(webDir, 'src', 'app', 'admin', 'customers', 'page.tsx'), 'utf-8');
+    const customersPage = fs.readFileSync(
+      path.join(webDir, 'src', 'app', 'admin', 'customers', 'page.tsx'),
+      'utf-8',
+    );
     assert.match(customersPage, /if \(isUpdatingRole\) return;/);
     assert.match(customersPage, /if \(isUpdatingBlock\) return;/);
 
-    const loginPage = fs.readFileSync(path.join(webDir, 'src', 'app', 'admin', 'login', 'page.tsx'), 'utf-8');
+    const loginPage = fs.readFileSync(
+      path.join(webDir, 'src', 'app', 'admin', 'login', 'page.tsx'),
+      'utf-8',
+    );
     assert.match(loginPage, /if \(isLoading\) return;/);
   });
 });
 
 describe('Admin Panel: Module 8 - Rigorous Business Invariants & Security Hardening', () => {
   it('8.1: Variant SKU Uniqueness (VAL-02) is enforced in Product model and AdminService', () => {
-    const productModel = fs.readFileSync(path.join(apiDir, 'src', 'models', 'Product.model.ts'), 'utf-8');
+    const productModel = fs.readFileSync(
+      path.join(apiDir, 'src', 'models', 'Product.model.ts'),
+      'utf-8',
+    );
     assert.match(productModel, /Each variant must have a unique SKU code/);
 
-    const adminService = fs.readFileSync(path.join(apiDir, 'src', 'services', 'admin.service.ts'), 'utf-8');
+    const adminService = fs.readFileSync(
+      path.join(apiDir, 'src', 'services', 'admin.service.ts'),
+      'utf-8',
+    );
     assert.match(adminService, /Each variant must have a unique SKU code/);
   });
 
   it('8.2: Order state machine transitions (ORD-01) enforce terminal states and valid lifecycle', () => {
-    const adminService = fs.readFileSync(path.join(apiDir, 'src', 'services', 'admin.service.ts'), 'utf-8');
+    const adminService = fs.readFileSync(
+      path.join(apiDir, 'src', 'services', 'admin.service.ts'),
+      'utf-8',
+    );
     assert.match(adminService, /ALLOWED_TRANSITIONS/);
     assert.match(adminService, /delivered:\s*\[\s*\]/);
     assert.match(adminService, /cancelled:\s*\[\s*\]/);
@@ -283,26 +313,38 @@ describe('Admin Panel: Module 8 - Rigorous Business Invariants & Security Harden
   });
 
   it('8.3: Refund eligibility guard (ORD-02) and check-and-set lock (SEC-05) prevent illegal and double refunds', () => {
-    const adminService = fs.readFileSync(path.join(apiDir, 'src', 'services', 'admin.service.ts'), 'utf-8');
+    const adminService = fs.readFileSync(
+      path.join(apiDir, 'src', 'services', 'admin.service.ts'),
+      'utf-8',
+    );
     assert.match(adminService, /paymentStatus !== 'captured'/);
     assert.match(adminService, /paymentStatus === 'refunding'/);
     assert.match(adminService, /paymentStatus:\s*'refunding'/);
   });
 
   it('8.4: Deletion dependency guards protect products (CAT-01) and categories (CAT-02)', () => {
-    const adminService = fs.readFileSync(path.join(apiDir, 'src', 'services', 'admin.service.ts'), 'utf-8');
+    const adminService = fs.readFileSync(
+      path.join(apiDir, 'src', 'services', 'admin.service.ts'),
+      'utf-8',
+    );
     assert.match(adminService, /Cannot delete product: active unfulfilled orders exist/);
     assert.match(adminService, /active products are currently assigned to it/);
   });
 
   it('8.5: Financial metrics (FIN-01) require paymentStatus: captured for platform revenue and customer spend', () => {
-    const adminService = fs.readFileSync(path.join(apiDir, 'src', 'services', 'admin.service.ts'), 'utf-8');
+    const adminService = fs.readFileSync(
+      path.join(apiDir, 'src', 'services', 'admin.service.ts'),
+      'utf-8',
+    );
     assert.match(adminService, /paymentStatus:\s*'captured'/);
     assert.match(adminService, /status:\s*\{\s*\$nin:\s*\['cancelled'\]\s*\}/);
   });
 
   it('8.6: Telemetry schema (SEC-03) caps path and referrer string lengths', () => {
-    const adminSchema = fs.readFileSync(path.join(apiDir, 'src', 'validators', 'admin.schema.ts'), 'utf-8');
+    const adminSchema = fs.readFileSync(
+      path.join(apiDir, 'src', 'validators', 'admin.schema.ts'),
+      'utf-8',
+    );
     assert.match(adminSchema, /trackViewSchema/);
     assert.match(adminSchema, /max\(200/);
     assert.match(adminSchema, /max\(300/);

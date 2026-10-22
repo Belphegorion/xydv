@@ -46,12 +46,15 @@ export const adminCreateProductSchema = z.object({
         )
         .optional()
         .refine(
-          (items) => !items || new Set(items.map((i) => i.sku.trim().toUpperCase())).size === items.length,
+          (items) =>
+            !items || new Set(items.map((i) => i.sku.trim().toUpperCase())).size === items.length,
           {
             message: 'Each variant must have a unique SKU code',
           },
         ),
-      images: z.array(z.union([z.string(), z.object({ url: z.string() }).passthrough()])).optional(),
+      images: z
+        .array(z.union([z.string(), z.object({ url: z.string() }).passthrough()]))
+        .optional(),
       inStock: z.boolean().optional(),
       isPublished: z.boolean().optional(),
       isFeatured: z.boolean().optional(),
@@ -115,22 +118,29 @@ export const adminUpdateProductSchema = z.object({
         )
         .optional()
         .refine(
-          (items) => !items || new Set(items.map((i) => i.sku.trim().toUpperCase())).size === items.length,
+          (items) =>
+            !items || new Set(items.map((i) => i.sku.trim().toUpperCase())).size === items.length,
           {
             message: 'Each variant must have a unique SKU code',
           },
         ),
-      images: z.array(z.union([z.string(), z.object({ url: z.string() }).passthrough()])).optional(),
+      images: z
+        .array(z.union([z.string(), z.object({ url: z.string() }).passthrough()]))
+        .optional(),
       inStock: z.boolean().optional(),
       isPublished: z.boolean().optional(),
       isFeatured: z.boolean().optional(),
       bestseller: z.boolean().optional(),
       lowStockThreshold: z.number().int().min(0).optional(),
     })
-    .refine((data) => !data.compareAt || data.compareAt === null || !data.price || data.compareAt > data.price, {
-      message: 'Compare price must be greater than sale price',
-      path: ['compareAt'],
-    }),
+    .refine(
+      (data) =>
+        !data.compareAt || data.compareAt === null || !data.price || data.compareAt > data.price,
+      {
+        message: 'Compare price must be greater than sale price',
+        path: ['compareAt'],
+      },
+    ),
 });
 
 export const createCategorySchema = z.object({

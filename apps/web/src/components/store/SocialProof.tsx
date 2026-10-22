@@ -38,37 +38,42 @@ export function SocialProof() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section aria-labelledby="social-proof-heading" className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+    <section
+      aria-labelledby="social-proof-heading"
+      className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24"
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 md:mb-16 border-b border-[var(--border)] pb-6">
+      <div className="mb-8 flex flex-col justify-between border-b border-[var(--border)] pb-6 sm:mb-12 md:mb-16 md:flex-row md:items-end">
         <div>
-          <span className="text-[var(--text-secondary)] dark:text-[var(--accent)] text-xs font-mono font-semibold uppercase tracking-[0.25em]">
+          <span className="font-mono text-xs font-semibold tracking-[0.25em] text-[var(--text-secondary)] uppercase dark:text-[var(--accent)]">
             FIELD TESTED / ATHLETE REPORTS
           </span>
           <h2
             id="social-proof-heading"
-            className="text-[var(--text-primary)] text-3xl md:text-5xl font-bold uppercase tracking-tighter font-heading mt-2"
+            className="font-heading mt-2 text-3xl font-bold tracking-tighter text-[var(--text-primary)] uppercase md:text-5xl"
           >
             VERIFIED IN THE ARENA
           </h2>
         </div>
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-4 md:mt-0">
+        <div className="mt-4 flex flex-wrap items-center gap-2 sm:gap-3 md:mt-0">
           <div
             role="img"
-            className="flex items-center gap-1 text-zinc-900 bg-zinc-100 px-2 py-0.5 border border-zinc-200 dark:bg-white/10 dark:border-white/20 dark:text-white"
+            className="flex items-center gap-1 border border-zinc-200 bg-zinc-100 px-2 py-0.5 text-zinc-900 dark:border-white/20 dark:bg-white/10 dark:text-white"
             aria-label="Rating 5 out of 5 stars"
           >
             {[...Array(5)].map((_, i) => (
               <Star key={i} size={14} weight="fill" />
             ))}
           </div>
-          <span className="text-[var(--text-primary)] text-xs font-mono font-bold">4.92 / 5.0</span>
-          <span className="text-[var(--text-muted)] text-[11px] font-mono">(1,840+ VERIFIED ATHLETES)</span>
+          <span className="font-mono text-xs font-bold text-[var(--text-primary)]">4.92 / 5.0</span>
+          <span className="font-mono text-[11px] text-[var(--text-muted)]">
+            (1,840+ VERIFIED ATHLETES)
+          </span>
         </div>
       </div>
 
       {/* Testimonial Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
         {TESTIMONIALS.map((t, idx) => (
           <motion.div
             key={t.author}
@@ -85,15 +90,12 @@ export function SocialProof() {
                     delay: idx * 0.09,
                   }
             }
-            className="bg-[var(--bg-surface)] border border-[var(--border)] p-5 sm:p-8 flex flex-col justify-between hover:border-[var(--text-primary)]/40 transition-[border-color,box-shadow] duration-200 shadow-sm"
+            className="flex flex-col justify-between border border-[var(--border)] bg-[var(--bg-surface)] p-5 shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-[var(--text-primary)]/40 sm:p-8"
           >
             <div>
               {/* Stars & Verified Badge */}
-              <div className="flex items-center justify-between mb-6">
-                <div
-                  className="flex text-zinc-900 dark:text-white gap-0.5"
-                  aria-hidden="true"
-                >
+              <div className="mb-6 flex items-center justify-between">
+                <div className="flex gap-0.5 text-zinc-900 dark:text-white" aria-hidden="true">
                   {[...Array(t.rating)].map((_, i) => (
                     <Star key={i} size={14} weight="fill" />
                   ))}
@@ -104,19 +106,19 @@ export function SocialProof() {
               </div>
 
               {/* Quote */}
-              <blockquote className="text-[var(--text-primary)] text-xs sm:text-sm md:text-base leading-relaxed font-sans mb-8">
+              <blockquote className="mb-8 font-sans text-xs leading-relaxed text-[var(--text-primary)] sm:text-sm md:text-base">
                 &ldquo;{t.quote}&rdquo;
               </blockquote>
             </div>
 
             {/* Author Meta */}
-            <div className="pt-4 border-t border-[var(--border)]">
-              <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="border-t border-[var(--border)] pt-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-[var(--text-primary)] text-xs font-bold uppercase tracking-wider font-heading">
+                  <p className="font-heading text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                     {t.author}
                   </p>
-                  <p className="text-[var(--text-secondary)] dark:text-[var(--accent)] text-[10px] font-mono tracking-widest uppercase mt-0.5">
+                  <p className="mt-0.5 font-mono text-[10px] tracking-widest text-[var(--text-secondary)] uppercase dark:text-[var(--accent)]">
                     {t.role}
                   </p>
                 </div>
@@ -124,7 +126,7 @@ export function SocialProof() {
                   {t.verifiedPiece}
                 </Badge>
               </div>
-              <p className="text-[var(--text-muted)] text-[10px] font-mono uppercase mt-2">
+              <p className="mt-2 font-mono text-[10px] text-[var(--text-muted)] uppercase">
                 DISCIPLINE: {t.discipline}
               </p>
             </div>

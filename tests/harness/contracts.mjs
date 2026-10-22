@@ -43,7 +43,17 @@ export const MOTION_SPECS = {
   recommendedDurationMs: 240,
   easingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)',
   allowedAnimatableProperties: ['transform', 'opacity'],
-  disallowedProperties: ['width', 'height', 'margin', 'padding', 'top', 'left', 'bottom', 'right', 'all'],
+  disallowedProperties: [
+    'width',
+    'height',
+    'margin',
+    'padding',
+    'top',
+    'left',
+    'bottom',
+    'right',
+    'all',
+  ],
   disallowedEntranceScale: 0,
   springPhysics: {
     stiffness: 350,
@@ -65,7 +75,10 @@ export function calculateCartMetrics(items = []) {
   );
   const isFreeShipping = subtotal >= COMMERCE_RULES.freeShippingThreshold;
   const shipping = items.length === 0 ? 0 : isFreeShipping ? 0 : COMMERCE_RULES.standardShippingFee;
-  const freeShippingDelta = Math.max(0, Number((COMMERCE_RULES.freeShippingThreshold - subtotal).toFixed(2)));
+  const freeShippingDelta = Math.max(
+    0,
+    Number((COMMERCE_RULES.freeShippingThreshold - subtotal).toFixed(2)),
+  );
   const freeShippingProgress = Math.min(
     100,
     Number(((subtotal / COMMERCE_RULES.freeShippingThreshold) * 100).toFixed(1)),
@@ -111,10 +124,7 @@ export function getContrastRatio(foregroundHex, backgroundHex) {
 }
 
 export function generateRazorpaySignature(orderId, paymentId, keySecret) {
-  return crypto
-    .createHmac('sha256', keySecret)
-    .update(`${orderId}|${paymentId}`)
-    .digest('hex');
+  return crypto.createHmac('sha256', keySecret).update(`${orderId}|${paymentId}`).digest('hex');
 }
 
 export function verifyRazorpaySignature(orderId, paymentId, signature, keySecret) {
@@ -127,10 +137,7 @@ export function verifyRazorpaySignature(orderId, paymentId, signature, keySecret
 }
 
 export function generateWebhookSignature(rawBody, webhookSecret) {
-  return crypto
-    .createHmac('sha256', webhookSecret)
-    .update(rawBody)
-    .digest('hex');
+  return crypto.createHmac('sha256', webhookSecret).update(rawBody).digest('hex');
 }
 
 export function verifyWebhookSignature(rawBody, signature, webhookSecret) {

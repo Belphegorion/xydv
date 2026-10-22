@@ -99,7 +99,10 @@ export default function AdminSettingsPage() {
         setSettings(res.data);
       }
       setIsDirty(false);
-      setFeedback({ type: 'success', message: 'Store settings successfully synchronized and saved.' });
+      setFeedback({
+        type: 'success',
+        message: 'Store settings successfully synchronized and saved.',
+      });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to save store settings';
       setFeedback({ type: 'error', message: msg });
@@ -110,8 +113,8 @@ export default function AdminSettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-96 items-center justify-center font-mono text-xs uppercase tracking-widest text-[#71717a]">
-        <div className="w-6 h-6 border-2 border-[#e8ff00] border-t-transparent rounded-full animate-spin mr-3" />
+      <div className="flex h-96 items-center justify-center font-mono text-xs tracking-widest text-[#71717a] uppercase">
+        <div className="mr-3 h-6 w-6 animate-spin rounded-full border-2 border-[#e8ff00] border-t-transparent" />
         Loading System Settings...
       </div>
     );
@@ -120,22 +123,24 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#1f1f1f] pb-5">
+      <div className="flex flex-col gap-4 border-b border-[#1f1f1f] pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
             <Gear size={20} className="text-[#e8ff00]" />
-            <h1 className="font-mono text-xl font-bold uppercase tracking-wider text-[#f5f5f5]">
+            <h1 className="font-mono text-xl font-bold tracking-wider text-[#f5f5f5] uppercase">
               Store Settings
             </h1>
           </div>
           <p className="mt-1 font-mono text-xs text-[#a0a0a0]">
-            Authoritative parameters for checkout calculations, taxation, thresholds, and brand identity.
+            Authoritative parameters for checkout calculations, taxation, thresholds, and brand
+            identity.
           </p>
         </div>
 
         {settings.updatedAt && (
           <div className="font-mono text-[11px] text-[#71717a]">
-            Last Updated: {new Date(settings.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST
+            Last Updated:{' '}
+            {new Date(settings.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST
           </div>
         )}
       </div>
@@ -167,20 +172,20 @@ export default function AdminSettingsPage() {
       <form onSubmit={handleSave} className="space-y-6">
         {/* Shipping & Delivery */}
         <div className="rounded border border-[#1f1f1f] bg-[#111111] p-6 shadow-sm">
-          <div className="flex items-center gap-2 border-b border-[#1f1f1f] pb-3 mb-5">
+          <div className="mb-5 flex items-center gap-2 border-b border-[#1f1f1f] pb-3">
             <Truck size={18} className="text-[#e8ff00]" />
-            <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-[#f5f5f5]">
+            <h2 className="font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
               Fulfillment & Shipping Rules
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
-              <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-2">
+              <label className="mb-2 block font-mono text-xs text-[#a0a0a0] uppercase">
                 Free Shipping Threshold (₹)
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 font-mono text-xs text-[#71717a]">₹</span>
+                <span className="absolute top-2.5 left-3 font-mono text-xs text-[#71717a]">₹</span>
                 <input
                   type="number"
                   min="0"
@@ -191,20 +196,21 @@ export default function AdminSettingsPage() {
                     setIsDirty(true);
                     setSettings({ ...settings, freeShippingThreshold: Number(e.target.value) });
                   }}
-                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pl-8 pr-3 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-8 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
                 />
               </div>
               <p className="mt-1.5 font-mono text-[10px] text-[#71717a]">
-                Orders with subtotal at or above this amount automatically qualify for free shipping.
+                Orders with subtotal at or above this amount automatically qualify for free
+                shipping.
               </p>
             </div>
 
             <div>
-              <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-2">
+              <label className="mb-2 block font-mono text-xs text-[#a0a0a0] uppercase">
                 Standard Shipping Fee (₹)
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 font-mono text-xs text-[#71717a]">₹</span>
+                <span className="absolute top-2.5 left-3 font-mono text-xs text-[#71717a]">₹</span>
                 <input
                   type="number"
                   min="0"
@@ -215,7 +221,7 @@ export default function AdminSettingsPage() {
                     setIsDirty(true);
                     setSettings({ ...settings, standardShippingFee: Number(e.target.value) });
                   }}
-                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pl-8 pr-3 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-8 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
                 />
               </div>
               <p className="mt-1.5 font-mono text-[10px] text-[#71717a]">
@@ -227,16 +233,16 @@ export default function AdminSettingsPage() {
 
         {/* Taxes & Currency */}
         <div className="rounded border border-[#1f1f1f] bg-[#111111] p-6 shadow-sm">
-          <div className="flex items-center gap-2 border-b border-[#1f1f1f] pb-3 mb-5">
+          <div className="mb-5 flex items-center gap-2 border-b border-[#1f1f1f] pb-3">
             <Receipt size={18} className="text-[#e8ff00]" />
-            <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-[#f5f5f5]">
+            <h2 className="font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
               Taxation & Currency Specification
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             <div>
-              <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-2">
+              <label className="mb-2 block font-mono text-xs text-[#a0a0a0] uppercase">
                 Tax Rate (GST / Fraction)
               </label>
               <input
@@ -258,11 +264,11 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-2">
+              <label className="mb-2 block font-mono text-xs text-[#a0a0a0] uppercase">
                 Currency Code
               </label>
               <div className="relative">
-                <CurrencyInr size={14} className="absolute left-3 top-3 text-[#71717a]" />
+                <CurrencyInr size={14} className="absolute top-3 left-3 text-[#71717a]" />
                 <input
                   type="text"
                   required
@@ -271,13 +277,13 @@ export default function AdminSettingsPage() {
                     setIsDirty(true);
                     setSettings({ ...settings, currency: e.target.value.toUpperCase() });
                   }}
-                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pl-8 pr-3 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-8 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-2">
+              <label className="mb-2 block font-mono text-xs text-[#a0a0a0] uppercase">
                 Currency Symbol
               </label>
               <input
@@ -296,15 +302,15 @@ export default function AdminSettingsPage() {
 
         {/* Inventory Safety Alert Limit */}
         <div className="rounded border border-[#1f1f1f] bg-[#111111] p-6 shadow-sm">
-          <div className="flex items-center gap-2 border-b border-[#1f1f1f] pb-3 mb-5">
+          <div className="mb-5 flex items-center gap-2 border-b border-[#1f1f1f] pb-3">
             <ShieldCheck size={18} className="text-[#e8ff00]" />
-            <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-[#f5f5f5]">
+            <h2 className="font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
               Global Inventory Thresholds
             </h2>
           </div>
 
           <div className="max-w-md">
-            <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-2">
+            <label className="mb-2 block font-mono text-xs text-[#a0a0a0] uppercase">
               Default Low Stock Alert Limit (Units)
             </label>
             <input
@@ -320,23 +326,24 @@ export default function AdminSettingsPage() {
               className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
             />
             <p className="mt-1.5 font-mono text-[10px] text-[#71717a]">
-              Any SKU with stock at or below this limit will trigger low-stock badges and alerts in the admin console.
+              Any SKU with stock at or below this limit will trigger low-stock badges and alerts in
+              the admin console.
             </p>
           </div>
         </div>
 
         {/* Brand & Support Contact */}
         <div className="rounded border border-[#1f1f1f] bg-[#111111] p-6 shadow-sm">
-          <div className="flex items-center gap-2 border-b border-[#1f1f1f] pb-3 mb-5">
+          <div className="mb-5 flex items-center gap-2 border-b border-[#1f1f1f] pb-3">
             <EnvelopeSimple size={18} className="text-[#e8ff00]" />
-            <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-[#f5f5f5]">
+            <h2 className="font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
               Store Identity & Invoicing
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
-              <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-2">
+              <label className="mb-2 block font-mono text-xs text-[#a0a0a0] uppercase">
                 Store Brand Name
               </label>
               <input
@@ -352,7 +359,7 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-2">
+              <label className="mb-2 block font-mono text-xs text-[#a0a0a0] uppercase">
                 Customer Support Email
               </label>
               <input
@@ -378,7 +385,7 @@ export default function AdminSettingsPage() {
           <button
             type="submit"
             disabled={isSaving || !isDirty}
-            className="inline-flex items-center gap-2 rounded border border-[#e8ff00] bg-[#e8ff00] px-6 py-2.5 font-mono text-xs font-bold uppercase text-[#0a0a0a] hover:bg-[#e8ff00]/90 disabled:opacity-40 active:scale-[0.97] transition-transform"
+            className="inline-flex items-center gap-2 rounded border border-[#e8ff00] bg-[#e8ff00] px-6 py-2.5 font-mono text-xs font-bold text-[#0a0a0a] uppercase transition-transform hover:bg-[#e8ff00]/90 active:scale-[0.97] disabled:opacity-40"
           >
             <FloppyDisk size={16} />
             <span>{isSaving ? 'Synchronizing...' : 'Save Store Settings'}</span>

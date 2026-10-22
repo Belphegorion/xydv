@@ -9,7 +9,8 @@ export const CATALOG_FIXTURES = [
     name: 'Volt Performance Tee',
     slug: 'volt-performance-tee',
     brand: 'VERTEX',
-    description: 'Flagship technical training shirt featuring SweatShield+ moisture-wicking and 4-way AeroFlex stretch.',
+    description:
+      'Flagship technical training shirt featuring SweatShield+ moisture-wicking and 4-way AeroFlex stretch.',
     category: 'tops',
     tags: ['tee', 'training', 'new-arrival', 'bestseller'],
     price: 58.0,
@@ -90,7 +91,8 @@ export const CATALOG_FIXTURES = [
     name: 'Apex Modular Training Shorts',
     slug: 'apex-modular-training-shorts',
     brand: 'VERTEX',
-    description: '5-inch technical training short with compression liner, waterproof phone pocket, and reinforced waistband.',
+    description:
+      '5-inch technical training short with compression liner, waterproof phone pocket, and reinforced waistband.',
     category: 'bottoms',
     tags: ['shorts', 'training', 'bestseller'],
     price: 72.0,
@@ -141,7 +143,8 @@ export const CATALOG_FIXTURES = [
     name: 'Stealth Tactical Tech Hoodie',
     slug: 'stealth-tactical-tech-hoodie',
     brand: 'VERTEX',
-    description: 'Heavyweight thermal fleece with Cordura ballistic elbow reinforcements and storm-proof hood.',
+    description:
+      'Heavyweight thermal fleece with Cordura ballistic elbow reinforcements and storm-proof hood.',
     category: 'outerwear',
     tags: ['hoodie', 'outerwear', 'tactical'],
     price: 148.0,
@@ -211,6 +214,12 @@ export const BENTO_CATEGORIES = [
   { id: 'cat-tops', name: 'Tops & Baselayers', slug: 'tops', ratio: '16:10', count: 14 },
   { id: 'cat-bottoms', name: 'Bottoms & Shorts', slug: 'bottoms', ratio: '3:4', count: 18 },
   { id: 'cat-outerwear', name: 'Technical Outerwear', slug: 'outerwear', ratio: '16:9', count: 9 },
-  { id: 'cat-accessories', name: 'Accessories & EDC', slug: 'accessories', ratio: '1:1', count: 22 },
+  {
+    id: 'cat-accessories',
+    name: 'Accessories & EDC',
+    slug: 'accessories',
+    ratio: '1:1',
+    count: 22,
+  },
   { id: 'cat-all', name: 'Complete Archive', slug: 'all', ratio: 'full-width', count: 63 },
 ];

@@ -29,31 +29,19 @@ describe('Batch 5: HIGH-03 - Customer Auth Storefront Store', () => {
       /export\s+const\s+useCustomerAuthStore\s*=\s*create/,
       'customerAuth.ts must export useCustomerAuthStore Zustand hook',
     );
-    assert.match(
-      storeSrc,
-      /isModalOpen/,
-      'customerAuth.ts must manage isModalOpen state',
-    );
+    assert.match(storeSrc, /isModalOpen/, 'customerAuth.ts must manage isModalOpen state');
     assert.match(
       storeSrc,
       /authMode|modalMode/,
       'customerAuth.ts must manage auth mode state ("login" | "register")',
     );
-    assert.match(
-      storeSrc,
-      /login\s*:\s*async/,
-      'customerAuth.ts must implement login action',
-    );
+    assert.match(storeSrc, /login\s*:\s*async/, 'customerAuth.ts must implement login action');
     assert.match(
       storeSrc,
       /register\s*:\s*async/,
       'customerAuth.ts must implement register action',
     );
-    assert.match(
-      storeSrc,
-      /logout\s*:\s*\(\)/,
-      'customerAuth.ts must implement logout action',
-    );
+    assert.match(storeSrc, /logout\s*:\s*\(\)/, 'customerAuth.ts must implement logout action');
     assert.match(
       storeSrc,
       /localStorage\.setItem\(['"]xydv_auth_token['"]/,
@@ -73,16 +61,9 @@ describe('Batch 5: HIGH-03 - CustomerAuthModal Component & Layout Integration', 
   const navbarPath = path.join(webDir, 'src', 'components', 'layout', 'Navbar.tsx');
 
   it('CustomerAuthModal.tsx exists and implements accessible modal dialog with Emil Kowalski motion', () => {
-    assert.ok(
-      fs.existsSync(modalPath),
-      'CustomerAuthModal.tsx must exist in components/store',
-    );
+    assert.ok(fs.existsSync(modalPath), 'CustomerAuthModal.tsx must exist in components/store');
     const modalSrc = fs.readFileSync(modalPath, 'utf-8');
-    assert.match(
-      modalSrc,
-      /role=["']dialog["']/,
-      'CustomerAuthModal must specify role="dialog"',
-    );
+    assert.match(modalSrc, /role=["']dialog["']/, 'CustomerAuthModal must specify role="dialog"');
     assert.match(
       modalSrc,
       /aria-modal=["']true["']/,
@@ -160,11 +141,7 @@ describe('Batch 5: HIGH-03 - CartDrawer Interactive Shipping Destination Form', 
       /shippingAddress\.phone|PHONE NUMBER/i,
       'CartDrawer.tsx must collect phone number',
     );
-    assert.match(
-      cartDrawerSrc,
-      /shippingAddress\.city|CITY/i,
-      'CartDrawer.tsx must collect city',
-    );
+    assert.match(cartDrawerSrc, /shippingAddress\.city|CITY/i, 'CartDrawer.tsx must collect city');
     assert.match(
       cartDrawerSrc,
       /shippingAddress\.postalCode|PIN CODE|postalCode/i,

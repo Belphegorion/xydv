@@ -39,7 +39,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       volt: 'bg-[var(--accent)] text-[var(--accent-foreground,#ffffff)] dark:text-[#0a0a0a] border border-[var(--accent)] hover:bg-[var(--accent-hover)] hover:border-[var(--accent-hover)] transition-colors shadow-sm',
       outline:
         'bg-transparent text-[var(--text-primary)] border border-[var(--border)] hover:bg-[var(--text-primary)] hover:text-[var(--bg)]',
-      ghost: 'bg-transparent text-[var(--text-secondary)] border border-transparent hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]',
+      ghost:
+        'bg-transparent text-[var(--text-secondary)] border border-transparent hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]',
       danger:
         'bg-transparent text-[#b91c1c] border border-[#b91c1c]/40 hover:bg-[#b91c1c]/10 hover:border-[#b91c1c] dark:text-[#ff3b3b] dark:border-[#ff3b3b]/40 dark:hover:bg-[#ff3b3b]/10 dark:hover:border-[#ff3b3b]',
     }[variant];
@@ -55,11 +56,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {isLoading ? (
           <span
-            className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin flex-shrink-0"
+            className="h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent"
             aria-hidden="true"
           />
         ) : (
-          icon && <span className="flex-shrink-0 flex items-center">{icon}</span>
+          icon && <span className="flex flex-shrink-0 items-center">{icon}</span>
         )}
         <span>{children}</span>
       </button>

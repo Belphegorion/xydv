@@ -56,7 +56,9 @@ export default function AdminCustomersPage() {
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null,
+  );
 
   // Profile Drawer / Modal state
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
@@ -197,20 +199,21 @@ export default function AdminCustomersPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-xl font-bold uppercase tracking-wider text-[#f5f5f5]">
+          <h2 className="font-mono text-xl font-bold tracking-wider text-[#f5f5f5] uppercase">
             Customer Directory & Permissions
           </h2>
-          <p className="font-mono text-xs text-[#71717a] mt-0.5">
-            Audit customer accounts, manage administrative roles, and enforce security suspensions ({total} registered users)
+          <p className="mt-0.5 font-mono text-xs text-[#71717a]">
+            Audit customer accounts, manage administrative roles, and enforce security suspensions (
+            {total} registered users)
           </p>
         </div>
 
         <button
           type="button"
           onClick={fetchCustomers}
-          className="inline-flex items-center gap-2 rounded border border-[#1f1f1f] bg-[#111111] px-3.5 py-2 font-mono text-xs uppercase tracking-wider text-[#a0a0a0] hover:text-[#f5f5f5] hover:border-[#333333] transition-colors active:scale-[0.97]"
+          className="inline-flex items-center gap-2 rounded border border-[#1f1f1f] bg-[#111111] px-3.5 py-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#333333] hover:text-[#f5f5f5] active:scale-[0.97]"
         >
           <ArrowClockwise size={14} className={isLoading ? 'animate-spin' : ''} />
           <span>Refresh Users</span>
@@ -237,9 +240,12 @@ export default function AdminCustomersPage() {
       )}
 
       {/* Toolbar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5">
+      <div className="grid grid-cols-1 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5 sm:grid-cols-3">
         <div className="relative">
-          <MagnifyingGlass size={16} className="pointer-events-none absolute left-3 top-3 text-[#71717a]" />
+          <MagnifyingGlass
+            size={16}
+            className="pointer-events-none absolute top-3 left-3 text-[#71717a]"
+          />
           <input
             type="text"
             value={search}
@@ -248,7 +254,7 @@ export default function AdminCustomersPage() {
               setPage(1);
             }}
             placeholder="Search name, email address..."
-            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pl-9 pr-3 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
+            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-9 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
           />
         </div>
 
@@ -283,16 +289,16 @@ export default function AdminCustomersPage() {
       <div className="overflow-hidden rounded border border-[#1f1f1f] bg-[#111111]">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono uppercase tracking-wider text-[#a0a0a0]">
+            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono tracking-wider text-[#a0a0a0] uppercase">
               <tr>
-                <th className="py-3 px-4">User</th>
-                <th className="py-3 px-4">Email Address</th>
-                <th className="py-3 px-4">Role</th>
-                <th className="py-3 px-4">Account Status</th>
-                <th className="py-3 px-4">Orders</th>
-                <th className="py-3 px-4">Total Spent</th>
-                <th className="py-3 px-4">Joined Date</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="px-4 py-3">User</th>
+                <th className="px-4 py-3">Email Address</th>
+                <th className="px-4 py-3">Role</th>
+                <th className="px-4 py-3">Account Status</th>
+                <th className="px-4 py-3">Orders</th>
+                <th className="px-4 py-3">Total Spent</th>
+                <th className="px-4 py-3">Joined Date</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1f1f1f]">
@@ -307,7 +313,7 @@ export default function AdminCustomersPage() {
                 </tr>
               ) : customers.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-[#71717a] font-mono uppercase">
+                  <td colSpan={8} className="py-12 text-center font-mono text-[#71717a] uppercase">
                     No customers found matching filter criteria.
                   </td>
                 </tr>
@@ -316,10 +322,10 @@ export default function AdminCustomersPage() {
                   const isCurrentAdmin = c._id === currentAdmin?._id;
 
                   return (
-                    <tr key={c._id} className="hover:bg-[#141414] transition-colors">
-                      <td className="py-3 px-4">
+                    <tr key={c._id} className="transition-colors hover:bg-[#141414]">
+                      <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#181818] border border-[#262626] font-mono text-xs font-bold text-[#e8ff00]">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full border border-[#262626] bg-[#181818] font-mono text-xs font-bold text-[#e8ff00]">
                             {c.name[0].toUpperCase()}
                           </div>
                           <div>
@@ -333,9 +339,9 @@ export default function AdminCustomersPage() {
                         </div>
                       </td>
 
-                      <td className="py-3 px-4 font-mono text-[#a0a0a0]">{c.email}</td>
+                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">{c.email}</td>
 
-                      <td className="py-3 px-4">
+                      <td className="px-4 py-3">
                         <span
                           className={`inline-flex items-center gap-1 rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
                             c.role === 'admin'
@@ -348,35 +354,35 @@ export default function AdminCustomersPage() {
                         </span>
                       </td>
 
-                      <td className="py-3 px-4">
+                      <td className="px-4 py-3">
                         {c.isBlocked ? (
-                          <span className="inline-flex items-center gap-1 rounded bg-[#ff3b3b]/15 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-[#ff3b3b]">
+                          <span className="inline-flex items-center gap-1 rounded bg-[#ff3b3b]/15 px-2 py-0.5 font-mono text-[10px] font-bold text-[#ff3b3b] uppercase">
                             <Prohibit size={12} />
                             <span>Suspended</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center rounded bg-[#22c55e]/15 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-[#22c55e]">
+                          <span className="inline-flex items-center rounded bg-[#22c55e]/15 px-2 py-0.5 font-mono text-[10px] font-bold text-[#22c55e] uppercase">
                             Active
                           </span>
                         )}
                       </td>
 
-                      <td className="py-3 px-4 font-mono text-[#a0a0a0]">{c.orderCount}</td>
+                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">{c.orderCount}</td>
 
-                      <td className="py-3 px-4 font-mono font-bold text-[#f5f5f5]">
+                      <td className="px-4 py-3 font-mono font-bold text-[#f5f5f5]">
                         ₹{c.totalSpent.toFixed(2)}
                       </td>
 
-                      <td className="py-3 px-4 font-mono text-[#71717a]">
+                      <td className="px-4 py-3 font-mono text-[#71717a]">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
 
-                      <td className="py-3 px-4 text-right">
+                      <td className="px-4 py-3 text-right">
                         <div className="inline-flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => handleOpenProfile(c._id)}
-                            className="rounded p-1.5 text-[#a0a0a0] hover:bg-[#1f1f1f] hover:text-[#f5f5f5] transition-colors"
+                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#1f1f1f] hover:text-[#f5f5f5]"
                             title="Inspect History"
                           >
                             <Eye size={16} />
@@ -394,8 +400,8 @@ export default function AdminCustomersPage() {
                               }
                               className={`rounded p-1.5 transition-colors ${
                                 c.role === 'admin'
-                                  ? 'text-[#a0a0a0] hover:text-[#ff3b3b] hover:bg-[#ff3b3b]/10'
-                                  : 'text-[#a0a0a0] hover:text-[#e8ff00] hover:bg-[#e8ff00]/10'
+                                  ? 'text-[#a0a0a0] hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b]'
+                                  : 'text-[#a0a0a0] hover:bg-[#e8ff00]/10 hover:text-[#e8ff00]'
                               }`}
                               title={c.role === 'admin' ? 'Demote to Customer' : 'Promote to Admin'}
                             >
@@ -416,7 +422,7 @@ export default function AdminCustomersPage() {
                               className={`rounded p-1.5 transition-colors ${
                                 c.isBlocked
                                   ? 'text-[#22c55e] hover:bg-[#22c55e]/10'
-                                  : 'text-[#a0a0a0] hover:text-[#ff3b3b] hover:bg-[#ff3b3b]/10'
+                                  : 'text-[#a0a0a0] hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b]'
                               }`}
                               title={c.isBlocked ? 'Unblock Account' : 'Suspend Account'}
                             >
@@ -443,7 +449,7 @@ export default function AdminCustomersPage() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 uppercase text-[#f5f5f5] disabled:opacity-30 active:scale-[0.97]"
+              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
             >
               Previous
             </button>
@@ -451,7 +457,7 @@ export default function AdminCustomersPage() {
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 uppercase text-[#f5f5f5] disabled:opacity-30 active:scale-[0.97]"
+              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
             >
               Next
             </button>
@@ -462,18 +468,19 @@ export default function AdminCustomersPage() {
       {/* Customer Profile & Purchase History Modal */}
       {selectedCustomerId && customerDetail && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 shadow-2xl text-[#f5f5f5]">
-            <div className="flex items-center justify-between border-b border-[#1f1f1f] pb-4 mb-6">
+          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl">
+            <div className="mb-6 flex items-center justify-between border-b border-[#1f1f1f] pb-4">
               <div>
-                <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-[#e8ff00]">
+                <h3 className="font-mono text-sm font-bold tracking-wider text-[#e8ff00] uppercase">
                   Customer Profile: {customerDetail.user.name}
                 </h3>
                 <p className="font-mono text-[10px] text-[#71717a]">
-                  Member since {new Date(customerDetail.user.createdAt).toLocaleDateString()} • {customerDetail.orderCount} total orders
+                  Member since {new Date(customerDetail.user.createdAt).toLocaleDateString()} •{' '}
+                  {customerDetail.orderCount} total orders
                 </p>
               </div>
 
@@ -491,13 +498,13 @@ export default function AdminCustomersPage() {
 
             <div className="space-y-6">
               {/* Account Overview Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3">
-                  <span className="font-mono text-[10px] uppercase text-[#71717a] block">
+                  <span className="block font-mono text-[10px] text-[#71717a] uppercase">
                     Account Status
                   </span>
                   <span
-                    className={`font-mono text-xs font-bold uppercase mt-1 inline-block ${
+                    className={`mt-1 inline-block font-mono text-xs font-bold uppercase ${
                       customerDetail.user.isBlocked ? 'text-[#ff3b3b]' : 'text-[#22c55e]'
                     }`}
                   >
@@ -506,19 +513,19 @@ export default function AdminCustomersPage() {
                 </div>
 
                 <div className="rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3">
-                  <span className="font-mono text-[10px] uppercase text-[#71717a] block">
+                  <span className="block font-mono text-[10px] text-[#71717a] uppercase">
                     Assigned Role
                   </span>
-                  <span className="font-mono text-xs font-bold uppercase text-[#e8ff00] mt-1 inline-block">
+                  <span className="mt-1 inline-block font-mono text-xs font-bold text-[#e8ff00] uppercase">
                     {customerDetail.user.role}
                   </span>
                 </div>
 
                 <div className="rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3">
-                  <span className="font-mono text-[10px] uppercase text-[#71717a] block">
+                  <span className="block font-mono text-[10px] text-[#71717a] uppercase">
                     Lifetime Spend
                   </span>
-                  <span className="font-mono text-xs font-bold text-[#f5f5f5] mt-1 inline-block">
+                  <span className="mt-1 inline-block font-mono text-xs font-bold text-[#f5f5f5]">
                     ₹{customerDetail.totalSpent.toFixed(2)}
                   </span>
                 </div>
@@ -526,58 +533,58 @@ export default function AdminCustomersPage() {
 
               {/* Purchase History Table */}
               <div>
-                <h4 className="font-mono text-xs uppercase tracking-wider text-[#a0a0a0] mb-2">
+                <h4 className="mb-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase">
                   Order & Transaction History ({customerDetail.orders.length})
                 </h4>
 
                 <div className="overflow-hidden rounded border border-[#1f1f1f]">
                   <table className="w-full text-left font-sans text-xs">
-                    <thead className="bg-[#181818] font-mono text-[10px] uppercase text-[#71717a] border-b border-[#1f1f1f]">
+                    <thead className="border-b border-[#1f1f1f] bg-[#181818] font-mono text-[10px] text-[#71717a] uppercase">
                       <tr>
-                        <th className="py-2.5 px-3">Order Ref</th>
-                        <th className="py-2.5 px-3">Date</th>
-                        <th className="py-2.5 px-3">Items</th>
-                        <th className="py-2.5 px-3">Amount</th>
-                        <th className="py-2.5 px-3">Payment</th>
-                        <th className="py-2.5 px-3">Status</th>
+                        <th className="px-3 py-2.5">Order Ref</th>
+                        <th className="px-3 py-2.5">Date</th>
+                        <th className="px-3 py-2.5">Items</th>
+                        <th className="px-3 py-2.5">Amount</th>
+                        <th className="px-3 py-2.5">Payment</th>
+                        <th className="px-3 py-2.5">Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#1f1f1f] bg-[#0a0a0a]">
                       {customerDetail.orders.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="py-6 text-center text-[#71717a] font-mono">
+                          <td colSpan={6} className="py-6 text-center font-mono text-[#71717a]">
                             No orders placed by this account yet.
                           </td>
                         </tr>
                       ) : (
                         customerDetail.orders.map((o) => (
                           <tr key={o._id}>
-                            <td className="py-2.5 px-3 font-mono font-bold text-[#e8ff00]">
+                            <td className="px-3 py-2.5 font-mono font-bold text-[#e8ff00]">
                               #{o._id.slice(-6).toUpperCase()}
                             </td>
-                            <td className="py-2.5 px-3 font-mono text-[#a0a0a0]">
+                            <td className="px-3 py-2.5 font-mono text-[#a0a0a0]">
                               {new Date(o.createdAt).toLocaleDateString()}
                             </td>
-                            <td className="py-2.5 px-3 font-mono text-[#a0a0a0]">
+                            <td className="px-3 py-2.5 font-mono text-[#a0a0a0]">
                               {o.items?.length || 0} products
                             </td>
-                            <td className="py-2.5 px-3 font-mono font-bold text-[#f5f5f5]">
+                            <td className="px-3 py-2.5 font-mono font-bold text-[#f5f5f5]">
                               ₹{o.total.toFixed(2)}
                             </td>
-                            <td className="py-2.5 px-3 font-mono text-[11px] uppercase">
+                            <td className="px-3 py-2.5 font-mono text-[11px] uppercase">
                               <span
                                 className={
                                   o.paymentStatus === 'captured'
                                     ? 'text-[#22c55e]'
                                     : o.paymentStatus === 'refunded'
-                                    ? 'text-[#ff3b3b]'
-                                    : 'text-[#f59e0b]'
+                                      ? 'text-[#ff3b3b]'
+                                      : 'text-[#f59e0b]'
                                 }
                               >
                                 {o.paymentStatus}
                               </span>
                             </td>
-                            <td className="py-2.5 px-3 font-mono text-[10px] uppercase text-[#f5f5f5]">
+                            <td className="px-3 py-2.5 font-mono text-[10px] text-[#f5f5f5] uppercase">
                               {o.status}
                             </td>
                           </tr>

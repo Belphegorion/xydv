@@ -1,0 +1,11 @@
+# Dependency & build outputs
+node_modules
+.next
+dist
+.turbo
+*.tsbuildinfo
+package-lock.json
+.agents
+
+# Byte-for-byte client mirror files tested for strict equality
+apps/web/src/components/layout/Navbar.tsx

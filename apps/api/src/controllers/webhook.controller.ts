@@ -4,6 +4,7 @@ import { Order } from '../models/Order.model';
 import { ProcessedWebhookEvent } from '../models/Idempotency.model';
 import { RAZORPAY_WEBHOOK_SECRET } from '../config/razorpay';
 import { inventoryService } from '../services/inventory.service';
+import { logger } from '../config/logger';
 import type { RazorpayWebhookEvent } from '@vertex/types';
 
 // In-memory idempotency cache for fast recent deduplication
@@ -64,7 +65,7 @@ export class WebhookController {
       crypto.timingSafeEqual(expectedBuf, signatureBuf);
 
     if (!isSignatureValid) {
-      console.error('Razorpay webhook HMAC signature verification failed');
+      logger.error('Razorpay webhook HMAC signature verification failed');
       res.status(400).json({ error: 'Invalid signature' });
       return;
     }
@@ -74,7 +75,9 @@ export class WebhookController {
     try {
       event = JSON.parse(rawBody.toString('utf-8')) as RazorpayWebhookEvent;
     } catch (err) {
-      console.error('Failed to parse Razorpay webhook payload:', err);
+      logger.error('Failed to parse Razorpay webhook payload:', {
+        error: err instanceof Error ? err.message : String(err),
+      });
       res.status(400).json({ error: 'Invalid JSON payload' });
       return;
     }
@@ -114,7 +117,12 @@ export class WebhookController {
         await ProcessedWebhookEvent.create({ eventId, eventType: event.event });
         recordProcessedEvent(eventId);
       } catch (dbErr) {
-        if (typeof dbErr === 'object' && dbErr !== null && 'code' in dbErr && dbErr.code === 11000) {
+        if (
+          typeof dbErr === 'object' &&
+          dbErr !== null &&
+          'code' in dbErr &&
+          dbErr.code === 11000
+        ) {
           recordProcessedEvent(eventId);
           res.json({
             status: 'ok',
@@ -232,7 +240,7 @@ export class WebhookController {
         }
 
         default:
-          console.log(`Unhandled Razorpay event: ${event.event}`);
+          logger.info(`Unhandled Razorpay event: ${event.event}`, { event: event.event });
       }
 
       if (eventId) {
@@ -241,7 +249,9 @@ export class WebhookController {
 
       res.json({ status: 'ok', received: true, processed: true });
     } catch (err) {
-      console.error('Error processing Razorpay webhook event:', err);
+      logger.error('Error processing Razorpay webhook event:', {
+        error: err instanceof Error ? err.message : String(err),
+      });
       res.status(500).json({ error: 'Internal server error processing webhook' });
     }
   }

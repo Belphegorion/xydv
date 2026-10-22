@@ -1,6 +1,6 @@
 /**
  * Backend Hardening & Edge-Case Verification Suite
- * 
+ *
  * Verifies:
  * 1. Dual-tier inventory prevents double stock decrements during payment verification.
  * 2. Checkout reservation rollback under stock exhaustion.
@@ -272,14 +272,13 @@ describe('Backend Hardening Empirical Verification Suite', () => {
       });
 
       const familyId = crypto.randomUUID();
-      const secret = process.env.JWT_REFRESH_SECRET || '4044plbw7MAxaHGi1KJAsOrKttSRaTqP18QNxH2IzoE';
-      
+      const secret =
+        process.env.JWT_REFRESH_SECRET || '4044plbw7MAxaHGi1KJAsOrKttSRaTqP18QNxH2IzoE';
+
       // Sign an already expired refresh token (-1s)
-      const expiredToken = jwt.sign(
-        { _id: user._id.toString(), familyId },
-        secret,
-        { expiresIn: '-1s' },
-      );
+      const expiredToken = jwt.sign({ _id: user._id.toString(), familyId }, secret, {
+        expiresIn: '-1s',
+      });
 
       const tokenHash = crypto.createHash('sha256').update(expiredToken).digest('hex');
 

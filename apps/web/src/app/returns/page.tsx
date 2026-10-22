@@ -30,56 +30,59 @@ export default function ReturnsPortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] pt-24 sm:pt-32 pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <div className="min-h-screen bg-[var(--bg)] pt-24 pb-24 sm:pt-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Header */}
-        <div className="border-b border-[var(--border)] pb-8 mb-10">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-            <span className="text-[11px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+        <div className="mb-10 border-b border-[var(--border)] pb-8">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--accent)]" />
+            <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
               ATHLETE ASSURANCE & EXCHANGE PROTOCOL
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight font-heading text-[var(--text-primary)]">
+          <h1 className="font-heading text-3xl font-black tracking-tight text-[var(--text-primary)] uppercase sm:text-4xl md:text-5xl">
             30-DAY EXCHANGE & RETURN PORTAL
           </h1>
-          <p className="text-[var(--text-secondary)] text-xs sm:text-sm font-sans mt-2 max-w-2xl">
-            We provide seamless 30-day trial exchanges. If your hardware does not fit your physical biomechanics, generate a prepaid courier waybill below.
+          <p className="mt-2 max-w-2xl font-sans text-xs text-[var(--text-secondary)] sm:text-sm">
+            We provide seamless 30-day trial exchanges. If your hardware does not fit your physical
+            biomechanics, generate a prepaid courier waybill below.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
           {/* ========================================================= */}
           {/* LEFT: RETURN / EXCHANGE GENERATOR FORM                     */}
           {/* ========================================================= */}
-          <div className="lg:col-span-7 bg-[var(--bg-surface)] border border-[var(--border)] p-6 sm:p-8">
-            <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border)] pb-3 mb-6">
+          <div className="border border-[var(--border)] bg-[var(--bg-surface)] p-6 sm:p-8 lg:col-span-7">
+            <h2 className="mb-6 border-b border-[var(--border)] pb-3 font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase">
               STEP 01 // INITIATE RETURN OR SIZE SWAP
             </h2>
 
             {returnLabelReady ? (
-              <div className="p-6 bg-[var(--bg-elevated)] border border-emerald-500/30 space-y-4">
+              <div className="space-y-4 border border-emerald-500/30 bg-[var(--bg-elevated)] p-6">
                 <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                   <CheckCircle size={22} weight="bold" />
-                  <span className="text-xs font-mono font-bold uppercase tracking-widest">
+                  <span className="font-mono text-xs font-bold tracking-widest uppercase">
                     PREPAID DHL RETURN WAYBILL GENERATED
                   </span>
                 </div>
-                <div className="space-y-1 text-xs font-mono">
+                <div className="space-y-1 font-mono text-xs">
                   <p className="text-[var(--text-muted)] uppercase">RMA NUMBER:</p>
                   <p className="text-lg font-bold text-[var(--text-primary)]">
                     RMA-XYDV-{Math.floor(100000 + Math.random() * 900000)}
                   </p>
                 </div>
-                <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed">
+                <p className="font-sans text-xs leading-relaxed text-[var(--text-secondary)]">
                   Your prepaid digital shipping label has been dispatched to{' '}
-                  <strong className="text-[var(--text-primary)] font-mono">{email}</strong>. Simply attach to your original packaging and arrange a complimentary DHL carrier pickup or drop-off.
+                  <strong className="font-mono text-[var(--text-primary)]">{email}</strong>. Simply
+                  attach to your original packaging and arrange a complimentary DHL carrier pickup
+                  or drop-off.
                 </p>
-                <div className="pt-2 flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => window.print()}
-                    className="px-5 py-2.5 bg-[var(--text-primary)] text-[var(--bg)] font-mono text-xs font-bold uppercase tracking-wider active:scale-[0.97]"
+                    className="bg-[var(--text-primary)] px-5 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase active:scale-[0.97]"
                   >
                     PRINT RETURN WAYBILL
                   </button>
@@ -90,7 +93,7 @@ export default function ReturnsPortalPage() {
                       setOrderId('');
                       setEmail('');
                     }}
-                    className="px-4 py-2.5 border border-[var(--border)] text-[var(--text-secondary)] font-mono text-xs font-bold uppercase tracking-wider hover:text-[var(--text-primary)] active:scale-[0.97]"
+                    className="border border-[var(--border)] px-4 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--text-secondary)] uppercase hover:text-[var(--text-primary)] active:scale-[0.97]"
                   >
                     START OVER
                   </button>
@@ -99,7 +102,10 @@ export default function ReturnsPortalPage() {
             ) : (
               <form onSubmit={handleInitiateReturn} className="space-y-4">
                 <div>
-                  <label htmlFor="return-order-id" className="text-[11px] font-mono text-[var(--text-muted)] uppercase block mb-1.5">
+                  <label
+                    htmlFor="return-order-id"
+                    className="mb-1.5 block font-mono text-[11px] text-[var(--text-muted)] uppercase"
+                  >
                     ORDER IDENTIFIER *
                   </label>
                   <input
@@ -109,12 +115,15 @@ export default function ReturnsPortalPage() {
                     value={orderId}
                     onChange={(e) => setOrderId(e.target.value)}
                     placeholder="e.g. XYDV-10492"
-                    className="w-full h-11 px-3.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--text-primary)] uppercase transition-colors"
+                    className="h-11 w-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3.5 font-mono text-xs text-[var(--text-primary)] uppercase placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="return-email" className="text-[11px] font-mono text-[var(--text-muted)] uppercase block mb-1.5">
+                  <label
+                    htmlFor="return-email"
+                    className="mb-1.5 block font-mono text-[11px] text-[var(--text-muted)] uppercase"
+                  >
                     BILLING EMAIL ADDRESS *
                   </label>
                   <input
@@ -124,31 +133,42 @@ export default function ReturnsPortalPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@domain.com"
-                    className="w-full h-11 px-3.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--text-primary)] transition-colors"
+                    className="h-11 w-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="return-reason" className="text-[11px] font-mono text-[var(--text-muted)] uppercase block mb-1.5">
+                  <label
+                    htmlFor="return-reason"
+                    className="mb-1.5 block font-mono text-[11px] text-[var(--text-muted)] uppercase"
+                  >
                     REASON FOR EXCHANGE / RETURN
                   </label>
                   <select
                     id="return-reason"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    className="w-full h-11 px-3 text-xs font-mono uppercase bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--text-primary)] cursor-pointer"
+                    className="h-11 w-full cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-xs text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none"
                   >
-                    <option value="Exchange for Alternate Size">Exchange for Alternate Size (Complimentary)</option>
-                    <option value="Exchange for Alternate Colorway">Exchange for Alternate Colorway</option>
-                    <option value="Fit Did Not Meet Expectation">Fit Did Not Meet Biomechanical Expectation</option>
-                    <option value="Refund to Original Payment">Refund to Original Payment Method</option>
+                    <option value="Exchange for Alternate Size">
+                      Exchange for Alternate Size (Complimentary)
+                    </option>
+                    <option value="Exchange for Alternate Colorway">
+                      Exchange for Alternate Colorway
+                    </option>
+                    <option value="Fit Did Not Meet Expectation">
+                      Fit Did Not Meet Biomechanical Expectation
+                    </option>
+                    <option value="Refund to Original Payment">
+                      Refund to Original Payment Method
+                    </option>
                   </select>
                 </div>
 
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className="touch-target w-full h-12 bg-[var(--text-primary)] text-[var(--bg)] font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:opacity-95 active:scale-[0.97] transition-[background-color,border-color,opacity,transform] duration-150 cursor-pointer shadow-sm"
+                  className="touch-target flex h-12 w-full cursor-pointer items-center justify-center gap-2 bg-[var(--text-primary)] font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase shadow-sm transition-[background-color,border-color,opacity,transform] duration-150 hover:opacity-95 active:scale-[0.97]"
                 >
                   {isProcessing ? (
                     <>
@@ -169,40 +189,41 @@ export default function ReturnsPortalPage() {
           {/* ========================================================= */}
           {/* RIGHT: RETURN GUIDELINES & PROTOCOL                       */}
           {/* ========================================================= */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-[var(--bg-surface)] border border-[var(--border)] p-6 space-y-4">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
+          <div className="space-y-6 lg:col-span-5">
+            <div className="space-y-4 border border-[var(--border)] bg-[var(--bg-surface)] p-6">
+              <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                 RETURN PREREQUISITES
               </span>
-              <h3 className="text-xl font-heading font-black uppercase text-[var(--text-primary)]">
+              <h3 className="font-heading text-xl font-black text-[var(--text-primary)] uppercase">
                 INTEGRITY STANDARDS
               </h3>
-              <ul className="space-y-3 text-xs font-mono text-[var(--text-secondary)]">
+              <ul className="space-y-3 font-mono text-xs text-[var(--text-secondary)]">
                 <li className="flex items-start gap-2.5">
-                  <span className="text-[var(--accent)] font-bold">✓</span>
+                  <span className="font-bold text-[var(--accent)]">✓</span>
                   <span>Items must be unwashed, unworn, and free from scent or chalk marks.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="text-[var(--accent)] font-bold">✓</span>
+                  <span className="font-bold text-[var(--accent)]">✓</span>
                   <span>All silicone telemetry tags and woven labels must remain attached.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="text-[var(--accent)] font-bold">✓</span>
+                  <span className="font-bold text-[var(--accent)]">✓</span>
                   <span>Exchange initiated within 30 calendar days from delivery date.</span>
                 </li>
               </ul>
             </div>
 
-            <div className="bg-[var(--bg-surface)] border border-[var(--border)] p-6 space-y-3">
-              <h4 className="text-xs font-mono font-bold uppercase text-[var(--text-primary)]">
+            <div className="space-y-3 border border-[var(--border)] bg-[var(--bg-surface)] p-6">
+              <h4 className="font-mono text-xs font-bold text-[var(--text-primary)] uppercase">
                 NEED RAPID ASSISTANCE?
               </h4>
-              <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed">
-                If your piece arrived with a manufacturing anomaly, contact our engineering desk directly for immediate express priority replacement.
+              <p className="font-sans text-xs leading-relaxed text-[var(--text-secondary)]">
+                If your piece arrived with a manufacturing anomaly, contact our engineering desk
+                directly for immediate express priority replacement.
               </p>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase text-[var(--text-primary)] underline hover:text-[var(--text-secondary)] mt-2"
+                className="mt-2 inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[var(--text-primary)] uppercase underline hover:text-[var(--text-secondary)]"
               >
                 <span>CONTACT ATHLETE SUPPORT DESK</span>
                 <span>↗</span>

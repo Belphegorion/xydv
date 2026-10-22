@@ -29,8 +29,14 @@ export const createReviewSchema = z.object({
       .number({ required_error: 'Rating is required' })
       .min(1, 'Rating must be at least 1')
       .max(5, 'Rating cannot exceed 5'),
-    title: z.string().min(1, 'Review title is required').max(150, 'Title cannot exceed 150 characters'),
-    body: z.string().min(1, 'Review body is required').max(2000, 'Body cannot exceed 2000 characters'),
+    title: z
+      .string()
+      .min(1, 'Review title is required')
+      .max(150, 'Title cannot exceed 150 characters'),
+    body: z
+      .string()
+      .min(1, 'Review body is required')
+      .max(2000, 'Body cannot exceed 2000 characters'),
     userName: z.string().optional(),
   }),
   params: z.object({

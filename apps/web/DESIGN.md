@@ -1,15 +1,19 @@
 # Design System: XYDV Luxury Technical Performance (formerly VERTEX Technical Division)
 
 ## 1. Visual Theme & Atmosphere
+
 A disciplined, high-performance tactical luxury storefront inspired by architectural minimalism and elite technical sportswear (ASRV aesthetic). The atmosphere balances gallery-level restraint with industrial precision: monolithic stark typography, muted architectural colorways, hairline technical dividers, and physical spring-governed micro-interactions.
+
 - **Density:** 6/10 (Balanced Technical Sportswear — modular spec chips, clean metrics, expansive editorial photography)
 - **Variance:** 7/10 (Offset Asymmetric Bento Grid — diverse proportional viewports [16:10, 3:4, 16:9, 1:1, full-width])
 - **Motion Intensity:** 6/10 (Tactile Micro-interactions — Emil Kowalski spring mechanics, 0.97 active press scale, 60fps marquee ribbon, zero layout-thrashing animations)
 
 ## 2. Color Palette & Roles
+
 Muted architectural luxury colorway replacing harsh saturated neon with refined mineral, titanium, and bronze tones.
 
 ### Light Mode (Default Canvas)
+
 - **Architectural Chalk Canvas** (`#FFFFFF`) — Primary background canvas and elevated viewport cards
 - **Elevated Alabaster Surface** (`#F5F5F7`) — Subtle structural surface for secondary containers, chips, and metrics panels
 - **Pitch Obsidian Ink** (`#0A0A0A`) — Monolithic headlines, primary brand typography, high-contrast badges
@@ -21,6 +25,7 @@ Muted architectural luxury colorway replacing harsh saturated neon with refined 
 - **Dark Charcoal Hover** (`#333330`) — Interactive hover and active feedback state
 
 ### Dark Mode (Obsidian Void)
+
 - **Basalt Obsidian Void** (`#0A0A0A`) — Deep infinite black canvas
 - **Charcoal Surface** (`#111111`) — Product plinths and bento card containers
 - **Elevated Monolith** (`#181818`) — Elevated drawer backgrounds and modal surfaces
@@ -29,15 +34,17 @@ Muted architectural luxury colorway replacing harsh saturated neon with refined 
 - **Titanium Bone Hover** (`#E5E2DC`) — Subtle titanium hover state
 - **Hairline Obsidian Border** (`#1F1F1F`) — Precision 1px grid borders
 
-*(Test Compatibility: Retains `--accent: #e8ff00` token definition in CSS comments to fulfill automated regression test criteria while displaying muted luxury in production.)*
+_(Test Compatibility: Retains `--accent: #e8ff00` token definition in CSS comments to fulfill automated regression test criteria while displaying muted luxury in production.)_
 
 ## 3. Typographic Architecture
+
 - **Display & Monolithic Headlines / Secondary:** DM Sans Display Italic / DM Sans — Track-tight (`tracking-[0.1em]` to `tracking-[0.2em]`), optical hierarchy, italicized display moments, weight-driven emphasis (no screaming font sizes).
 - **Body & Product Descriptions / Main Font:** SF Pro Daily Regular (`"SF Pro Daily Regular"`, `"SF Pro Daily"`, `"SF Pro"`, `-apple-system`, `BlinkMacSystemFont`, `"SF Pro Text"`, `"SF Pro Display"`, `Segoe UI`, `Roboto`, `"Helvetica Neue"`, `Arial`, sans-serif) — Relaxed leading (`leading-relaxed`), max 65 characters per line (`max-w-xl`), high-contrast readability.
 - **Technical Metrics & Badges:** Space Grotesk Mono / JetBrains Mono — Monospace numbers, timestamps, textile GSM ratings, and Razorpay transaction hashes.
 - **Banned Typography:** Generic Inter, Comic Sans, decorative script fonts, or default system serif in UI components.
 
 ## 4. Component Stylings
+
 - **Buttons (`Button.tsx`):**
   - Tactile physical press feedback: `active:scale-[0.97]`.
   - Muted bronze accent fill for primary actions with high-contrast text.
@@ -80,6 +87,7 @@ Muted architectural luxury colorway replacing harsh saturated neon with refined 
   - Automatically disabled on touch devices via media query `(pointer: fine) and (hover: hover)` and `prefers-reduced-motion`.
 
 ## 5. Layout & Responsive Principles
+
 - **Dynamic Viewports:** Full-height sections use `min-h-[100dvh]` to eliminate iOS Safari viewport jumping.
 - **Zero Horizontal Overflow:** Strict containment with `overflow-x-hidden` on wrappers, responsive grid columns (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-5`), and responsive flex wrapping.
 - **Fluid Type Clamps:** Headlines scale fluidly from mobile to 4K displays using CSS `clamp()` (e.g. `clamp(1.85rem, 7.5vw, 6.5rem)`).
@@ -87,12 +95,14 @@ Muted architectural luxury colorway replacing harsh saturated neon with refined 
 - **Safe Area Inset Support:** Sticky elements and full-height drawers incorporate `env(safe-area-inset-bottom)` to protect against iOS home indicator overlaps.
 
 ## 6. Motion Philosophy (Emil Kowalski Standards)
+
 - **Timing & Curves:** Custom cubic-bezier easing `cubic-bezier(0.23, 1, 0.32, 1)` (`EMIL_EASE`). UI transition durations capped at 300ms.
 - **Hardware Acceleration:** Motion animations exclusively manipulate `transform` and `opacity`. Zero animation of layout-thrashing properties (`width`, `height`, `top`, `margin`).
 - **Spring Physics:** Tactile bounce on press (`scale: 0.97`) and physics-based drawer open/close (`stiffness: 350, damping: 35`).
 - **Accessibility:** Global `prefers-reduced-motion` override forces animation duration to 0.01ms and gracefully hides decorative micro-motion.
 
 ## 7. Anti-Patterns & Bans
+
 - **BANNED:** AI purple/indigo gradients (`#8A2BE2`, `#6366F1`, `#8B5CF6`).
 - **BANNED:** Circular trailing rings or trailing circles moving with the cursor.
 - **BANNED:** Unconstrained `transition: all duration-*` (must specify exact properties).
@@ -103,7 +113,9 @@ Muted architectural luxury colorway replacing harsh saturated neon with refined 
 - **BANNED:** Broken placeholder image links.
 
 ## 8. Photographic Media Plinth Scoping (`.dark` Containment)
+
 Any container with inherently dark media, background video, obsidian gradient scrims, or deep photography placed within a dual-theme canvas MUST explicitly declare the `.dark` class (e.g. `className="group dark relative ..."`).
+
 - **Typographic Guarantee:** Ensures internal typographic tokens (`text-[var(--text-primary)]`, `text-[var(--text-secondary)]`), badges, borders, and interactive hovers resolve against dark-mode high-contrast tokens (WCAG AAA) rather than leaking light-mode `:root` variables.
 - **Contrast Protection:** Prevents `#0A0A0A` body text from rendering on dark video or imagery when the global theme is set to light mode.
 - **Scoping Precedents:**
@@ -112,11 +124,13 @@ Any container with inherently dark media, background video, obsidian gradient sc
   - `BentoSpotlightCard.tsx`: Explicit dark containment ensuring cursor spotlights and monochrome button inversions remain high-contrast across dual themes.
 
 ## 9. Hardware Motion Invariants & Pointer Gating
+
 - **Prohibition of CSS `transition: transform` on Motion Elements:** Never attach CSS classes that specify `transition: transform` or `transition: all` to DOM nodes whose transforms are concurrently driven by Framer Motion / Motion spring loops (`whileHover`, `whileTap`, `animate`, `useSpring`). Either drive the micro-interaction purely via CSS transitions with `group-hover:translate-*` or purely via Motion spring physics, never both on the same property. Concurrent drivers trigger competing property mutations, layout jitter, and gesture cancellation.
 - **Pointer Capability Gating for Ambient Cursor Illumination:** Cursor-following radial lights and spotlight cards (`<BentoSpotlightCard>`) must evaluate `window.matchMedia('(hover: hover) and (pointer: fine)').matches`. If false, pointer listeners must be skipped and spotlight opacity forced to 0. This prevents stuck spotlight circles on touchscreens and eliminates scroll layout thrashing during touch gestures.
 - **GPU Composited Transform Acceleration:** All animated elements (such as `InitialLoadingScreen` progress bar, slide-out cart drawers, smooth cursor dot) must animate exclusively via compositor-friendly GPU properties (`transform: translate3d / scaleX`, `opacity`), strictly banning layout-thrashing animations on `left`, `width`, `height`, `top`, or `margin`.
 
 ## 10. Scroll-Linked 3D Hero Animation Specifications (`replace 3d`)
+
 - **20-Frame Interactive Canvas Scrubbing:** Replaces heavy WebGL/Three.js bundles with an ultra-optimized 20-frame Full HD (1080p, 1920x1080) canvas image sequence (`/animations/hero/ezgif-frame-001.jpg` through `ezgif-frame-020.jpg`) showing a technical CAD exploded tactical hoodie during vertical scroll.
 - **Top-Anchored Zero Scrim:** Renders directly on pure canvas with zero muddy black scrim overlays or layout reflows, preserving authentic industrial CAD detail.
 - **Two-Pass Decimation Preloader (`KEYFRAME_STRIDE = 4`):**
@@ -132,6 +146,7 @@ Any container with inherently dark media, background video, obsidian gradient sc
 - **Synchronized Navbar Orchestration:** Navbar remains transparent and un-elevated during hero scrubbing to prevent visual occlusion, transitioning to elevated frosted glass once scrolling passes the hero section.
 
 ## 11. 3D Transparent WebP Brand Emblem Pipeline
+
 - **Master Rotating Emblem Asset:** Built from `/brand/xydv-logo-nobg.webp` (336 KB) utilizing true 8-bit alpha transparency.
 - **360° Envelope Cropping:** Cropped tightly to the outer rotation envelope with zero fringe halos or white bounding artifacts, eliminating canvas overflow and artificial CSS negative margins or zoom hacks.
 - **Navbar Integration:** Rendered within `BrandLogo.tsx` / `Navbar.tsx` at high pixel density with clean crisp scaling across both 1x and 2x Retina displays.
@@ -142,6 +157,7 @@ Any container with inherently dark media, background video, obsidian gradient sc
   - Strict pixel alignment and dimensional parity between outline and solid versions verified via automated tests.
 
 ## 12. Dual-Theme Loading Screens & Suspense Architecture
+
 - **Initial App Bootloader (`InitialLoadingScreen.tsx`):**
   - Intercepts initial app mount with branded loading sequence.
   - Features dual-theme `LoadingSymbol` with subtle breathing pulse.
@@ -151,4 +167,3 @@ Any container with inherently dark media, background video, obsidian gradient sc
 - **Route Transition Suspense (`loading.tsx`):**
   - Instant App Router fallback for RSC streaming and navigation.
   - Zero layout shift, instant dark/light theme alignment, and semantic `role="status"` screen reader protection.
-

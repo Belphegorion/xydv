@@ -96,27 +96,30 @@ export function CategoryGrid() {
   }, []);
 
   return (
-    <section aria-labelledby="category-grid-heading" className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+    <section
+      aria-labelledby="category-grid-heading"
+      className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24"
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 border-b border-[var(--border)] pb-6">
+      <div className="mb-8 flex flex-col justify-between border-b border-[var(--border)] pb-6 sm:mb-12 md:flex-row md:items-end">
         <div>
-          <span className="text-[var(--text-secondary)] dark:text-zinc-400 text-xs font-mono font-semibold uppercase tracking-[0.25em]">
+          <span className="font-mono text-xs font-semibold tracking-[0.25em] text-[var(--text-secondary)] uppercase dark:text-zinc-400">
             TAXONOMY / ARCHIVE
           </span>
           <h2
             id="category-grid-heading"
-            className="text-[var(--text-primary)] text-3xl md:text-5xl font-bold uppercase tracking-tighter font-heading mt-2"
+            className="font-heading mt-2 text-3xl font-bold tracking-tighter text-[var(--text-primary)] uppercase md:text-5xl"
           >
             DISCIPLINE BY CATEGORY
           </h2>
         </div>
-        <p className="text-[var(--text-secondary)] text-xs font-mono uppercase tracking-widest mt-4 md:mt-0">
+        <p className="mt-4 font-mono text-xs tracking-widest text-[var(--text-secondary)] uppercase md:mt-0">
           5 ARCHIVES / {categories.find((c) => c.slug === 'all')?.count || 12} ACTIVE GEAR STYLES
         </p>
       </div>
 
       {/* Asymmetric 5-Cell Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-12">
         {categories.map((cat, idx) => (
           <motion.div
             key={cat.id}
@@ -128,13 +131,13 @@ export function CategoryGrid() {
               delay: shouldReduceMotion ? 0 : idx * 0.04,
               ease: EMIL_EASE,
             }}
-            className={`${cat.gridSpan} w-full h-[260px] sm:h-[280px] lg:h-full min-h-[260px] sm:min-h-[280px]`}
+            className={`${cat.gridSpan} h-[260px] min-h-[260px] w-full sm:h-[280px] sm:min-h-[280px] lg:h-full`}
           >
-            <BentoSpotlightCard className="w-full h-full">
+            <BentoSpotlightCard className="h-full w-full">
               <Link
                 href={cat.slug === 'all' ? '/products' : `/products?category=${cat.slug}`}
                 aria-label={`Explore ${cat.name} (${cat.count} pieces)`}
-                className="group dark relative overflow-hidden bg-black border border-zinc-800/80 hover:border-white/50 dark:border-white/15 dark:hover:border-white/50 flex flex-col justify-between p-5 sm:p-6 md:p-8 w-full h-full transition-[border-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset"
+                className="group dark relative flex h-full w-full flex-col justify-between overflow-hidden border border-zinc-800/80 bg-black p-5 transition-[border-color,box-shadow] duration-200 hover:border-white/50 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-inset sm:p-6 md:p-8 dark:border-white/15 dark:hover:border-white/50"
               >
                 {/* Background Image with Calibrated Dual Scrims and Smooth Scale */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
@@ -147,39 +150,39 @@ export function CategoryGrid() {
                   />
                   {/* Top scrim protecting header taxonomy badge and tactile arrow */}
                   <div
-                    className="absolute inset-x-0 top-0 h-28 sm:h-32 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none z-10"
+                    className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28 bg-gradient-to-b from-black/80 via-black/40 to-transparent sm:h-32"
                     aria-hidden="true"
                   />
                   {/* Bottom scrim protecting category title and technical description */}
                   <div
-                    className="absolute inset-x-0 bottom-0 h-36 sm:h-44 bg-gradient-to-t from-black/90 via-black/55 to-transparent pointer-events-none z-10"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 bg-gradient-to-t from-black/90 via-black/55 to-transparent sm:h-44"
                     aria-hidden="true"
                   />
                 </div>
 
                 {/* Top Taxonomy & Action Strip (Symmetrically Aligned Across All Cards) */}
-                <div className="relative z-20 flex items-center justify-between w-full">
+                <div className="relative z-20 flex w-full items-center justify-between">
                   <Badge variant="volt" size="sm">
                     {cat.count} PIECES
                   </Badge>
                   <span
-                    className="touch-target w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white group-hover:bg-white group-hover:text-black group-hover:border-white shadow-xl transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97]"
+                    className="touch-target flex h-12 min-h-[48px] w-12 min-w-[48px] items-center justify-center border border-white/20 bg-white/10 text-white shadow-xl backdrop-blur-md transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:border-white group-hover:bg-white group-hover:text-black active:scale-[0.97]"
                     aria-hidden="true"
                   >
                     <ArrowUpRight
                       size={18}
                       weight="bold"
-                      className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]"
+                      className="transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-1 group-hover:-translate-y-1"
                     />
                   </span>
                 </div>
 
                 {/* Bottom Content Metadata (Anchored Consistently Across All Cards) */}
-                <div className="relative z-20 flex flex-col justify-end w-full">
-                  <h3 className="text-white group-hover:text-white text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-tight font-heading group-hover:translate-x-1.5 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]">
+                <div className="relative z-20 flex w-full flex-col justify-end">
+                  <h3 className="font-heading text-lg font-bold tracking-tight text-white uppercase transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-1.5 group-hover:text-white sm:text-xl md:text-2xl">
                     {cat.name}
                   </h3>
-                  <p className="text-zinc-300 text-xs font-mono mt-1 max-w-md line-clamp-2">
+                  <p className="mt-1 line-clamp-2 max-w-md font-mono text-xs text-zinc-300">
                     {cat.description}
                   </p>
                 </div>

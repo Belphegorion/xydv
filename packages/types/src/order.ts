@@ -3,14 +3,10 @@
  */
 
 export type OrderStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled';
+  'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
-export type PaymentStatus = 'pending' | 'captured' | 'failed' | 'refunded' | 'refunding' | 'partially_refunded';
+export type PaymentStatus =
+  'pending' | 'captured' | 'failed' | 'refunded' | 'refunding' | 'partially_refunded';
 
 export interface OrderItem {
   productId: string;
@@ -66,4 +62,3 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
 }
-

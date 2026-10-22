@@ -1,7 +1,7 @@
 /**
  * M1 Empirical Challenge & Adversarial Verification Suite
  * Authored by m1_challenger_1 (empirical_challenger)
- * 
+ *
  * Verifies:
  * 1. HMAC-SHA256 signature generation and tamper testing (bit flips, truncation, wrong secret, payload tampering)
  * 2. Razorpay order creation validation (empty items, negative quantities, client price tampering, stock bounds)
@@ -53,14 +53,17 @@ describe('M1 Empirical Challenge: HMAC-SHA256 Cryptographic Tamper Testing', () 
 
   it('1.2: Tampered signature (single hex character bit-flip) is strictly rejected', () => {
     const signature = generateRazorpaySignature(orderId, paymentId, keySecret);
-    
+
     // Flip first character
     const flippedFirst = (signature[0] === 'a' ? 'b' : 'a') + signature.slice(1);
     assert.equal(verifyRazorpaySignature(orderId, paymentId, flippedFirst, keySecret), false);
 
     // Flip middle character
     const midIdx = 32;
-    const flippedMid = signature.slice(0, midIdx) + (signature[midIdx] === '0' ? '1' : '0') + signature.slice(midIdx + 1);
+    const flippedMid =
+      signature.slice(0, midIdx) +
+      (signature[midIdx] === '0' ? '1' : '0') +
+      signature.slice(midIdx + 1);
     assert.equal(verifyRazorpaySignature(orderId, paymentId, flippedMid, keySecret), false);
 
     // Flip last character
@@ -93,20 +96,26 @@ describe('M1 Empirical Challenge: HMAC-SHA256 Cryptographic Tamper Testing', () 
     const server = new ServerRuntimeSimulator({ keySecret });
 
     const orderRes = server.createRazorpayOrder({
-      items: [{ productId: CATALOG_FIXTURES[0]._id, variantId: CATALOG_FIXTURES[0].variants[0].id, quantity: 1 }],
+      items: [
+        {
+          productId: CATALOG_FIXTURES[0]._id,
+          variantId: CATALOG_FIXTURES[0].variants[0].id,
+          quantity: 1,
+        },
+      ],
       shippingAddress: { fullName: 'Test User', postalCode: '10001' },
     });
     assert.equal(orderRes.success, true);
 
     const testCases = [
-      '',                     // empty string
-      'a',                    // 1 char
-      'abc123',               // 6 chars
-      '0'.repeat(32),         // 32 chars (MD5 length)
-      '0'.repeat(63),         // 63 chars (off by one short)
-      '0'.repeat(65),         // 65 chars (off by one long)
-      '0'.repeat(128),        // 128 chars (SHA512 length)
-      'xyz!@#$%^&*()_+',      // special characters
+      '', // empty string
+      'a', // 1 char
+      'abc123', // 6 chars
+      '0'.repeat(32), // 32 chars (MD5 length)
+      '0'.repeat(63), // 63 chars (off by one short)
+      '0'.repeat(65), // 65 chars (off by one long)
+      '0'.repeat(128), // 128 chars (SHA512 length)
+      'xyz!@#$%^&*()_+', // special characters
     ];
 
     for (const badSig of testCases) {
@@ -160,7 +169,11 @@ describe('M1 Empirical Challenge: HMAC-SHA256 Cryptographic Tamper Testing', () 
 
     // Tampered payload: append a single trailing space (whitespace sensitivity)
     const whitespaceBuffer = Buffer.from(webhookPayload + ' ', 'utf-8');
-    assert.equal(verifyWebhookSignature(whitespaceBuffer, validWebhookSig, webhookSecret), false, 'Whitespace modification must fail HMAC');
+    assert.equal(
+      verifyWebhookSignature(whitespaceBuffer, validWebhookSig, webhookSecret),
+      false,
+      'Whitespace modification must fail HMAC',
+    );
   });
 
   it('1.7: Length-mismatch timing attack resilience in timingSafeEqual', () => {
@@ -250,7 +263,11 @@ describe('M1 Empirical Challenge: Order Creation Validation & Attack Scenarios',
 
     assert.equal(res.success, true);
     // Catalog price is $148.00 (from seed data)
-    assert.equal(res.data.breakdown.subtotal, validProduct.price, 'Subtotal must equal authoritative catalog price');
+    assert.equal(
+      res.data.breakdown.subtotal,
+      validProduct.price,
+      'Subtotal must equal authoritative catalog price',
+    );
     assert.ok(res.data.amount > 0, 'Calculated paise amount must be strictly positive');
   });
 
@@ -291,13 +308,17 @@ describe('M1 Empirical Challenge: Order Creation Validation & Attack Scenarios',
     // Test tricky decimal amounts
     const decimalItems = [
       { price: 19.99, quantity: 3 }, // 59.97
-      { price: 0.01, quantity: 1 },  // 0.01
+      { price: 0.01, quantity: 1 }, // 0.01
       { price: 149.99, quantity: 1 }, // exactly $0.01 below free shipping threshold
     ];
 
     for (const item of decimalItems) {
       const metrics = calculateCartMetrics([item]);
-      assert.equal(Number.isInteger(metrics.amountPaise), true, `Paise amount ${metrics.amountPaise} must be integer`);
+      assert.equal(
+        Number.isInteger(metrics.amountPaise),
+        true,
+        `Paise amount ${metrics.amountPaise} must be integer`,
+      );
       assert.equal(Number.isFinite(metrics.amountPaise), true);
       assert.ok(metrics.amountPaise > 0);
     }
@@ -332,7 +353,11 @@ describe('M1 Empirical Challenge: @vertex/types Compilation & Type Safety', () =
       `npx tsc "${fixturePath}" --noEmit --skipLibCheck --target ES2022 --moduleResolution node`,
       { cwd: rootDir, encoding: 'utf-8' },
     );
-    assert.equal(result.trim(), '', 'TypeScript compilation of contracts must produce zero diagnostics');
+    assert.equal(
+      result.trim(),
+      '',
+      'TypeScript compilation of contracts must produce zero diagnostics',
+    );
   });
 
   it('3.4: TypeScript catches intentional invalid type assignments', () => {
@@ -369,18 +394,25 @@ describe('M1 Empirical Challenge: Production Implementation Audit (apps/api)', (
     const content = fs.readFileSync(ordersRoutesPath, 'utf-8');
 
     // Check if orders.routes.ts validates quantity <= 0 or non-integer
-    const hasQuantityCheck = content.includes('item.quantity <= 0') ||
-                             content.includes('quantity <= 0') ||
-                             content.includes('Number.isInteger(item.quantity)');
+    const hasQuantityCheck =
+      content.includes('item.quantity <= 0') ||
+      content.includes('quantity <= 0') ||
+      content.includes('Number.isInteger(item.quantity)');
 
     // CHALLENGE FINDING: In apps/api/src/routes/orders.routes.ts,
     // quantity <= 0 is NOT validated prior to subtotal calculation!
     // We document this empirical observation.
     if (!hasQuantityCheck) {
-      console.warn('[VULNERABILITY WARNING] apps/api/src/routes/orders.routes.ts lacks explicit check for quantity <= 0 or integer validation!');
+      console.warn(
+        '[VULNERABILITY WARNING] apps/api/src/routes/orders.routes.ts lacks explicit check for quantity <= 0 or integer validation!',
+      );
     }
     // We assert our observation accurately reflects the file
-    assert.equal(hasQuantityCheck, false, 'Confirmed: orders.routes.ts currently lacks item.quantity <= 0 validation');
+    assert.equal(
+      hasQuantityCheck,
+      false,
+      'Confirmed: orders.routes.ts currently lacks item.quantity <= 0 validation',
+    );
   });
 
   it('4.2: Audit orders.routes.ts for constant-time HMAC comparison', () => {
@@ -389,8 +421,14 @@ describe('M1 Empirical Challenge: Production Implementation Audit (apps/api)', (
 
     const usesTimingSafe = content.includes('timingSafeEqual');
     if (!usesTimingSafe) {
-      console.warn('[ADVISORY] apps/api/src/routes/orders.routes.ts uses === instead of crypto.timingSafeEqual for signature verification');
+      console.warn(
+        '[ADVISORY] apps/api/src/routes/orders.routes.ts uses === instead of crypto.timingSafeEqual for signature verification',
+      );
     }
-    assert.equal(usesTimingSafe, false, 'Confirmed: orders.routes.ts currently uses string === comparison');
+    assert.equal(
+      usesTimingSafe,
+      false,
+      'Confirmed: orders.routes.ts currently uses string === comparison',
+    );
   });
 });

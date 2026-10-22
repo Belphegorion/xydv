@@ -1,7 +1,7 @@
 /**
  * M2 Empirical Adversarial Challenge: Product Catalog API Verification Suite
  * Authored by m2_challenger_1 (empirical_challenger)
- * 
+ *
  * Objectives:
  * 1. Category aggregation route ordering & swallowing verification (GET /api/products/categories vs /:slug)
  * 2. Query filtering stress-testing with complex parameter combinations (category + search + minPrice + maxPrice + sort)
@@ -44,7 +44,10 @@ describe('Milestone 2 Empirical Challenge: Product Catalog API & Route Resilienc
 
     // 2. Fetch sample product for slug and ObjectId tests
     allProducts = await Product.find({ isPublished: true }).lean();
-    assert.ok(allProducts.length >= 10, `Database must contain at least 10 seeded products (found: ${allProducts.length})`);
+    assert.ok(
+      allProducts.length >= 10,
+      `Database must contain at least 10 seeded products (found: ${allProducts.length})`,
+    );
     sampleProduct = allProducts.find((p) => p.slug === 'volt-performance-tee') || allProducts[0];
     assert.ok(sampleProduct, 'Sample product must exist');
 
@@ -121,7 +124,11 @@ describe('Milestone 2 Empirical Challenge: Product Catalog API & Route Resilienc
       try {
         const res = await fetch(`http://127.0.0.1:${brokenPort}/test/categories`);
         const body = await res.json();
-        assert.equal(res.status, 404, 'Swallowed route returns 404 because "categories" is treated as :slug');
+        assert.equal(
+          res.status,
+          404,
+          'Swallowed route returns 404 because "categories" is treated as :slug',
+        );
         assert.match(body.error, /Product not found: categories/);
       } finally {
         await new Promise((r) => brokenServer.close(r));
@@ -154,14 +161,30 @@ describe('Milestone 2 Empirical Challenge: Product Catalog API & Route Resilienc
         assert.ok(typeof cat.id === 'string' && cat.id.length > 0);
         assert.ok(typeof cat.name === 'string' && cat.name.length > 0);
         assert.ok(typeof cat.description === 'string' && cat.description.length > 0);
-        assert.ok(typeof cat.count === 'number' && cat.count > 0, `Category ${cat.slug} must have count > 0`);
-        assert.ok(typeof cat.minPrice === 'number' && cat.minPrice > 0, `minPrice for ${cat.slug} must be > 0`);
-        assert.ok(typeof cat.maxPrice === 'number' && cat.maxPrice >= cat.minPrice, `maxPrice must be >= minPrice`);
-        assert.ok(typeof cat.imageUrl === 'string' && cat.imageUrl.startsWith('http'), `imageUrl for ${cat.slug} must be valid URL`);
+        assert.ok(
+          typeof cat.count === 'number' && cat.count > 0,
+          `Category ${cat.slug} must have count > 0`,
+        );
+        assert.ok(
+          typeof cat.minPrice === 'number' && cat.minPrice > 0,
+          `minPrice for ${cat.slug} must be > 0`,
+        );
+        assert.ok(
+          typeof cat.maxPrice === 'number' && cat.maxPrice >= cat.minPrice,
+          `maxPrice must be >= minPrice`,
+        );
+        assert.ok(
+          typeof cat.imageUrl === 'string' && cat.imageUrl.startsWith('http'),
+          `imageUrl for ${cat.slug} must be valid URL`,
+        );
         totalProductsInCategories += cat.count;
       }
 
-      assert.equal(totalProductsInCategories, 10, 'Sum of all category counts must equal total catalog size (10)');
+      assert.equal(
+        totalProductsInCategories,
+        10,
+        'Sum of all category counts must equal total catalog size (10)',
+      );
     });
   });
 
@@ -171,7 +194,9 @@ describe('Milestone 2 Empirical Challenge: Product Catalog API & Route Resilienc
   describe('Suite 2: Query Filtering with Complex Combinations & Boundaries', () => {
     it('2.1: Multi-parameter intersection (category + search + minPrice + maxPrice + sort)', async () => {
       // tops ($58, $78, $185); search="compression" ($78); minPrice=50, maxPrice=100; sort=price-asc
-      const res = await fetch(`${baseUrl}?category=tops&search=compression&minPrice=50&maxPrice=100&sort=price-asc`);
+      const res = await fetch(
+        `${baseUrl}?category=tops&search=compression&minPrice=50&maxPrice=100&sort=price-asc`,
+      );
       assert.equal(res.status, 200);
       const body = await res.json();
       assert.equal(body.success, true);
@@ -289,7 +314,11 @@ describe('Milestone 2 Empirical Challenge: Product Catalog API & Route Resilienc
       const res = await fetch(`${baseUrl}?minPrice=invalid_string&maxPrice=NaN`);
       assert.equal(res.status, 200);
       const body = await res.json();
-      assert.equal(body.total, 10, 'Invalid price strings should be ignored rather than crashing query');
+      assert.equal(
+        body.total,
+        10,
+        'Invalid price strings should be ignored rather than crashing query',
+      );
     });
 
     it('2.11: Unknown sort fallback defaults to newest order', async () => {
@@ -408,8 +437,16 @@ describe('Milestone 2 Empirical Challenge: Product Catalog API & Route Resilienc
 
       assert.equal(categoryCounts.tops, 3, 'Tops must have 3 products for 16:10 Bento cell');
       assert.equal(categoryCounts.bottoms, 3, 'Bottoms must have 3 products for 3:4 Bento cell');
-      assert.equal(categoryCounts.outerwear, 2, 'Outerwear must have 2 products for 16:9 Bento cell');
-      assert.equal(categoryCounts.accessories, 2, 'Accessories must have 2 products for 1:1 Bento cell');
+      assert.equal(
+        categoryCounts.outerwear,
+        2,
+        'Outerwear must have 2 products for 16:9 Bento cell',
+      );
+      assert.equal(
+        categoryCounts.accessories,
+        2,
+        'Accessories must have 2 products for 1:1 Bento cell',
+      );
       assert.equal(allProducts.length, 10, 'Total must equal 10 for full-width Bento cell');
     });
 
@@ -435,7 +472,8 @@ describe('Milestone 2 Empirical Challenge: Product Catalog API & Route Resilienc
             `Variant ${variant.sku} missing primary imageUrl`,
           );
           assert.ok(
-            typeof variant.secondaryImageUrl === 'string' && variant.secondaryImageUrl.startsWith('http'),
+            typeof variant.secondaryImageUrl === 'string' &&
+              variant.secondaryImageUrl.startsWith('http'),
             `Variant ${variant.sku} missing secondaryImageUrl for hover crossfade`,
           );
         }
@@ -443,9 +481,21 @@ describe('Milestone 2 Empirical Challenge: Product Catalog API & Route Resilienc
     });
 
     it('4.4: 100% of products include technical specs citing high-performance fabrics', () => {
-      const technicalFabrics = ['Cordura', 'GORE-TEX', 'YKK', 'DWR', 'Ripstop', 'Merino', 'Fidlock', '4-Way'];
+      const technicalFabrics = [
+        'Cordura',
+        'GORE-TEX',
+        'YKK',
+        'DWR',
+        'Ripstop',
+        'Merino',
+        'Fidlock',
+        '4-Way',
+      ];
       for (const prod of allProducts) {
-        assert.ok(Array.isArray(prod.specs) && prod.specs.length > 0, `Product ${prod.name} must have specs`);
+        assert.ok(
+          Array.isArray(prod.specs) && prod.specs.length > 0,
+          `Product ${prod.name} must have specs`,
+        );
         const allSpecsText = prod.specs.map((s) => `${s.label} ${s.value}`).join(' ');
         const hasTechnicalCitation = technicalFabrics.some((fab) =>
           allSpecsText.toLowerCase().includes(fab.toLowerCase()),

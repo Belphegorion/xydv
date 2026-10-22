@@ -3,7 +3,11 @@ import { orderController } from '../controllers/order.controller';
 import { requireAuth } from '../middleware/auth';
 import { validateRequest } from '../middleware/validateRequest';
 import { orderLimiter } from '../middleware/rateLimiter';
-import { createOrderSchema, verifyPaymentSchema, orderIdParamSchema } from '../validators/order.schema';
+import {
+  createOrderSchema,
+  verifyPaymentSchema,
+  orderIdParamSchema,
+} from '../validators/order.schema';
 
 const router = Router();
 
@@ -45,11 +49,7 @@ router.post(
 );
 
 // GET /api/orders — List user's orders
-router.get(
-  '/',
-  requireAuth,
-  orderController.getUserOrders.bind(orderController),
-);
+router.get('/', requireAuth, orderController.getUserOrders.bind(orderController));
 
 // GET /api/orders/:id — Fetch specific order
 router.get(

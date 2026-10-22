@@ -1,6 +1,6 @@
 /**
  * Backend Audit Independent Remediation Verification Suite
- * 
+ *
  * Verifies all 25 findings (CRIT-01 to CRIT-04, HIGH-01 to HIGH-06,
  * MED-01 to MED-11, LOW-01 to LOW-04) from the independent backend audit.
  */
@@ -25,7 +25,10 @@ describe('Backend Audit Remediation: Group 1 - Critical (P0)', () => {
     // Verifies logger.error is called for status >= 500 unconditionally
     assert.match(content, /if\s*\(\s*statusCode\s*>=\s*500\s*\)\s*\{\s*logger\.error/);
     // Verifies production response sanitization
-    assert.match(content, /if\s*\(\s*isProduction\s*&&\s*statusCode\s*>=\s*500\s*\)\s*\{\s*message\s*=\s*'Internal Server Error';\s*\}/);
+    assert.match(
+      content,
+      /if\s*\(\s*isProduction\s*&&\s*statusCode\s*>=\s*500\s*\)\s*\{\s*message\s*=\s*'Internal Server Error';\s*\}/,
+    );
   });
 
   it('CRIT-02: Inventory reservations use atomic check-and-set findOneAndUpdate for capture and release', () => {
@@ -34,9 +37,15 @@ describe('Backend Audit Remediation: Group 1 - Critical (P0)', () => {
     const content = fs.readFileSync(filePath, 'utf-8');
 
     // captureReservation atomic update
-    assert.match(content, /findOneAndUpdate\(\s*\{\s*razorpayOrderId,\s*status:\s*'active'\s*\},\s*\{\s*\$set:\s*\{\s*status:\s*'captured'\s*\}\s*\},/);
+    assert.match(
+      content,
+      /findOneAndUpdate\(\s*\{\s*razorpayOrderId,\s*status:\s*'active'\s*\},\s*\{\s*\$set:\s*\{\s*status:\s*'captured'\s*\}\s*\},/,
+    );
     // releaseReservation atomic update
-    assert.match(content, /findOneAndUpdate\(\s*\{\s*razorpayOrderId,\s*status:\s*'active'\s*\},\s*\{\s*\$set:\s*\{\s*status:\s*'released'\s*\}\s*\},/);
+    assert.match(
+      content,
+      /findOneAndUpdate\(\s*\{\s*razorpayOrderId,\s*status:\s*'active'\s*\},\s*\{\s*\$set:\s*\{\s*status:\s*'released'\s*\}\s*\},/,
+    );
     // cleanExpiredReservations atomic update
     assert.match(content, /findOneAndUpdate\(\s*\{\s*_id:\s*res\._id,\s*status:\s*'active'\s*\},/);
   });
@@ -67,9 +76,15 @@ describe('Backend Audit Remediation: Group 1 - Critical (P0)', () => {
     assert.match(orderContent, /alreadyCaptured:\s*true/);
 
     // Webhook controller atomic conditional status update
-    assert.match(webhookContent, /findOneAndUpdate\(\s*\{\s*razorpayOrderId:\s*payment\.order_id,\s*paymentStatus:\s*\{\s*\$ne:\s*'captured'\s*\}\s*\},/);
+    assert.match(
+      webhookContent,
+      /findOneAndUpdate\(\s*\{\s*razorpayOrderId:\s*payment\.order_id,\s*paymentStatus:\s*\{\s*\$ne:\s*'captured'\s*\}\s*\},/,
+    );
     // Webhook controller must not contain the double-deduct fallback loop
-    assert.doesNotMatch(webhookContent, /for\s*\(\s*const item of order\.items\s*\)\s*\{\s*await inventoryService\.deductStock/);
+    assert.doesNotMatch(
+      webhookContent,
+      /for\s*\(\s*const item of order\.items\s*\)\s*\{\s*await inventoryService\.deductStock/,
+    );
   });
 });
 
@@ -82,7 +97,10 @@ describe('Backend Audit Remediation: Group 2 - High Severity (P1)', () => {
     const serviceContent = fs.readFileSync(authServicePath, 'utf-8');
 
     // auth middleware verify algorithm pinning
-    assert.match(middlewareContent, /jwt\.verify\([^,]+,\s*[^,]+,\s*\{\s*algorithms:\s*\['HS256'\]\s*\}\)/);
+    assert.match(
+      middlewareContent,
+      /jwt\.verify\([^,]+,\s*[^,]+,\s*\{\s*algorithms:\s*\['HS256'\]\s*\}\)/,
+    );
 
     // auth service sign and verify algorithm pinning
     assert.match(serviceContent, /algorithm:\s*'HS256'/);
@@ -102,7 +120,10 @@ describe('Backend Audit Remediation: Group 2 - High Severity (P1)', () => {
     assert.match(limiterContent, /windowMs:\s*15\s*\*\s*60\s*\*\s*1000/);
 
     // Mounted on create-order route
-    assert.match(routesContent, /router\.post\(\s*['"]\/razorpay\/create-order['"],\s*orderLimiter,/);
+    assert.match(
+      routesContent,
+      /router\.post\(\s*['"]\/razorpay\/create-order['"],\s*orderLimiter,/,
+    );
   });
 
   it('HIGH-03: Production startup halts with fatal error if default placeholder secrets are detected', () => {
@@ -110,7 +131,10 @@ describe('Backend Audit Remediation: Group 2 - High Severity (P1)', () => {
     const content = fs.readFileSync(envPath, 'utf-8');
 
     assert.match(content, /if\s*\(\s*process\.env\.NODE_ENV === 'production'\s*\)\s*\{/);
-    assert.match(content, /throw new Error\(\s*['"]Fatal: Default placeholder secrets detected in production/);
+    assert.match(
+      content,
+      /throw new Error\(\s*['"]Fatal: Default placeholder secrets detected in production/,
+    );
   });
 
   it('HIGH-04: Process handles unhandledRejection and uncaughtException gracefully', () => {
@@ -128,7 +152,10 @@ describe('Backend Audit Remediation: Group 2 - High Severity (P1)', () => {
     const content = fs.readFileSync(authServicePath, 'utf-8');
 
     // Atomic findOneAndUpdate check-and-set on isRevoked
-    assert.match(content, /RefreshToken\.findOneAndUpdate\(\s*\{\s*tokenHash,\s*isRevoked:\s*false\s*\},\s*\{\s*\$set:\s*\{\s*isRevoked:\s*true\s*\}\s*\},/);
+    assert.match(
+      content,
+      /RefreshToken\.findOneAndUpdate\(\s*\{\s*tokenHash,\s*isRevoked:\s*false\s*\},\s*\{\s*\$set:\s*\{\s*isRevoked:\s*true\s*\}\s*\},/,
+    );
   });
 
   it('HIGH-06: Uploads directory is resolved to an absolute canonical path', () => {
@@ -140,9 +167,15 @@ describe('Backend Audit Remediation: Group 2 - High Severity (P1)', () => {
     const serverContent = fs.readFileSync(serverPath, 'utf-8');
     const adminServiceContent = fs.readFileSync(adminServicePath, 'utf-8');
 
-    assert.match(uploadContent, /export const UPLOADS_DIR\s*=\s*(?:process\.env\.UPLOADS_DIR\s*\|\|\s*)?path\.resolve\(__dirname/);
+    assert.match(
+      uploadContent,
+      /export const UPLOADS_DIR\s*=\s*(?:process\.env\.UPLOADS_DIR\s*\|\|\s*)?path\.resolve\(__dirname/,
+    );
     assert.match(serverContent, /import\s*\{\s*UPLOADS_DIR\s*\}\s*from\s*'\.\/middleware\/upload'/);
-    assert.match(adminServiceContent, /import\s*\{\s*UPLOADS_DIR\s*\}\s*from\s*'\.\.\/middleware\/upload'/);
+    assert.match(
+      adminServiceContent,
+      /import\s*\{\s*UPLOADS_DIR\s*\}\s*from\s*'\.\.\/middleware\/upload'/,
+    );
   });
 });
 
@@ -183,21 +216,22 @@ describe('Backend Audit Remediation: Group 3 - Medium Severity (P2)', () => {
 
     // Valid JPEG header
     const jpegPath = path.join(tmpDir, `test_${Date.now()}_1.jpg`);
-    fs.writeFileSync(jpegPath, Buffer.from([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]));
+    fs.writeFileSync(jpegPath, Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10]));
     assert.strictEqual(validateImageMagicBytes(jpegPath), true);
     fs.unlinkSync(jpegPath);
 
     // Valid PNG header
     const pngPath = path.join(tmpDir, `test_${Date.now()}_2.png`);
-    fs.writeFileSync(pngPath, Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]));
+    fs.writeFileSync(pngPath, Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
     assert.strictEqual(validateImageMagicBytes(pngPath), true);
     fs.unlinkSync(pngPath);
 
     // Valid WebP header (RIFF....WEBP)
     const webpPath = path.join(tmpDir, `test_${Date.now()}_3.webp`);
-    fs.writeFileSync(webpPath, Buffer.from([
-      0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50
-    ]));
+    fs.writeFileSync(
+      webpPath,
+      Buffer.from([0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50]),
+    );
     assert.strictEqual(validateImageMagicBytes(webpPath), true);
     fs.unlinkSync(webpPath);
 
@@ -209,7 +243,7 @@ describe('Backend Audit Remediation: Group 3 - Medium Severity (P2)', () => {
 
     // Disallowed executable / malicious header (MZ executable)
     const exePath = path.join(tmpDir, `test_${Date.now()}_5.exe`);
-    fs.writeFileSync(exePath, Buffer.from([0x4D, 0x5A, 0x90, 0x00]));
+    fs.writeFileSync(exePath, Buffer.from([0x4d, 0x5a, 0x90, 0x00]));
     assert.strictEqual(validateImageMagicBytes(exePath), false);
     fs.unlinkSync(exePath);
 
@@ -227,7 +261,10 @@ describe('Backend Audit Remediation: Group 3 - Medium Severity (P2)', () => {
 
     assert.match(fs.readFileSync(dbPath, 'utf-8'), /import\s+env\s+from\s+['"]\.\/env['"]/);
     assert.match(fs.readFileSync(razorpayPath, 'utf-8'), /import\s+env\s+from\s+['"]\.\/env['"]/);
-    assert.match(fs.readFileSync(serverPath, 'utf-8'), /import\s+env\s+from\s+['"]\.\/config\/env['"]/);
+    assert.match(
+      fs.readFileSync(serverPath, 'utf-8'),
+      /import\s+env\s+from\s+['"]\.\/config\/env['"]/,
+    );
   });
 
   it('MED-05: Zod request validation is mounted on previously unvalidated routes', () => {
@@ -291,7 +328,10 @@ describe('Backend Audit Remediation: Group 3 - Medium Severity (P2)', () => {
     const dbPath = path.join(apiDir, 'src', 'config', 'database.ts');
     const content = fs.readFileSync(dbPath, 'utf-8');
 
-    assert.match(content, /throw new Error\(`Failed to connect to MongoDB after \$\{maxRetries\} attempts`\)/);
+    assert.match(
+      content,
+      /throw new Error\(`Failed to connect to MongoDB after \$\{maxRetries\} attempts`\)/,
+    );
   });
 });
 
@@ -339,6 +379,9 @@ describe('Backend Audit Remediation: Group 4 - Low Severity (P3)', () => {
 
     assert.match(content, /Review\.aggregate(?:<[^>]+>)?\(\[/);
     assert.match(content, /\$match:\s*\{\s*productId/);
-    assert.match(content, /\$group:\s*\{\s*_id:\s*'\$productId',\s*averageRating:\s*\{\s*\$avg:\s*'\$rating'\s*\}/);
+    assert.match(
+      content,
+      /\$group:\s*\{\s*_id:\s*'\$productId',\s*averageRating:\s*\{\s*\$avg:\s*'\$rating'\s*\}/,
+    );
   });
 });

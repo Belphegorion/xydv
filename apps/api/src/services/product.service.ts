@@ -36,7 +36,10 @@ export class ProductService {
         },
         { $sort: { _id: 1 } },
       ]),
-      Category.find({ isActive: { $ne: false } }).sort({ name: 1 }).lean().catch(() => []),
+      Category.find({ isActive: { $ne: false } })
+        .sort({ name: 1 })
+        .lean()
+        .catch(() => []),
     ]);
 
     const categoryMetadata: Record<string, { name: string; description: string }> = {
@@ -58,8 +61,12 @@ export class ProductService {
       },
     };
 
-    const categoriesMap = new Map(rawCategories.map((c) => [c._id ? String(c._id).toLowerCase() : '', c]));
-    const dbCategoriesMap = new Map(dbCategories.map((c) => [c.slug ? String(c.slug).toLowerCase() : '', c]));
+    const categoriesMap = new Map(
+      rawCategories.map((c) => [c._id ? String(c._id).toLowerCase() : '', c]),
+    );
+    const dbCategoriesMap = new Map(
+      dbCategories.map((c) => [c.slug ? String(c.slug).toLowerCase() : '', c]),
+    );
 
     // Dynamically derive all active categories from DB Category collection and active Products
     const slugSet = new Set<string>();

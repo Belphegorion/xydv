@@ -18,8 +18,8 @@ export class OrderController {
             ...(guestEmail ? { email: guestEmail } : {}),
           }
         : guestEmail
-        ? { email: guestEmail }
-        : undefined;
+          ? { email: guestEmail }
+          : undefined;
       const data = await orderService.createRazorpayOrder(
         items,
         resolvedShipping,

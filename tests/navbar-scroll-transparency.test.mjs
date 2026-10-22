@@ -8,35 +8,62 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
-const primaryNavbarPath = path.join(rootDir, 'apps', 'web', 'src', 'components', 'layout', 'Navbar.tsx');
-const clientNavbarPath = path.resolve(rootDir, '..', 'project-v1-client', 'apps', 'web', 'src', 'components', 'layout', 'Navbar.tsx');
+const primaryNavbarPath = path.join(
+  rootDir,
+  'apps',
+  'web',
+  'src',
+  'components',
+  'layout',
+  'Navbar.tsx',
+);
+const clientNavbarPath = path.resolve(
+  rootDir,
+  '..',
+  'project-v1-client',
+  'apps',
+  'web',
+  'src',
+  'components',
+  'layout',
+  'Navbar.tsx',
+);
 
 describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
   const primaryContent = fs.readFileSync(primaryNavbarPath, 'utf-8');
-  const clientContent = fs.existsSync(clientNavbarPath) ? fs.readFileSync(clientNavbarPath, 'utf-8') : null;
+  const clientContent = fs.existsSync(clientNavbarPath)
+    ? fs.readFileSync(clientNavbarPath, 'utf-8')
+    : null;
 
   it('1. Primary and Client copies of Navbar.tsx are strictly identical', () => {
     if (clientContent && primaryContent !== clientContent) {
       // Single-workspace isolation: project-v1-client is preserved unchanged per user constraint
-      assert.ok(primaryContent.length > 0, 'primary Navbar.tsx must be valid in single-workspace isolation');
+      assert.ok(
+        primaryContent.length > 0,
+        'primary Navbar.tsx must be valid in single-workspace isolation',
+      );
       return;
     }
-    assert.equal(primaryContent, clientContent, 'project-v1 and project-v1-client Navbar.tsx must be byte-for-byte identical');
+    assert.equal(
+      primaryContent,
+      clientContent,
+      'project-v1 and project-v1-client Navbar.tsx must be byte-for-byte identical',
+    );
   });
 
   it('2. Navbar never hides during scroll animation (no -translate-y-full opacity-0 pointer-events-none)', () => {
     assert.ok(
       !primaryContent.includes('-translate-y-full'),
-      'Navbar must not translate offscreen during hero animation'
+      'Navbar must not translate offscreen during hero animation',
     );
     assert.ok(
       !primaryContent.includes('opacity-0 pointer-events-none'),
-      'Navbar must not become invisible or non-interactive during hero animation'
+      'Navbar must not become invisible or non-interactive during hero animation',
     );
     assert.match(
       primaryContent,
       /translate-y-0 opacity-100 pointer-events-auto/,
-      'Navbar must remain translate-y-0 opacity-100 pointer-events-auto'
+      'Navbar must remain translate-y-0 opacity-100 pointer-events-auto',
     );
   });
 
@@ -44,17 +71,17 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
     assert.match(
       primaryContent,
       /mobileOpen\s*\?\s*['"]bg-\[var\(--bg\)\] border-b border-\[var\(--border\)\] shadow-sm['"]/,
-      'Mobile menu open must render solid theme background'
+      'Mobile menu open must render solid theme background',
     );
     assert.match(
       primaryContent,
       /isElevated\s*\?\s*['"]bg-\[var\(--bg\)\]\/98 backdrop-blur-md border-b border-\[var\(--border\)\] shadow-sm['"]/,
-      'Elevated navbar must render bg-[var(--bg)]/98 backdrop-blur-md'
+      'Elevated navbar must render bg-[var(--bg)]/98 backdrop-blur-md',
     );
     assert.match(
       primaryContent,
       /:\s*['"]bg-transparent border-b border-transparent['"]/,
-      'Non-elevated navbar must render bg-transparent border-b border-transparent'
+      'Non-elevated navbar must render bg-transparent border-b border-transparent',
     );
   });
 
@@ -62,7 +89,7 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
     assert.match(
       primaryContent,
       /forceWhite=\{!isElevated\}/,
-      'BrandLogo must receive forceWhite={!isElevated} to guarantee white emblem during transparency'
+      'BrandLogo must receive forceWhite={!isElevated} to guarantee white emblem during transparency',
     );
   });
 
@@ -70,12 +97,12 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
     assert.match(
       primaryContent,
       /isElevated\s*\?\s*['"]text-\[var\(--text-secondary\)\] hover:text-\[var\(--text-primary\)\]['"]\s*:\s*['"]text-zinc-300 hover:text-white['"]/,
-      'Nav links must resolve to text-zinc-300 hover:text-white when not elevated'
+      'Nav links must resolve to text-zinc-300 hover:text-white when not elevated',
     );
     assert.match(
       primaryContent,
       /isElevated\s*\?\s*['"]text-\[var\(--text-primary\)\]['"]\s*:\s*['"]text-white['"]/,
-      'Mobile hamburger button must resolve to text-white when not elevated'
+      'Mobile hamburger button must resolve to text-white when not elevated',
     );
   });
 
@@ -83,7 +110,7 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
     assert.match(
       primaryContent,
       /const\s+isElevated\s*=\s*(!isHome\s*\|\|\s*)?\(!heroActive\s*&&\s*scrolled\)\s*\|\|\s*mobileOpen;/,
-      'Elevation must be gated on !isHome and !heroActive so scrubbing animation stays transparent'
+      'Elevation must be gated on !isHome and !heroActive so scrubbing animation stays transparent',
     );
   });
 
@@ -91,7 +118,7 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
     assert.match(
       primaryContent,
       /isFinishedLocally\s*=\s*progress\s*>=\s*0\.99/,
-      'isFinishedLocally must only trigger when animation progress is truly complete (>= 0.99)'
+      'isFinishedLocally must only trigger when animation progress is truly complete (>= 0.99)',
     );
   });
 
@@ -136,15 +163,13 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
         const bgClass = mobileOpen
           ? 'bg-[var(--bg)] border-b border-[var(--border)] shadow-sm'
           : isElevated
-          ? 'bg-[var(--bg)]/98 backdrop-blur-md border-b border-[var(--border)] shadow-sm'
-          : 'bg-transparent border-b border-transparent';
+            ? 'bg-[var(--bg)]/98 backdrop-blur-md border-b border-[var(--border)] shadow-sm'
+            : 'bg-transparent border-b border-transparent';
         const forceWhite = !isElevated;
         const linkClass = isElevated
           ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           : 'text-zinc-300 hover:text-white';
-        const hamburgerClass = isElevated
-          ? 'text-[var(--text-primary)]'
-          : 'text-white';
+        const hamburgerClass = isElevated ? 'text-[var(--text-primary)]' : 'text-white';
         return { isElevated, bgClass, forceWhite, linkClass, hamburgerClass, heroActive };
       }
 
@@ -165,7 +190,7 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
 
     // Scrubbing at progress 0.20 (scrollY = 450)
     sim.onScroll(450);
-    sim.onHeroStatus(0.20);
+    sim.onHeroStatus(0.2);
     sim.checkHeroScroll(2700);
     s = sim.getClasses();
     assert.equal(s.isElevated, false);
@@ -174,7 +199,7 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
 
     // Scrubbing at progress 0.50 (scrollY = 1125)
     sim.onScroll(1125);
-    sim.onHeroStatus(0.50);
+    sim.onHeroStatus(0.5);
     sim.checkHeroScroll(2025);
     s = sim.getClasses();
     assert.equal(s.isElevated, false);
@@ -207,7 +232,10 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
     sim.checkHeroScroll(900);
     s = sim.getClasses();
     assert.equal(s.isElevated, true, 'Sequence completion must elevate navbar');
-    assert.equal(s.bgClass, 'bg-[var(--bg)]/98 backdrop-blur-md border-b border-[var(--border)] shadow-sm');
+    assert.equal(
+      s.bgClass,
+      'bg-[var(--bg)]/98 backdrop-blur-md border-b border-[var(--border)] shadow-sm',
+    );
     assert.equal(s.forceWhite, false);
 
     // Scrolled past hero (scrollY = 3500, rectBottom = 0)
@@ -215,12 +243,15 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
     sim.checkHeroScroll(0);
     s = sim.getClasses();
     assert.equal(s.isElevated, true, 'Past hero must elevate navbar');
-    assert.equal(s.bgClass, 'bg-[var(--bg)]/98 backdrop-blur-md border-b border-[var(--border)] shadow-sm');
+    assert.equal(
+      s.bgClass,
+      'bg-[var(--bg)]/98 backdrop-blur-md border-b border-[var(--border)] shadow-sm',
+    );
     assert.equal(s.forceWhite, false);
 
     // Reverse scroll back up into hero (scrollY = 1800, progress = 0.80)
     sim.onScroll(1800);
-    sim.onHeroStatus(0.80);
+    sim.onHeroStatus(0.8);
     sim.checkHeroScroll(1350);
     s = sim.getClasses();
     assert.equal(s.isElevated, false, 'Reversing back into hero must restore transparency');
@@ -243,9 +274,19 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
     subpageSim.onScroll(0);
     const subState = subpageSim.getClasses();
     assert.equal(subState.isElevated, true, 'Subpages must be elevated at scrollY = 0');
-    assert.equal(subState.bgClass, 'bg-[var(--bg)]/98 backdrop-blur-md border-b border-[var(--border)] shadow-sm');
-    assert.equal(subState.forceWhite, false, 'forceWhite must be false on subpages to ensure high-contrast dark text in light mode');
-    assert.equal(subState.linkClass, 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]');
+    assert.equal(
+      subState.bgClass,
+      'bg-[var(--bg)]/98 backdrop-blur-md border-b border-[var(--border)] shadow-sm',
+    );
+    assert.equal(
+      subState.forceWhite,
+      false,
+      'forceWhite must be false on subpages to ensure high-contrast dark text in light mode',
+    );
+    assert.equal(
+      subState.linkClass,
+      'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
+    );
     assert.equal(subState.hamburgerClass, 'text-[var(--text-primary)]');
   });
 });

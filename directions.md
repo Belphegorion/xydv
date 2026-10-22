@@ -163,6 +163,7 @@ apps/api/src/
 ## 4. Complete API Specification
 
 ### 4.1 Authentication & Profile (`/api/auth`)
+
 - `POST /api/auth/register`: Create user account, returns JWT access token + user DTO. Sets HTTP-only refresh cookie.
 - `POST /api/auth/login`: Authenticate email/password, returns JWT access token + user DTO. Sets HTTP-only refresh cookie.
 - `POST /api/auth/refresh`: Rotate refresh token using secure cookie; detects reuse and revokes compromised token families.
@@ -170,12 +171,14 @@ apps/api/src/
 - `GET /api/auth/me`: Get authenticated user profile (requires `Bearer` token).
 
 ### 4.2 Customer Address Management (`/api/users`)
+
 - `GET /api/users/me`: Return authenticated user document.
 - `PATCH /api/users/me`: Update display name or avatar.
 - `POST /api/users/me/addresses`: Add new shipping address to user's address book.
 - `DELETE /api/users/me/addresses/:id`: Delete saved shipping address.
 
 ### 4.3 Catalog & Exploration (`/api/products`)
+
 - `GET /api/products/categories`: Return category aggregations (tops, bottoms, outerwear, accessories) with product counts and hero image URLs. Declared before `/:slug` to prevent route shadowing.
 - `GET /api/products`: 10-parameter filtering engine:
   - `category` (tops, bottoms, outerwear, accessories, or all)
@@ -191,6 +194,7 @@ apps/api/src/
 - `POST /api/products/:slug/reviews`: Authenticated endpoint to submit a verified product review.
 
 ### 4.4 Orders & Razorpay Checkout (`/api/orders`)
+
 - `POST /api/orders/razorpay/create-order` (Aliases: `/create-order`, `/create-payment-intent`):
   - Validates positive integer quantities ($>0$).
   - Computes authoritative pricing ($150 threshold for free shipping, 8% tax).
@@ -207,6 +211,7 @@ apps/api/src/
 - `GET /api/orders/:id`: Fetch specific order details (restricted to owning customer or admin).
 
 ### 4.5 Persistent Webhooks (`/api/webhooks`)
+
 - `POST /api/webhooks/razorpay`:
   - Preserves raw request Buffer before JSON body parsing.
   - Timing-safe HMAC verification against `RAZORPAY_WEBHOOK_SECRET`.
@@ -214,6 +219,7 @@ apps/api/src/
   - Handles `payment.captured`, `order.paid`, and `payment.failed` with atomic order status update guards.
 
 ### 4.6 Admin Operations (`/api/admin`)
+
 - Requires `role: 'admin'`.
 - `GET /api/admin/products`: List all products including drafts.
 - `POST /api/admin/products`: Create new technical product with auto-slug generation.

@@ -41,44 +41,52 @@ export function HeroSection() {
   // Flowing kinetic ladder transforms for STAGE 1: MATERIAL SPECS (MOISTURE & REBOUND)
   // Window: 0.00 -> 0.36
   const stage1Opacity = useTransform(scrollYProgress, [0, 0.22, 0.32], [1, 1, 0]);
-  const stage1Visibility = useTransform<number, 'hidden' | 'visible'>(scrollYProgress, (v) => (v > 0.35 ? 'hidden' : 'visible'));
-  const stage1Rung1X = useTransform(scrollYProgress, [0, 0.20, 0.32], [0, -12, -35]);
-  const stage1Rung1Y = useTransform(scrollYProgress, [0, 0.20, 0.32], [0, -4, -14]);
+  const stage1Visibility = useTransform<number, 'hidden' | 'visible'>(scrollYProgress, (v) =>
+    v > 0.35 ? 'hidden' : 'visible',
+  );
+  const stage1Rung1X = useTransform(scrollYProgress, [0, 0.2, 0.32], [0, -12, -35]);
+  const stage1Rung1Y = useTransform(scrollYProgress, [0, 0.2, 0.32], [0, -4, -14]);
   const stage1Rung2X = useTransform(scrollYProgress, [0, 0.22, 0.32], [0, 16, 42]);
   const stage1Rung2Y = useTransform(scrollYProgress, [0, 0.22, 0.32], [0, -2, -8]);
   const stage1Rung3X = useTransform(scrollYProgress, [0, 0.24, 0.32], [0, -8, -24]);
   const stage1Rung3Y = useTransform(scrollYProgress, [0, 0.24, 0.32], [0, 6, 16]);
-  const stage1ContentY = useTransform(scrollYProgress, [0, 0.20, 0.32], [0, 8, 20]);
+  const stage1ContentY = useTransform(scrollYProgress, [0, 0.2, 0.32], [0, 8, 20]);
 
   // Flowing kinetic ladder transforms for STAGE 2: MATERIAL SPECS (BALLISTIC ARMOR & CORDURA)
   // Window: 0.32 -> 0.68
-  const stage2Opacity = useTransform(scrollYProgress, [0.32, 0.40, 0.58, 0.68], [0, 1, 1, 0]);
-  const stage2Visibility = useTransform<number, 'hidden' | 'visible'>(scrollYProgress, (v) => (v < 0.30 || v > 0.70 ? 'hidden' : 'visible'));
+  const stage2Opacity = useTransform(scrollYProgress, [0.32, 0.4, 0.58, 0.68], [0, 1, 1, 0]);
+  const stage2Visibility = useTransform<number, 'hidden' | 'visible'>(scrollYProgress, (v) =>
+    v < 0.3 || v > 0.7 ? 'hidden' : 'visible',
+  );
   const stage2Rung1X = useTransform(scrollYProgress, [0.32, 0.45, 0.68], [-30, 0, 30]);
   const stage2Rung1Y = useTransform(scrollYProgress, [0.32, 0.45, 0.68], [15, 0, -15]);
   const stage2Rung2X = useTransform(scrollYProgress, [0.32, 0.48, 0.68], [-20, 0, 40]);
   const stage2Rung2Y = useTransform(scrollYProgress, [0.32, 0.48, 0.68], [10, 0, -10]);
-  const stage2Rung3X = useTransform(scrollYProgress, [0.32, 0.50, 0.68], [-35, 0, 25]);
-  const stage2Rung3Y = useTransform(scrollYProgress, [0.32, 0.50, 0.68], [20, 0, -20]);
+  const stage2Rung3X = useTransform(scrollYProgress, [0.32, 0.5, 0.68], [-35, 0, 25]);
+  const stage2Rung3Y = useTransform(scrollYProgress, [0.32, 0.5, 0.68], [20, 0, -20]);
   const stage2ContentY = useTransform(scrollYProgress, [0.32, 0.45, 0.68], [15, 0, -15]);
 
   // Flowing kinetic ladder transforms for STAGE 3: CLIMAX (ENGINEERED FOR THE RELENTLESS)
   // Window: 0.68 -> 1.00
   const climaxOpacity = useTransform(scrollYProgress, [0.68, 0.78, 1.0], [0, 1, 1]);
-  const climaxVisibility = useTransform<number, 'hidden' | 'visible'>(scrollYProgress, (v) => (v < 0.66 ? 'hidden' : 'visible'));
-  const climaxPointerEvents = useTransform<number, 'none' | 'auto'>(scrollYProgress, (v) => (v < 0.75 ? 'none' : 'auto'));
+  const climaxVisibility = useTransform<number, 'hidden' | 'visible'>(scrollYProgress, (v) =>
+    v < 0.66 ? 'hidden' : 'visible',
+  );
+  const climaxPointerEvents = useTransform<number, 'none' | 'auto'>(scrollYProgress, (v) =>
+    v < 0.75 ? 'none' : 'auto',
+  );
   const climaxRung1X = useTransform(scrollYProgress, [0.68, 0.82, 1.0], [-25, 0, 0]);
   const climaxRung1Y = useTransform(scrollYProgress, [0.68, 0.82, 1.0], [20, 0, 0]);
-  const climaxRung2X = useTransform(scrollYProgress, [0.70, 0.85, 1.0], [-15, 0, 0]);
-  const climaxRung2Y = useTransform(scrollYProgress, [0.70, 0.85, 1.0], [15, 0, 0]);
+  const climaxRung2X = useTransform(scrollYProgress, [0.7, 0.85, 1.0], [-15, 0, 0]);
+  const climaxRung2Y = useTransform(scrollYProgress, [0.7, 0.85, 1.0], [15, 0, 0]);
   const climaxRung3X = useTransform(scrollYProgress, [0.72, 0.88, 1.0], [-30, 0, 0]);
   const climaxRung3Y = useTransform(scrollYProgress, [0.72, 0.88, 1.0], [25, 0, 0]);
   const climaxContentY = useTransform(scrollYProgress, [0.68, 0.82, 1.0], [20, 0, 0]);
 
   // Scroll cues and tactical telemetry transforms
   const initialScrollPromptOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  const telemetryOpacity = useTransform(scrollYProgress, [0.15, 0.22, 0.84, 0.90], [0, 1, 1, 0]);
-  const completionCueOpacity = useTransform(scrollYProgress, [0.90, 0.96], [0, 1]);
+  const telemetryOpacity = useTransform(scrollYProgress, [0.15, 0.22, 0.84, 0.9], [0, 1, 1, 0]);
+  const completionCueOpacity = useTransform(scrollYProgress, [0.9, 0.96], [0, 1]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -92,14 +100,12 @@ export function HeroSection() {
   };
 
   const itemVariants = {
-    hidden: shouldReduceMotion
-      ? { opacity: 0, y: 0 }
-      : { opacity: 0, y: 20 },
+    hidden: shouldReduceMotion ? { opacity: 0, y: 0 } : { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: shouldReduceMotion ? 0.01 : 0.30,
+        duration: shouldReduceMotion ? 0.01 : 0.3,
         ease: EMIL_EASE,
       },
     },
@@ -131,82 +137,85 @@ export function HeroSection() {
     return null;
   }, []);
 
-  const drawFrame = useCallback((frameIndex: number) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) return;
+  const drawFrame = useCallback(
+    (frameIndex: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d', { alpha: false });
+      if (!ctx) return;
 
-    const img = getBestLoadedFrame(frameIndex);
-    if (!img || !img.complete || img.naturalWidth === 0) return;
+      const img = getBestLoadedFrame(frameIndex);
+      if (!img || !img.complete || img.naturalWidth === 0) return;
 
-    let { cw, ch, dpr } = sizeRef.current;
-    if (cw === 0 || ch === 0) {
-      const rect = canvas.getBoundingClientRect();
-      cw = rect.width || (typeof window !== 'undefined' ? window.innerWidth : 0);
-      ch = rect.height || (typeof window !== 'undefined' ? window.innerHeight : 0);
-      dpr = Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2);
-      sizeRef.current = { cw, ch, dpr };
-      const targetW = Math.round(cw * dpr);
-      const targetH = Math.round(ch * dpr);
-      if (canvas.width !== targetW || canvas.height !== targetH) {
-        canvas.width = targetW;
-        canvas.height = targetH;
+      let { cw, ch, dpr } = sizeRef.current;
+      if (cw === 0 || ch === 0) {
+        const rect = canvas.getBoundingClientRect();
+        cw = rect.width || (typeof window !== 'undefined' ? window.innerWidth : 0);
+        ch = rect.height || (typeof window !== 'undefined' ? window.innerHeight : 0);
+        dpr = Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2);
+        sizeRef.current = { cw, ch, dpr };
+        const targetW = Math.round(cw * dpr);
+        const targetH = Math.round(ch * dpr);
+        if (canvas.width !== targetW || canvas.height !== targetH) {
+          canvas.width = targetW;
+          canvas.height = targetH;
+        }
       }
-    }
-    if (cw === 0 || ch === 0) return;
+      if (cw === 0 || ch === 0) return;
 
-    const iw = img.naturalWidth || 1920;
-    const ih = img.naturalHeight || 1080;
+      const iw = img.naturalWidth || 1920;
+      const ih = img.naturalHeight || 1080;
 
-    const scale = Math.max(cw / iw, ch / ih);
-    const nw = iw * scale;
-    const nh = ih * scale;
+      const scale = Math.max(cw / iw, ch / ih);
+      const nw = iw * scale;
+      const nh = ih * scale;
 
-    // Vertical framing: center 3D hoodie turntable vertically (focalY = 0.50) without clipping
-    const focalY = 0.5;
-    const dy = Math.min(0, Math.max(ch - nh, ch / 2 - nh * focalY));
+      // Vertical framing: center 3D hoodie turntable vertically (focalY = 0.50) without clipping
+      const focalY = 0.5;
+      const dy = Math.min(0, Math.max(ch - nh, ch / 2 - nh * focalY));
 
-    // Horizontal framing: center 3D hoodie turntable dead-center (focalX = 0.50) across mobile and desktop
-    const isMobile = cw < 768;
-    const focalX = isMobile ? 0.5 : 0.5;
-    const dx = Math.min(0, Math.max(cw - nw, cw / 2 - nw * focalX));
+      // Horizontal framing: center 3D hoodie turntable dead-center (focalX = 0.50) across mobile and desktop
+      const isMobile = cw < 768;
+      const focalX = isMobile ? 0.5 : 0.5;
+      const dx = Math.min(0, Math.max(cw - nw, cw / 2 - nw * focalX));
 
-    ctx.save();
-    ctx.scale(dpr, dpr);
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'medium';
-    ctx.drawImage(img, dx, dy, nw, nh);
-    ctx.restore();
-  }, [getBestLoadedFrame]);
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'medium';
+      ctx.drawImage(img, dx, dy, nw, nh);
+      ctx.restore();
+    },
+    [getBestLoadedFrame],
+  );
 
-  const scheduleRender = useCallback((frameIndex: number, immediate = false) => {
-    targetFrameRef.current = frameIndex;
-    if (frameCounterRef.current) {
-      frameCounterRef.current.textContent = `[${String(frameIndex + 1).padStart(3, '0')} / 020]`;
-    }
-    if (immediate) {
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
+  const scheduleRender = useCallback(
+    (frameIndex: number, immediate = false) => {
+      targetFrameRef.current = frameIndex;
+      if (frameCounterRef.current) {
+        frameCounterRef.current.textContent = `[${String(frameIndex + 1).padStart(3, '0')} / 020]`;
+      }
+      if (immediate) {
+        if (rafIdRef.current !== null) {
+          cancelAnimationFrame(rafIdRef.current);
+          rafIdRef.current = null;
+        }
+        drawFrame(frameIndex);
+        return;
+      }
+      if (rafIdRef.current !== null) return;
+      rafIdRef.current = requestAnimationFrame(() => {
         rafIdRef.current = null;
-      }
-      drawFrame(frameIndex);
-      return;
-    }
-    if (rafIdRef.current !== null) return;
-    rafIdRef.current = requestAnimationFrame(() => {
-      rafIdRef.current = null;
-      drawFrame(targetFrameRef.current);
-    });
-  }, [drawFrame]);
+        drawFrame(targetFrameRef.current);
+      });
+    },
+    [drawFrame],
+  );
 
   // Bind scroll progress directly to frame scrubbing & notify navbar
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (shouldReduceMotion) return;
-    const targetFrame = Math.min(
-      TOTAL_FRAMES - 1,
-      Math.max(0, Math.floor(latest * TOTAL_FRAMES))
-    );
+    const targetFrame = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.floor(latest * TOTAL_FRAMES)));
     scheduleRender(targetFrame);
     if (telemetryLabelRef.current) {
       if (latest < 0.35) {
@@ -222,7 +231,7 @@ export function HeroSection() {
       window.dispatchEvent(
         new CustomEvent('xydv:hero-animation-status', {
           detail: { isFinished, progress: latest },
-        })
+        }),
       );
     }
   });
@@ -289,7 +298,8 @@ export function HeroSection() {
         // 1. Wire listeners BEFORE setting src to eliminate synchronous cache race conditions
         img.onload = () => {
           if ('decode' in img) {
-            img.decode()
+            img
+              .decode()
               .then(() => onFinish(img))
               .catch(() => onFinish(img));
           } else {
@@ -307,7 +317,8 @@ export function HeroSection() {
         // 3. Synchronous cache check: if browser resolved from disk/memory cache immediately
         if (img.complete && img.naturalWidth > 0) {
           if ('decode' in img) {
-            img.decode()
+            img
+              .decode()
               .then(() => onFinish(img))
               .catch(() => onFinish(img));
           } else {
@@ -374,7 +385,7 @@ export function HeroSection() {
     const initialProgress = scrollYProgress.get();
     const initialFrame = Math.min(
       TOTAL_FRAMES - 1,
-      Math.max(0, Math.floor(initialProgress * TOTAL_FRAMES))
+      Math.max(0, Math.floor(initialProgress * TOTAL_FRAMES)),
     );
     scheduleRender(initialFrame, true);
 
@@ -419,16 +430,16 @@ export function HeroSection() {
       ref={containerRef}
       aria-label="New Season Showcase"
       className={cn(
-        'relative w-full bg-black dark border-b border-black/20 dark:border-white/10 min-h-[100dvh]',
-        shouldReduceMotion ? '' : 'h-[350vh]'
+        'dark relative min-h-[100dvh] w-full border-b border-black/20 bg-black dark:border-white/10',
+        shouldReduceMotion ? '' : 'h-[350vh]',
       )}
     >
       {/* Sticky Viewport Container */}
-      <div className="sticky top-0 h-[100dvh] w-full flex flex-col justify-center px-4 sm:px-8 md:px-12 lg:px-16 pt-16 sm:pt-20 md:pt-24 pb-12 overflow-hidden bg-black">
+      <div className="sticky top-0 flex h-[100dvh] w-full flex-col justify-center overflow-hidden bg-black px-4 pt-16 pb-12 sm:px-8 sm:pt-20 md:px-12 md:pt-24 lg:px-16">
         {/* HTML5 Canvas Layer */}
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 z-0 w-full h-full pointer-events-none select-none"
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
           aria-hidden="true"
         />
 
@@ -437,7 +448,7 @@ export function HeroSection() {
           preload="none"
           muted
           playsInline
-          className="hidden pointer-events-none select-none"
+          className="pointer-events-none hidden select-none"
           aria-hidden="true"
           tabIndex={-1}
         >
@@ -448,12 +459,12 @@ export function HeroSection() {
         </video>
 
         {/* Hero Content with Flowing Kinetic Ladder Choreography: Material Specs First, Climax At Last */}
-        <div className="relative z-10 max-w-7xl w-full mx-auto flex flex-col items-start pointer-events-none">
+        <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-7xl flex-col items-start">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="relative w-full max-w-xl lg:max-w-2xl flex flex-col items-start min-h-[360px] sm:min-h-[400px]"
+            className="relative flex min-h-[360px] w-full max-w-xl flex-col items-start sm:min-h-[400px] lg:max-w-2xl"
           >
             {/* ========================================================================= */}
             {/* 1. STAGE 1: MATERIAL SPECS (FIRST — SCROLL 0.00 -> 0.35)                  */}
@@ -464,8 +475,8 @@ export function HeroSection() {
                 opacity: shouldReduceMotion ? 0 : stage1Opacity,
               }}
               className={cn(
-                'w-full flex flex-col items-start pointer-events-none select-none',
-                shouldReduceMotion ? 'hidden' : 'relative'
+                'pointer-events-none flex w-full flex-col items-start select-none',
+                shouldReduceMotion ? 'hidden' : 'relative',
               )}
               aria-hidden={shouldReduceMotion ? 'true' : undefined}
             >
@@ -476,7 +487,7 @@ export function HeroSection() {
               </div>
 
               <div
-                className="w-full flex flex-col font-heading uppercase tracking-tighter mb-4 sm:mb-6"
+                className="font-heading mb-4 flex w-full flex-col tracking-tighter uppercase sm:mb-6"
                 aria-label="SweatShield Plus Moisture Regulation 4-Way Rebound"
               >
                 {/* Ladder Step 1: SWEATSHIELD+ */}
@@ -487,10 +498,10 @@ export function HeroSection() {
                   }}
                   className="flex items-baseline gap-3"
                 >
-                  <span className="block text-white text-[clamp(1.8rem,5vw,4.25rem)] font-extrabold uppercase tracking-tight leading-[0.92] [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]">
+                  <span className="block text-[clamp(1.8rem,5vw,4.25rem)] leading-[0.92] font-extrabold tracking-tight text-white uppercase [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]">
                     SWEATSHIELD+
                   </span>
-                  <span className="text-[#E8FF00] font-mono text-xs sm:text-sm font-bold tracking-widest">
+                  <span className="font-mono text-xs font-bold tracking-widest text-[#E8FF00] sm:text-sm">
                     18,000 g/m²
                   </span>
                 </motion.div>
@@ -501,16 +512,16 @@ export function HeroSection() {
                     x: shouldReduceMotion ? 0 : stage1Rung2X,
                     y: shouldReduceMotion ? 0 : stage1Rung2Y,
                   }}
-                  className="flex items-center gap-2 sm:gap-3 pl-4 sm:pl-8 md:pl-12 my-1 sm:my-2"
+                  className="my-1 flex items-center gap-2 pl-4 sm:my-2 sm:gap-3 sm:pl-8 md:pl-12"
                 >
                   <span
-                    className="h-[2px] w-6 sm:w-10 bg-[#E8FF00] shadow-[0_0_8px_rgba(232,255,0,0.6)] shrink-0"
+                    className="h-[2px] w-6 shrink-0 bg-[#E8FF00] shadow-[0_0_8px_rgba(232,255,0,0.6)] sm:w-10"
                     aria-hidden="true"
                   />
-                  <span className="text-[#E8FF00] text-[clamp(1.1rem,3vw,2.5rem)] font-mono font-bold tracking-wider uppercase leading-none [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
+                  <span className="font-mono text-[clamp(1.1rem,3vw,2.5rem)] leading-none font-bold tracking-wider text-[#E8FF00] uppercase [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
                     4-WAY REBOUND
                   </span>
-                  <span className="text-zinc-400 text-[10px] sm:text-xs font-mono tracking-widest uppercase">
+                  <span className="font-mono text-[10px] tracking-widest text-zinc-400 uppercase sm:text-xs">
                     {'// 94% TENSILE'}
                   </span>
                 </motion.div>
@@ -523,7 +534,7 @@ export function HeroSection() {
                   }}
                   className="pl-8 sm:pl-16 md:pl-24"
                 >
-                  <span className="block text-white text-[clamp(1.5rem,4.5vw,3.75rem)] font-black uppercase tracking-tight leading-[0.92] [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
+                  <span className="block text-[clamp(1.5rem,4.5vw,3.75rem)] leading-[0.92] font-black tracking-tight text-white uppercase [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
                     ZERO SATURATION
                   </span>
                 </motion.div>
@@ -533,9 +544,10 @@ export function HeroSection() {
                 style={{
                   y: shouldReduceMotion ? 0 : stage1ContentY,
                 }}
-                className="text-zinc-200 text-xs sm:text-sm md:text-base max-w-lg mb-4 leading-relaxed font-sans pl-3 border-l-2 border-[#E8FF00]/60 [text-shadow:_0_1px_8px_rgb(0_0_0_/_90%)] backdrop-blur-[2px] bg-black/20 py-1"
+                className="mb-4 max-w-lg border-l-2 border-[#E8FF00]/60 bg-black/20 py-1 pl-3 font-sans text-xs leading-relaxed text-zinc-200 backdrop-blur-[2px] [text-shadow:_0_1px_8px_rgb(0_0_0_/_90%)] sm:text-sm md:text-base"
               >
-                Hydrophobic micro-yarn channels moisture away from the dermis 3x faster than standard knit. Maintains zero garment saturation under peak Zone 5 anaerobic output.
+                Hydrophobic micro-yarn channels moisture away from the dermis 3x faster than
+                standard knit. Maintains zero garment saturation under peak Zone 5 anaerobic output.
               </motion.p>
             </motion.div>
 
@@ -548,8 +560,8 @@ export function HeroSection() {
                 opacity: shouldReduceMotion ? 0 : stage2Opacity,
               }}
               className={cn(
-                'w-full flex flex-col items-start pointer-events-none select-none',
-                shouldReduceMotion ? 'hidden' : 'absolute top-0 left-0'
+                'pointer-events-none flex w-full flex-col items-start select-none',
+                shouldReduceMotion ? 'hidden' : 'absolute top-0 left-0',
               )}
               aria-hidden={shouldReduceMotion ? 'true' : undefined}
             >
@@ -560,7 +572,7 @@ export function HeroSection() {
               </div>
 
               <div
-                className="w-full flex flex-col font-heading uppercase tracking-tighter mb-4 sm:mb-6"
+                className="font-heading mb-4 flex w-full flex-col tracking-tighter uppercase sm:mb-6"
                 aria-label="Cordura Ripstop 500D Abrasion Armor ClimateSync"
               >
                 {/* Ladder Step 1: CORDURA® RIPSTOP */}
@@ -571,10 +583,10 @@ export function HeroSection() {
                   }}
                   className="flex items-baseline gap-3"
                 >
-                  <span className="block text-white text-[clamp(1.8rem,5vw,4.25rem)] font-extrabold uppercase tracking-tight leading-[0.92] [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]">
+                  <span className="block text-[clamp(1.8rem,5vw,4.25rem)] leading-[0.92] font-extrabold tracking-tight text-white uppercase [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]">
                     CORDURA® RIPSTOP
                   </span>
-                  <span className="text-[#E8FF00] font-mono text-xs sm:text-sm font-bold tracking-widest">
+                  <span className="font-mono text-xs font-bold tracking-widest text-[#E8FF00] sm:text-sm">
                     500D DENIER
                   </span>
                 </motion.div>
@@ -585,16 +597,16 @@ export function HeroSection() {
                     x: shouldReduceMotion ? 0 : stage2Rung2X,
                     y: shouldReduceMotion ? 0 : stage2Rung2Y,
                   }}
-                  className="flex items-center gap-2 sm:gap-3 pl-4 sm:pl-8 md:pl-12 my-1 sm:my-2"
+                  className="my-1 flex items-center gap-2 pl-4 sm:my-2 sm:gap-3 sm:pl-8 md:pl-12"
                 >
                   <span
-                    className="h-[2px] w-6 sm:w-10 bg-[#E8FF00] shadow-[0_0_8px_rgba(232,255,0,0.6)] shrink-0"
+                    className="h-[2px] w-6 shrink-0 bg-[#E8FF00] shadow-[0_0_8px_rgba(232,255,0,0.6)] sm:w-10"
                     aria-hidden="true"
                   />
-                  <span className="text-[#E8FF00] text-[clamp(1.1rem,3vw,2.5rem)] font-mono font-bold tracking-wider uppercase leading-none [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
+                  <span className="font-mono text-[clamp(1.1rem,3vw,2.5rem)] leading-none font-bold tracking-wider text-[#E8FF00] uppercase [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
                     ABRASION ARMOR
                   </span>
-                  <span className="text-zinc-400 text-[10px] sm:text-xs font-mono tracking-widest uppercase">
+                  <span className="font-mono text-[10px] tracking-widest text-zinc-400 uppercase sm:text-xs">
                     {'// 50,000+ RUBS'}
                   </span>
                 </motion.div>
@@ -607,7 +619,7 @@ export function HeroSection() {
                   }}
                   className="pl-8 sm:pl-16 md:pl-24"
                 >
-                  <span className="block text-white text-[clamp(1.5rem,4.5vw,3.75rem)] font-black uppercase tracking-tight leading-[0.92] [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
+                  <span className="block text-[clamp(1.5rem,4.5vw,3.75rem)] leading-[0.92] font-black tracking-tight text-white uppercase [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
                     CLIMATESYNC THERMAL
                   </span>
                 </motion.div>
@@ -617,9 +629,10 @@ export function HeroSection() {
                 style={{
                   y: shouldReduceMotion ? 0 : stage2ContentY,
                 }}
-                className="text-zinc-200 text-xs sm:text-sm md:text-base max-w-lg mb-4 leading-relaxed font-sans pl-3 border-l-2 border-[#E8FF00]/60 [text-shadow:_0_1px_8px_rgb(0_0_0_/_90%)] backdrop-blur-[2px] bg-black/20 py-1"
+                className="mb-4 max-w-lg border-l-2 border-[#E8FF00]/60 bg-black/20 py-1 pl-3 font-sans text-xs leading-relaxed text-zinc-200 backdrop-blur-[2px] [text-shadow:_0_1px_8px_rgb(0_0_0_/_90%)] sm:text-sm md:text-base"
               >
-                Military-grade ballistic weave reinforced at friction thresholds. Cellular thermal micro-grooves preserve 37°C core balance across ambient thermal shifts.
+                Military-grade ballistic weave reinforced at friction thresholds. Cellular thermal
+                micro-grooves preserve 37°C core balance across ambient thermal shifts.
               </motion.p>
             </motion.div>
 
@@ -633,8 +646,8 @@ export function HeroSection() {
                 pointerEvents: shouldReduceMotion ? 'auto' : climaxPointerEvents,
               }}
               className={cn(
-                'w-full flex flex-col items-start',
-                shouldReduceMotion ? 'relative pointer-events-auto' : 'absolute top-0 left-0'
+                'flex w-full flex-col items-start',
+                shouldReduceMotion ? 'pointer-events-auto relative' : 'absolute top-0 left-0',
               )}
             >
               <div className="mb-3 sm:mb-4">
@@ -645,7 +658,7 @@ export function HeroSection() {
 
               {/* Cascading Flowing Ladder Headline */}
               <h1
-                className="w-full flex flex-col font-heading uppercase tracking-tighter mb-4 sm:mb-6 select-none"
+                className="font-heading mb-4 flex w-full flex-col tracking-tighter uppercase select-none sm:mb-6"
                 aria-label="Engineered For The Relentless"
               >
                 {/* Ladder Step 1: ENGINEERED */}
@@ -654,7 +667,7 @@ export function HeroSection() {
                     x: shouldReduceMotion ? 0 : climaxRung1X,
                     y: shouldReduceMotion ? 0 : climaxRung1Y,
                   }}
-                  className="block text-white text-[clamp(2rem,5.5vw,5rem)] font-extrabold uppercase tracking-tight leading-[0.92] [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]"
+                  className="block text-[clamp(2rem,5.5vw,5rem)] leading-[0.92] font-extrabold tracking-tight text-white uppercase [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]"
                 >
                   ENGINEERED
                 </motion.span>
@@ -665,16 +678,16 @@ export function HeroSection() {
                     x: shouldReduceMotion ? 0 : climaxRung2X,
                     y: shouldReduceMotion ? 0 : climaxRung2Y,
                   }}
-                  className="flex items-center gap-2 sm:gap-3 pl-4 sm:pl-8 md:pl-12 my-1 sm:my-2"
+                  className="my-1 flex items-center gap-2 pl-4 sm:my-2 sm:gap-3 sm:pl-8 md:pl-12"
                 >
                   <span
-                    className="h-[2px] w-6 sm:w-10 bg-[#E8FF00] shadow-[0_0_8px_rgba(232,255,0,0.6)] shrink-0"
+                    className="h-[2px] w-6 shrink-0 bg-[#E8FF00] shadow-[0_0_8px_rgba(232,255,0,0.6)] sm:w-10"
                     aria-hidden="true"
                   />
-                  <span className="text-[#E8FF00] text-[clamp(1.2rem,3.2vw,2.75rem)] font-mono font-bold tracking-wider uppercase leading-none [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
+                  <span className="font-mono text-[clamp(1.2rem,3.2vw,2.75rem)] leading-none font-bold tracking-wider text-[#E8FF00] uppercase [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
                     FOR THE
                   </span>
-                  <span className="text-zinc-400 text-[10px] sm:text-xs font-mono tracking-widest uppercase">
+                  <span className="font-mono text-[10px] tracking-widest text-zinc-400 uppercase sm:text-xs">
                     {'// DIV.01'}
                   </span>
                 </motion.div>
@@ -687,7 +700,7 @@ export function HeroSection() {
                   }}
                   className="pl-8 sm:pl-16 md:pl-24"
                 >
-                  <span className="block text-white text-[clamp(2.2rem,6.2vw,5.5rem)] font-black uppercase tracking-tight leading-[0.92] [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
+                  <span className="block text-[clamp(2.2rem,6.2vw,5.5rem)] leading-[0.92] font-black tracking-tight text-white uppercase [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
                     RELENTLESS
                   </span>
                 </motion.div>
@@ -698,13 +711,14 @@ export function HeroSection() {
                 style={{
                   y: shouldReduceMotion ? 0 : climaxContentY,
                 }}
-                className="text-zinc-200 text-xs sm:text-sm md:text-base max-w-lg mb-6 sm:mb-8 leading-relaxed font-sans pl-3 border-l-2 border-[#E8FF00]/60 [text-shadow:_0_1px_8px_rgb(0_0_0_/_90%)] backdrop-blur-[2px] bg-black/20 py-1"
+                className="mb-6 max-w-lg border-l-2 border-[#E8FF00]/60 bg-black/20 py-1 pl-3 font-sans text-xs leading-relaxed text-zinc-200 backdrop-blur-[2px] [text-shadow:_0_1px_8px_rgb(0_0_0_/_90%)] sm:mb-8 sm:text-sm md:text-base"
               >
-                Tactical performance apparel crafted with proprietary SweatShield+ moisture regulation and 4-way AeroFlex ballistic stretch. Built for zero compromise.
+                Tactical performance apparel crafted with proprietary SweatShield+ moisture
+                regulation and 4-way AeroFlex ballistic stretch. Built for zero compromise.
               </motion.p>
 
               {/* Call to Actions with Spring Tap Interaction */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto pointer-events-auto">
+              <div className="pointer-events-auto flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
                 <motion.div
                   whileHover={shouldReduceMotion ? undefined : { scale: 1.02, y: -2 }}
                   whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
@@ -713,7 +727,7 @@ export function HeroSection() {
                 >
                   <Link
                     href="/products"
-                    className="touch-target inline-flex items-center justify-center gap-3 bg-white text-black border border-white font-mono font-bold uppercase tracking-widest px-8 text-xs sm:text-sm hover:bg-zinc-200 hover:border-zinc-200 transition-colors shadow-lg w-full sm:w-auto min-h-[48px]"
+                    className="touch-target inline-flex min-h-[48px] w-full items-center justify-center gap-3 border border-white bg-white px-8 font-mono text-xs font-bold tracking-widest text-black uppercase shadow-lg transition-colors hover:border-zinc-200 hover:bg-zinc-200 sm:w-auto sm:text-sm"
                   >
                     <span>SHOP COLLECTION</span>
                     <ArrowRight size={18} weight="bold" />
@@ -728,7 +742,7 @@ export function HeroSection() {
                 >
                   <Link
                     href="/products?featured=true"
-                    className="touch-target inline-flex items-center justify-center border border-white/40 text-white font-mono font-bold uppercase tracking-widest px-8 text-xs sm:text-sm hover:bg-white hover:text-black transition-colors backdrop-blur-sm shadow-lg w-full sm:w-auto min-h-[48px]"
+                    className="touch-target inline-flex min-h-[48px] w-full items-center justify-center border border-white/40 px-8 font-mono text-xs font-bold tracking-widest text-white uppercase shadow-lg backdrop-blur-sm transition-colors hover:bg-white hover:text-black sm:w-auto sm:text-sm"
                   >
                     <span>EXPLORE ARCHIVE</span>
                   </Link>
@@ -741,7 +755,7 @@ export function HeroSection() {
         {/* 1. Initial Visual Scroll Indicator (fades out as scroll begins) */}
         <motion.div
           style={{ opacity: shouldReduceMotion ? 1 : initialScrollPromptOpacity }}
-          className="absolute bottom-6 right-6 md:right-12 z-10 hidden md:flex items-center gap-2 text-zinc-400 text-xs font-mono uppercase tracking-widest pointer-events-none select-none"
+          className="pointer-events-none absolute right-6 bottom-6 z-10 hidden items-center gap-2 font-mono text-xs tracking-widest text-zinc-400 uppercase select-none md:right-12 md:flex"
           aria-hidden="true"
         >
           <span>SCROLL TO EXPLORE SPECS</span>
@@ -756,14 +770,14 @@ export function HeroSection() {
         {/* 2. Mid-Sequence Tactical Telemetry Indicator (visible between 15% and 94% scroll) */}
         <motion.div
           style={{ opacity: shouldReduceMotion ? 0 : telemetryOpacity }}
-          className="absolute bottom-6 left-4 sm:left-8 md:left-12 z-10 flex items-center gap-2 sm:gap-3 text-zinc-400 text-[10px] sm:text-xs font-mono uppercase tracking-wider sm:tracking-widest pointer-events-none select-none"
+          className="pointer-events-none absolute bottom-6 left-4 z-10 flex items-center gap-2 font-mono text-[10px] tracking-wider text-zinc-400 uppercase select-none sm:left-8 sm:gap-3 sm:text-xs sm:tracking-widest md:left-12"
           aria-hidden="true"
         >
-          <span className="inline-block w-2 h-2 rounded-full bg-[#E8FF00] animate-pulse shrink-0" />
-          <span ref={telemetryLabelRef} className="truncate max-w-[200px] sm:max-w-none">
+          <span className="inline-block h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#E8FF00]" />
+          <span ref={telemetryLabelRef} className="max-w-[200px] truncate sm:max-w-none">
             SEQ 01: SWEATSHIELD+ // 18K MVTR
           </span>
-          <span ref={frameCounterRef} className="text-zinc-500 font-mono shrink-0">
+          <span ref={frameCounterRef} className="shrink-0 font-mono text-zinc-500">
             [001 / 020]
           </span>
         </motion.div>
@@ -771,7 +785,7 @@ export function HeroSection() {
         {/* 3. Sequence Completion Cue (fades in at 90%..96% scroll) */}
         <motion.div
           style={{ opacity: shouldReduceMotion ? 0 : completionCueOpacity }}
-          className="absolute bottom-6 right-4 sm:right-8 md:right-12 z-10 flex items-center gap-2 text-[#E8FF00] text-xs font-mono uppercase tracking-widest pointer-events-none select-none"
+          className="pointer-events-none absolute right-4 bottom-6 z-10 flex items-center gap-2 font-mono text-xs tracking-widest text-[#E8FF00] uppercase select-none sm:right-8 md:right-12"
           aria-hidden="true"
         >
           <span>SCROLL TO ENTER</span>

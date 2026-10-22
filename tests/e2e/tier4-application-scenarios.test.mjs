@@ -117,7 +117,11 @@ describe('Tier 4: Real-World Application Scenarios (E2E User Journeys)', () => {
 
     // 8. User simulates payment completion in Razorpay Modal
     const simulatedPaymentId = 'pay_real_sim_998877';
-    const validSignature = generateRazorpaySignature(razorpayOrderId, simulatedPaymentId, server.keySecret);
+    const validSignature = generateRazorpaySignature(
+      razorpayOrderId,
+      simulatedPaymentId,
+      server.keySecret,
+    );
     modal.simulateSuccess(simulatedPaymentId, validSignature);
     assert.equal(modal.isOpen, false);
     assert.ok(clientPaymentResponse !== null);

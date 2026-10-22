@@ -34,7 +34,11 @@ import { ServerRuntimeSimulator } from '../harness/server-runtime.mjs';
 describe('Tier 1: Feature 1 - Visual Tokens & Anti-Slop Palette (R1)', () => {
   it('T1.F1.1: Background tokens enforce obsidian void (#0A0A0A) and dark surfaces', () => {
     assert.equal(DESIGN_TOKENS.colors.bg.toUpperCase(), '#0A0A0A', 'Primary bg must be #0A0A0A');
-    assert.equal(DESIGN_TOKENS.colors.bgSurface.toUpperCase(), '#111111', 'Surface must be #111111');
+    assert.equal(
+      DESIGN_TOKENS.colors.bgSurface.toUpperCase(),
+      '#111111',
+      'Surface must be #111111',
+    );
     assert.equal(DESIGN_TOKENS.colors.border.toUpperCase(), '#1F1F1F', 'Borders must be #1F1F1F');
   });
 
@@ -67,11 +71,18 @@ describe('Tier 1: Feature 1 - Visual Tokens & Anti-Slop Palette (R1)', () => {
 // ============================================================================
 describe('Tier 2: Feature 2 - Aspect-Locked Media & Bento Proportions (R1)', () => {
   it('T1.F2.1: Product cards strictly enforce aspect-[3/4] ratio contract', () => {
-    assert.equal(DESIGN_TOKENS.layout.productCardAspect, '3/4', 'Product card aspect ratio must be 3/4');
+    assert.equal(
+      DESIGN_TOKENS.layout.productCardAspect,
+      '3/4',
+      'Product card aspect ratio must be 3/4',
+    );
     for (const prod of CATALOG_FIXTURES) {
       assert.ok(prod.variants.length > 0, `Product ${prod.name} must have variants`);
       for (const variant of prod.variants) {
-        assert.ok(variant.imageUrl.startsWith('http'), `Variant ${variant.sku} must have valid image URL`);
+        assert.ok(
+          variant.imageUrl.startsWith('http'),
+          `Variant ${variant.sku} must have valid image URL`,
+        );
       }
     }
   });
@@ -103,7 +114,11 @@ describe('Tier 2: Feature 2 - Aspect-Locked Media & Bento Proportions (R1)', () 
   it('T1.F2.5: Image URLs are aspect-ratio locked webp assets without broken placeholders', () => {
     for (const prod of CATALOG_FIXTURES) {
       for (const v of prod.variants) {
-        assert.match(v.imageUrl, /\.(webp|jpg|png|svg)$|^https:\/\/images\./, 'Image must be valid web format');
+        assert.match(
+          v.imageUrl,
+          /\.(webp|jpg|png|svg)$|^https:\/\/images\./,
+          'Image must be valid web format',
+        );
       }
     }
   });
@@ -114,7 +129,11 @@ describe('Tier 2: Feature 2 - Aspect-Locked Media & Bento Proportions (R1)', () 
 // ============================================================================
 describe('Tier 1: Feature 3 - Micro-Interactions & Tap Feedback (R2)', () => {
   it('T1.F3.1: Button tap specification enforces scale(0.97) on :active', () => {
-    assert.equal(MOTION_SPECS.buttonTapActiveScale, 0.97, 'Active tap feedback must scale down to 0.97');
+    assert.equal(
+      MOTION_SPECS.buttonTapActiveScale,
+      0.97,
+      'Active tap feedback must scale down to 0.97',
+    );
   });
 
   it('T1.F3.2: Allowed animation properties are strictly compositor-accelerated', () => {
@@ -179,7 +198,11 @@ describe('Tier 1: Feature 4 - Motion Timing & Reduced-Motion (R2)', () => {
 
   it('T1.F4.5: Prefers-reduced-motion fallback reduces durations to 0ms', () => {
     const reducedMotionDuration = 0;
-    assert.equal(reducedMotionDuration, 0, 'Prefers-reduced-motion must collapse animation duration to 0ms');
+    assert.equal(
+      reducedMotionDuration,
+      0,
+      'Prefers-reduced-motion must collapse animation duration to 0ms',
+    );
   });
 });
 
@@ -531,11 +554,20 @@ describe('Tier 1: Feature 9 - WCAG 2.1 AA Accessibility & Structural Rigor (R4)'
 
   it('T1.F9.4: Focus rings utilize volt accent (:focus-visible outline: 2px solid #E8FF00)', () => {
     const focusRingColor = DESIGN_TOKENS.colors.accent;
-    assert.equal(focusRingColor, '#E8FF00', 'Focus outline must use volt yellow for high visibility');
+    assert.equal(
+      focusRingColor,
+      '#E8FF00',
+      'Focus outline must use volt yellow for high visibility',
+    );
   });
 
   it('T1.F9.5: Modal/drawer focus trap cycles Tab and Shift+Tab without focus leaks', () => {
-    const focusTrap = new FocusTrapSimulator(['close-btn', 'qty-minus', 'qty-plus', 'checkout-btn']);
+    const focusTrap = new FocusTrapSimulator([
+      'close-btn',
+      'qty-minus',
+      'qty-plus',
+      'checkout-btn',
+    ]);
     focusTrap.activate('cart-nav-trigger');
 
     // Initial focus on first element
@@ -547,10 +579,18 @@ describe('Tier 1: Feature 9 - WCAG 2.1 AA Accessibility & Structural Rigor (R4)'
     assert.equal(focusTrap.handleTab(false), 'checkout-btn');
 
     // Tab at boundary cycles back to first element
-    assert.equal(focusTrap.handleTab(false), 'close-btn', 'Focus must cycle from last to first element');
+    assert.equal(
+      focusTrap.handleTab(false),
+      'close-btn',
+      'Focus must cycle from last to first element',
+    );
 
     // Shift+Tab at boundary cycles back to last element
-    assert.equal(focusTrap.handleTab(true), 'checkout-btn', 'Shift+Tab must cycle from first to last element');
+    assert.equal(
+      focusTrap.handleTab(true),
+      'checkout-btn',
+      'Shift+Tab must cycle from first to last element',
+    );
 
     // Escape deactivates and restores focus to trigger button
     const restored = focusTrap.handleEscape();

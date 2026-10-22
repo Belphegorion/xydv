@@ -34,5 +34,4 @@ ticketSchema.index({ email: 1 });
 ticketSchema.index({ createdAt: -1 });
 
 export const Ticket: Model<ITicket> =
-  (mongoose.models.Ticket as Model<ITicket>) ||
-  mongoose.model<ITicket>('Ticket', ticketSchema);
+  (mongoose.models.Ticket as Model<ITicket>) || mongoose.model<ITicket>('Ticket', ticketSchema);

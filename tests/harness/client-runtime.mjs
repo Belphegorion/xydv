@@ -125,7 +125,8 @@ export class CartStoreSimulator {
   swapVariant(itemId, newVariant) {
     const itemIndex = this.items.findIndex((i) => i.id === itemId);
     if (itemIndex === -1) return { success: false, reason: 'Item not found' };
-    if (!newVariant || newVariant.stock <= 0) return { success: false, reason: 'Variant out of stock' };
+    if (!newVariant || newVariant.stock <= 0)
+      return { success: false, reason: 'Variant out of stock' };
 
     const currentItem = this.items[itemIndex];
     const newItemId = `${currentItem.productId}::${newVariant.id}`;
@@ -164,7 +165,9 @@ export class CartStoreSimulator {
 }
 
 export class FocusTrapSimulator {
-  constructor(focusableSelectors = ['close-button', 'qty-dec', 'qty-inc', 'swatch-btn', 'checkout-button']) {
+  constructor(
+    focusableSelectors = ['close-button', 'qty-dec', 'qty-inc', 'swatch-btn', 'checkout-button'],
+  ) {
     this.elements = focusableSelectors;
     this.currentIndex = 0;
     this.isOpen = false;

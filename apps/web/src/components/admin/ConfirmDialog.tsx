@@ -46,16 +46,16 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-dialog-title"
     >
       <div
-        className="w-full max-w-md rounded-none border border-[#1f1f1f] bg-[#111111] p-6 shadow-2xl text-[#f5f5f5]"
+        className="w-full max-w-md rounded-none border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 mb-4">
+        <div className="mb-4 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <div
               className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded border ${
@@ -66,7 +66,10 @@ export function ConfirmDialog({
             >
               <Warning size={22} weight="bold" />
             </div>
-            <h2 id="confirm-dialog-title" className="font-mono text-sm font-bold uppercase tracking-wider">
+            <h2
+              id="confirm-dialog-title"
+              className="font-mono text-sm font-bold tracking-wider uppercase"
+            >
               {title}
             </h2>
           </div>
@@ -75,23 +78,21 @@ export function ConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={isLoading}
-            className="p-1 text-[#71717a] hover:text-[#f5f5f5] transition-colors"
+            className="p-1 text-[#71717a] transition-colors hover:text-[#f5f5f5]"
             aria-label="Close dialog"
           >
             <X size={18} />
           </button>
         </div>
 
-        <p className="text-xs text-[#a0a0a0] leading-relaxed mb-6 font-sans">
-          {description}
-        </p>
+        <p className="mb-6 font-sans text-xs leading-relaxed text-[#a0a0a0]">{description}</p>
 
-        <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#1f1f1f]">
+        <div className="flex items-center justify-end gap-3 border-t border-[#1f1f1f] pt-2">
           <button
             type="button"
             onClick={onCancel}
             disabled={isLoading}
-            className="px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#a0a0a0] hover:text-[#f5f5f5] border border-[#1f1f1f] hover:border-[#333333] transition-colors active:scale-[0.97]"
+            className="border border-[#1f1f1f] px-4 py-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#333333] hover:text-[#f5f5f5] active:scale-[0.97]"
           >
             {cancelText}
           </button>
@@ -100,7 +101,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className={`inline-flex items-center justify-center gap-2 px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-colors active:scale-[0.97] ${
+            className={`inline-flex items-center justify-center gap-2 px-5 py-2 font-mono text-xs font-bold tracking-wider uppercase transition-colors active:scale-[0.97] ${
               isDestructive
                 ? 'border border-[#ff3b3b] bg-[#ff3b3b] text-[#ffffff] hover:bg-[#ff3b3b]/90'
                 : 'border border-[#e8ff00] bg-[#e8ff00] text-[#0a0a0a] hover:bg-[#e8ff00]/90'

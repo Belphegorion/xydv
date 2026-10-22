@@ -21,10 +21,7 @@ describe('Batch 4: HIGH-02 - Dynamic Categories & Taxonomy in Product Service', 
     path.join(apiDir, 'src', 'services', 'product.service.ts'),
     'utf-8',
   );
-  const apiRoutesSrc = fs.readFileSync(
-    path.join(apiDir, 'src', 'routes', 'index.ts'),
-    'utf-8',
-  );
+  const apiRoutesSrc = fs.readFileSync(path.join(apiDir, 'src', 'routes', 'index.ts'), 'utf-8');
 
   it('product.service.ts eliminates hardcoded allCategories list', () => {
     assert.doesNotMatch(

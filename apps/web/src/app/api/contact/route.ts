@@ -1,22 +1,18 @@
 import { NextResponse } from 'next/server';
 
 const API_BASE_URL =
-  process.env.INTERNAL_API_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  'http://localhost:5000/api';
+  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export async function POST(request: Request) {
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { error: 'Invalid JSON request payload.' },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: 'Invalid JSON request payload.' }, { status: 400 });
   }
 
-  const payload = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
+  const payload =
+    typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
   const { name, email, topic, orderId, message } = payload;
 
   const trimmedName = typeof name === 'string' ? name.trim() : '';
@@ -49,7 +45,9 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: true,
         ticketId: data.ticketId,
-        message: data.message || 'Support dispatch received. An athlete service engineer will review within 2 hours.',
+        message:
+          data.message ||
+          'Support dispatch received. An athlete service engineer will review within 2 hours.',
         data: data.data,
       });
     }

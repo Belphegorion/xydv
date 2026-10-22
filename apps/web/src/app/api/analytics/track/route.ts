@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const API_BASE_URL =
-  process.env.INTERNAL_API_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  'http://localhost:5000/api';
+  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export async function POST(request: Request) {
   try {
@@ -39,6 +37,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: false }, { status: res.status });
   } catch {
-    return NextResponse.json({ success: false, error: 'Telemetry endpoint unavailable' }, { status: 502 });
+    return NextResponse.json(
+      { success: false, error: 'Telemetry endpoint unavailable' },
+      { status: 502 },
+    );
   }
 }

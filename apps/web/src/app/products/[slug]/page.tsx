@@ -81,34 +81,41 @@ function parseGender(val: unknown): CatalogProduct['gender'] {
   return 'unisex';
 }
 
-function mapApiProductToCatalog(apiProd: ApiProductInput, existingStatic?: CatalogProduct): CatalogProduct {
+function mapApiProductToCatalog(
+  apiProd: ApiProductInput,
+  existingStatic?: CatalogProduct,
+): CatalogProduct {
   if (existingStatic) {
     return {
       ...existingStatic,
       price: typeof apiProd.price === 'number' ? apiProd.price : existingStatic.price,
-      compareAtPrice: typeof apiProd.compareAt === 'number' ? apiProd.compareAt : existingStatic.compareAtPrice,
+      compareAtPrice:
+        typeof apiProd.compareAt === 'number' ? apiProd.compareAt : existingStatic.compareAtPrice,
       category: parseCategory(apiProd.category || existingStatic.category),
-      variants: Array.isArray(apiProd.variants) && apiProd.variants.length > 0
-        ? apiProd.variants.map((v: ApiProductVariant, idx: number) => {
-            const staticVar = existingStatic.variants[idx] || existingStatic.variants[0];
-            return {
-              id: v._id || v.id || staticVar.id,
-              sku: v.sku || staticVar.sku,
-              colorName: v.colorName || v.color || staticVar.colorName,
-              colorHex: v.colorHex || staticVar.colorHex,
-              size: v.size || staticVar.size,
-              primaryImage: v.imageUrl || staticVar.primaryImage,
-              secondaryImage: v.secondaryImageUrl || staticVar.secondaryImage,
-              gallery: Array.isArray(v.images) && v.images.length > 0 ? v.images : staticVar.gallery,
-              stock: typeof v.stock === 'number' ? v.stock : staticVar.stock,
-            };
-          })
-        : existingStatic.variants,
+      variants:
+        Array.isArray(apiProd.variants) && apiProd.variants.length > 0
+          ? apiProd.variants.map((v: ApiProductVariant, idx: number) => {
+              const staticVar = existingStatic.variants[idx] || existingStatic.variants[0];
+              return {
+                id: v._id || v.id || staticVar.id,
+                sku: v.sku || staticVar.sku,
+                colorName: v.colorName || v.color || staticVar.colorName,
+                colorHex: v.colorHex || staticVar.colorHex,
+                size: v.size || staticVar.size,
+                primaryImage: v.imageUrl || staticVar.primaryImage,
+                secondaryImage: v.secondaryImageUrl || staticVar.secondaryImage,
+                gallery:
+                  Array.isArray(v.images) && v.images.length > 0 ? v.images : staticVar.gallery,
+                stock: typeof v.stock === 'number' ? v.stock : staticVar.stock,
+              };
+            })
+          : existingStatic.variants,
     };
   }
 
   const firstVariant = apiProd.variants?.[0];
-  const primaryImg = firstVariant?.imageUrl || firstVariant?.images?.[0] || '/lookbook/image-2-1.jpg';
+  const primaryImg =
+    firstVariant?.imageUrl || firstVariant?.images?.[0] || '/lookbook/image-2-1.jpg';
   const secondaryImg = firstVariant?.secondaryImageUrl || firstVariant?.images?.[1] || primaryImg;
 
   return {
@@ -132,31 +139,32 @@ function mapApiProductToCatalog(apiProd: ApiProductInput, existingStatic?: Catal
     features: apiProd.features || ['Moisture-wicking', 'Ergonomic fit', 'Reinforced stitching'],
     careInstructions: ['Machine wash cold', 'Tumble dry low', 'Do not bleach'],
     biomechanics: 'Engineered for unrestrained range of motion under high thermal output.',
-    variants: Array.isArray(apiProd.variants) && apiProd.variants.length > 0
-      ? apiProd.variants.map((v: ApiProductVariant, idx: number) => ({
-          id: v._id || v.id || `var_${apiProd.slug}_${idx}`,
-          sku: v.sku || `SKU-${idx}`,
-          colorName: v.colorName || v.color || 'Void Obsidian',
-          colorHex: v.colorHex || '#0A0A0A',
-          size: v.size || 'M',
-          primaryImage: v.imageUrl || primaryImg,
-          secondaryImage: v.secondaryImageUrl || secondaryImg,
-          gallery: Array.isArray(v.images) && v.images.length > 0 ? v.images : [primaryImg],
-          stock: typeof v.stock === 'number' ? v.stock : 50,
-        }))
-      : [
-          {
-            id: `var_${apiProd.slug}_0`,
-            sku: `SKU-${apiProd.slug}`,
-            colorName: 'Void Obsidian',
-            colorHex: '#0A0A0A',
-            size: 'M',
-            primaryImage: primaryImg,
-            secondaryImage: secondaryImg,
-            gallery: [primaryImg],
-            stock: 50,
-          },
-        ],
+    variants:
+      Array.isArray(apiProd.variants) && apiProd.variants.length > 0
+        ? apiProd.variants.map((v: ApiProductVariant, idx: number) => ({
+            id: v._id || v.id || `var_${apiProd.slug}_${idx}`,
+            sku: v.sku || `SKU-${idx}`,
+            colorName: v.colorName || v.color || 'Void Obsidian',
+            colorHex: v.colorHex || '#0A0A0A',
+            size: v.size || 'M',
+            primaryImage: v.imageUrl || primaryImg,
+            secondaryImage: v.secondaryImageUrl || secondaryImg,
+            gallery: Array.isArray(v.images) && v.images.length > 0 ? v.images : [primaryImg],
+            stock: typeof v.stock === 'number' ? v.stock : 50,
+          }))
+        : [
+            {
+              id: `var_${apiProd.slug}_0`,
+              sku: `SKU-${apiProd.slug}`,
+              colorName: 'Void Obsidian',
+              colorHex: '#0A0A0A',
+              size: 'M',
+              primaryImage: primaryImg,
+              secondaryImage: secondaryImg,
+              gallery: [primaryImg],
+              stock: 50,
+            },
+          ],
     rating: typeof apiProd.averageRating === 'number' ? apiProd.averageRating : 4.8,
     reviewCount: typeof apiProd.reviewCount === 'number' ? apiProd.reviewCount : 42,
     reviews: [],
@@ -178,15 +186,17 @@ export default function ProductDetailPage({ params }: PageProps) {
   const isCustomerAuth = useCustomerAuthStore((s) => s.isAuthenticated);
   const openAuthModal = useCustomerAuthStore((s) => s.openModal);
 
-  const [liveReviews, setLiveReviews] = useState<Array<{
-    id: string;
-    author: string;
-    discipline: string;
-    rating: number;
-    title: string;
-    content: string;
-    date: string;
-  }>>([]);
+  const [liveReviews, setLiveReviews] = useState<
+    Array<{
+      id: string;
+      author: string;
+      discipline: string;
+      rating: number;
+      title: string;
+      content: string;
+      date: string;
+    }>
+  >([]);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
@@ -227,7 +237,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     title: r.title || 'Verified Performance',
                     content: r.body || '',
                     date: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : 'RECENT',
-                  }))
+                  })),
                 );
               }
             })
@@ -274,7 +284,7 @@ export default function ProductDetailPage({ params }: PageProps) {
           title: reviewTitle.trim(),
           body: reviewBody.trim(),
           userName: reviewAuthor.trim() || customerUser?.name || 'Verified Athlete',
-        }
+        },
       );
 
       const rData = res?.data || {
@@ -296,7 +306,7 @@ export default function ProductDetailPage({ params }: PageProps) {
           content: rData.body,
           date: 'JUST NOW',
         },
-        ...(prev.length > 0 ? prev : (product?.reviews || [])),
+        ...(prev.length > 0 ? prev : product?.reviews || []),
       ]);
 
       setReviewSuccess(true);
@@ -337,21 +347,14 @@ export default function ProductDetailPage({ params }: PageProps) {
   const isWishlisted = useWishlistStore((s) => (product ? s.isWishlisted(product.id) : false));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
 
-  const related = useMemo(
-    () => (product ? getRelatedProducts(product.id, 4) : []),
-    [product],
-  );
+  const related = useMemo(() => (product ? getRelatedProducts(product.id, 4) : []), [product]);
 
   const sizes = useMemo(() => {
     if (!product) return [];
     if (product.category === 'accessories') return ['OS'];
     if (Array.isArray(product.variants) && product.variants.length > 0) {
       const derived = Array.from(
-        new Set(
-          product.variants
-            .map((v) => v.size)
-            .filter((s): s is string => Boolean(s)),
-        ),
+        new Set(product.variants.map((v) => v.size).filter((s): s is string => Boolean(s))),
       );
       if (derived.length > 0) return derived;
     }
@@ -374,9 +377,9 @@ export default function ProductDetailPage({ params }: PageProps) {
 
   if (isLoading && !product) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] pt-32 pb-24 text-white flex flex-col items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#E8FF00] border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="font-mono text-xs uppercase tracking-widest text-[#a0a0a0]">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#0A0A0A] pt-32 pb-24 text-white">
+        <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#E8FF00] border-t-transparent" />
+        <p className="font-mono text-xs tracking-widest text-[#a0a0a0] uppercase">
           Loading Product Specification...
         </p>
       </div>
@@ -395,11 +398,12 @@ export default function ProductDetailPage({ params }: PageProps) {
   // Handle Size Selection dynamically derived from variant stock
   const isSizeDisabled = (size: string) => {
     if (!product || product.category === 'accessories') return false;
-    const matchingVariant = product.variants.find(
-      (v) =>
-        v.size === size &&
-        (v.colorName === activeVariant.colorName || v.colorHex === activeVariant.colorHex),
-    ) ?? product.variants.find((v) => v.size === size);
+    const matchingVariant =
+      product.variants.find(
+        (v) =>
+          v.size === size &&
+          (v.colorName === activeVariant.colorName || v.colorHex === activeVariant.colorHex),
+      ) ?? product.variants.find((v) => v.size === size);
 
     if (matchingVariant) {
       return typeof matchingVariant.stock === 'number' && matchingVariant.stock <= 0;
@@ -424,7 +428,7 @@ export default function ProductDetailPage({ params }: PageProps) {
         sku: activeVariant.sku,
         maxStock: activeVariant.stock,
       },
-      quantity
+      quantity,
     );
 
     if (timerRef.current) {
@@ -441,7 +445,7 @@ export default function ProductDetailPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] pt-24 sm:pt-32 pb-24">
+    <div className="min-h-screen bg-[var(--bg)] pt-24 pb-24 sm:pt-32">
       {/* Lightbox / Fullscreen Zoom Modal */}
       <AnimatePresence>
         {isZoomOpen && (
@@ -449,18 +453,18 @@ export default function ProductDetailPage({ params }: PageProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 backdrop-blur-md"
             onClick={() => setIsZoomOpen(false)}
           >
             <button
               type="button"
               onClick={() => setIsZoomOpen(false)}
-              className="absolute top-6 right-6 z-50 w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors"
+              className="absolute top-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
               aria-label="Close fullscreen zoom"
             >
               <X size={24} weight="bold" />
             </button>
-            <div className="relative w-full max-w-5xl h-[85vh]">
+            <div className="relative h-[85vh] w-full max-w-5xl">
               <Image
                 src={gallery[activeImageIdx]}
                 alt={`${product.name} zoom view`}
@@ -474,35 +478,40 @@ export default function ProductDetailPage({ params }: PageProps) {
         )}
       </AnimatePresence>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Breadcrumbs */}
-        <nav aria-label="Breadcrumb" className="mb-6 text-[11px] font-mono text-[var(--text-muted)] flex items-center gap-2">
-          <Link href="/" className="hover:text-[var(--text-primary)] transition-colors">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-6 flex items-center gap-2 font-mono text-[11px] text-[var(--text-muted)]"
+        >
+          <Link href="/" className="transition-colors hover:text-[var(--text-primary)]">
             HOME
           </Link>
           <span>/</span>
-          <Link href="/products" className="hover:text-[var(--text-primary)] transition-colors">
+          <Link href="/products" className="transition-colors hover:text-[var(--text-primary)]">
             PRODUCTS
           </Link>
           <span>/</span>
           <Link
             href={`/products?category=${product.category}`}
-            className="hover:text-[var(--text-primary)] uppercase transition-colors"
+            className="uppercase transition-colors hover:text-[var(--text-primary)]"
           >
             {product.category}
           </Link>
           <span>/</span>
-          <span className="text-[var(--text-primary)] uppercase truncate max-w-[200px]">{product.name}</span>
+          <span className="max-w-[200px] truncate text-[var(--text-primary)] uppercase">
+            {product.name}
+          </span>
         </nav>
 
         {/* Main Grid: Media Rail & Purchase Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-14">
           {/* ========================================================= */}
           {/* LEFT COLUMN: Sticky Media Gallery                         */}
           {/* ========================================================= */}
-          <div className="lg:col-span-7 flex flex-col gap-4">
+          <div className="flex flex-col gap-4 lg:col-span-7">
             {/* Primary Main Viewport */}
-            <div className="relative aspect-[3/4] w-full bg-black/5 dark:bg-black overflow-hidden border border-[var(--border)] group">
+            <div className="group relative aspect-[3/4] w-full overflow-hidden border border-[var(--border)] bg-black/5 dark:bg-black">
               <Image
                 src={gallery[activeImageIdx]}
                 alt={`${product.name} in ${activeVariant.colorName}`}
@@ -513,13 +522,17 @@ export default function ProductDetailPage({ params }: PageProps) {
               />
 
               {/* Taxonomy Badges */}
-              <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5 pointer-events-none">
+              <div className="pointer-events-none absolute top-4 left-4 z-10 flex flex-col gap-1.5">
                 <Badge variant="volt" size="sm">
                   {`${product.discipline.toUpperCase()} // DIV.0${product.discipline === 'run' ? '1' : product.discipline === 'train' ? '2' : '3'}`}
                 </Badge>
                 {product.compareAtPrice && product.compareAtPrice > product.price && (
-                  <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase bg-[var(--text-primary)] text-[var(--bg)]">
-                    SAVE {Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}%
+                  <span className="bg-[var(--text-primary)] px-2 py-0.5 font-mono text-[10px] font-bold text-[var(--bg)] uppercase">
+                    SAVE{' '}
+                    {Math.round(
+                      ((product.compareAtPrice - product.price) / product.compareAtPrice) * 100,
+                    )}
+                    %
                   </span>
                 )}
               </div>
@@ -528,7 +541,7 @@ export default function ProductDetailPage({ params }: PageProps) {
               <button
                 type="button"
                 onClick={() => setIsZoomOpen(true)}
-                className="touch-target absolute bottom-4 right-4 z-10 w-11 h-11 flex items-center justify-center rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-black hover:border-white transition-[background-color,border-color,color,transform] duration-200 active:scale-[0.97]"
+                className="touch-target absolute right-4 bottom-4 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white backdrop-blur-md transition-[background-color,border-color,color,transform] duration-200 hover:border-white hover:bg-white hover:text-black active:scale-[0.97]"
                 aria-label="Open full resolution inspection"
               >
                 <MagnifyingGlassPlus size={20} weight="bold" />
@@ -537,7 +550,7 @@ export default function ProductDetailPage({ params }: PageProps) {
 
             {/* Thumbnail Strip */}
             {gallery.length > 1 && (
-              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-3">
+              <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 sm:gap-3">
                 {gallery.map((img, tIdx) => (
                   <button
                     key={img + tIdx}
@@ -565,30 +578,30 @@ export default function ProductDetailPage({ params }: PageProps) {
           {/* ========================================================= */}
           {/* RIGHT COLUMN: Specifications & Purchasing Architecture    */}
           {/* ========================================================= */}
-          <div className="lg:col-span-5 flex flex-col justify-start">
+          <div className="flex flex-col justify-start lg:col-span-5">
             {/* Header / Taxonomy */}
-            <div className="border-b border-[var(--border)] pb-6 mb-6">
-              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
+            <div className="mb-6 border-b border-[var(--border)] pb-6">
+              <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                 {`${product.gender.toUpperCase()}'S DIVISION // ${product.specsSummary}`}
               </span>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight font-heading text-[var(--text-primary)] mt-1">
+              <h1 className="font-heading mt-1 text-2xl font-black tracking-tight text-[var(--text-primary)] uppercase sm:text-3xl lg:text-4xl">
                 {product.name}
               </h1>
 
               {/* Price & Rating Row */}
               <div className="mt-3 flex items-center justify-between">
                 <div className="flex items-baseline gap-3">
-                  <span className="text-xl sm:text-2xl font-mono font-bold text-[var(--text-primary)]">
+                  <span className="font-mono text-xl font-bold text-[var(--text-primary)] sm:text-2xl">
                     {formatPrice(product.price)}
                   </span>
                   {product.compareAtPrice && product.compareAtPrice > product.price && (
-                    <span className="text-sm font-mono text-[var(--text-muted)] line-through">
+                    <span className="font-mono text-sm text-[var(--text-muted)] line-through">
                       {formatPrice(product.compareAtPrice)}
                     </span>
                   )}
                 </div>
 
-                <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--text-secondary)]">
+                <div className="flex items-center gap-1.5 font-mono text-xs text-[var(--text-secondary)]">
                   <div className="flex items-center text-amber-500">
                     <Star size={14} weight="fill" />
                   </div>
@@ -597,22 +610,26 @@ export default function ProductDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-4 leading-relaxed font-sans">
+              <p className="mt-4 font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm">
                 {product.headline}
               </p>
             </div>
 
             {/* Colorway Selection */}
             <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                   COLORWAY
                 </span>
-                <span className="text-xs font-mono text-[var(--text-secondary)] uppercase">
+                <span className="font-mono text-xs text-[var(--text-secondary)] uppercase">
                   {activeVariant.colorName}
                 </span>
               </div>
-              <div className="flex items-center gap-2.5" role="group" aria-label="Available colorways">
+              <div
+                className="flex items-center gap-2.5"
+                role="group"
+                aria-label="Available colorways"
+              >
                 {product.variants.map((v, idx) => (
                   <button
                     key={v.id}
@@ -622,13 +639,13 @@ export default function ProductDetailPage({ params }: PageProps) {
                       setActiveImageIdx(0);
                     }}
                     aria-label={`Select colorway ${v.colorName}`}
-                    className="touch-target p-1 -m-1 focus:outline-none"
+                    className="touch-target -m-1 p-1 focus:outline-none"
                   >
                     <span
-                      className={`block w-6 h-6 rounded-full border transition-[transform,border-color] duration-150 active:scale-[0.95] ${
+                      className={`block h-6 w-6 rounded-full border transition-[transform,border-color] duration-150 active:scale-[0.95] ${
                         idx === activeVariantIdx
-                          ? 'border-[var(--text-primary)] ring-2 ring-[var(--text-primary)] ring-offset-2 ring-offset-[var(--bg)] scale-110 shadow-sm'
-                          : 'border-black/20 dark:border-white/20 hover:border-[var(--text-primary)]'
+                          ? 'scale-110 border-[var(--text-primary)] shadow-sm ring-2 ring-[var(--text-primary)] ring-offset-2 ring-offset-[var(--bg)]'
+                          : 'border-black/20 hover:border-[var(--text-primary)] dark:border-white/20'
                       }`}
                       style={{ backgroundColor: v.colorHex }}
                     />
@@ -639,13 +656,13 @@ export default function ProductDetailPage({ params }: PageProps) {
 
             {/* Size Selector Matrix */}
             <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                   SELECT SIZE
                 </span>
                 <Link
                   href="/sizing"
-                  className="text-[11px] font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center gap-1 transition-colors underline"
+                  className="flex items-center gap-1 font-mono text-[11px] text-[var(--text-secondary)] underline transition-colors hover:text-[var(--text-primary)]"
                 >
                   <Ruler size={13} weight="bold" />
                   <span>SIZE & FIT GUIDE ↗</span>
@@ -661,12 +678,12 @@ export default function ProductDetailPage({ params }: PageProps) {
                       type="button"
                       disabled={disabled}
                       onClick={() => setSelectedSize(s)}
-                      className={`h-11 flex items-center justify-center font-mono text-xs font-bold uppercase transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] ${
+                      className={`flex h-11 items-center justify-center font-mono text-xs font-bold uppercase transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] ${
                         selectedSize === s
-                          ? 'bg-[var(--text-primary)] text-[var(--bg)] border border-[var(--text-primary)] shadow-sm'
+                          ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] shadow-sm'
                           : disabled
-                          ? 'bg-[var(--bg-elevated)]/30 text-[var(--text-muted)] border border-[var(--border)]/40 line-through cursor-not-allowed'
-                          : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border)] hover:border-[var(--text-primary)]'
+                            ? 'cursor-not-allowed border border-[var(--border)]/40 bg-[var(--bg-elevated)]/30 text-[var(--text-muted)] line-through'
+                            : 'border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:border-[var(--text-primary)]'
                       }`}
                     >
                       {s}
@@ -677,15 +694,15 @@ export default function ProductDetailPage({ params }: PageProps) {
             </div>
 
             {/* Quantity Selector & Action Cluster */}
-            <div className="space-y-3 mb-8">
+            <div className="mb-8 space-y-3">
               <div className="flex items-center gap-3">
                 {/* Quantity */}
-                <div className="flex items-center border border-[var(--border)] bg-[var(--bg-elevated)] h-12">
+                <div className="flex h-12 items-center border border-[var(--border)] bg-[var(--bg-elevated)]">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     aria-label="Decrease quantity"
-                    className="touch-target w-10 h-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm font-mono active:scale-[0.97]"
+                    className="touch-target flex h-full w-10 items-center justify-center font-mono text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                   >
                     -
                   </button>
@@ -696,7 +713,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     type="button"
                     onClick={() => setQuantity((q) => Math.min(10, q + 1))}
                     aria-label="Increase quantity"
-                    className="touch-target w-10 h-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm font-mono active:scale-[0.97]"
+                    className="touch-target flex h-full w-10 items-center justify-center font-mono text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                   >
                     +
                   </button>
@@ -707,7 +724,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                   type="button"
                   onClick={handleAddToCart}
                   disabled={isAdding}
-                  className="touch-target flex-1 h-12 bg-[var(--text-primary)] text-[var(--bg)] font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-[opacity,transform] duration-150 active:scale-[0.97] hover:opacity-95 shadow-md cursor-pointer"
+                  className="touch-target flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 bg-[var(--text-primary)] font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase shadow-md transition-[opacity,transform] duration-150 hover:opacity-95 active:scale-[0.97] sm:text-sm"
                 >
                   {isAdding ? (
                     <>
@@ -735,41 +752,49 @@ export default function ProductDetailPage({ params }: PageProps) {
                     image: activeVariant.primaryImage,
                   })
                 }
-                className="touch-target w-full h-11 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:border-[var(--text-primary)] transition-colors active:scale-[0.97]"
+                className="touch-target flex h-11 w-full items-center justify-center gap-2 border border-[var(--border)] bg-[var(--bg-elevated)] font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97]"
               >
-                <Heart size={16} weight={isWishlisted ? 'fill' : 'bold'} className={isWishlisted ? 'text-[var(--accent)]' : ''} />
+                <Heart
+                  size={16}
+                  weight={isWishlisted ? 'fill' : 'bold'}
+                  className={isWishlisted ? 'text-[var(--accent)]' : ''}
+                />
                 <span>{isWishlisted ? 'RETIRE FROM SAVED ARCHIVE' : 'ADD TO SAVED ARCHIVE'}</span>
               </button>
             </div>
 
             {/* Guarantee Callout Banner */}
-            <div className="p-4 bg-[var(--bg-surface)] border border-[var(--border)] space-y-2 mb-8">
-              <div className="flex items-center gap-2.5 text-xs font-mono text-[var(--text-secondary)]">
+            <div className="mb-8 space-y-2 border border-[var(--border)] bg-[var(--bg-surface)] p-4">
+              <div className="flex items-center gap-2.5 font-mono text-xs text-[var(--text-secondary)]">
                 <GlobeHemisphereWest size={16} className="text-[var(--accent)]" weight="bold" />
                 <span>COMPLIMENTARY EXPRESS DISPATCH OVER ₹150</span>
               </div>
-              <div className="flex items-center gap-2.5 text-xs font-mono text-[var(--text-secondary)]">
-                <ShieldCheck size={16} className="text-[#15803d] dark:text-[#22c55e]" weight="bold" />
+              <div className="flex items-center gap-2.5 font-mono text-xs text-[var(--text-secondary)]">
+                <ShieldCheck
+                  size={16}
+                  className="text-[#15803d] dark:text-[#22c55e]"
+                  weight="bold"
+                />
                 <span>30-DAY EXCHANGE TRIAL & FULL WARRANTY</span>
               </div>
             </div>
 
             {/* Technical Specifications Accordion */}
-            <div className="border-t border-[var(--border)] divide-y divide-[var(--border)]">
+            <div className="divide-y divide-[var(--border)] border-t border-[var(--border)]">
               {/* Accordion 1: Fabric & Textile */}
               <div>
                 <button
                   type="button"
                   onClick={() => toggleAccordion('materials')}
-                  className="touch-target w-full py-4 flex items-center justify-between text-left focus:outline-none"
+                  className="touch-target flex w-full items-center justify-between py-4 text-left focus:outline-none"
                 >
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                  <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                     01 // TEXTILE & MATERIAL ENGINEERING
                   </span>
                   <CaretDown
                     size={14}
                     weight="bold"
-                    className={`transition-transform duration-200 text-[var(--text-secondary)] ${
+                    className={`text-[var(--text-secondary)] transition-transform duration-200 ${
                       openAccordion === 'materials' ? 'rotate-180' : ''
                     }`}
                   />
@@ -781,22 +806,24 @@ export default function ProductDetailPage({ params }: PageProps) {
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2, ease: EMIL_EASE }}
-                      className="overflow-hidden pb-4 text-xs font-mono text-[var(--text-secondary)] space-y-2"
+                      className="space-y-2 overflow-hidden pb-4 font-mono text-xs text-[var(--text-secondary)]"
                     >
                       <p>
-                        <span className="text-[var(--text-primary)] font-bold">COMPOSITION:</span>{' '}
+                        <span className="font-bold text-[var(--text-primary)]">COMPOSITION:</span>{' '}
                         {product.fabricDetails.composition}
                       </p>
                       <p>
-                        <span className="text-[var(--text-primary)] font-bold">WEIGHT:</span>{' '}
+                        <span className="font-bold text-[var(--text-primary)]">WEIGHT:</span>{' '}
                         {product.fabricDetails.weightGsm} GSM Heavyweight Technical Spec
                       </p>
                       <p>
-                        <span className="text-[var(--text-primary)] font-bold">TECHNOLOGY:</span>{' '}
+                        <span className="font-bold text-[var(--text-primary)]">TECHNOLOGY:</span>{' '}
                         {product.fabricDetails.technology}
                       </p>
                       <p>
-                        <span className="text-[var(--text-primary)] font-bold">SURFACE FINISH:</span>{' '}
+                        <span className="font-bold text-[var(--text-primary)]">
+                          SURFACE FINISH:
+                        </span>{' '}
                         {product.fabricDetails.finish}
                       </p>
                     </motion.div>
@@ -809,15 +836,15 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <button
                   type="button"
                   onClick={() => toggleAccordion('biomechanics')}
-                  className="touch-target w-full py-4 flex items-center justify-between text-left focus:outline-none"
+                  className="touch-target flex w-full items-center justify-between py-4 text-left focus:outline-none"
                 >
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                  <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                     02 // ATHLETIC BIOMECHANICS & FIT
                   </span>
                   <CaretDown
                     size={14}
                     weight="bold"
-                    className={`transition-transform duration-200 text-[var(--text-secondary)] ${
+                    className={`text-[var(--text-secondary)] transition-transform duration-200 ${
                       openAccordion === 'biomechanics' ? 'rotate-180' : ''
                     }`}
                   />
@@ -829,7 +856,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2, ease: EMIL_EASE }}
-                      className="overflow-hidden pb-4 text-xs font-sans text-[var(--text-secondary)] leading-relaxed"
+                      className="overflow-hidden pb-4 font-sans text-xs leading-relaxed text-[var(--text-secondary)]"
                     >
                       {product.biomechanics}
                     </motion.div>
@@ -842,15 +869,15 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <button
                   type="button"
                   onClick={() => toggleAccordion('care')}
-                  className="touch-target w-full py-4 flex items-center justify-between text-left focus:outline-none"
+                  className="touch-target flex w-full items-center justify-between py-4 text-left focus:outline-none"
                 >
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                  <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                     03 // CARE & LONGEVITY PROTOCOL
                   </span>
                   <CaretDown
                     size={14}
                     weight="bold"
-                    className={`transition-transform duration-200 text-[var(--text-secondary)] ${
+                    className={`text-[var(--text-secondary)] transition-transform duration-200 ${
                       openAccordion === 'care' ? 'rotate-180' : ''
                     }`}
                   />
@@ -862,9 +889,9 @@ export default function ProductDetailPage({ params }: PageProps) {
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2, ease: EMIL_EASE }}
-                      className="overflow-hidden pb-4 text-xs font-mono text-[var(--text-secondary)]"
+                      className="overflow-hidden pb-4 font-mono text-xs text-[var(--text-secondary)]"
                     >
-                      <ul className="list-disc pl-5 space-y-1.5">
+                      <ul className="list-disc space-y-1.5 pl-5">
                         {product.careInstructions.map((instruction, idx) => (
                           <li key={idx}>{instruction}</li>
                         ))}
@@ -879,15 +906,15 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <button
                   type="button"
                   onClick={() => toggleAccordion('shipping')}
-                  className="touch-target w-full py-4 flex items-center justify-between text-left focus:outline-none"
+                  className="touch-target flex w-full items-center justify-between py-4 text-left focus:outline-none"
                 >
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                  <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                     04 // DISPATCH & WARRANTY GUARANTEE
                   </span>
                   <CaretDown
                     size={14}
                     weight="bold"
-                    className={`transition-transform duration-200 text-[var(--text-secondary)] ${
+                    className={`text-[var(--text-secondary)] transition-transform duration-200 ${
                       openAccordion === 'shipping' ? 'rotate-180' : ''
                     }`}
                   />
@@ -899,13 +926,15 @@ export default function ProductDetailPage({ params }: PageProps) {
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2, ease: EMIL_EASE }}
-                      className="overflow-hidden pb-4 text-xs font-sans text-[var(--text-secondary)] leading-relaxed space-y-2"
+                      className="space-y-2 overflow-hidden pb-4 font-sans text-xs leading-relaxed text-[var(--text-secondary)]"
                     >
                       <p>
-                        All hardware is dispatched via air freight directly from our central fulfillment depot. Orders before 14:00 EST depart same business day.
+                        All hardware is dispatched via air freight directly from our central
+                        fulfillment depot. Orders before 14:00 EST depart same business day.
                       </p>
                       <p>
-                        Complimentary exchanges and returns are supported for 30 calendar days provided items are unworn and tags remain intact.
+                        Complimentary exchanges and returns are supported for 30 calendar days
+                        provided items are unworn and tags remain intact.
                       </p>
                     </motion.div>
                   )}
@@ -918,25 +947,34 @@ export default function ProductDetailPage({ params }: PageProps) {
         {/* ========================================================= */}
         {/* ATHLETE REVIEWS SECTION                                   */}
         {/* ========================================================= */}
-        <section aria-labelledby="reviews-heading" className="mt-20 pt-12 border-t border-[var(--border)]">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+        <section
+          aria-labelledby="reviews-heading"
+          className="mt-20 border-t border-[var(--border)] pt-12"
+        >
+          <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <span className="text-[11px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+              <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                 FIELD REPORTS
               </span>
-              <h2 id="reviews-heading" className="text-2xl sm:text-3xl font-black uppercase font-heading text-[var(--text-primary)]">
-                VERIFIED ATHLETE REVIEWS ({liveReviews.length > 0 ? liveReviews.length : product.reviewCount})
+              <h2
+                id="reviews-heading"
+                className="font-heading text-2xl font-black text-[var(--text-primary)] uppercase sm:text-3xl"
+              >
+                VERIFIED ATHLETE REVIEWS (
+                {liveReviews.length > 0 ? liveReviews.length : product.reviewCount})
               </h2>
             </div>
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-mono font-bold text-[var(--text-primary)]">{product.rating}</span>
+                <span className="font-mono text-2xl font-bold text-[var(--text-primary)]">
+                  {product.rating}
+                </span>
                 <div className="flex text-amber-500">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} size={16} weight="fill" />
                   ))}
                 </div>
-                <span className="text-xs font-mono text-[var(--text-muted)]">BENCHMARK</span>
+                <span className="font-mono text-xs text-[var(--text-muted)]">BENCHMARK</span>
               </div>
 
               <button
@@ -948,7 +986,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     setIsReviewFormOpen(!isReviewFormOpen);
                   }
                 }}
-                className="py-2.5 px-4 bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-primary)] text-xs font-mono font-bold uppercase tracking-wider transition-colors min-h-[44px]"
+                className="min-h-[44px] border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--accent)]"
               >
                 {isReviewFormOpen ? 'CANCEL REVIEW' : '+ WRITE REPORT'}
               </button>
@@ -957,44 +995,59 @@ export default function ProductDetailPage({ params }: PageProps) {
 
           {/* Collapsible Review Submission Form */}
           {isReviewFormOpen && (
-            <form onSubmit={handleReviewSubmit} className="mb-8 p-6 bg-[var(--bg-surface)] border border-[var(--border)] space-y-4">
-              <h3 className="text-xs font-heading font-bold uppercase text-[var(--text-primary)] tracking-wider">
+            <form
+              onSubmit={handleReviewSubmit}
+              className="mb-8 space-y-4 border border-[var(--border)] bg-[var(--bg-surface)] p-6"
+            >
+              <h3 className="font-heading text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                 SUBMIT FIELD PERFORMANCE REPORT
               </h3>
               {reviewError && (
-                <div role="alert" className="p-2.5 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-mono">
+                <div
+                  role="alert"
+                  className="border border-red-500/30 bg-red-500/10 p-2.5 font-mono text-xs text-red-500"
+                >
                   {reviewError}
                 </div>
               )}
               {reviewSuccess && (
-                <div role="status" className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-xs font-mono">
+                <div
+                  role="status"
+                  className="border border-emerald-500/30 bg-emerald-500/10 p-2.5 font-mono text-xs text-emerald-500"
+                >
                   Report verified and logged to product telemetry.
                 </div>
               )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <span className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                  <span className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase">
                     PERFORMANCE RATING (1-5 STARS)
                   </span>
                   <div className="flex items-center gap-1.5 py-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setReviewRating(star)}
-                        className="touch-target min-w-[44px] min-h-[44px] flex items-center justify-center text-amber-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                        aria-label={`Rate ${star} stars`}
-                      >
-                        <Star size={20} weight={star <= reviewRating ? 'fill' : 'regular'} />
-                      </button>
-                    ))}
-                    <span className="ml-2 text-xs font-mono font-bold text-[var(--text-primary)]">
+                    {[1, 2, 3, 4, 5].map((star) => {
+                      /* prettier-ignore */
+                      return (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setReviewRating(star)}
+                          className="touch-target flex min-w-[44px] min-h-[44px] items-center justify-center text-amber-500 focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none"
+                          aria-label={`Rate ${star} stars`}
+                        >
+                          <Star size={20} weight={star <= reviewRating ? 'fill' : 'regular'} />
+                        </button>
+                      );
+                    })}
+                    <span className="ml-2 font-mono text-xs font-bold text-[var(--text-primary)]">
                       {reviewRating} / 5
                     </span>
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="review-author" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                  <label
+                    htmlFor="review-author"
+                    className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                  >
                     ATHLETE CALLSIGN / NAME
                   </label>
                   <input
@@ -1003,13 +1056,16 @@ export default function ProductDetailPage({ params }: PageProps) {
                     placeholder={customerUser?.name || 'e.g. Kai N.'}
                     value={reviewAuthor}
                     onChange={(e) => setReviewAuthor(e.target.value)}
-                    className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
+                    className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="review-title" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                <label
+                  htmlFor="review-title"
+                  className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                >
                   REPORT HEADLINE / TITLE *
                 </label>
                 <input
@@ -1019,12 +1075,15 @@ export default function ProductDetailPage({ params }: PageProps) {
                   placeholder="e.g. Exceptional thermal regulation during 15K trail run"
                   value={reviewTitle}
                   onChange={(e) => setReviewTitle(e.target.value)}
-                  className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
+                  className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                 />
               </div>
 
               <div>
-                <label htmlFor="review-body" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                <label
+                  htmlFor="review-body"
+                  className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                >
                   FIELD OBSERVATIONS / REVIEW CONTENT *
                 </label>
                 <textarea
@@ -1034,27 +1093,34 @@ export default function ProductDetailPage({ params }: PageProps) {
                   placeholder="Describe fit, abrasion resistance, moisture regulation, and biomechanics in the field..."
                   value={reviewBody}
                   onChange={(e) => setReviewBody(e.target.value)}
-                  className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                  className="w-full border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={reviewSubmitting}
-                className="py-3 px-6 bg-[var(--accent)] text-black dark:text-black font-mono font-bold text-xs uppercase tracking-wider transition-transform active:scale-[0.97] disabled:opacity-50 min-h-[48px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                className="min-h-[48px] bg-[var(--accent)] px-6 py-3 font-mono text-xs font-bold tracking-wider text-black uppercase transition-transform focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none active:scale-[0.97] disabled:opacity-50 dark:text-black"
               >
                 {reviewSubmitting ? 'DISPATCHING REPORT...' : 'TRANSMIT REVIEW TO ARCHIVE'}
               </button>
             </form>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
             {(liveReviews.length > 0 ? liveReviews : product.reviews).map((rev) => (
-              <div key={rev.id} className="p-5 bg-[var(--bg-surface)] border border-[var(--border)] space-y-3">
+              <div
+                key={rev.id}
+                className="space-y-3 border border-[var(--border)] bg-[var(--bg-surface)] p-5"
+              >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-mono font-bold text-[var(--text-primary)]">{rev.author}</span>
-                    <span className="text-[10px] font-mono text-[var(--text-muted)] ml-2">[{rev.discipline}]</span>
+                    <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
+                      {rev.author}
+                    </span>
+                    <span className="ml-2 font-mono text-[10px] text-[var(--text-muted)]">
+                      [{rev.discipline}]
+                    </span>
                   </div>
                   <div className="flex text-amber-500">
                     {[...Array(rev.rating)].map((_, i) => (
@@ -1062,9 +1128,13 @@ export default function ProductDetailPage({ params }: PageProps) {
                     ))}
                   </div>
                 </div>
-                <h3 className="text-xs font-heading font-bold uppercase text-[var(--text-primary)]">{rev.title}</h3>
-                <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed">{rev.content}</p>
-                <div className="pt-2 border-t border-[var(--border)] flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
+                <h3 className="font-heading text-xs font-bold text-[var(--text-primary)] uppercase">
+                  {rev.title}
+                </h3>
+                <p className="font-sans text-xs leading-relaxed text-[var(--text-secondary)]">
+                  {rev.content}
+                </p>
+                <div className="flex items-center justify-between border-t border-[var(--border)] pt-2 font-mono text-[10px] text-[var(--text-muted)]">
                   <span>VERIFIED ORDER</span>
                   <span>{rev.date}</span>
                 </div>
@@ -1077,45 +1147,51 @@ export default function ProductDetailPage({ params }: PageProps) {
         {/* RELATED COMPANIONS SECTION                                */}
         {/* ========================================================= */}
         {related.length > 0 && (
-          <section aria-labelledby="related-heading" className="mt-20 pt-12 border-t border-[var(--border)]">
-            <div className="flex items-center justify-between mb-8">
+          <section
+            aria-labelledby="related-heading"
+            className="mt-20 border-t border-[var(--border)] pt-12"
+          >
+            <div className="mb-8 flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+                <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                   COMPLEMENTARY GEAR
                 </span>
-                <h2 id="related-heading" className="text-2xl sm:text-3xl font-black uppercase font-heading text-[var(--text-primary)]">
+                <h2
+                  id="related-heading"
+                  className="font-heading text-2xl font-black text-[var(--text-primary)] uppercase sm:text-3xl"
+                >
                   ENGINEERED COMPANIONS
                 </h2>
               </div>
               <Link
                 href="/products"
-                className="text-xs font-mono font-bold uppercase text-[var(--text-primary)] hover:text-[var(--text-secondary)] flex items-center gap-1"
+                className="flex items-center gap-1 font-mono text-xs font-bold text-[var(--text-primary)] uppercase hover:text-[var(--text-secondary)]"
               >
                 <span>VIEW ARCHIVE</span>
                 <ArrowRight size={14} weight="bold" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {related.map((item) => (
                 <Link
                   key={item.id}
                   href={`/products/${item.slug}`}
-                  className="group flex flex-col bg-[var(--bg-surface)] border border-[var(--border)] hover:border-[var(--text-primary)] transition-colors p-2 sm:p-3"
+                  className="group flex flex-col border border-[var(--border)] bg-[var(--bg-surface)] p-2 transition-colors hover:border-[var(--text-primary)] sm:p-3"
                 >
-                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/5 dark:bg-black mb-2">
+                  <div className="relative mb-2 aspect-[3/4] w-full overflow-hidden bg-black/5 dark:bg-black">
                     <Image
                       src={item.variants[0]?.primaryImage || '/products/image-4-1.jpg'}
                       alt={item.name}
                       fill
                       sizes="25vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
-                  <h3 className="text-xs font-heading font-bold uppercase text-[var(--text-primary)] truncate">
+                  <h3 className="font-heading truncate text-xs font-bold text-[var(--text-primary)] uppercase">
                     {item.name}
                   </h3>
-                  <span className="text-[11px] font-mono text-[var(--text-secondary)] mt-1">
+                  <span className="mt-1 font-mono text-[11px] text-[var(--text-secondary)]">
                     {formatPrice(item.price)}
                   </span>
                 </Link>

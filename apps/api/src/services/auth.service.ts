@@ -15,7 +15,10 @@ function getJwtSecret(): string {
     throw new AppError('Server configuration error: JWT secret is invalid or not configured', 500);
   }
   if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-    throw new AppError('Server configuration error: JWT_SECRET environment variable is missing in production', 500);
+    throw new AppError(
+      'Server configuration error: JWT_SECRET environment variable is missing in production',
+      500,
+    );
   }
   return secret;
 }
@@ -23,10 +26,16 @@ function getJwtSecret(): string {
 function getJwtRefreshSecret(): string {
   const secret = process.env.JWT_REFRESH_SECRET || env.JWT_REFRESH_SECRET;
   if (!secret || secret === 'secret') {
-    throw new AppError('Server configuration error: JWT refresh secret is invalid or not configured', 500);
+    throw new AppError(
+      'Server configuration error: JWT refresh secret is invalid or not configured',
+      500,
+    );
   }
   if (process.env.NODE_ENV === 'production' && !process.env.JWT_REFRESH_SECRET) {
-    throw new AppError('Server configuration error: JWT_REFRESH_SECRET environment variable is missing in production', 500);
+    throw new AppError(
+      'Server configuration error: JWT_REFRESH_SECRET environment variable is missing in production',
+      500,
+    );
   }
   return secret;
 }
@@ -41,14 +50,10 @@ export function signAccessToken(payload: { _id: string; email: string; role: str
 
 export function signRefreshToken(payload: { _id: string; familyId: string }): string {
   const secret = getJwtRefreshSecret();
-  return jwt.sign(
-    { ...payload, jti: crypto.randomUUID() },
-    secret,
-    {
-      algorithm: 'HS256',
-      expiresIn: process.env.JWT_REFRESH_EXPIRE || '30d',
-    } as jwt.SignOptions,
-  );
+  return jwt.sign({ ...payload, jti: crypto.randomUUID() }, secret, {
+    algorithm: 'HS256',
+    expiresIn: process.env.JWT_REFRESH_EXPIRE || '30d',
+  } as jwt.SignOptions);
 }
 
 export class AuthService {
@@ -145,7 +150,10 @@ export class AuthService {
     const secret = getJwtRefreshSecret();
     let decoded: { _id: string; familyId: string };
     try {
-      decoded = jwt.verify(token, secret, { algorithms: ['HS256'] }) as { _id: string; familyId: string };
+      decoded = jwt.verify(token, secret, { algorithms: ['HS256'] }) as {
+        _id: string;
+        familyId: string;
+      };
     } catch {
       const revoked = await RefreshToken.findOne({ tokenHash, isRevoked: true });
       if (revoked) {
@@ -185,7 +193,10 @@ export class AuthService {
       email: user.email,
       role: user.role,
     });
-    const newRefreshToken = signRefreshToken({ _id: String(user._id), familyId: updatedRecord.familyId });
+    const newRefreshToken = signRefreshToken({
+      _id: String(user._id),
+      familyId: updatedRecord.familyId,
+    });
 
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await RefreshToken.create({
@@ -229,7 +240,8 @@ export class AuthService {
     if (!user) {
       return {
         success: true,
-        message: 'If an account with that email exists, password reset instructions have been sent.',
+        message:
+          'If an account with that email exists, password reset instructions have been sent.',
       };
     }
 

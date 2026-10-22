@@ -7,7 +7,16 @@ import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
 import { calculateCartMetrics } from '@vertex/types';
-import { X, Minus, Plus, Trash, ShieldCheck, ArrowRight, CheckCircle, MapPin } from '@phosphor-icons/react';
+import {
+  X,
+  Minus,
+  Plus,
+  Trash,
+  ShieldCheck,
+  ArrowRight,
+  CheckCircle,
+  MapPin,
+} from '@phosphor-icons/react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { EMIL_EASE } from '@/lib/motion';
@@ -62,15 +71,16 @@ export function CartDrawer() {
 
   useEffect(() => {
     let isMounted = true;
+    /* prettier-ignore */
     api.get<{
-      success: boolean;
-      data: {
-        freeShippingThreshold: number;
-        standardShippingFee: number;
-        taxRate: number;
-        currency: string;
-      };
-    }>('/settings')
+        success: boolean;
+        data: {
+          freeShippingThreshold: number;
+          standardShippingFee: number;
+          taxRate: number;
+          currency: string;
+        };
+      }>('/settings')
       .then((res) => {
         const data = res?.data;
         if (isMounted && data?.freeShippingThreshold !== undefined) {
@@ -306,7 +316,11 @@ export function CartDrawer() {
           let failureDesc: string | undefined;
           if (typeof resp === 'object' && resp !== null && 'error' in resp) {
             const maybeError = Reflect.get(resp, 'error');
-            if (typeof maybeError === 'object' && maybeError !== null && 'description' in maybeError) {
+            if (
+              typeof maybeError === 'object' &&
+              maybeError !== null &&
+              'description' in maybeError
+            ) {
               const maybeDesc = Reflect.get(maybeError, 'description');
               if (typeof maybeDesc === 'string') {
                 failureDesc = maybeDesc;
@@ -538,45 +552,60 @@ export function CartDrawer() {
             {items.length > 0 && (
               <div className="space-y-4 border-t border-[var(--border)] bg-[var(--bg-surface)] p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
                 {/* Shipping Address Form Section */}
-                <div className="border border-[var(--border)] bg-[var(--bg-elevated)] p-3.5 space-y-3">
+                <div className="space-y-3 border border-[var(--border)] bg-[var(--bg-elevated)] p-3.5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase flex items-center gap-1.5">
+                      <span className="flex items-center gap-1.5 font-mono text-[10px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                         <MapPin size={12} weight="bold" />
                         <span>DISPATCH DESTINATION</span>
                       </span>
-                      <h4 className="text-xs font-heading font-bold uppercase text-[var(--text-primary)] mt-0.5">
+                      <h4 className="font-heading mt-0.5 text-xs font-bold text-[var(--text-primary)] uppercase">
                         SHIPPING ADDRESS
                       </h4>
                     </div>
                     <button
                       type="button"
                       onClick={() => setShowAddressForm(!showAddressForm)}
-                      className="text-[11px] font-mono font-bold text-[var(--text-primary)] hover:text-[var(--accent)] underline min-h-[44px] min-w-[44px] inline-flex items-center px-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                      className="inline-flex min-h-[44px] min-w-[44px] items-center px-1 font-mono text-[11px] font-bold text-[var(--text-primary)] underline hover:text-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none"
                     >
                       {showAddressForm ? 'CLOSE' : shippingAddress.line1 ? 'EDIT' : '+ ADD ADDRESS'}
                     </button>
                   </div>
 
                   {!showAddressForm && shippingAddress.line1 ? (
-                    <div className="text-xs font-mono text-[var(--text-secondary)] space-y-0.5 bg-[var(--bg)] p-2.5 border border-[var(--border)]">
-                      <p className="font-bold text-[var(--text-primary)]">{shippingAddress.fullName}</p>
-                      <p>{shippingAddress.line1}{shippingAddress.line2 ? `, ${shippingAddress.line2}` : ''}</p>
-                      <p>{shippingAddress.city}, {shippingAddress.state} {shippingAddress.postalCode}</p>
-                      <p className="text-[10px] text-[var(--text-muted)]">PHONE: {shippingAddress.phone}</p>
+                    <div className="space-y-0.5 border border-[var(--border)] bg-[var(--bg)] p-2.5 font-mono text-xs text-[var(--text-secondary)]">
+                      <p className="font-bold text-[var(--text-primary)]">
+                        {shippingAddress.fullName}
+                      </p>
+                      <p>
+                        {shippingAddress.line1}
+                        {shippingAddress.line2 ? `, ${shippingAddress.line2}` : ''}
+                      </p>
+                      <p>
+                        {shippingAddress.city}, {shippingAddress.state} {shippingAddress.postalCode}
+                      </p>
+                      <p className="text-[10px] text-[var(--text-muted)]">
+                        PHONE: {shippingAddress.phone}
+                      </p>
                     </div>
                   ) : null}
 
                   {showAddressForm && (
-                    <div className="space-y-2.5 pt-1 border-t border-[var(--border)]">
+                    <div className="space-y-2.5 border-t border-[var(--border)] pt-1">
                       {addressError && (
-                        <div role="alert" className="p-2 bg-red-500/10 border border-red-500/30 text-red-500 text-[11px] font-mono">
+                        <div
+                          role="alert"
+                          className="border border-red-500/30 bg-red-500/10 p-2 font-mono text-[11px] text-red-500"
+                        >
                           {addressError}
                         </div>
                       )}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                         <div>
-                          <label htmlFor="shipping-fullName" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label
+                            htmlFor="shipping-fullName"
+                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                          >
                             FULL NAME *
                           </label>
                           <input
@@ -589,11 +618,14 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, fullName: e.target.value });
                             }}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                         <div>
-                          <label htmlFor="shipping-phone" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label
+                            htmlFor="shipping-phone"
+                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                          >
                             PHONE NUMBER *
                           </label>
                           <input
@@ -606,13 +638,16 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, phone: e.target.value });
                             }}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label htmlFor="shipping-line1" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                        <label
+                          htmlFor="shipping-line1"
+                          className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                        >
                           STREET ADDRESS *
                         </label>
                         <input
@@ -625,12 +660,15 @@ export function CartDrawer() {
                             setAddressError(null);
                             setShippingAddress({ ...shippingAddress, line1: e.target.value });
                           }}
-                          className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
+                          className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="shipping-line2" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                        <label
+                          htmlFor="shipping-line2"
+                          className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                        >
                           APARTMENT, SUITE, ETC. (OPTIONAL)
                         </label>
                         <input
@@ -638,14 +676,19 @@ export function CartDrawer() {
                           type="text"
                           placeholder="Apartment, unit, floor"
                           value={shippingAddress.line2}
-                          onChange={(e) => setShippingAddress({ ...shippingAddress, line2: e.target.value })}
-                          className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
+                          onChange={(e) =>
+                            setShippingAddress({ ...shippingAddress, line2: e.target.value })
+                          }
+                          className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                         />
                       </div>
 
                       <div className="grid grid-cols-3 gap-2">
                         <div className="col-span-1">
-                          <label htmlFor="shipping-city" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label
+                            htmlFor="shipping-city"
+                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                          >
                             CITY *
                           </label>
                           <input
@@ -658,11 +701,14 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, city: e.target.value });
                             }}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                         <div className="col-span-1">
-                          <label htmlFor="shipping-state" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label
+                            htmlFor="shipping-state"
+                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                          >
                             STATE
                           </label>
                           <input
@@ -670,12 +716,17 @@ export function CartDrawer() {
                             type="text"
                             placeholder="State"
                             value={shippingAddress.state}
-                            onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
+                            onChange={(e) =>
+                              setShippingAddress({ ...shippingAddress, state: e.target.value })
+                            }
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                         <div className="col-span-1">
-                          <label htmlFor="shipping-postalCode" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label
+                            htmlFor="shipping-postalCode"
+                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                          >
                             PIN CODE *
                           </label>
                           <input
@@ -686,9 +737,12 @@ export function CartDrawer() {
                             value={shippingAddress.postalCode}
                             onChange={(e) => {
                               setAddressError(null);
-                              setShippingAddress({ ...shippingAddress, postalCode: e.target.value });
+                              setShippingAddress({
+                                ...shippingAddress,
+                                postalCode: e.target.value,
+                              });
                             }}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                       </div>

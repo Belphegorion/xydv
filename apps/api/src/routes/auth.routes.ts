@@ -54,16 +54,9 @@ router.post(
 );
 
 // POST /api/auth/logout — Invalidate refresh token and clear cookie
-router.post(
-  '/logout',
-  authController.logout.bind(authController),
-);
+router.post('/logout', authController.logout.bind(authController));
 
 // GET /api/auth/me — Get authenticated user
-router.get(
-  '/me',
-  requireAuth,
-  authController.me.bind(authController),
-);
+router.get('/me', requireAuth, authController.me.bind(authController));
 
 export default router;

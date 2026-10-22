@@ -66,4 +66,3 @@ export interface AnalyticsData {
   orderStatusDistribution: Array<{ status: string; count: number }>;
   topSellingProducts: Array<{ id: string; name: string; quantity: number; revenue: number }>;
 }
-

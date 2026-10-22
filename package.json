@@ -15,7 +15,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,json,css,md}\"",
     "type-check": "turbo type-check",
     "seed:admin": "npm run seed:admin --workspace=@vertex/api",
-    "test": "node tests/runner.mjs && node --test tests/batch1-security-dependencies-secrets.test.mjs tests/batch2-money-payments-gateway.test.mjs tests/batch3-dataflow-static-mocks.test.mjs tests/batch4-dynamic-categories.test.mjs tests/batch5-customer-auth-checkout.test.mjs tests/batch6-telemetry-reviews.test.mjs tests/batch8-a11y-perf-polish.test.mjs tests/batch9-admin-ux-forms.test.mjs tests/m3-empirical-design-system-challenge.test.mjs tests/collection-showcase.test.mjs tests/loading-screens.test.mjs tests/boundary-stress.test.mjs tests/brand-assets-tab-icons.test.mjs tests/navbar-scroll-transparency.test.mjs tests/new-routes-verification.test.mjs tests/admin-panel-verification.test.mjs tests/backend-audit-remediation.test.mjs"
+    "test": "node tests/runner.mjs && node --test tests/batch1-security-dependencies-secrets.test.mjs tests/batch2-money-payments-gateway.test.mjs tests/batch3-dataflow-static-mocks.test.mjs tests/batch4-dynamic-categories.test.mjs tests/batch5-customer-auth-checkout.test.mjs tests/batch6-telemetry-reviews.test.mjs tests/batch8-a11y-perf-polish.test.mjs tests/batch9-admin-ux-forms.test.mjs tests/batch10-code-style-repo-clean.test.mjs tests/m3-empirical-design-system-challenge.test.mjs tests/collection-showcase.test.mjs tests/loading-screens.test.mjs tests/boundary-stress.test.mjs tests/brand-assets-tab-icons.test.mjs tests/navbar-scroll-transparency.test.mjs tests/new-routes-verification.test.mjs tests/admin-panel-verification.test.mjs tests/backend-audit-remediation.test.mjs"
   },
   "devDependencies": {
     "turbo": "^2.5.4",

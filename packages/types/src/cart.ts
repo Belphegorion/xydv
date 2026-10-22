@@ -69,7 +69,10 @@ export function calculateCartMetrics(
   );
   const isFreeShipping = subtotal >= rules.freeShippingThreshold;
   const shipping = items.length === 0 ? 0 : isFreeShipping ? 0 : rules.standardShippingFee;
-  const freeShippingDelta = Math.max(0, Number((rules.freeShippingThreshold - subtotal).toFixed(2)));
+  const freeShippingDelta = Math.max(
+    0,
+    Number((rules.freeShippingThreshold - subtotal).toFixed(2)),
+  );
   const freeShippingProgress = Math.min(
     100,
     Number(((subtotal / rules.freeShippingThreshold) * 100).toFixed(1)),
@@ -89,4 +92,3 @@ export function calculateCartMetrics(
     freeShippingProgress,
   };
 }
-

@@ -35,14 +35,14 @@ describe('Loading Screens Brand Assets & Architectural Contracts', () => {
       const stat = fs.statSync(fullPath);
       assert.ok(stat.size > 1000, `Asset ${imgName} must have non-zero content (>1KB)`);
       const buf = fs.readFileSync(fullPath);
-      assert.equal(buf.readUInt32BE(0), 0x89504E47, `Asset ${imgName} must be a valid PNG`);
+      assert.equal(buf.readUInt32BE(0), 0x89504e47, `Asset ${imgName} must be a valid PNG`);
     }
   });
 
   it('2. LoadingSymbol cleanly implements dual-theme static image switching', () => {
     const symbolSrc = fs.readFileSync(
       path.join(webSrcDir, 'components', 'ui', 'LoadingSymbol.tsx'),
-      'utf-8'
+      'utf-8',
     );
 
     // Light Mode references
@@ -64,7 +64,7 @@ describe('Loading Screens Brand Assets & Architectural Contracts', () => {
   it('3. InitialLoadingScreen implements progress bar, telemetry, and smooth unmount', () => {
     const initialSrc = fs.readFileSync(
       path.join(webSrcDir, 'components', 'ui', 'InitialLoadingScreen.tsx'),
-      'utf-8'
+      'utf-8',
     );
 
     assert.match(initialSrc, /<LoadingSymbol/);
@@ -104,11 +104,20 @@ describe('Loading Screens Brand Assets & Architectural Contracts', () => {
 
     for (const file of files) {
       const content = fs.readFileSync(file, 'utf-8');
-      assert.ok(!content.includes('scale: 0,') && !content.includes('scale(0)'), `${file} must not contain scale(0)`);
-      assert.ok(!content.includes('transition-all duration-'), `${file} must not contain transition-all duration-`);
+      assert.ok(
+        !content.includes('scale: 0,') && !content.includes('scale(0)'),
+        `${file} must not contain scale(0)`,
+      );
+      assert.ok(
+        !content.includes('transition-all duration-'),
+        `${file} must not contain transition-all duration-`,
+      );
 
       for (const banned of bannedColors) {
-        assert.ok(!content.toUpperCase().includes(banned), `${file} must not contain banned AI color ${banned}`);
+        assert.ok(
+          !content.toUpperCase().includes(banned),
+          `${file} must not contain banned AI color ${banned}`,
+        );
       }
     }
   });
@@ -133,7 +142,7 @@ describe('Loading Screens Brand Assets & Architectural Contracts', () => {
   it('8. WCAG 2.1 AA screen reader protection and progressbar semantic contracts', () => {
     const initialSrc = fs.readFileSync(
       path.join(webSrcDir, 'components', 'ui', 'InitialLoadingScreen.tsx'),
-      'utf-8'
+      'utf-8',
     );
     const loadingSrc = fs.readFileSync(path.join(webSrcDir, 'app', 'loading.tsx'), 'utf-8');
 
@@ -152,7 +161,14 @@ describe('Loading Screens Brand Assets & Architectural Contracts', () => {
 
   it('9. GPU composited transform performance (no layout-thrashing left animations)', () => {
     const loadingSrc = fs.readFileSync(path.join(webSrcDir, 'app', 'loading.tsx'), 'utf-8');
-    assert.ok(!loadingSrc.includes("left: ['-35%', '100%']"), 'loading.tsx must not animate left property to avoid reflows');
-    assert.match(loadingSrc, /x:\s*\['-100%',\s*'300%'\]/, 'loading.tsx must use GPU-composited x transform');
+    assert.ok(
+      !loadingSrc.includes("left: ['-35%', '100%']"),
+      'loading.tsx must not animate left property to avoid reflows',
+    );
+    assert.match(
+      loadingSrc,
+      /x:\s*\['-100%',\s*'300%'\]/,
+      'loading.tsx must use GPU-composited x transform',
+    );
   });
 });

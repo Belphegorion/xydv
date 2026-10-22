@@ -2,7 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import mongoose from 'mongoose';
 import slugify from 'slugify';
-import { Product, type IProduct, type IProductVariant, type IProductImage } from '../models/Product.model';
+import {
+  Product,
+  type IProduct,
+  type IProductVariant,
+  type IProductImage,
+} from '../models/Product.model';
 import { Order, type OrderStatus } from '../models/Order.model';
 import { User } from '../models/User.model';
 import { Category } from '../models/Category.model';
@@ -85,7 +90,15 @@ export class AdminService {
     page?: string;
     limit?: string;
   }) {
-    const { search, category, inStock, lowStock, sort = 'newest', page = '1', limit = '20' } = params;
+    const {
+      search,
+      category,
+      inStock,
+      lowStock,
+      sort = 'newest',
+      page = '1',
+      limit = '20',
+    } = params;
     const filter: Record<string, unknown> = {};
 
     if (category && category !== 'all') {
@@ -231,12 +244,15 @@ export class AdminService {
 
     // Orphan asset cleanup on edit (PIPE-HIGH-04)
     if (data.images && Array.isArray(data.images)) {
-      const newUrls = new Set(
-        data.images.map((img) => (typeof img === 'string' ? img : img?.url)),
-      );
+      const newUrls = new Set(data.images.map((img) => (typeof img === 'string' ? img : img?.url)));
       if (existingProduct.images && Array.isArray(existingProduct.images)) {
         for (const oldImg of existingProduct.images) {
-          const oldUrl = typeof oldImg === 'string' ? oldImg : (typeof oldImg === 'object' && oldImg !== null ? (oldImg as IProductImage).url : undefined);
+          const oldUrl =
+            typeof oldImg === 'string'
+              ? oldImg
+              : typeof oldImg === 'object' && oldImg !== null
+                ? (oldImg as IProductImage).url
+                : undefined;
           if (oldUrl && oldUrl.includes('/uploads/') && !newUrls.has(oldUrl)) {
             const filename = path.basename(oldUrl);
             const localPath = path.join(UPLOADS_DIR, filename);
@@ -291,7 +307,12 @@ export class AdminService {
     const imageUrlsToClean = new Set<string>();
     if (product.images && Array.isArray(product.images)) {
       for (const img of product.images) {
-        const imgUrl = typeof img === 'string' ? img : (typeof img === 'object' && img !== null ? (img as IProductImage).url : undefined);
+        const imgUrl =
+          typeof img === 'string'
+            ? img
+            : typeof img === 'object' && img !== null
+              ? (img as IProductImage).url
+              : undefined;
         if (imgUrl) imageUrlsToClean.add(imgUrl);
       }
     }
@@ -353,9 +374,7 @@ export class AdminService {
   > {
     const [categories, productCounts] = await Promise.all([
       Category.find().sort({ name: 1 }).lean(),
-      Product.aggregate([
-        { $group: { _id: { $toLower: '$category' }, count: { $sum: 1 } } },
-      ]),
+      Product.aggregate([{ $group: { _id: { $toLower: '$category' }, count: { $sum: 1 } } }]),
     ]);
 
     const countMap = new Map<string, number>();
@@ -574,17 +593,33 @@ export class AdminService {
     if (!mongoose.isValidObjectId(id)) {
       throw new AppError('Order not found', 404);
     }
-    const order = await Order.findById(id).select('-razorpaySignature').populate('userId', 'name email role').lean();
+    const order = await Order.findById(id)
+      .select('-razorpaySignature')
+      .populate('userId', 'name email role')
+      .lean();
     if (!order) throw new AppError('Order not found', 404);
     return order;
   }
 
-  async updateOrderStatus(id: string, status: string, trackingNumber?: string, adminId?: string, ip?: string) {
+  async updateOrderStatus(
+    id: string,
+    status: string,
+    trackingNumber?: string,
+    adminId?: string,
+    ip?: string,
+  ) {
     if (!mongoose.isValidObjectId(id)) {
       throw new AppError('Order not found', 404);
     }
 
-    const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+    const validStatuses = [
+      'pending',
+      'confirmed',
+      'processing',
+      'shipped',
+      'delivered',
+      'cancelled',
+    ];
     if (!status || !validStatuses.includes(status)) {
       throw new AppError(
         'Invalid order status. Must be pending, confirmed, processing, shipped, delivered, or cancelled.',
@@ -703,7 +738,10 @@ export class AdminService {
     }
 
     const currentRefunded = order.refundAmount || 0;
-    const remainingRefundable = Math.max(0, Math.round((order.total - currentRefunded) * 100) / 100);
+    const remainingRefundable = Math.max(
+      0,
+      Math.round((order.total - currentRefunded) * 100) / 100,
+    );
 
     if (remainingRefundable <= 0) {
       throw new AppError('This order has already been fully refunded', 400);
@@ -722,8 +760,7 @@ export class AdminService {
     }
 
     const isFullRefund =
-      Math.round((currentRefunded + refundAmountToIssue) * 100) >=
-      Math.round(order.total * 100);
+      Math.round((currentRefunded + refundAmountToIssue) * 100) >= Math.round(order.total * 100);
 
     // Atomic lock to prevent concurrent double-refunds (SEC-05)
     const locked = await Order.findOneAndUpdate(
@@ -910,10 +947,7 @@ export class AdminService {
           },
         ],
         totalCount: [{ $count: 'count' }],
-        lowStockCount: [
-          { $match: { 'variants.stock': { $lte: threshold } } },
-          { $count: 'count' },
-        ],
+        lowStockCount: [{ $match: { 'variants.stock': { $lte: threshold } } }, { $count: 'count' }],
       },
     });
 
@@ -932,7 +966,13 @@ export class AdminService {
     };
   }
 
-  async updateVariantStock(productId: string, sku: string, stock: number, adminId?: string, ip?: string) {
+  async updateVariantStock(
+    productId: string,
+    sku: string,
+    stock: number,
+    adminId?: string,
+    ip?: string,
+  ) {
     if (!mongoose.isValidObjectId(productId)) {
       throw new AppError('Product not found', 404);
     }
@@ -1113,7 +1153,9 @@ export class AdminService {
 
     if (!user) throw new AppError('Customer not found', 404);
 
-    const capturedOrders = orders.filter((o) => o.status !== 'cancelled' && o.paymentStatus === 'captured');
+    const capturedOrders = orders.filter(
+      (o) => o.status !== 'cancelled' && o.paymentStatus === 'captured',
+    );
     const totalSpent = capturedOrders.reduce((sum, o) => sum + (o.total || 0), 0);
 
     return {
@@ -1134,7 +1176,12 @@ export class AdminService {
     };
   }
 
-  async updateCustomerRole(id: string, role: 'customer' | 'admin', currentAdminId?: string, ip?: string) {
+  async updateCustomerRole(
+    id: string,
+    role: 'customer' | 'admin',
+    currentAdminId?: string,
+    ip?: string,
+  ) {
     if (!mongoose.isValidObjectId(id)) {
       throw new AppError('Customer not found', 404);
     }

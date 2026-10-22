@@ -60,8 +60,8 @@ export function getAvailableSizes(
         typeof v.stock === 'number'
           ? v.stock > 0
           : typeof v.inStock === 'boolean'
-          ? v.inStock
-          : true;
+            ? v.inStock
+            : true;
       const current = sizeMap.get(v.size);
       sizeMap.set(v.size, current !== undefined ? current || inStock : inStock);
     }

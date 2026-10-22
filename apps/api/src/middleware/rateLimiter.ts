@@ -17,7 +17,11 @@ export const authLimiter = rateLimit({
   skip: () => isTest,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { success: false, error: 'Too many auth attempts. Please try again later.', message: 'Too many auth attempts. Please try again later.' },
+  message: {
+    success: false,
+    error: 'Too many auth attempts. Please try again later.',
+    message: 'Too many auth attempts. Please try again later.',
+  },
 });
 
 export const orderLimiter = rateLimit({

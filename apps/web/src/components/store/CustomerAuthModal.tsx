@@ -90,13 +90,13 @@ export function CustomerAuthModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 10 }}
             transition={SPRING_TACTILE}
-            className="relative w-full max-w-md bg-[var(--bg)] border border-[var(--border)] p-6 sm:p-8 shadow-2xl z-10"
+            className="relative z-10 w-full max-w-md border border-[var(--border)] bg-[var(--bg)] p-6 shadow-2xl sm:p-8"
           >
             {/* Close Button */}
             <button
               onClick={closeModal}
               aria-label="Close authentication modal"
-              className="absolute top-4 right-4 touch-target min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+              className="touch-target absolute top-4 right-4 flex min-h-[44px] min-w-[44px] items-center justify-center text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none"
             >
               <X size={20} weight="bold" />
             </button>
@@ -104,32 +104,34 @@ export function CustomerAuthModal() {
             {isAuthenticated && customerUser ? (
               <div>
                 <div className="mb-6">
-                  <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+                  <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                     ACTIVE ATHLETE SESSION
                   </span>
-                  <h2 className="text-xl sm:text-2xl font-black uppercase font-heading text-[var(--text-primary)] mt-1">
+                  <h2 className="font-heading mt-1 text-xl font-black text-[var(--text-primary)] uppercase sm:text-2xl">
                     {customerUser.name || 'ATHLETE PROFILE'}
                   </h2>
-                  <p className="text-xs font-mono text-[var(--text-muted)] mt-1">
+                  <p className="mt-1 font-mono text-xs text-[var(--text-muted)]">
                     {customerUser.email}
                   </p>
                 </div>
 
-                <div className="space-y-4 mb-6">
-                  <div className="p-4 bg-[var(--bg-elevated)] border border-[var(--border)] font-mono text-xs space-y-2">
-                    <div className="flex justify-between items-center text-[10px] uppercase">
+                <div className="mb-6 space-y-4">
+                  <div className="space-y-2 border border-[var(--border)] bg-[var(--bg-elevated)] p-4 font-mono text-xs">
+                    <div className="flex items-center justify-between text-[10px] uppercase">
                       <span className="text-[var(--text-muted)]">TELEMETRY STATUS</span>
-                      <span className="text-emerald-500 font-bold flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+                      <span className="flex items-center gap-1.5 font-bold text-emerald-500">
+                        <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
                         SYNCHRONIZED
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-[var(--text-primary)] pt-1 border-t border-[var(--border)]/50">
+                    <div className="flex items-center justify-between border-t border-[var(--border)]/50 pt-1 text-[var(--text-primary)]">
                       <span className="text-[var(--text-secondary)]">DESIGNATION</span>
-                      <span className="font-bold uppercase text-[var(--accent)]">{customerUser.role || 'ATHLETE'}</span>
+                      <span className="font-bold text-[var(--accent)] uppercase">
+                        {customerUser.role || 'ATHLETE'}
+                      </span>
                     </div>
                     {customerUser.phone && (
-                      <div className="flex justify-between items-center text-[var(--text-primary)] pt-1 border-t border-[var(--border)]/50">
+                      <div className="flex items-center justify-between border-t border-[var(--border)]/50 pt-1 text-[var(--text-primary)]">
                         <span className="text-[var(--text-secondary)]">COMMUNICATION</span>
                         <span>{customerUser.phone}</span>
                       </div>
@@ -144,14 +146,14 @@ export function CustomerAuthModal() {
                       logout();
                       closeModal();
                     }}
-                    className="w-full py-3 px-4 bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-red-500/50 text-red-500 hover:text-red-400 font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors active:scale-[0.98] min-h-[48px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500"
+                    className="flex min-h-[48px] w-full items-center justify-center gap-2 border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3 font-mono text-xs font-bold tracking-wider text-red-500 uppercase transition-colors hover:border-red-500/50 hover:text-red-400 focus-visible:ring-1 focus-visible:ring-red-500 focus-visible:outline-none active:scale-[0.98]"
                   >
                     TERMINATE SESSION / SIGN OUT
                   </button>
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="w-full py-2.5 text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors min-h-[44px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                    className="flex min-h-[44px] w-full items-center justify-center py-2.5 font-mono text-xs text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none"
                   >
                     RETURN TO STOREFRONT
                   </button>
@@ -161,13 +163,13 @@ export function CustomerAuthModal() {
               <>
                 {/* Header Badge */}
                 <div className="mb-6">
-                  <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+                  <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                     AUTHENTICATION PORTAL
                   </span>
-                  <h2 className="text-xl sm:text-2xl font-black uppercase font-heading text-[var(--text-primary)] mt-1">
+                  <h2 className="font-heading mt-1 text-xl font-black text-[var(--text-primary)] uppercase sm:text-2xl">
                     {authMode === 'login' ? 'ATHLETE ACCESS' : 'ENLIST NEW MEMBER'}
                   </h2>
-                  <p className="text-xs font-mono text-[var(--text-muted)] mt-1">
+                  <p className="mt-1 font-mono text-xs text-[var(--text-muted)]">
                     {authMode === 'login'
                       ? 'Sign in to access order archives and synchronized checkouts.'
                       : 'Register for tactical apparel telemetry and member drops.'}
@@ -175,13 +177,13 @@ export function CustomerAuthModal() {
                 </div>
 
                 {/* Mode Switch Tabs */}
-                <div className="grid grid-cols-2 gap-1 p-1 bg-[var(--bg-elevated)] border border-[var(--border)] mb-6">
+                <div className="mb-6 grid grid-cols-2 gap-1 border border-[var(--border)] bg-[var(--bg-elevated)] p-1">
                   <button
                     type="button"
                     onClick={() => setAuthMode('login')}
-                    className={`py-2 text-xs font-mono font-bold uppercase tracking-wider transition-colors min-h-[44px] ${
+                    className={`min-h-[44px] py-2 font-mono text-xs font-bold tracking-wider uppercase transition-colors ${
                       authMode === 'login'
-                        ? 'bg-[var(--bg)] text-[var(--text-primary)] shadow-sm border border-[var(--border)]'
+                        ? 'border border-[var(--border)] bg-[var(--bg)] text-[var(--text-primary)] shadow-sm'
                         : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                     }`}
                   >
@@ -190,9 +192,9 @@ export function CustomerAuthModal() {
                   <button
                     type="button"
                     onClick={() => setAuthMode('register')}
-                    className={`py-2 text-xs font-mono font-bold uppercase tracking-wider transition-colors min-h-[44px] ${
+                    className={`min-h-[44px] py-2 font-mono text-xs font-bold tracking-wider uppercase transition-colors ${
                       authMode === 'register'
-                        ? 'bg-[var(--bg)] text-[var(--text-primary)] shadow-sm border border-[var(--border)]'
+                        ? 'border border-[var(--border)] bg-[var(--bg)] text-[var(--text-primary)] shadow-sm'
                         : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                     }`}
                   >
@@ -204,7 +206,7 @@ export function CustomerAuthModal() {
                 {error && (
                   <div
                     role="alert"
-                    className="mb-5 p-3 bg-red-500/10 border border-red-500/30 text-red-500 dark:text-red-400 text-xs font-mono leading-relaxed"
+                    className="mb-5 border border-red-500/30 bg-red-500/10 p-3 font-mono text-xs leading-relaxed text-red-500 dark:text-red-400"
                   >
                     {error}
                   </div>
@@ -216,12 +218,12 @@ export function CustomerAuthModal() {
                     <div>
                       <label
                         htmlFor="auth-name"
-                        className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
+                        className="mb-1.5 block font-mono text-[11px] font-bold tracking-wider text-[var(--text-secondary)] uppercase"
                       >
                         FULL ATHLETE NAME
                       </label>
                       <div className="relative">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
+                        <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[var(--text-muted)]">
                           <User size={16} weight="bold" />
                         </div>
                         <input
@@ -232,7 +234,7 @@ export function CustomerAuthModal() {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="e.g. Kai Nakamura"
-                          className="w-full pl-9 pr-3 py-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                          className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg-elevated)] py-2.5 pr-3 pl-9 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
                         />
                       </div>
                     </div>
@@ -241,12 +243,12 @@ export function CustomerAuthModal() {
                   <div>
                     <label
                       htmlFor="auth-email"
-                      className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
+                      className="mb-1.5 block font-mono text-[11px] font-bold tracking-wider text-[var(--text-secondary)] uppercase"
                     >
                       EMAIL ADDRESS
                     </label>
                     <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
+                      <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[var(--text-muted)]">
                         <Envelope size={16} weight="bold" />
                       </div>
                       <input
@@ -257,7 +259,7 @@ export function CustomerAuthModal() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="athlete@domain.com"
-                        className="w-full pl-9 pr-3 py-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                        className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg-elevated)] py-2.5 pr-3 pl-9 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -265,12 +267,15 @@ export function CustomerAuthModal() {
                   <div>
                     <label
                       htmlFor="auth-password"
-                      className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
+                      className="mb-1.5 block font-mono text-[11px] font-bold tracking-wider text-[var(--text-secondary)] uppercase"
                     >
-                      PASSWORD {authMode === 'register' && <span className="text-[10px] text-[var(--text-muted)]">(MIN 8 CHARS)</span>}
+                      PASSWORD{' '}
+                      {authMode === 'register' && (
+                        <span className="text-[10px] text-[var(--text-muted)]">(MIN 8 CHARS)</span>
+                      )}
                     </label>
                     <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
+                      <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[var(--text-muted)]">
                         <LockKey size={16} weight="bold" />
                       </div>
                       <input
@@ -281,7 +286,7 @@ export function CustomerAuthModal() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••••••"
-                        className="w-full pl-9 pr-3 py-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                        className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg-elevated)] py-2.5 pr-3 pl-9 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -290,7 +295,7 @@ export function CustomerAuthModal() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full mt-2 py-3 px-4 bg-[var(--accent)] text-black dark:text-black font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-transform active:scale-[0.98] disabled:opacity-50 min-h-[48px]"
+                    className="mt-2 flex min-h-[48px] w-full items-center justify-center gap-2 bg-[var(--accent)] px-4 py-3 font-mono text-xs font-bold tracking-wider text-black uppercase transition-transform active:scale-[0.98] disabled:opacity-50 dark:text-black"
                   >
                     {isLoading ? (
                       <>
@@ -299,7 +304,9 @@ export function CustomerAuthModal() {
                       </>
                     ) : (
                       <>
-                        <span>{authMode === 'login' ? 'INITIALIZE SESSION' : 'SUBMIT ENLISTMENT'}</span>
+                        <span>
+                          {authMode === 'login' ? 'INITIALIZE SESSION' : 'SUBMIT ENLISTMENT'}
+                        </span>
                         <ArrowRight size={14} weight="bold" />
                       </>
                     )}
@@ -307,11 +314,11 @@ export function CustomerAuthModal() {
                 </form>
 
                 {/* Footer switcher note */}
-                <div className="mt-6 pt-4 border-t border-[var(--border)] text-center">
+                <div className="mt-6 border-t border-[var(--border)] pt-4 text-center">
                   <button
                     type="button"
                     onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
-                    className="text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors min-h-[44px] flex items-center justify-center w-full"
+                    className="flex min-h-[44px] w-full items-center justify-center font-mono text-xs text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
                   >
                     {authMode === 'login'
                       ? "Don't have an account? Enlist as a new member"

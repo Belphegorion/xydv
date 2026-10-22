@@ -34,7 +34,9 @@ function AdminProductsContent() {
   const [inStockFilter, setInStockFilter] = useState('');
   const [sort, setSort] = useState('newest');
   const [isLoading, setIsLoading] = useState(true);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null,
+  );
 
   // Modal / Form state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,7 +51,9 @@ function AdminProductsContent() {
   const [price, setPrice] = useState<number>(148);
   const [compareAt, setCompareAt] = useState<number | undefined>(undefined);
   const [tagsInput, setTagsInput] = useState('');
-  const [images, setImages] = useState<Array<{ url: string; alt?: string; isPrimary?: boolean }>>([]);
+  const [images, setImages] = useState<Array<{ url: string; alt?: string; isPrimary?: boolean }>>(
+    [],
+  );
   const [variants, setVariants] = useState<ProductVariant[]>([
     {
       sku: 'XYDV-001-BLK-M',
@@ -394,7 +398,7 @@ function AdminProductsContent() {
   const handleUpdateVariant = (
     idx: number,
     field: keyof ProductVariant,
-    val: ProductVariant[keyof ProductVariant]
+    val: ProductVariant[keyof ProductVariant],
   ) => {
     setVariants((prev) => {
       const copy = [...prev];
@@ -405,7 +409,10 @@ function AdminProductsContent() {
 
   const handleRemoveVariant = (idx: number) => {
     if (variants.length <= 1) {
-      setFeedback({ type: 'error', message: 'A product must contain at least one inventory variant.' });
+      setFeedback({
+        type: 'error',
+        message: 'A product must contain at least one inventory variant.',
+      });
       return;
     }
     setVariants((prev) => prev.filter((_, i) => i !== idx));
@@ -414,20 +421,21 @@ function AdminProductsContent() {
   return (
     <div className="space-y-6">
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-xl font-bold uppercase tracking-wider text-[#f5f5f5]">
+          <h2 className="font-mono text-xl font-bold tracking-wider text-[#f5f5f5] uppercase">
             Product Catalog
           </h2>
-          <p className="font-mono text-xs text-[#71717a] mt-0.5">
-            Manage listings, multi-angle imagery, and size/color inventory variants ({total} total products)
+          <p className="mt-0.5 font-mono text-xs text-[#71717a]">
+            Manage listings, multi-angle imagery, and size/color inventory variants ({total} total
+            products)
           </p>
         </div>
 
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 rounded-none border border-[#e8ff00] bg-[#e8ff00] px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-[#0a0a0a] hover:bg-[#e8ff00]/90 transition-colors active:scale-[0.97]"
+          className="inline-flex items-center gap-2 rounded-none border border-[#e8ff00] bg-[#e8ff00] px-4 py-2.5 font-mono text-xs font-bold tracking-wider text-[#0a0a0a] uppercase transition-colors hover:bg-[#e8ff00]/90 active:scale-[0.97]"
         >
           <Plus size={16} weight="bold" />
           <span>New Product</span>
@@ -454,10 +462,13 @@ function AdminProductsContent() {
       )}
 
       {/* Search, Filter & Sort Toolbar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5">
+      <div className="grid grid-cols-1 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Search */}
         <div className="relative">
-          <MagnifyingGlass size={16} className="pointer-events-none absolute left-3 top-3 text-[#71717a]" />
+          <MagnifyingGlass
+            size={16}
+            className="pointer-events-none absolute top-3 left-3 text-[#71717a]"
+          />
           <input
             type="text"
             value={search}
@@ -466,7 +477,7 @@ function AdminProductsContent() {
               setPage(1);
             }}
             placeholder="Search title, SKU, tag..."
-            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pl-9 pr-3 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
+            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-9 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
           />
         </div>
 
@@ -521,14 +532,14 @@ function AdminProductsContent() {
       <div className="overflow-hidden rounded border border-[#1f1f1f] bg-[#111111]">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono uppercase tracking-wider text-[#a0a0a0]">
+            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono tracking-wider text-[#a0a0a0] uppercase">
               <tr>
-                <th className="py-3 px-4">Product</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Price</th>
-                <th className="py-3 px-4">Variants</th>
-                <th className="py-3 px-4">Stock Status</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="px-4 py-3">Product</th>
+                <th className="px-4 py-3">Category</th>
+                <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Variants</th>
+                <th className="px-4 py-3">Stock Status</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1f1f1f]">
@@ -543,7 +554,7 @@ function AdminProductsContent() {
                 </tr>
               ) : products.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-[#71717a] font-mono uppercase">
+                  <td colSpan={6} className="py-12 text-center font-mono text-[#71717a] uppercase">
                     No products found matching active filters.
                   </td>
                 </tr>
@@ -552,12 +563,14 @@ function AdminProductsContent() {
                   const primaryImage =
                     typeof p.images?.[0] === 'string'
                       ? p.images[0]
-                      : p.images?.[0]?.url || p.variants?.[0]?.imageUrl || '/brand-assets/xydv-logo.png';
+                      : p.images?.[0]?.url ||
+                        p.variants?.[0]?.imageUrl ||
+                        '/brand-assets/xydv-logo.png';
                   const totalStock = (p.variants || []).reduce((acc, v) => acc + (v.stock || 0), 0);
 
                   return (
-                    <tr key={p._id || p.id} className="hover:bg-[#141414] transition-colors">
-                      <td className="py-3 px-4">
+                    <tr key={p._id || p.id} className="transition-colors hover:bg-[#141414]">
+                      <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className="relative h-12 w-10 flex-shrink-0 overflow-hidden rounded border border-[#222222] bg-[#181818]">
                             <img
@@ -573,11 +586,9 @@ function AdminProductsContent() {
                         </div>
                       </td>
 
-                      <td className="py-3 px-4 font-mono uppercase text-[#a0a0a0]">
-                        {p.category}
-                      </td>
+                      <td className="px-4 py-3 font-mono text-[#a0a0a0] uppercase">{p.category}</td>
 
-                      <td className="py-3 px-4 font-mono">
+                      <td className="px-4 py-3 font-mono">
                         <span className="font-bold text-[#f5f5f5]">₹{p.price}</span>
                         {p.compareAt && (
                           <span className="ml-1.5 text-[10px] text-[#71717a] line-through">
@@ -586,37 +597,39 @@ function AdminProductsContent() {
                         )}
                       </td>
 
-                      <td className="py-3 px-4 font-mono text-[#a0a0a0]">
+                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">
                         <div className="flex items-center gap-1.5">
                           <span>{p.variants?.length || 0} SKUs</span>
-                          <span className="text-[10px] text-[#71717a]">({totalStock} total units)</span>
+                          <span className="text-[10px] text-[#71717a]">
+                            ({totalStock} total units)
+                          </span>
                         </div>
                       </td>
 
-                      <td className="py-3 px-4">
+                      <td className="px-4 py-3">
                         {p.inStock && totalStock > 0 ? (
                           totalStock <= 5 ? (
-                            <span className="inline-flex items-center rounded bg-[#ff3b3b]/10 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-[#ff3b3b]">
+                            <span className="inline-flex items-center rounded bg-[#ff3b3b]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#ff3b3b] uppercase">
                               Low Stock ({totalStock})
                             </span>
                           ) : (
-                            <span className="inline-flex items-center rounded bg-[#22c55e]/10 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-[#22c55e]">
+                            <span className="inline-flex items-center rounded bg-[#22c55e]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#22c55e] uppercase">
                               In Stock
                             </span>
                           )
                         ) : (
-                          <span className="inline-flex items-center rounded bg-[#71717a]/10 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-[#71717a]">
+                          <span className="inline-flex items-center rounded bg-[#71717a]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#71717a] uppercase">
                             Exhausted
                           </span>
                         )}
                       </td>
 
-                      <td className="py-3 px-4 text-right">
+                      <td className="px-4 py-3 text-right">
                         <div className="inline-flex items-center gap-2">
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(p)}
-                            className="rounded p-1.5 text-[#a0a0a0] hover:bg-[#1f1f1f] hover:text-[#f5f5f5] transition-colors"
+                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#1f1f1f] hover:text-[#f5f5f5]"
                             aria-label={`Edit ${p.name}`}
                           >
                             <PencilSimple size={16} />
@@ -630,7 +643,7 @@ function AdminProductsContent() {
                                 name: p.name,
                               })
                             }
-                            className="rounded p-1.5 text-[#a0a0a0] hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] transition-colors"
+                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b]"
                             aria-label={`Delete ${p.name}`}
                           >
                             <Trash size={16} />
@@ -655,7 +668,7 @@ function AdminProductsContent() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 uppercase text-[#f5f5f5] disabled:opacity-30 active:scale-[0.97]"
+              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
             >
               Previous
             </button>
@@ -663,7 +676,7 @@ function AdminProductsContent() {
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 uppercase text-[#f5f5f5] disabled:opacity-30 active:scale-[0.97]"
+              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
             >
               Next
             </button>
@@ -674,13 +687,13 @@ function AdminProductsContent() {
       {/* Product Create / Edit Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 shadow-2xl text-[#f5f5f5]">
-            <div className="flex items-center justify-between border-b border-[#1f1f1f] pb-4 mb-6">
-              <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-[#e8ff00]">
+          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl">
+            <div className="mb-6 flex items-center justify-between border-b border-[#1f1f1f] pb-4">
+              <h3 className="font-mono text-sm font-bold tracking-wider text-[#e8ff00] uppercase">
                 {isEditing ? `Edit Product: ${name}` : 'Create New Product'}
               </h3>
               <button
@@ -694,7 +707,7 @@ function AdminProductsContent() {
 
             {feedback && (
               <div
-                className={`flex items-center justify-between rounded border p-3 mb-6 font-mono text-xs ${
+                className={`mb-6 flex items-center justify-between rounded border p-3 font-mono text-xs ${
                   feedback.type === 'success'
                     ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#22c55e]'
                     : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
@@ -718,9 +731,9 @@ function AdminProductsContent() {
 
             <form onSubmit={handleSaveProduct} className="space-y-6">
               {/* Basic Info */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1.5">
+                  <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
                     Product Title *
                   </label>
                   <input
@@ -737,7 +750,7 @@ function AdminProductsContent() {
                 </div>
 
                 <div>
-                  <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1.5">
+                  <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
                     Brand
                   </label>
                   <input
@@ -752,7 +765,7 @@ function AdminProductsContent() {
                 </div>
 
                 <div>
-                  <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1.5">
+                  <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
                     Category *
                   </label>
                   <select
@@ -773,7 +786,7 @@ function AdminProductsContent() {
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1.5">
+                    <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
                       Price (₹) *
                     </label>
                     <input
@@ -797,7 +810,7 @@ function AdminProductsContent() {
                   </div>
 
                   <div>
-                    <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1.5">
+                    <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
                       Compare Price (₹)
                     </label>
                     <input
@@ -816,7 +829,7 @@ function AdminProductsContent() {
 
                 <div className="grid grid-cols-2 gap-2 sm:col-span-2">
                   <div>
-                    <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1.5">
+                    <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
                       Low Stock Threshold
                     </label>
                     <input
@@ -832,7 +845,7 @@ function AdminProductsContent() {
                   </div>
 
                   <div className="flex flex-col justify-center pt-2">
-                    <label className="flex items-center gap-2 cursor-pointer mt-3">
+                    <label className="mt-3 flex cursor-pointer items-center gap-2">
                       <input
                         type="checkbox"
                         checked={isPublished}
@@ -840,9 +853,9 @@ function AdminProductsContent() {
                           setIsDirty(true);
                           setIsPublished(e.target.checked);
                         }}
-                        className="h-4 w-4 rounded border-[#1f1f1f] bg-[#0a0a0a] text-[#e8ff00] focus:ring-0 cursor-pointer accent-[#e8ff00]"
+                        className="h-4 w-4 cursor-pointer rounded border-[#1f1f1f] bg-[#0a0a0a] text-[#e8ff00] accent-[#e8ff00] focus:ring-0"
                       />
-                      <span className="font-mono text-xs uppercase text-[#f5f5f5]">
+                      <span className="font-mono text-xs text-[#f5f5f5] uppercase">
                         Published (Storefront Visible)
                       </span>
                     </label>
@@ -852,7 +865,7 @@ function AdminProductsContent() {
 
               {/* Description */}
               <div>
-                <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1.5">
+                <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
                   Technical Description *
                 </label>
                 <textarea
@@ -867,7 +880,7 @@ function AdminProductsContent() {
 
               {/* Tags */}
               <div>
-                <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1.5">
+                <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
                   Search Tags (Comma separated)
                 </label>
                 <input
@@ -880,12 +893,12 @@ function AdminProductsContent() {
               </div>
 
               {/* Multiple Images Upload & Gallery */}
-              <div className="space-y-3 pt-2 border-t border-[#1f1f1f]">
+              <div className="space-y-3 border-t border-[#1f1f1f] pt-2">
                 <div className="flex items-center justify-between">
-                  <label className="block font-mono text-xs uppercase tracking-wider text-[#e8ff00]">
+                  <label className="block font-mono text-xs tracking-wider text-[#e8ff00] uppercase">
                     Product Images ({images.length})
                   </label>
-                  <label className="cursor-pointer inline-flex items-center gap-1.5 rounded border border-[#1f1f1f] bg-[#181818] px-3 py-1 font-mono text-xs uppercase tracking-wider text-[#f5f5f5] hover:bg-[#222222]">
+                  <label className="inline-flex cursor-pointer items-center gap-1.5 rounded border border-[#1f1f1f] bg-[#181818] px-3 py-1 font-mono text-xs tracking-wider text-[#f5f5f5] uppercase hover:bg-[#222222]">
                     <UploadSimple size={14} />
                     <span>{isUploading ? 'Uploading...' : 'Upload Images'}</span>
                     <input
@@ -900,7 +913,7 @@ function AdminProductsContent() {
                 </div>
 
                 {images.length > 0 ? (
-                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                  <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
                     {images.map((img, idx) => (
                       <div
                         key={img.url || idx}
@@ -910,7 +923,7 @@ function AdminProductsContent() {
                         <button
                           type="button"
                           onClick={() => setImages((prev) => prev.filter((_, i) => i !== idx))}
-                          className="absolute top-1 right-1 rounded bg-black/80 p-1 text-[#ff3b3b] opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-1 right-1 rounded bg-black/80 p-1 text-[#ff3b3b] opacity-0 transition-opacity group-hover:opacity-100"
                         >
                           <X size={12} />
                         </button>
@@ -925,15 +938,15 @@ function AdminProductsContent() {
               </div>
 
               {/* Variant Management Matrix */}
-              <div className="space-y-3 pt-2 border-t border-[#1f1f1f]">
+              <div className="space-y-3 border-t border-[#1f1f1f] pt-2">
                 <div className="flex items-center justify-between">
-                  <label className="block font-mono text-xs uppercase tracking-wider text-[#e8ff00]">
+                  <label className="block font-mono text-xs tracking-wider text-[#e8ff00] uppercase">
                     Variants & Stock Matrix ({variants.length})
                   </label>
                   <button
                     type="button"
                     onClick={handleAddVariant}
-                    className="inline-flex items-center gap-1 font-mono text-xs uppercase text-[#e8ff00] hover:underline"
+                    className="inline-flex items-center gap-1 font-mono text-xs text-[#e8ff00] uppercase hover:underline"
                   >
                     <Plus size={14} />
                     <span>Add Variant</span>
@@ -944,25 +957,25 @@ function AdminProductsContent() {
                   {variants.map((v, idx) => (
                     <div
                       key={v.sku || idx}
-                      className="grid grid-cols-1 sm:grid-cols-6 gap-2 rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 items-center font-mono text-xs"
+                      className="grid grid-cols-1 items-center gap-2 rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-mono text-xs sm:grid-cols-6"
                     >
                       <div className="sm:col-span-2">
-                        <label className="text-[10px] text-[#71717a] block">SKU</label>
+                        <label className="block text-[10px] text-[#71717a]">SKU</label>
                         <input
                           type="text"
                           required
                           value={v.sku}
                           onChange={(e) => handleUpdateVariant(idx, 'sku', e.target.value)}
-                          className="w-full bg-transparent border-b border-[#222222] text-[#f5f5f5] py-0.5 focus:outline-none focus:border-[#e8ff00]"
+                          className="w-full border-b border-[#222222] bg-transparent py-0.5 text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <label className="text-[10px] text-[#71717a] block">Size</label>
+                        <label className="block text-[10px] text-[#71717a]">Size</label>
                         <select
                           value={v.size}
                           onChange={(e) => handleUpdateVariant(idx, 'size', e.target.value)}
-                          className="w-full bg-[#111111] border border-[#222222] text-[#f5f5f5] py-0.5 px-1 focus:outline-none"
+                          className="w-full border border-[#222222] bg-[#111111] px-1 py-0.5 text-[#f5f5f5] focus:outline-none"
                         >
                           {['XS', 'S', 'M', 'L', 'XL', 'XXL', 'ONE SIZE'].map((s) => (
                             <option key={s} value={s}>
@@ -974,39 +987,41 @@ function AdminProductsContent() {
 
                       <div className="flex items-center gap-2">
                         <div className="flex-1">
-                          <label className="text-[10px] text-[#71717a] block">Color</label>
+                          <label className="block text-[10px] text-[#71717a]">Color</label>
                           <input
                             type="text"
                             value={v.color || ''}
                             onChange={(e) => handleUpdateVariant(idx, 'color', e.target.value)}
                             placeholder="Black"
-                            className="w-full bg-transparent border-b border-[#222222] text-[#f5f5f5] py-0.5 focus:outline-none focus:border-[#e8ff00]"
+                            className="w-full border-b border-[#222222] bg-transparent py-0.5 text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
                           />
                         </div>
                         <input
                           type="color"
                           value={v.colorHex || '#000000'}
                           onChange={(e) => handleUpdateVariant(idx, 'colorHex', e.target.value)}
-                          className="h-6 w-6 mt-3.5 cursor-pointer bg-transparent border-0"
+                          className="mt-3.5 h-6 w-6 cursor-pointer border-0 bg-transparent"
                           title="Choose Color Hex"
                         />
                       </div>
 
                       <div>
-                        <label className="text-[10px] text-[#71717a] block">Stock</label>
+                        <label className="block text-[10px] text-[#71717a]">Stock</label>
                         <input
                           type="number"
                           min={0}
                           required
                           value={v.stock}
-                          onChange={(e) => handleUpdateVariant(idx, 'stock', Number(e.target.value))}
-                          className="w-full bg-transparent border-b border-[#222222] text-[#f5f5f5] py-0.5 focus:outline-none focus:border-[#e8ff00]"
+                          onChange={(e) =>
+                            handleUpdateVariant(idx, 'stock', Number(e.target.value))
+                          }
+                          className="w-full border-b border-[#222222] bg-transparent py-0.5 text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
                         />
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0">
+                      <div className="flex items-center justify-between gap-2 pt-2 sm:justify-end sm:pt-0">
                         <div>
-                          <label className="text-[10px] text-[#71717a] block">Price (₹)</label>
+                          <label className="block text-[10px] text-[#71717a]">Price (₹)</label>
                           <input
                             type="number"
                             min={0}
@@ -1015,14 +1030,14 @@ function AdminProductsContent() {
                             onChange={(e) =>
                               handleUpdateVariant(idx, 'price', Number(e.target.value))
                             }
-                            className="w-16 bg-transparent border-b border-[#222222] text-[#f5f5f5] py-0.5 focus:outline-none focus:border-[#e8ff00]"
+                            className="w-16 border-b border-[#222222] bg-transparent py-0.5 text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
                           />
                         </div>
 
                         <button
                           type="button"
                           onClick={() => handleRemoveVariant(idx)}
-                          className="p-1 mt-3.5 text-[#ff3b3b] hover:opacity-75"
+                          className="mt-3.5 p-1 text-[#ff3b3b] hover:opacity-75"
                           title="Remove variant"
                         >
                           <Trash size={16} />
@@ -1034,11 +1049,11 @@ function AdminProductsContent() {
               </div>
 
               {/* Form Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1f1f1f]">
+              <div className="flex items-center justify-end gap-3 border-t border-[#1f1f1f] pt-4">
                 <button
                   type="button"
                   onClick={handleRequestCloseModal}
-                  className="rounded border border-[#1f1f1f] bg-transparent px-4 py-2 font-mono text-xs uppercase text-[#a0a0a0] hover:text-[#f5f5f5]"
+                  className="rounded border border-[#1f1f1f] bg-transparent px-4 py-2 font-mono text-xs text-[#a0a0a0] uppercase hover:text-[#f5f5f5]"
                 >
                   Cancel
                 </button>
@@ -1046,7 +1061,7 @@ function AdminProductsContent() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="rounded border border-[#e8ff00] bg-[#e8ff00] px-6 py-2 font-mono text-xs font-bold uppercase text-[#0a0a0a] hover:bg-[#e8ff00]/90 disabled:opacity-50 active:scale-[0.97]"
+                  className="rounded border border-[#e8ff00] bg-[#e8ff00] px-6 py-2 font-mono text-xs font-bold text-[#0a0a0a] uppercase hover:bg-[#e8ff00]/90 active:scale-[0.97] disabled:opacity-50"
                 >
                   {isSaving ? 'Saving...' : isEditing ? 'Update Listing' : 'Publish Product'}
                 </button>
@@ -1089,7 +1104,9 @@ function AdminProductsContent() {
 
 export default function AdminProductsPage() {
   return (
-    <Suspense fallback={<div className="p-8 font-mono text-xs text-[#71717a]">Loading catalog...</div>}>
+    <Suspense
+      fallback={<div className="p-8 font-mono text-xs text-[#71717a]">Loading catalog...</div>}
+    >
       <AdminProductsContent />
     </Suspense>
   );

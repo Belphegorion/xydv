@@ -24,7 +24,11 @@ describe('Batch 9: MED-01 - Public Settings Endpoint Proxy', () => {
     assert.ok(fs.existsSync(routePath), 'apps/web/src/app/api/settings/route.ts must exist');
 
     const content = fs.readFileSync(routePath, 'utf-8');
-    assert.match(content, /export\s+async\s+function\s+GET/, 'route.ts must export async function GET');
+    assert.match(
+      content,
+      /export\s+async\s+function\s+GET/,
+      'route.ts must export async function GET',
+    );
     assert.match(content, /freeShippingThreshold/, 'route.ts must handle freeShippingThreshold');
     assert.match(content, /currencySymbol/, 'route.ts must handle currencySymbol');
   });
@@ -36,8 +40,16 @@ describe('Batch 9: MED-07 - Dynamic Announcement Bar', () => {
     assert.ok(fs.existsSync(filePath), 'AnnouncementBar.tsx must exist');
 
     const content = fs.readFileSync(filePath, 'utf-8');
-    assert.match(content, /\/api\/settings|\/settings/, 'AnnouncementBar must query settings endpoint');
-    assert.match(content, /freeShippingThreshold/, 'AnnouncementBar must read freeShippingThreshold');
+    assert.match(
+      content,
+      /\/api\/settings|\/settings/,
+      'AnnouncementBar must query settings endpoint',
+    );
+    assert.match(
+      content,
+      /freeShippingThreshold/,
+      'AnnouncementBar must read freeShippingThreshold',
+    );
     assert.match(content, /currencySymbol/, 'AnnouncementBar must read currencySymbol');
   });
 });
@@ -48,8 +60,16 @@ describe('Batch 9: MED-08 - Dirty Form Guards (beforeunload)', () => {
     assert.ok(fs.existsSync(filePath), 'admin/settings/page.tsx must exist');
 
     const content = fs.readFileSync(filePath, 'utf-8');
-    assert.match(content, /window\.addEventListener\(['"]beforeunload['"]/, 'Settings page must attach beforeunload listener');
-    assert.match(content, /window\.removeEventListener\(['"]beforeunload['"]/, 'Settings page must clean up beforeunload listener');
+    assert.match(
+      content,
+      /window\.addEventListener\(['"]beforeunload['"]/,
+      'Settings page must attach beforeunload listener',
+    );
+    assert.match(
+      content,
+      /window\.removeEventListener\(['"]beforeunload['"]/,
+      'Settings page must clean up beforeunload listener',
+    );
     assert.match(content, /isDirty/, 'Settings page must guard beforeunload against isDirty');
   });
 
@@ -58,8 +78,16 @@ describe('Batch 9: MED-08 - Dirty Form Guards (beforeunload)', () => {
     assert.ok(fs.existsSync(filePath), 'admin/products/page.tsx must exist');
 
     const content = fs.readFileSync(filePath, 'utf-8');
-    assert.match(content, /window\.addEventListener\(['"]beforeunload['"]/, 'Products page must attach beforeunload listener');
-    assert.match(content, /window\.removeEventListener\(['"]beforeunload['"]/, 'Products page must clean up beforeunload listener');
+    assert.match(
+      content,
+      /window\.addEventListener\(['"]beforeunload['"]/,
+      'Products page must attach beforeunload listener',
+    );
+    assert.match(
+      content,
+      /window\.removeEventListener\(['"]beforeunload['"]/,
+      'Products page must clean up beforeunload listener',
+    );
     assert.match(content, /isDirty/, 'Products page must guard beforeunload against isDirty');
   });
 });

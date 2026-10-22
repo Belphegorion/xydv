@@ -36,12 +36,12 @@ export function LoadingSymbol({
     typeof progress === 'number'
       ? Math.min(100, Math.max(0, progress))
       : variant === 'fill'
-      ? 0
-      : undefined;
+        ? 0
+        : undefined;
 
   return (
     <div
-      className={`relative select-none pointer-events-none ${className}`}
+      className={`pointer-events-none relative select-none ${className}`}
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
@@ -55,7 +55,8 @@ export function LoadingSymbol({
           height={size}
           unoptimized
           priority={priority}
-          className="w-full h-full object-contain block dark:hidden select-none"
+          /* prettier-ignore */
+          className="block dark:hidden h-full w-full object-contain select-none"
         />
         {/* Dark Mode Outline */}
         <Image
@@ -65,7 +66,8 @@ export function LoadingSymbol({
           height={size}
           unoptimized
           priority={priority}
-          className="w-full h-full object-contain hidden dark:block select-none"
+          /* prettier-ignore */
+          className="hidden dark:block h-full w-full object-contain select-none"
         />
       </div>
 
@@ -76,8 +78,11 @@ export function LoadingSymbol({
           shouldReduceMotion
             ? { opacity: 1 }
             : variant === 'pulse'
-            ? { opacity: 0.15, scale: 0.98 }
-            : { opacity: clampedProgress !== undefined ? Math.max(0.12, clampedProgress / 100) : 0 }
+              ? { opacity: 0.15, scale: 0.98 }
+              : {
+                  opacity:
+                    clampedProgress !== undefined ? Math.max(0.12, clampedProgress / 100) : 0,
+                }
         }
         animate={
           variant === 'pulse'
@@ -88,10 +93,10 @@ export function LoadingSymbol({
                   scale: [0.98, 1.01, 0.98],
                 }
             : variant === 'fill' && clampedProgress !== undefined
-            ? {
-                opacity: Math.max(0.12, clampedProgress / 100),
-              }
-            : undefined
+              ? {
+                  opacity: Math.max(0.12, clampedProgress / 100),
+                }
+              : undefined
         }
         transition={
           variant === 'pulse'
@@ -107,9 +112,7 @@ export function LoadingSymbol({
         }
         style={{
           clipPath:
-            clampedProgress !== undefined
-              ? `inset(${100 - clampedProgress}% 0% 0% 0%)`
-              : undefined,
+            clampedProgress !== undefined ? `inset(${100 - clampedProgress}% 0% 0% 0%)` : undefined,
         }}
       >
         {/* Light Mode Solid */}
@@ -120,7 +123,8 @@ export function LoadingSymbol({
           height={size}
           unoptimized
           priority={priority}
-          className="w-full h-full object-contain block dark:hidden select-none"
+          /* prettier-ignore */
+          className="block dark:hidden h-full w-full object-contain select-none"
         />
         {/* Dark Mode Solid */}
         <Image
@@ -130,7 +134,8 @@ export function LoadingSymbol({
           height={size}
           unoptimized
           priority={priority}
-          className="w-full h-full object-contain hidden dark:block select-none"
+          /* prettier-ignore */
+          className="hidden dark:block h-full w-full object-contain select-none"
         />
       </motion.div>
     </div>

@@ -4,20 +4,13 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  COMMERCE_RULES,
-  calculateCartMetrics,
-} from './harness/contracts.mjs';
-import {
-  LocalStorageMock,
-  CartStoreSimulator,
-} from './harness/client-runtime.mjs';
+import { COMMERCE_RULES, calculateCartMetrics } from './harness/contracts.mjs';
+import { LocalStorageMock, CartStoreSimulator } from './harness/client-runtime.mjs';
 import { ServerRuntimeSimulator } from './harness/server-runtime.mjs';
 import { CATALOG_FIXTURES } from './harness/seed-data.mjs';
 import { FREE_SHIPPING_THRESHOLD } from '@vertex/types';
 
 describe('Empirical Adversarial Challenge: Free Shipping Threshold & Subtotal Arithmetic', () => {
-
   it('Boundary Threshold Equality: FREE_SHIPPING_THRESHOLD matches COMMERCE_RULES.freeShippingThreshold', () => {
     assert.equal(FREE_SHIPPING_THRESHOLD, 150);
     assert.equal(COMMERCE_RULES.freeShippingThreshold, 150);
@@ -58,7 +51,7 @@ describe('Empirical Adversarial Challenge: Free Shipping Threshold & Subtotal Ar
       assert.equal(metrics.shipping, 9.99);
       assert.equal(metrics.freeShippingDelta, 0.01);
       // Floating-point tax calculation: 149.99 * 0.08 = 11.9992 -> 12.00
-      assert.equal(metrics.tax, 12.00);
+      assert.equal(metrics.tax, 12.0);
       // Total: 149.99 + 9.99 + 12.00 = 171.98
       assert.equal(metrics.total, 171.98);
       assert.equal(metrics.amountPaise, 17198);
@@ -68,23 +61,23 @@ describe('Empirical Adversarial Challenge: Free Shipping Threshold & Subtotal Ar
       const items = [{ price: 149.999, quantity: 1 }];
       const metrics = calculateCartMetrics(items);
       // toFixed(2) rounds 149.999 to 150.00
-      assert.equal(metrics.subtotal, 150.00);
+      assert.equal(metrics.subtotal, 150.0);
       assert.equal(metrics.isFreeShipping, true);
       assert.equal(metrics.shipping, 0);
       assert.equal(metrics.freeShippingDelta, 0);
     });
 
     it('$150.00: Exact threshold unlocks free shipping with 0 delta and $0 shipping', () => {
-      const items = [{ price: 150.00, quantity: 1 }];
+      const items = [{ price: 150.0, quantity: 1 }];
       const metrics = calculateCartMetrics(items);
-      assert.equal(metrics.subtotal, 150.00);
+      assert.equal(metrics.subtotal, 150.0);
       assert.equal(metrics.isFreeShipping, true);
       assert.equal(metrics.shipping, 0);
       assert.equal(metrics.freeShippingDelta, 0);
       assert.equal(metrics.freeShippingProgress, 100);
       // Tax: 150 * 0.08 = 12.00
-      assert.equal(metrics.tax, 12.00);
-      assert.equal(metrics.total, 162.00);
+      assert.equal(metrics.tax, 12.0);
+      assert.equal(metrics.total, 162.0);
       assert.equal(metrics.amountPaise, 16200);
     });
 
@@ -97,7 +90,7 @@ describe('Empirical Adversarial Challenge: Free Shipping Threshold & Subtotal Ar
       assert.equal(metrics.freeShippingDelta, 0);
       assert.equal(metrics.freeShippingProgress, 100);
       // Tax: 150.01 * 0.08 = 12.0008 -> 12.00
-      assert.equal(metrics.tax, 12.00);
+      assert.equal(metrics.tax, 12.0);
       assert.equal(metrics.total, 162.01);
       assert.equal(metrics.amountPaise, 16201);
     });
@@ -107,7 +100,7 @@ describe('Empirical Adversarial Challenge: Free Shipping Threshold & Subtotal Ar
     it('Sum of multiple decimal items avoids JS binary floating point errors (e.g. 19.99 * 7 + 9.99 = 149.92)', () => {
       const items = [
         { price: 19.99, quantity: 7 }, // 139.93
-        { price: 9.99, quantity: 1 },  // 9.99 -> 149.92
+        { price: 9.99, quantity: 1 }, // 9.99 -> 149.92
       ];
       const metrics = calculateCartMetrics(items);
       assert.equal(metrics.subtotal, 149.92);
@@ -117,9 +110,9 @@ describe('Empirical Adversarial Challenge: Free Shipping Threshold & Subtotal Ar
     });
 
     it('Three items summing exactly to 150.00 (50.00 * 3) cleanly unlocks free shipping', () => {
-      const items = [{ price: 50.00, quantity: 3 }];
+      const items = [{ price: 50.0, quantity: 3 }];
       const metrics = calculateCartMetrics(items);
-      assert.equal(metrics.subtotal, 150.00);
+      assert.equal(metrics.subtotal, 150.0);
       assert.equal(metrics.isFreeShipping, true);
       assert.equal(metrics.freeShippingDelta, 0);
     });
@@ -188,9 +181,9 @@ describe('Empirical Adversarial Challenge: Free Shipping Threshold & Subtotal Ar
     });
 
     it('Extreme cart value ($1,000,000.00): subtotal and amountPaise remain safe integers', () => {
-      const items = [{ price: 1000000.00, quantity: 1 }];
+      const items = [{ price: 1000000.0, quantity: 1 }];
       const metrics = calculateCartMetrics(items);
-      assert.equal(metrics.subtotal, 1000000.00);
+      assert.equal(metrics.subtotal, 1000000.0);
       assert.equal(metrics.isFreeShipping, true);
       assert.equal(metrics.freeShippingDelta, 0);
       assert.equal(metrics.freeShippingProgress, 100);

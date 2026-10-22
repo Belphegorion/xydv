@@ -154,10 +154,7 @@ describe('Batch 3: CRIT-06 - Support Ticket Model, Express Persistence & Contact
 });
 
 describe('Batch 3: CRIT-07 - Dynamic Variant Sizes & Stock Derivation', () => {
-  const utilsSrc = fs.readFileSync(
-    path.join(webDir, 'src', 'lib', 'utils.ts'),
-    'utf-8',
-  );
+  const utilsSrc = fs.readFileSync(path.join(webDir, 'src', 'lib', 'utils.ts'), 'utf-8');
   const productSlugPageSrc = fs.readFileSync(
     path.join(webDir, 'src', 'app', 'products', '[slug]', 'page.tsx'),
     'utf-8',
@@ -190,11 +187,7 @@ describe('Batch 3: CRIT-07 - Dynamic Variant Sizes & Stock Derivation', () => {
   });
 
   it('eliminates hardcoded XS-XXL size array from utils.ts and PDP', () => {
-    assert.doesNotMatch(
-      utilsSrc,
-      /'XXL'/,
-      'utils.ts must not contain hardcoded XXL size fallback',
-    );
+    assert.doesNotMatch(utilsSrc, /'XXL'/, 'utils.ts must not contain hardcoded XXL size fallback');
     assert.doesNotMatch(
       productSlugPageSrc,
       /'XXL'/,

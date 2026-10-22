@@ -25,7 +25,11 @@ interface CustomerAuthState {
   setAuthMode: (mode: 'login' | 'register') => void;
   clearError: () => void;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   initialize: () => Promise<void>;
 }

@@ -104,26 +104,30 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] pt-24 sm:pt-32 pb-24">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+    <div className="min-h-screen bg-[var(--bg)] pt-24 pb-24 sm:pt-32">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6">
         {/* Header */}
-        <div className="border-b border-[var(--border)] pb-8 mb-10 text-center sm:text-left">
-          <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-            <span className="text-[11px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+        <div className="mb-10 border-b border-[var(--border)] pb-8 text-center sm:text-left">
+          <div className="mb-2 flex items-center justify-center gap-2 sm:justify-start">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--accent)]" />
+            <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
               TECHNICAL KNOWLEDGE BASE
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight font-heading text-[var(--text-primary)]">
+          <h1 className="font-heading text-3xl font-black tracking-tight text-[var(--text-primary)] uppercase sm:text-4xl md:text-5xl">
             FREQUENTLY ASKED QUESTIONS
           </h1>
-          <p className="text-[var(--text-secondary)] text-xs sm:text-sm font-sans mt-2 max-w-xl">
-            In-depth documentation covering our proprietary textile membranes, athletic sizing calibration, secure checkout, and global express air dispatch.
+          <p className="mt-2 max-w-xl font-sans text-xs text-[var(--text-secondary)] sm:text-sm">
+            In-depth documentation covering our proprietary textile membranes, athletic sizing
+            calibration, secure checkout, and global express air dispatch.
           </p>
 
           {/* Search Input */}
-          <div className="relative max-w-lg mt-6">
-            <MagnifyingGlass size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+          <div className="relative mt-6 max-w-lg">
+            <MagnifyingGlass
+              size={16}
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[var(--text-muted)]"
+            />
             <input
               id="faq-search-input"
               aria-label="Search knowledge base by keyword"
@@ -131,14 +135,14 @@ export default function FAQPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="SEARCH KNOWLEDGE BASE BY KEYWORD..."
-              className="w-full h-11 pl-10 pr-9 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--text-primary)] uppercase transition-colors"
+              className="h-11 w-full border border-[var(--border)] bg-[var(--bg-elevated)] pr-9 pl-10 font-mono text-xs text-[var(--text-primary)] uppercase placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:outline-none"
             />
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch('')}
                 aria-label="Clear search input"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1"
+                className="absolute top-1/2 right-3 -translate-y-1/2 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 <X size={14} weight="bold" />
               </button>
@@ -147,7 +151,7 @@ export default function FAQPage() {
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-8 scrollbar-none">
+        <div className="mb-8 flex scrollbar-none items-center gap-2 overflow-x-auto pb-2">
           {[
             { id: 'all', label: 'ALL INQUIRIES' },
             { id: 'materials', label: 'TEXTILE SCIENCE' },
@@ -160,10 +164,10 @@ export default function FAQPage() {
               key={cat.id}
               type="button"
               onClick={() => setActiveCategory(cat.id)}
-              className={`touch-target px-3.5 py-2 text-xs font-mono font-bold uppercase tracking-wider whitespace-nowrap transition-colors active:scale-[0.97] ${
+              className={`touch-target px-3.5 py-2 font-mono text-xs font-bold tracking-wider whitespace-nowrap uppercase transition-colors active:scale-[0.97] ${
                 activeCategory === cat.id
-                  ? 'bg-[var(--text-primary)] text-[var(--bg)] border border-[var(--text-primary)]'
-                  : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--text-primary)]'
+                  ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)]'
+                  : 'border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)]'
               }`}
             >
               {cat.label}
@@ -172,9 +176,9 @@ export default function FAQPage() {
         </div>
 
         {/* Accordion List */}
-        <div className="border border-[var(--border)] bg-[var(--bg-surface)] divide-y divide-[var(--border)]">
+        <div className="divide-y divide-[var(--border)] border border-[var(--border)] bg-[var(--bg-surface)]">
           {filteredFAQs.length === 0 ? (
-            <div className="p-12 text-center text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest">
+            <div className="p-12 text-center font-mono text-xs tracking-widest text-[var(--text-muted)] uppercase">
               [ NO MATCHING DOCUMENTATION FOUND FOR QUERY ]
             </div>
           ) : (
@@ -186,22 +190,22 @@ export default function FAQPage() {
                     type="button"
                     id={`accordion-trigger-${faq.id}`}
                     onClick={() => toggleFAQ(faq.id)}
-                    className="touch-target w-full p-5 sm:p-6 flex items-center justify-between text-left focus:outline-none"
+                    className="touch-target flex w-full items-center justify-between p-5 text-left focus:outline-none sm:p-6"
                     aria-expanded={isOpen}
                     aria-controls={`accordion-content-${faq.id}`}
                   >
                     <div className="pr-4">
-                      <span className="text-[10px] font-mono font-bold text-[var(--accent)] tracking-widest uppercase block mb-1">
+                      <span className="mb-1 block font-mono text-[10px] font-bold tracking-widest text-[var(--accent)] uppercase">
                         {faq.categoryLabel}
                       </span>
-                      <h3 className="text-xs sm:text-sm font-heading font-bold uppercase text-[var(--text-primary)]">
+                      <h3 className="font-heading text-xs font-bold text-[var(--text-primary)] uppercase sm:text-sm">
                         {faq.question}
                       </h3>
                     </div>
                     <CaretDown
                       size={16}
                       weight="bold"
-                      className={`text-[var(--text-secondary)] transition-transform duration-200 shrink-0 ${
+                      className={`shrink-0 text-[var(--text-secondary)] transition-transform duration-200 ${
                         isOpen ? 'rotate-180' : ''
                       }`}
                     />
@@ -217,7 +221,7 @@ export default function FAQPage() {
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2, ease: EMIL_EASE }}
-                        className="overflow-hidden px-5 sm:px-6 pb-6 text-xs text-[var(--text-secondary)] font-sans leading-relaxed border-t border-[var(--border)]/40 pt-4"
+                        className="overflow-hidden border-t border-[var(--border)]/40 px-5 pt-4 pb-6 font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:px-6"
                       >
                         {faq.answer}
                       </motion.div>
@@ -230,18 +234,19 @@ export default function FAQPage() {
         </div>
 
         {/* Footer Support Prompt */}
-        <div className="mt-12 p-6 bg-[var(--bg-elevated)] border border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border border-[var(--border)] bg-[var(--bg-elevated)] p-6 text-center sm:flex-row sm:text-left">
           <div>
-            <h4 className="text-xs font-mono font-bold uppercase text-[var(--text-primary)]">
+            <h4 className="font-mono text-xs font-bold text-[var(--text-primary)] uppercase">
               STILL HAVE AN UNANSWERED INQUIRY?
             </h4>
-            <p className="text-xs text-[var(--text-secondary)] font-sans mt-1">
-              Our technical apparel specialists are available to review specifications or advise on sizing.
+            <p className="mt-1 font-sans text-xs text-[var(--text-secondary)]">
+              Our technical apparel specialists are available to review specifications or advise on
+              sizing.
             </p>
           </div>
           <Link
             href="/contact"
-            className="touch-target px-5 py-2.5 bg-[var(--text-primary)] text-[var(--bg)] font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 active:scale-[0.97]"
+            className="touch-target flex items-center gap-1.5 bg-[var(--text-primary)] px-5 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase active:scale-[0.97]"
           >
             <span>CLIENT DESK</span>
             <ArrowRight size={14} weight="bold" />

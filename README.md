@@ -64,6 +64,7 @@ project-v1/
 ## Core Feature Specifications
 
 ### 1. 20-Frame Scroll-Linked Hero Canvas (`replace 3d`)
+
 - **Interactive Sequence**: 20 high-fidelity Full HD (1080p, 1920x1080) top-anchored frames (`ezgif-frame-001.jpg` through `ezgif-frame-020.jpg`) illustrating a CAD exploded tactical hoodie during vertical scroll.
 - **Two-Pass Decimation Preloader**: Employs `KEYFRAME_STRIDE = 4` to immediately download and cache 6 keyframes for instant smooth scrubbing, followed by seamless background hydration of intermediate frames.
 - **Top-Anchored Zero Scrim**: Renders directly on pure canvas with zero muddy black scrim overlays or layout reflows.
@@ -73,6 +74,7 @@ project-v1/
 - **Monospace Telemetry Ticker**: Real-time heads-up display showcasing frame index (`[001 / 020]`), scrub progress percentage, and compression telemetry.
 
 ### 2. 3D Transparent WebP Brand Emblem & Identity
+
 - **Transparent Rotating WebP**: Built from `xydv-logo-nobg.webp` (336 KB) utilizing true 8-bit alpha transparency and a cropped 360° rotation envelope, eliminating zoom hacks or canvas clipping.
 - **Dual-Theme Tab Icons**: Next.js App Router metadata configured with dynamic media queries:
   - Light mode: `xydv-logo.png` (high-contrast obsidian glyph)
@@ -80,6 +82,7 @@ project-v1/
   - Universal fallback: `favicon.ico` and 180x180 Apple Touch icons.
 
 ### 3. Commercial Grids & ASRV Evergreen Showcase
+
 - **3-Column Category Showcase (`CollectionShowcase.tsx`)**:
   - Faithful 3-column layout (`RUN`, `TRAIN` featuring `ASRV-WOMENS-133.jpg`, `REC`).
   - Semantic `<picture>` elements with responsive `<source>` queries and unoccluded midtone directional scrims.
@@ -94,10 +97,12 @@ project-v1/
 - **Lookbook Gallery**: 78 authentic high-resolution photography assets extracted directly from `XYDV_Apparel_Lookbook.pptx`.
 
 ### 4. Dual-Theme Loading Screens & Suspense Architecture
+
 - **Initial App Bootloader (`InitialLoadingScreen.tsx`)**: Displays dual-theme brand emblem, GPU-accelerated progress bar, telemetry metrics ticker, and seamless spring unmount.
 - **Route Transition Suspense (`loading.tsx`)**: Dedicated App Router loading state integrating `LoadingSymbol` with instant theme synchronization.
 
 ### 5. Commerce Engine & Cart Drawer
+
 - **Quick Cart Drawer**: Slide-out drawer with dynamic viewport height (`100dvh`), iOS safe area inset support (`pb-[max(1.5rem,env(safe-area-inset-bottom))]`), and Emil Kowalski spring mechanics.
 - **Free Shipping Delta**: Dynamic $150 threshold engine with real-time remaining delta calculation and progress bar.
 - **Authoritative Server Pricing**: Client price tampering neutralized via server-side catalog price lookup.
@@ -107,32 +112,32 @@ project-v1/
 
 ## Tech Stack
 
-| Layer | Technologies |
-|---|---|
-| **Frontend Framework** | Next.js 15.3 (App Router, React Server Components, Server Actions) |
-| **UI Library & Motion** | React 19, Motion v12, Lucide React, Phosphor Icons |
-| **Styling & Design System** | Tailwind CSS v4, Custom CSS Variables, Emil Kowalski Physics |
-| **State Management** | Zustand (persistent `vertex-cart`, `vertex-wishlist`), React Context |
-| **Backend API** | Express 5, Node.js 20+, RESTful API |
-| **Payments** | Razorpay (Orders API, Webhooks, HMAC-SHA256 Signatures) |
-| **Monorepo Tooling** | Turborepo 2.5+, npm workspaces, TypeScript 5.7 |
-| **Verification & Testing** | Native Node.js Test Runner (`node:test`, `node:assert/strict`) |
+| Layer                       | Technologies                                                         |
+| --------------------------- | -------------------------------------------------------------------- |
+| **Frontend Framework**      | Next.js 15.3 (App Router, React Server Components, Server Actions)   |
+| **UI Library & Motion**     | React 19, Motion v12, Lucide React, Phosphor Icons                   |
+| **Styling & Design System** | Tailwind CSS v4, Custom CSS Variables, Emil Kowalski Physics         |
+| **State Management**        | Zustand (persistent `vertex-cart`, `vertex-wishlist`), React Context |
+| **Backend API**             | Express 5, Node.js 20+, RESTful API                                  |
+| **Payments**                | Razorpay (Orders API, Webhooks, HMAC-SHA256 Signatures)              |
+| **Monorepo Tooling**        | Turborepo 2.5+, npm workspaces, TypeScript 5.7                       |
+| **Verification & Testing**  | Native Node.js Test Runner (`node:test`, `node:assert/strict`)       |
 
 ---
 
 ## Design System Tokens
 
-| Token | Light Mode Value | Dark Mode Value | Role |
-|---|---|---|---|
-| `--bg` | `#FFFFFF` | `#0A0A0A` | Canvas background |
-| `--surface` | `#F5F5F7` | `#111111` | Secondary containers & bento cells |
-| `--surface-elevated` | `#FFFFFF` | `#181818` | Elevated modals & cart drawer |
-| `--text-primary` | `#0A0A0A` | `#FFFFFF` | Monolithic headlines & high-contrast ink |
-| `--text-secondary` | `#52525B` | `#A1A1AA` | Technical specifications & metadata |
-| `--border` | `#E4E4E7` | `#1F1F1F` | 1px precision hairline borders |
-| `--accent` | `#1C1C1A` | `#FFFFFF` | Primary brand action & CTA emphasis |
-| `--volt` | `#E8FF00` | `#E8FF00` | High-contrast telemetry accent (17.66:1 contrast) |
-| `border-radius` | `0px` | `0px` | All-sharp architectural brutalist corners |
+| Token                | Light Mode Value | Dark Mode Value | Role                                              |
+| -------------------- | ---------------- | --------------- | ------------------------------------------------- |
+| `--bg`               | `#FFFFFF`        | `#0A0A0A`       | Canvas background                                 |
+| `--surface`          | `#F5F5F7`        | `#111111`       | Secondary containers & bento cells                |
+| `--surface-elevated` | `#FFFFFF`        | `#181818`       | Elevated modals & cart drawer                     |
+| `--text-primary`     | `#0A0A0A`        | `#FFFFFF`       | Monolithic headlines & high-contrast ink          |
+| `--text-secondary`   | `#52525B`        | `#A1A1AA`       | Technical specifications & metadata               |
+| `--border`           | `#E4E4E7`        | `#1F1F1F`       | 1px precision hairline borders                    |
+| `--accent`           | `#1C1C1A`        | `#FFFFFF`       | Primary brand action & CTA emphasis               |
+| `--volt`             | `#E8FF00`        | `#E8FF00`       | High-contrast telemetry accent (17.66:1 contrast) |
+| `border-radius`      | `0px`            | `0px`           | All-sharp architectural brutalist corners         |
 
 ---
 
@@ -146,6 +151,7 @@ npm test
 ```
 
 ### Breakdown of Tests:
+
 1. **Master Test Harness (`tests/runner.mjs`) — 99 Tests**:
    - **Tier 1: Feature Coverage (45 tests)**: Visual tokens, bento proportions, micro-interactions, motion timing, cart drawer, $150 free shipping delta, swatches, Razorpay lifecycle, WCAG 2.1 AA.
    - **Tier 2: Boundary & Corner Cases (35 tests)**: Viewport extremes (320px to 4K), 0ms reduced motion, quantity clamping, penny cliff ($149.99 vs $150.00), zero stock, signature buffer safety.

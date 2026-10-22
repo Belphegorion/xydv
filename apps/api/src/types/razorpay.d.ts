@@ -71,7 +71,14 @@ declare module 'razorpay' {
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 declare module 'mongoose' {
-  interface Query<ResultType, DocType, THelpers = {}, RawDocType = DocType, QueryOp = 'find', TVM = {}> {
+  interface Query<
+    ResultType,
+    DocType,
+    THelpers = {},
+    RawDocType = DocType,
+    QueryOp = 'find',
+    TVM = {},
+  > {
     sort(
       arg?:
         | string
@@ -79,7 +86,7 @@ declare module 'mongoose' {
         | [string, 1 | -1 | 'asc' | 'desc' | number][]
         | undefined
         | null,
-      options?: { override?: boolean }
+      options?: { override?: boolean },
     ): this;
   }
 }

@@ -16,7 +16,7 @@ export function RevenueTimelineChart({ data }: { data: RevenuePoint[] }) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="flex h-56 w-full items-center justify-center rounded border border-[#1f1f1f] bg-[#111111] p-6 text-center font-mono text-xs uppercase tracking-wider text-[#71717a]">
+      <div className="flex h-56 w-full items-center justify-center rounded border border-[#1f1f1f] bg-[#111111] p-6 text-center font-mono text-xs tracking-wider text-[#71717a] uppercase">
         No revenue transactions recorded in this interval
       </div>
     );
@@ -29,20 +29,22 @@ export function RevenueTimelineChart({ data }: { data: RevenuePoint[] }) {
 
   return (
     <div className="relative rounded border border-[#1f1f1f] bg-[#111111] p-5">
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#f5f5f5]">
+          <h3 className="font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
             Revenue Trajectory
           </h3>
-          <p className="font-mono text-[11px] text-[#71717a] mt-0.5">
+          <p className="mt-0.5 font-mono text-[11px] text-[#71717a]">
             Daily consolidated revenue & order throughput
           </p>
         </div>
         {hovered && (
           <div className="rounded border border-[#e8ff00]/40 bg-[#181818] px-2.5 py-1 font-mono text-xs">
             <span className="text-[#a0a0a0]">{hovered.date}: </span>
-            <span className="font-bold text-[#e8ff00]">₹{hovered.revenue.toLocaleString('en-IN')}</span>
-            <span className="text-[#71717a] ml-1.5">({hovered.orders} orders)</span>
+            <span className="font-bold text-[#e8ff00]">
+              ₹{hovered.revenue.toLocaleString('en-IN')}
+            </span>
+            <span className="ml-1.5 text-[#71717a]">({hovered.orders} orders)</span>
           </div>
         )}
       </div>
@@ -133,10 +135,10 @@ interface StatusBreakdown {
 
 const STATUS_COLORS: Record<string, string> = {
   delivered: '#22c55e', // Green
-  shipped: '#38bdf8',   // Sky blue
-  processing: '#e8ff00',// Volt yellow
+  shipped: '#38bdf8', // Sky blue
+  processing: '#e8ff00', // Volt yellow
   confirmed: '#f59e0b', // Amber
-  pending: '#a0a0a0',   // Gray
+  pending: '#a0a0a0', // Gray
   cancelled: '#ff3b3b', // Red
 };
 
@@ -145,7 +147,7 @@ export function OrderStatusDonutChart({ data }: { data: StatusBreakdown[] }) {
 
   if (total === 0) {
     return (
-      <div className="flex h-56 w-full items-center justify-center rounded border border-[#1f1f1f] bg-[#111111] p-6 text-center font-mono text-xs uppercase tracking-wider text-[#71717a]">
+      <div className="flex h-56 w-full items-center justify-center rounded border border-[#1f1f1f] bg-[#111111] p-6 text-center font-mono text-xs tracking-wider text-[#71717a] uppercase">
         No active orders recorded
       </div>
     );
@@ -159,11 +161,11 @@ export function OrderStatusDonutChart({ data }: { data: StatusBreakdown[] }) {
 
   return (
     <div className="rounded border border-[#1f1f1f] bg-[#111111] p-5">
-      <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#f5f5f5] mb-4">
+      <h3 className="mb-4 font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
         Order Status Breakdown
       </h3>
 
-      <div className="flex flex-col sm:flex-row items-center justify-around gap-6">
+      <div className="flex flex-col items-center justify-around gap-6 sm:flex-row">
         <div className="relative flex h-40 w-40 items-center justify-center">
           <svg className="h-full w-full -rotate-90" viewBox="0 0 160 160">
             <circle
@@ -199,20 +201,25 @@ export function OrderStatusDonutChart({ data }: { data: StatusBreakdown[] }) {
           </svg>
           <div className="absolute flex flex-col items-center">
             <span className="font-mono text-xl font-bold text-[#f5f5f5]">{total}</span>
-            <span className="font-mono text-[9px] uppercase tracking-wider text-[#71717a]">Orders</span>
+            <span className="font-mono text-[9px] tracking-wider text-[#71717a] uppercase">
+              Orders
+            </span>
           </div>
         </div>
 
         {/* Legend */}
-        <div className="space-y-2 w-full max-w-[180px]">
+        <div className="w-full max-w-[180px] space-y-2">
           {data.map((item) => {
             const color = STATUS_COLORS[item.status.toLowerCase()] || '#a0a0a0';
             const pct = Math.round((item.count / total) * 100);
             return (
-              <div key={item.status} className="flex items-center justify-between font-mono text-xs">
+              <div
+                key={item.status}
+                className="flex items-center justify-between font-mono text-xs"
+              >
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
-                  <span className="capitalize text-[#a0a0a0]">{item.status}</span>
+                  <span className="text-[#a0a0a0] capitalize">{item.status}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-[#f5f5f5]">{item.count}</span>
@@ -240,7 +247,7 @@ interface TopProduct {
 export function TopProductsChart({ data }: { data: TopProduct[] }) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex h-56 w-full items-center justify-center rounded border border-[#1f1f1f] bg-[#111111] p-6 text-center font-mono text-xs uppercase tracking-wider text-[#71717a]">
+      <div className="flex h-56 w-full items-center justify-center rounded border border-[#1f1f1f] bg-[#111111] p-6 text-center font-mono text-xs tracking-wider text-[#71717a] uppercase">
         No item sales recorded yet
       </div>
     );
@@ -250,11 +257,11 @@ export function TopProductsChart({ data }: { data: TopProduct[] }) {
 
   return (
     <div className="rounded border border-[#1f1f1f] bg-[#111111] p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#f5f5f5]">
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
           Top Selling Velocity
         </h3>
-        <span className="font-mono text-[10px] uppercase text-[#71717a]">Units & Revenue</span>
+        <span className="font-mono text-[10px] text-[#71717a] uppercase">Units & Revenue</span>
       </div>
 
       <div className="space-y-3.5">
@@ -263,15 +270,17 @@ export function TopProductsChart({ data }: { data: TopProduct[] }) {
           return (
             <div key={prod.id || idx} className="space-y-1">
               <div className="flex items-center justify-between font-mono text-xs">
-                <span className="truncate pr-2 font-medium text-[#f5f5f5] max-w-[200px] sm:max-w-[260px]">
+                <span className="max-w-[200px] truncate pr-2 font-medium text-[#f5f5f5] sm:max-w-[260px]">
                   {prod.name}
                 </span>
                 <div className="flex items-center gap-3 text-right">
                   <span className="text-[11px] text-[#71717a]">{prod.quantity} sold</span>
-                  <span className="font-bold text-[#e8ff00]">₹{prod.revenue.toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-[#e8ff00]">
+                    ₹{prod.revenue.toLocaleString('en-IN')}
+                  </span>
                 </div>
               </div>
-              <div className="h-2 w-full rounded-none bg-[#181818] overflow-hidden">
+              <div className="h-2 w-full overflow-hidden rounded-none bg-[#181818]">
                 <div
                   className="h-full bg-[#ffffff] transition-[width] duration-300"
                   style={{ width: `${widthPct}%` }}

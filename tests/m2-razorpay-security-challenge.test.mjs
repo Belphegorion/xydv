@@ -1,13 +1,13 @@
 /**
  * M2 Razorpay Security Hardening Empirical Adversarial Challenge Suite
  * Authored by m2_challenger_2 (teamwork_preview_challenger)
- * 
+ *
  * Empirically stress-tests:
  * 1. Quantity input validation in order creation (negative -1, non-integer 1.5, strings, 0, NaN rejected with HTTP 400).
  * 2. timingSafeEqual buffer comparison under mismatched buffer lengths (verify no RangeError thrown on short, long, or malformed signatures).
  * 3. Payment verification of non-existent orders with valid HMAC signatures (verify returns HTTP 404).
  * 4. Webhook event duplicate delivery and order capture idempotency (verify HTTP 200 idempotent response without duplication).
- * 
+ *
  * Verifies both:
  * - Live Express production API routes (apps/api/src/routes) mounted with MongoDB backing
  * - ServerRuntimeSimulator & contracts harness (tests/harness/)
@@ -42,8 +42,10 @@ import {
 } from './harness/contracts.mjs';
 import { CATALOG_FIXTURES } from './harness/seed-data.mjs';
 
-const ordersRouter = ordersRouterModule.default?.default || ordersRouterModule.default || ordersRouterModule;
-const webhooksRouter = webhooksRouterModule.default?.default || webhooksRouterModule.default || webhooksRouterModule;
+const ordersRouter =
+  ordersRouterModule.default?.default || ordersRouterModule.default || ordersRouterModule;
+const webhooksRouter =
+  webhooksRouterModule.default?.default || webhooksRouterModule.default || webhooksRouterModule;
 
 describe('M2 Adversarial Challenge: Razorpay Security Hardening Empirical Verification', () => {
   let server;
@@ -216,11 +218,7 @@ describe('M2 Adversarial Challenge: Razorpay Security Hardening Empirical Verifi
           }),
         });
 
-        assert.equal(
-          res.status,
-          400,
-          `Expected HTTP 400 Bad Request, got HTTP ${res.status}`,
-        );
+        assert.equal(res.status, 400, `Expected HTTP 400 Bad Request, got HTTP ${res.status}`);
 
         const data = await res.json();
         assert.equal(data.success, false);
@@ -273,13 +271,26 @@ describe('M2 Adversarial Challenge: Razorpay Security Hardening Empirical Verifi
         let threw = false;
         let result = true;
         try {
-          result = verifyRazorpaySignature('order_test', 'pay_test', testCase.sig, RAZORPAY_KEY_SECRET);
+          result = verifyRazorpaySignature(
+            'order_test',
+            'pay_test',
+            testCase.sig,
+            RAZORPAY_KEY_SECRET,
+          );
         } catch (e) {
           threw = true;
         }
 
-        assert.equal(threw, false, `verifyRazorpaySignature threw exception for '${testCase.label}'`);
-        assert.equal(result, false, `verifyRazorpaySignature must return false for '${testCase.label}'`);
+        assert.equal(
+          threw,
+          false,
+          `verifyRazorpaySignature threw exception for '${testCase.label}'`,
+        );
+        assert.equal(
+          result,
+          false,
+          `verifyRazorpaySignature must return false for '${testCase.label}'`,
+        );
       }
     });
 
@@ -294,8 +305,16 @@ describe('M2 Adversarial Challenge: Razorpay Security Hardening Empirical Verifi
           threw = true;
         }
 
-        assert.equal(threw, false, `verifyWebhookSignature threw exception for '${testCase.label}'`);
-        assert.equal(result, false, `verifyWebhookSignature must return false for '${testCase.label}'`);
+        assert.equal(
+          threw,
+          false,
+          `verifyWebhookSignature threw exception for '${testCase.label}'`,
+        );
+        assert.equal(
+          result,
+          false,
+          `verifyWebhookSignature must return false for '${testCase.label}'`,
+        );
       }
     });
   });
@@ -431,7 +450,11 @@ describe('M2 Adversarial Challenge: Razorpay Security Hardening Empirical Verifi
         body: rawBody,
       });
 
-      assert.equal(res1.status, 200, `First webhook delivery must return HTTP 200, got ${res1.status}`);
+      assert.equal(
+        res1.status,
+        200,
+        `First webhook delivery must return HTTP 200, got ${res1.status}`,
+      );
       const data1 = await res1.json();
       assert.equal(data1.status, 'ok');
       assert.equal(data1.received, true);
@@ -446,15 +469,15 @@ describe('M2 Adversarial Challenge: Razorpay Security Hardening Empirical Verifi
         body: rawBody,
       });
 
-      assert.equal(res2.status, 200, `Duplicate webhook delivery must return HTTP 200, got ${res2.status}`);
+      assert.equal(
+        res2.status,
+        200,
+        `Duplicate webhook delivery must return HTTP 200, got ${res2.status}`,
+      );
       const data2 = await res2.json();
       assert.equal(data2.status, 'ok');
       assert.equal(data2.received, true);
-      assert.equal(
-        data2.idempotent,
-        true,
-        'Duplicate webhook event must return idempotent: true',
-      );
+      assert.equal(data2.idempotent, true, 'Duplicate webhook event must return idempotent: true');
       assert.match(
         data2.message,
         new RegExp(uniqueEventId),

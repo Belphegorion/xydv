@@ -95,22 +95,22 @@ export function CollectionShowcase() {
   return (
     <section
       aria-labelledby="collection-showcase-heading"
-      className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24"
+      className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24"
     >
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 border-b border-[var(--border)] pb-6">
+      <div className="mb-8 flex flex-col justify-between border-b border-[var(--border)] pb-6 sm:mb-12 md:flex-row md:items-end">
         <div>
-          <span className="text-[var(--text-secondary)] dark:text-zinc-400 text-xs font-mono font-semibold uppercase tracking-[0.25em]">
+          <span className="font-mono text-xs font-semibold tracking-[0.25em] text-[var(--text-secondary)] uppercase dark:text-zinc-400">
             DISCIPLINE ARCHIVE // CAMPAIGN SS26
           </span>
           <h2
             id="collection-showcase-heading"
-            className="text-[var(--text-primary)] text-3xl md:text-5xl font-bold uppercase tracking-tighter font-heading mt-2"
+            className="font-heading mt-2 text-3xl font-bold tracking-tighter text-[var(--text-primary)] uppercase md:text-5xl"
           >
             TECHNICAL DISCIPLINE SHOWCASE
           </h2>
         </div>
-        <div className="flex items-center gap-3 mt-4 md:mt-0 text-[var(--text-secondary)] text-xs font-mono uppercase tracking-widest">
+        <div className="mt-4 flex items-center gap-3 font-mono text-xs tracking-widest text-[var(--text-secondary)] uppercase md:mt-0">
           <span>03 DISCIPLINES</span>
           <span aria-hidden="true">•</span>
           <span>LAB TESTED</span>
@@ -118,6 +118,7 @@ export function CollectionShowcase() {
       </div>
 
       {/* Split 3-Column Editorial Showcase Grid */}
+      {/* prettier-ignore */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         {SHOWCASE_COLLECTIONS.map((item, idx) => {
           const isMobileActive = activeMobileCardId === item.id;
@@ -146,15 +147,16 @@ export function CollectionShowcase() {
                     toggleMobileCard(item.id);
                   }
                 }}
-                className={`group dark relative flex flex-col justify-between overflow-hidden bg-[#0a0a0a] border ${
+                className={`group dark relative flex flex-col justify-between overflow-hidden border bg-[#0a0a0a] ${
                   isMobileActive ? 'border-white/40 shadow-2xl' : 'border-[#1f1f1f]'
-                } min-h-[480px] sm:min-h-[560px] lg:min-h-[640px] p-6 sm:p-8 hover:border-white/40 hover:shadow-2xl transition-[border-color,box-shadow] duration-300 cursor-pointer sm:cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black`}
+                } min-h-[480px] cursor-pointer p-6 transition-[border-color,box-shadow] duration-300 hover:border-white/40 hover:shadow-2xl focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:outline-none sm:min-h-[560px] sm:cursor-default sm:p-8 lg:min-h-[640px]`}
               >
                 {/* Media Container with Semantic <picture> & Responsive Art Direction */}
                 <div className="absolute inset-0 z-0 overflow-hidden bg-[#0a0a0a]">
-                  <picture className="w-full h-full block">
+                  <picture className="block h-full w-full">
                     <source media="(min-width: 1024px)" srcSet={item.images.desktop} />
                     <source media="(min-width: 640px)" srcSet={item.images.tablet} />
+                    {/* prettier-ignore */}
                     <img
                       src={item.images.mobile}
                       alt={item.images.alt}
@@ -171,18 +173,18 @@ export function CollectionShowcase() {
                       Bottom Scrim: Atmospheric gradient for typography/buttons.
                       Midtones: Purely unoccluded for garment/athlete texture. */}
                   <div
-                    className="absolute inset-x-0 top-0 h-32 sm:h-40 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none z-10"
+                    className="pointer-events-none absolute inset-x-0 top-0 z-10 h-32 bg-gradient-to-b from-black/80 via-black/40 to-transparent sm:h-40"
                     aria-hidden="true"
                   />
                   <div
-                    className="absolute inset-x-0 bottom-0 h-64 sm:h-72 lg:h-80 bg-gradient-to-t from-black/90 via-black/55 to-transparent pointer-events-none z-10"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-64 bg-gradient-to-t from-black/90 via-black/55 to-transparent sm:h-72 lg:h-80"
                     aria-hidden="true"
                   />
                 </div>
 
                 {/* Top Taxonomy Strip */}
                 <div className="relative z-20 flex items-start justify-between gap-4">
-                  <span className="text-[11px] font-mono font-semibold uppercase tracking-[0.25em] text-white/90">
+                  <span className="font-mono text-[11px] font-semibold tracking-[0.25em] text-white/90 uppercase">
                     {item.divisionNumber}
                   </span>
                   <Badge variant="volt" size="sm" dot>
@@ -191,15 +193,15 @@ export function CollectionShowcase() {
                 </div>
 
                 {/* Center / Bottom Content Overlay (Faithful to ASRV Reference) */}
-                <div className="relative z-20 flex flex-col items-center justify-end text-center mt-16 sm:mt-24">
-                  <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-widest font-heading text-white drop-shadow-[0_2px_15px_rgba(0,0,0,0.7)] group-hover:tracking-[0.2em] sm:group-hover:-translate-y-1 transition-[letter-spacing,transform] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]">
+                <div className="relative z-20 mt-16 flex flex-col items-center justify-end text-center sm:mt-24">
+                  <h3 className="font-heading text-3xl font-bold tracking-widest text-white uppercase drop-shadow-[0_2px_15px_rgba(0,0,0,0.7)] transition-[letter-spacing,transform] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:tracking-[0.2em] sm:text-4xl sm:group-hover:-translate-y-1 lg:text-5xl">
                     {item.title}
                   </h3>
 
                   {/* Mobile Tap Indicator */}
-                  <div className="sm:hidden mt-2 flex items-center justify-center">
+                  <div className="mt-2 flex items-center justify-center sm:hidden">
                     <span
-                      className={`text-[10px] font-mono font-semibold tracking-[0.2em] transition-colors duration-200 ${
+                      className={`font-mono text-[10px] font-semibold tracking-[0.2em] transition-colors duration-200 ${
                         isMobileActive ? 'text-[var(--accent)]' : 'text-white/70'
                       }`}
                     >
@@ -210,29 +212,29 @@ export function CollectionShowcase() {
                   {/* Hover-Revealed Content Container on Desktop; Tap-to-Reveal Animation on Mobile */}
                   {/* Immediate accessibility contract: opacity-100 max-h-none translate-y-0 */}
                   <div
-                    className={`w-full overflow-hidden transition-[opacity,max-height,transform] duration-300 delay-0 sm:delay-100 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                    className={`w-full overflow-hidden transition-[opacity,max-height,transform] delay-0 duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] sm:delay-100 ${
                       isMobileActive
-                        ? 'opacity-100 max-h-56 translate-y-0 pointer-events-auto'
-                        : 'opacity-0 max-h-0 translate-y-3 pointer-events-none'
-                    } sm:opacity-0 sm:max-h-0 sm:overflow-hidden sm:translate-y-3 sm:pointer-events-none sm:group-hover:opacity-100 sm:group-hover:max-h-56 sm:group-hover:translate-y-0 sm:group-hover:pointer-events-auto sm:group-hover:overflow-visible sm:group-focus-within:opacity-100 sm:group-focus-within:max-h-56 sm:group-focus-within:translate-y-0 sm:group-focus-within:pointer-events-auto sm:group-focus-within:overflow-visible`}
+                        ? 'pointer-events-auto max-h-56 translate-y-0 opacity-100'
+                        : 'pointer-events-none max-h-0 translate-y-3 opacity-0'
+                    } sm:pointer-events-none sm:max-h-0 sm:translate-y-3 sm:overflow-hidden sm:opacity-0 sm:group-focus-within:pointer-events-auto sm:group-focus-within:max-h-56 sm:group-focus-within:translate-y-0 sm:group-focus-within:overflow-visible sm:group-focus-within:opacity-100 sm:group-hover:pointer-events-auto sm:group-hover:max-h-56 sm:group-hover:translate-y-0 sm:group-hover:overflow-visible sm:group-hover:opacity-100`}
                   >
-                    <p className="text-xs sm:text-sm text-zinc-200 font-sans mt-2 max-w-xs mx-auto leading-relaxed">
+                    <p className="mx-auto mt-2 max-w-xs font-sans text-xs leading-relaxed text-zinc-200 sm:text-sm">
                       {item.subtitle}
                     </p>
 
                     {/* Dual Gender Action Buttons Group (Men / Women) */}
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 mt-3 sm:mt-5 w-full">
+                    <div className="mt-3 flex w-full flex-col items-center justify-center gap-2.5 sm:mt-5 sm:flex-row">
                       <Link
                         href={item.actions.men.href}
                         onClick={(e) => e.stopPropagation()}
-                        className="btn-tactile touch-target w-full sm:w-auto min-w-[120px] sm:min-w-[140px] min-h-[48px] px-5 py-2.5 bg-white text-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white hover:border-white border border-transparent font-mono text-xs font-bold uppercase tracking-widest transition-[background-color,color,border-color,transform] duration-200 delay-0 sm:delay-100 shadow-md active:scale-[0.97] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                        className="btn-tactile touch-target flex min-h-[48px] w-full min-w-[120px] items-center justify-center border border-transparent bg-white px-5 py-2.5 font-mono text-xs font-bold tracking-widest text-[#0a0a0a] uppercase shadow-md transition-[background-color,color,border-color,transform] delay-0 duration-200 hover:border-white hover:bg-[#0a0a0a] hover:text-white focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:outline-none active:scale-[0.97] sm:w-auto sm:min-w-[140px] sm:delay-100"
                       >
                         {item.actions.men.label}
                       </Link>
                       <Link
                         href={item.actions.women.href}
                         onClick={(e) => e.stopPropagation()}
-                        className="btn-tactile touch-target w-full sm:w-auto min-w-[120px] sm:min-w-[140px] min-h-[48px] px-5 py-2.5 bg-white text-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white hover:border-white border border-transparent font-mono text-xs font-bold uppercase tracking-widest transition-[background-color,color,border-color,transform] duration-200 delay-0 sm:delay-150 shadow-md active:scale-[0.97] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                        className="btn-tactile touch-target flex min-h-[48px] w-full min-w-[120px] items-center justify-center border border-transparent bg-white px-5 py-2.5 font-mono text-xs font-bold tracking-widest text-[#0a0a0a] uppercase shadow-md transition-[background-color,color,border-color,transform] delay-0 duration-200 hover:border-white hover:bg-[#0a0a0a] hover:text-white focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:outline-none active:scale-[0.97] sm:w-auto sm:min-w-[140px] sm:delay-150"
                       >
                         {item.actions.women.label}
                       </Link>

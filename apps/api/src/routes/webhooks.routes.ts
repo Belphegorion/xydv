@@ -9,16 +9,16 @@ export async function isWebhookEventProcessed(eventId: string): Promise<boolean>
   return Boolean(existing);
 }
 
-export async function recordWebhookEventProcessed(eventId: string, eventType: string): Promise<void> {
+export async function recordWebhookEventProcessed(
+  eventId: string,
+  eventType: string,
+): Promise<void> {
   await ProcessedWebhookEvent.create({ eventId, eventType });
 }
 
 const router = Router();
 
 // POST /api/webhooks/razorpay — raw body Buffer preserved in server.ts
-router.post(
-  '/razorpay',
-  webhookController.handleRazorpayWebhook.bind(webhookController),
-);
+router.post('/razorpay', webhookController.handleRazorpayWebhook.bind(webhookController));
 
 export default router;

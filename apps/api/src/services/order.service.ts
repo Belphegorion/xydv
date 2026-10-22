@@ -49,16 +49,14 @@ export async function getLiveStoreSettings(): Promise<StorePricingSettings> {
           typeof setting.shippingFee === 'number'
             ? setting.shippingFee
             : typeof setting.standardShippingFee === 'number'
-            ? setting.standardShippingFee
-            : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE,
+              ? setting.standardShippingFee
+              : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE,
         freeShippingThreshold:
           typeof setting.freeShippingThreshold === 'number'
             ? setting.freeShippingThreshold
             : COMMERCE_CONSTANTS.FREE_SHIPPING_THRESHOLD,
         taxRate:
-          typeof setting.taxRate === 'number'
-            ? setting.taxRate
-            : COMMERCE_CONSTANTS.TAX_RATE,
+          typeof setting.taxRate === 'number' ? setting.taxRate : COMMERCE_CONSTANTS.TAX_RATE,
         currency: setting.currency || COMMERCE_CONSTANTS.CURRENCY,
       };
       lastSettingsFetch = now;
@@ -268,8 +266,7 @@ export class OrderService {
         ? product.variants.find(
             (v) =>
               (item.sku && v.sku === item.sku) ||
-              (item.variantId &&
-                (v.id === item.variantId || v._id?.toString() === item.variantId)),
+              (item.variantId && (v.id === item.variantId || v._id?.toString() === item.variantId)),
           )
         : product.variants[0];
 
@@ -307,10 +304,7 @@ export class OrderService {
         price: itemPrice,
         quantity: item.quantity,
         image:
-          variant.imageUrl ||
-          variant.images?.[0] ||
-          primaryProductImg ||
-          '/products/image-4-1.jpg',
+          variant.imageUrl || variant.images?.[0] || primaryProductImg || '/products/image-4-1.jpg',
       };
 
       validatedItems.push(validatedItem);
@@ -365,8 +359,7 @@ export class OrderService {
           line2: shippingAddress.line2,
           city: shippingAddress.city || 'Standard City',
           state: shippingAddress.state || 'Standard State',
-          postalCode:
-            shippingAddress.postalCode || shippingAddress.zip || '000000',
+          postalCode: shippingAddress.postalCode || shippingAddress.zip || '000000',
           country: shippingAddress.country ?? 'IN',
           phone: shippingAddress.phone || '0000000000',
         }
@@ -567,8 +560,7 @@ export class OrderService {
         product.variants.find(
           (v) =>
             (item.sku && v.sku === item.sku) ||
-            (item.variantId &&
-              (v.id === item.variantId || v._id?.toString() === item.variantId)),
+            (item.variantId && (v.id === item.variantId || v._id?.toString() === item.variantId)),
         ) ?? product.variants[0];
 
       if (!variant) {

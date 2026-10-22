@@ -39,13 +39,11 @@ export const SEED_PRODUCTS = STATIC_CATALOG.map((p, idx) => ({
   isFeatured: idx < 4,
   featured: idx < 4,
   bestseller: idx < 6,
-  averageRating: Number((4.7 + ((idx % 3) * 0.1)).toFixed(1)),
+  averageRating: Number((4.7 + (idx % 3) * 0.1).toFixed(1)),
   reviewCount: 45 + idx * 15,
   specs: (p.specs || []).map((s) => ({ label: s.label, value: s.value })),
   features: p.features || [],
-  materials: [
-    'Cordura® Ballistic Nylon, 4-Way AeroFlex Stretch Weave, Hydrophobic DWR Coating',
-  ],
+  materials: ['Cordura® Ballistic Nylon, 4-Way AeroFlex Stretch Weave, Hydrophobic DWR Coating'],
   variants: p.variants.map((v) => ({
     id: v.id,
     sku: v.sku,

@@ -97,18 +97,28 @@ export default function SizingPage() {
     let baseSizeIndex = 2; // Default M
 
     if (gender === 'men') {
-      if (weightLbs < 145) baseSizeIndex = 0; // XS
-      else if (weightLbs < 165) baseSizeIndex = 1; // S
-      else if (weightLbs < 185) baseSizeIndex = 2; // M
-      else if (weightLbs < 210) baseSizeIndex = 3; // L
-      else if (weightLbs < 235) baseSizeIndex = 4; // XL
+      if (weightLbs < 145)
+        baseSizeIndex = 0; // XS
+      else if (weightLbs < 165)
+        baseSizeIndex = 1; // S
+      else if (weightLbs < 185)
+        baseSizeIndex = 2; // M
+      else if (weightLbs < 210)
+        baseSizeIndex = 3; // L
+      else if (weightLbs < 235)
+        baseSizeIndex = 4; // XL
       else baseSizeIndex = 5; // XXL
     } else {
-      if (weightLbs < 115) baseSizeIndex = 0; // XS
-      else if (weightLbs < 130) baseSizeIndex = 1; // S
-      else if (weightLbs < 150) baseSizeIndex = 2; // M
-      else if (weightLbs < 170) baseSizeIndex = 3; // L
-      else if (weightLbs < 195) baseSizeIndex = 4; // XL
+      if (weightLbs < 115)
+        baseSizeIndex = 0; // XS
+      else if (weightLbs < 130)
+        baseSizeIndex = 1; // S
+      else if (weightLbs < 150)
+        baseSizeIndex = 2; // M
+      else if (weightLbs < 170)
+        baseSizeIndex = 3; // L
+      else if (weightLbs < 195)
+        baseSizeIndex = 4; // XL
       else baseSizeIndex = 5; // XXL
     }
 
@@ -132,8 +142,8 @@ export default function SizingPage() {
         fit === 'compression'
           ? 'Anatomical zero-slip tension hugging muscle bellies for maximum blood circulation and posture support.'
           : fit === 'relaxed'
-          ? 'Generous architectural silhouette with dropped shoulders and unrestricted airflow for recovery and leisure.'
-          : 'Contoured athletic cut hugging shoulders and chest with comfortable taper through the core.',
+            ? 'Generous architectural silhouette with dropped shoulders and unrestricted airflow for recovery and leisure.'
+            : 'Contoured athletic cut hugging shoulders and chest with comfortable taper through the core.',
     };
   }, [gender, fit, heightCm, weightKg]);
 
@@ -147,47 +157,48 @@ export default function SizingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] pt-24 sm:pt-32 pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <div className="min-h-screen bg-[var(--bg)] pt-24 pb-24 sm:pt-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Header */}
-        <div className="border-b border-[var(--border)] pb-8 mb-10">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-            <span className="text-[11px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+        <div className="mb-10 border-b border-[var(--border)] pb-8">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--accent)]" />
+            <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
               BIOMECHANICAL FIT ARCHITECTURE
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight font-heading text-[var(--text-primary)]">
+          <h1 className="font-heading text-3xl font-black tracking-tight text-[var(--text-primary)] uppercase sm:text-4xl md:text-5xl">
             SIZE & FIT CALCULATOR
           </h1>
-          <p className="text-[var(--text-secondary)] text-xs sm:text-sm font-sans mt-2 max-w-2xl">
-            Calibrated against elite athlete anatomical scans. Input your physical metrics to resolve your exact size profile.
+          <p className="mt-2 max-w-2xl font-sans text-xs text-[var(--text-secondary)] sm:text-sm">
+            Calibrated against elite athlete anatomical scans. Input your physical metrics to
+            resolve your exact size profile.
           </p>
         </div>
 
         {/* ========================================================= */}
         {/* SECTION 1: INTERACTIVE FIT RECOMMENDER ENGINE             */}
         {/* ========================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+        <div className="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Controls Box */}
-          <div className="lg:col-span-7 bg-[var(--bg-surface)] border border-[var(--border)] p-6 sm:p-8 space-y-6">
-            <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border)] pb-3">
+          <div className="space-y-6 border border-[var(--border)] bg-[var(--bg-surface)] p-6 sm:p-8 lg:col-span-7">
+            <h2 className="border-b border-[var(--border)] pb-3 font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase">
               STEP 01 // ATHLETE PHYSICAL PROFILE
             </h2>
 
             {/* Gender Division Toggle */}
             <div>
-              <label className="text-xs font-mono text-[var(--text-muted)] uppercase block mb-2">
+              <label className="mb-2 block font-mono text-xs text-[var(--text-muted)] uppercase">
                 DIVISION SELECTION
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setGender('men')}
-                  className={`h-11 font-mono text-xs font-bold uppercase tracking-wider transition-colors active:scale-[0.97] ${
+                  className={`h-11 font-mono text-xs font-bold tracking-wider uppercase transition-colors active:scale-[0.97] ${
                     gender === 'men'
-                      ? 'bg-[var(--text-primary)] text-[var(--bg)] border border-[var(--text-primary)]'
-                      : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--text-primary)]'
+                      ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)]'
+                      : 'border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)]'
                   }`}
                 >
                   MEN&apos;S DIVISION
@@ -195,10 +206,10 @@ export default function SizingPage() {
                 <button
                   type="button"
                   onClick={() => setGender('women')}
-                  className={`h-11 font-mono text-xs font-bold uppercase tracking-wider transition-colors active:scale-[0.97] ${
+                  className={`h-11 font-mono text-xs font-bold tracking-wider uppercase transition-colors active:scale-[0.97] ${
                     gender === 'women'
-                      ? 'bg-[var(--text-primary)] text-[var(--bg)] border border-[var(--text-primary)]'
-                      : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--text-primary)]'
+                      ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)]'
+                      : 'border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)]'
                   }`}
                 >
                   WOMEN&apos;S DIVISION
@@ -208,10 +219,13 @@ export default function SizingPage() {
 
             {/* Height Slider */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono text-[var(--text-muted)] uppercase">STATURE (HEIGHT)</span>
-                <span className="text-xs font-mono font-bold text-[var(--text-primary)]">
-                  {heightCm} CM / {Math.floor(heightCm / 30.48)}&apos;{Math.round((heightCm % 30.48) / 2.54)}&quot;
+              <div className="mb-2 flex items-center justify-between">
+                <span className="font-mono text-xs text-[var(--text-muted)] uppercase">
+                  STATURE (HEIGHT)
+                </span>
+                <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
+                  {heightCm} CM / {Math.floor(heightCm / 30.48)}&apos;
+                  {Math.round((heightCm % 30.48) / 2.54)}&quot;
                 </span>
               </div>
               <input
@@ -222,9 +236,9 @@ export default function SizingPage() {
                 max={205}
                 value={heightCm}
                 onChange={(e) => setHeightCm(Number(e.target.value))}
-                className="w-full accent-[var(--accent)] cursor-pointer"
+                className="w-full cursor-pointer accent-[var(--accent)]"
               />
-              <div className="flex justify-between text-[10px] font-mono text-[var(--text-muted)] mt-1">
+              <div className="mt-1 flex justify-between font-mono text-[10px] text-[var(--text-muted)]">
                 <span>150 CM (4&apos;11&quot;)</span>
                 <span>180 CM (5&apos;11&quot;)</span>
                 <span>205 CM (6&apos;9&quot;)</span>
@@ -233,9 +247,11 @@ export default function SizingPage() {
 
             {/* Weight Slider */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono text-[var(--text-muted)] uppercase">MASS (WEIGHT)</span>
-                <span className="text-xs font-mono font-bold text-[var(--text-primary)]">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="font-mono text-xs text-[var(--text-muted)] uppercase">
+                  MASS (WEIGHT)
+                </span>
+                <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
                   {weightKg} KG / {Math.round(weightKg * 2.20462)} LBS
                 </span>
               </div>
@@ -247,9 +263,9 @@ export default function SizingPage() {
                 max={130}
                 value={weightKg}
                 onChange={(e) => setWeightKg(Number(e.target.value))}
-                className="w-full accent-[var(--accent)] cursor-pointer"
+                className="w-full cursor-pointer accent-[var(--accent)]"
               />
-              <div className="flex justify-between text-[10px] font-mono text-[var(--text-muted)] mt-1">
+              <div className="mt-1 flex justify-between font-mono text-[10px] text-[var(--text-muted)]">
                 <span>45 KG (99 LBS)</span>
                 <span>85 KG (187 LBS)</span>
                 <span>130 KG (286 LBS)</span>
@@ -258,7 +274,7 @@ export default function SizingPage() {
 
             {/* Fit Preference */}
             <div>
-              <label className="text-xs font-mono text-[var(--text-muted)] uppercase block mb-2">
+              <label className="mb-2 block font-mono text-xs text-[var(--text-muted)] uppercase">
                 DESIRED SILHOUETTE & FIT PREFERENCE
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -271,10 +287,10 @@ export default function SizingPage() {
                     key={f.id}
                     type="button"
                     onClick={() => setFit(f.id as FitPreference)}
-                    className={`h-11 px-2 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-colors active:scale-[0.97] ${
+                    className={`h-11 px-2 font-mono text-[10px] font-bold tracking-wider uppercase transition-colors active:scale-[0.97] sm:text-xs ${
                       fit === f.id
-                        ? 'bg-[var(--text-primary)] text-[var(--bg)] border border-[var(--text-primary)]'
-                        : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--text-primary)]'
+                        ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)]'
+                        : 'border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)]'
                     }`}
                   >
                     {f.label}
@@ -285,35 +301,37 @@ export default function SizingPage() {
           </div>
 
           {/* Live Algorithmic Output Box */}
-          <div className="lg:col-span-5 bg-[var(--bg-surface)] border border-[var(--border)] p-6 sm:p-8 flex flex-col justify-between">
+          <div className="flex flex-col justify-between border border-[var(--border)] bg-[var(--bg-surface)] p-6 sm:p-8 lg:col-span-5">
             <div>
-              <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border)] pb-3">
+              <h2 className="border-b border-[var(--border)] pb-3 font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase">
                 STEP 02 // ALGORITHMIC DIAGNOSIS
               </h2>
 
-              <div className="my-8 text-center p-6 bg-[var(--bg-elevated)] border border-[var(--border)]">
-                <span className="text-[11px] font-mono font-bold uppercase text-[var(--accent)] tracking-[0.2em] block mb-2">
+              <div className="my-8 border border-[var(--border)] bg-[var(--bg-elevated)] p-6 text-center">
+                <span className="mb-2 block font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                   RECOMMENDED HARDWARE SIZE
                 </span>
-                <span className="text-5xl sm:text-6xl font-black font-mono tracking-tight text-[var(--text-primary)]">
+                <span className="font-mono text-5xl font-black tracking-tight text-[var(--text-primary)] sm:text-6xl">
                   SIZE {recommendation.size}
                 </span>
                 <div className="mt-3 flex items-center justify-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+                  <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
                     {recommendation.confidence}% CONFIDENCE MATCH
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-3 text-xs font-sans text-[var(--text-secondary)] leading-relaxed">
+              <div className="space-y-3 font-sans text-xs leading-relaxed text-[var(--text-secondary)]">
                 <p>
-                  <strong className="text-[var(--text-primary)] font-mono uppercase">BEHAVIORAL FIT:</strong>{' '}
+                  <strong className="font-mono text-[var(--text-primary)] uppercase">
+                    BEHAVIORAL FIT:
+                  </strong>{' '}
                   {recommendation.description}
                 </p>
                 <p>
                   Calculated against a body mass index of{' '}
-                  <strong className="text-[var(--text-primary)] font-mono">
+                  <strong className="font-mono text-[var(--text-primary)]">
                     {(weightKg / ((heightCm / 100) * (heightCm / 100))).toFixed(1)}
                   </strong>{' '}
                   with anatomical shoulder and latissimus dorsi clearance.
@@ -321,10 +339,10 @@ export default function SizingPage() {
               </div>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-[var(--border)]">
+            <div className="mt-8 border-t border-[var(--border)] pt-4">
               <Link
                 href="/products"
-                className="w-full h-11 bg-[var(--text-primary)] text-[var(--bg)] font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-[0.97] transition-[background-color,border-color,opacity,transform] duration-150"
+                className="flex h-11 w-full items-center justify-center gap-2 bg-[var(--text-primary)] font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-[background-color,border-color,opacity,transform] duration-150 active:scale-[0.97]"
               >
                 <span>EXPLORE {recommendation.size} GEAR IN CATALOG</span>
                 <ArrowRight size={14} weight="bold" />
@@ -337,12 +355,15 @@ export default function SizingPage() {
         {/* SECTION 2: COMPREHENSIVE TACTICAL SIZE SPECIFICATION TABLE */}
         {/* ========================================================= */}
         <section aria-labelledby="matrix-heading" className="border-t border-[var(--border)] pt-12">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-4">
+          <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <span className="text-[11px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+              <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                 DIMENSIONAL BLUEPRINT
               </span>
-              <h2 id="matrix-heading" className="text-2xl sm:text-3xl font-black uppercase font-heading text-[var(--text-primary)]">
+              <h2
+                id="matrix-heading"
+                className="font-heading text-2xl font-black text-[var(--text-primary)] uppercase sm:text-3xl"
+              >
                 SPECIFICATION MATRIX
               </h2>
             </div>
@@ -355,7 +376,7 @@ export default function SizingPage() {
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`px-3 py-1.5 text-xs font-mono font-bold uppercase transition-colors ${
+                    className={`px-3 py-1.5 font-mono text-xs font-bold uppercase transition-colors ${
                       activeTab === tab
                         ? 'bg-[var(--text-primary)] text-[var(--bg)]'
                         : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -371,7 +392,7 @@ export default function SizingPage() {
                 <button
                   type="button"
                   onClick={() => setUnitSystem('in')}
-                  className={`px-2.5 py-1.5 text-xs font-mono font-bold uppercase transition-colors ${
+                  className={`px-2.5 py-1.5 font-mono text-xs font-bold uppercase transition-colors ${
                     unitSystem === 'in'
                       ? 'bg-[var(--text-primary)] text-[var(--bg)]'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -382,7 +403,7 @@ export default function SizingPage() {
                 <button
                   type="button"
                   onClick={() => setUnitSystem('cm')}
-                  className={`px-2.5 py-1.5 text-xs font-mono font-bold uppercase transition-colors ${
+                  className={`px-2.5 py-1.5 font-mono text-xs font-bold uppercase transition-colors ${
                     unitSystem === 'cm'
                       ? 'bg-[var(--text-primary)] text-[var(--bg)]'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -396,42 +417,52 @@ export default function SizingPage() {
 
           {/* Table */}
           <div className="overflow-x-auto border border-[var(--border)]">
-            <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-[var(--text-primary)] uppercase">
+            <table className="w-full text-left font-mono text-xs">
+              <thead className="border-b border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] uppercase">
                 <tr>
-                  <th className="py-3.5 px-4 font-bold">SIZE</th>
-                  <th className="py-3.5 px-4 font-bold">CHEST / BUST ({unitSystem.toUpperCase()})</th>
-                  <th className="py-3.5 px-4 font-bold">NATURAL WAIST ({unitSystem.toUpperCase()})</th>
-                  <th className="py-3.5 px-4 font-bold">HIP MEASUREMENT ({unitSystem.toUpperCase()})</th>
-                  <th className="py-3.5 px-4 font-bold">INSEAM LENGTH ({unitSystem.toUpperCase()})</th>
+                  <th className="px-4 py-3.5 font-bold">SIZE</th>
+                  <th className="px-4 py-3.5 font-bold">
+                    CHEST / BUST ({unitSystem.toUpperCase()})
+                  </th>
+                  <th className="px-4 py-3.5 font-bold">
+                    NATURAL WAIST ({unitSystem.toUpperCase()})
+                  </th>
+                  <th className="px-4 py-3.5 font-bold">
+                    HIP MEASUREMENT ({unitSystem.toUpperCase()})
+                  </th>
+                  <th className="px-4 py-3.5 font-bold">
+                    INSEAM LENGTH ({unitSystem.toUpperCase()})
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-[var(--text-secondary)]">
                 {currentChart.map((row) => (
                   <tr
                     key={row.size}
-                    className={`hover:bg-[var(--bg-surface)] transition-colors ${
-                      row.size === recommendation.size ? 'bg-[var(--accent)]/10 font-bold text-[var(--text-primary)]' : ''
+                    className={`transition-colors hover:bg-[var(--bg-surface)] ${
+                      row.size === recommendation.size
+                        ? 'bg-[var(--accent)]/10 font-bold text-[var(--text-primary)]'
+                        : ''
                     }`}
                   >
-                    <td className="py-3.5 px-4 font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <td className="flex items-center gap-2 px-4 py-3.5 font-bold text-[var(--text-primary)]">
                       <span>{row.size}</span>
                       {row.size === recommendation.size && (
-                        <span className="px-1.5 py-0.5 text-[9px] bg-[var(--accent)] text-black font-bold uppercase">
+                        <span className="bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold text-black uppercase">
                           MATCH
                         </span>
                       )}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="px-4 py-3.5">
                       {formatUnit(row.chest[0])} - {formatUnit(row.chest[1])}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="px-4 py-3.5">
                       {formatUnit(row.waist[0])} - {formatUnit(row.waist[1])}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="px-4 py-3.5">
                       {formatUnit(row.hip[0])} - {formatUnit(row.hip[1])}
                     </td>
-                    <td className="py-3.5 px-4">{formatUnit(row.inseam)}</td>
+                    <td className="px-4 py-3.5">{formatUnit(row.inseam)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -442,15 +473,21 @@ export default function SizingPage() {
         {/* ========================================================= */}
         {/* SECTION 3: HOW TO MEASURE GUIDE                           */}
         {/* ========================================================= */}
-        <section aria-labelledby="guide-heading" className="border-t border-[var(--border)] mt-16 pt-12">
-          <span className="text-[11px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+        <section
+          aria-labelledby="guide-heading"
+          className="mt-16 border-t border-[var(--border)] pt-12"
+        >
+          <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
             CALIBRATION PROTOCOL
           </span>
-          <h2 id="guide-heading" className="text-2xl sm:text-3xl font-black uppercase font-heading text-[var(--text-primary)] mb-6">
+          <h2
+            id="guide-heading"
+            className="font-heading mb-6 text-2xl font-black text-[var(--text-primary)] uppercase sm:text-3xl"
+          >
             HOW TO MEASURE
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
             {[
               {
                 step: '01',
@@ -477,10 +514,19 @@ export default function SizingPage() {
                   'Measure from highest point of inner crotch seam straight down the inner leg to bottom of ankle bone.',
               },
             ].map((guide) => (
-              <div key={guide.step} className="p-5 bg-[var(--bg-surface)] border border-[var(--border)] space-y-2">
-                <span className="text-xs font-mono font-bold text-[var(--accent)]">{guide.step}</span>
-                <h3 className="text-xs font-heading font-bold uppercase text-[var(--text-primary)]">{guide.title}</h3>
-                <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed">{guide.instruction}</p>
+              <div
+                key={guide.step}
+                className="space-y-2 border border-[var(--border)] bg-[var(--bg-surface)] p-5"
+              >
+                <span className="font-mono text-xs font-bold text-[var(--accent)]">
+                  {guide.step}
+                </span>
+                <h3 className="font-heading text-xs font-bold text-[var(--text-primary)] uppercase">
+                  {guide.title}
+                </h3>
+                <p className="font-sans text-xs leading-relaxed text-[var(--text-secondary)]">
+                  {guide.instruction}
+                </p>
               </div>
             ))}
           </div>

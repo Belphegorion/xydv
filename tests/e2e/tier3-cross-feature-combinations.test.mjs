@@ -152,7 +152,11 @@ describe('Tier 3: Pair 3 - Variant Swatches + Product Card Image Crossfade', () 
     isHovered = true;
     visibleImage = isHovered ? 'secondary' : 'primary';
     assert.equal(visibleImage, 'secondary');
-    assert.equal(activeColorway, 'Void Obsidian', 'Active colorway swatch must remain unchanged on hover');
+    assert.equal(
+      activeColorway,
+      'Void Obsidian',
+      'Active colorway swatch must remain unchanged on hover',
+    );
   });
 });
 
@@ -220,7 +224,12 @@ describe('Tier 3: Pair 4 - Cart State + Razorpay Order Creation', () => {
 // ============================================================================
 describe('Tier 3: Pair 5 - Cart Drawer Focus Trap + Cart State Mutations', () => {
   it('T3.P5.1: Opening cart activates focus trap; mutating item preserves trap containment', () => {
-    const focusTrap = new FocusTrapSimulator(['btn-close', 'btn-qty-dec', 'btn-qty-inc', 'btn-checkout']);
+    const focusTrap = new FocusTrapSimulator([
+      'btn-close',
+      'btn-qty-dec',
+      'btn-qty-inc',
+      'btn-checkout',
+    ]);
     const cart = new CartStoreSimulator();
     const product = CATALOG_FIXTURES[0];
 
@@ -274,7 +283,11 @@ describe('Tier 3: Pair 6 - Prefers-Reduced-Motion + Cart Drawer Spring Opening',
 
     cart.openCart();
     assert.equal(cart.isOpen, true);
-    assert.equal(animationDuration, 0, 'Animation duration must be 0ms under prefers-reduced-motion');
+    assert.equal(
+      animationDuration,
+      0,
+      'Animation duration must be 0ms under prefers-reduced-motion',
+    );
   });
 
   it('T3.P6.2: State transition completeness is identical between spring motion and reduced motion', () => {
@@ -323,7 +336,11 @@ describe('Tier 3: Pair 7 - Full Razorpay Backend Integration Cycle', () => {
     assert.equal(verifyRes.data.status, 'confirmed');
 
     // Step 3: Verify Stock Decrement
-    assert.equal(variant.stock, initialStock - 2, 'Variant stock must be decremented by purchased quantity');
+    assert.equal(
+      variant.stock,
+      initialStock - 2,
+      'Variant stock must be decremented by purchased quantity',
+    );
   });
 
   it('T3.P7.2: Webhook payment.captured reconciles order payment status idempotently', () => {

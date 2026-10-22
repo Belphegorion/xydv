@@ -36,7 +36,9 @@ router.post('/', async (req, res, next) => {
     const setting = await Setting.findOne({ key: 'global_store_settings' }).lean();
     const supportEmail = setting?.supportEmail || 'support@xydv.com';
 
-    logger.info(`[SUPPORT TICKET CREATED] Ticket ${ticket.ticketId} from ${trimmedEmail} routed to ${supportEmail}`);
+    logger.info(
+      `[SUPPORT TICKET CREATED] Ticket ${ticket.ticketId} from ${trimmedEmail} routed to ${supportEmail}`,
+    );
 
     res.status(201).json({
       success: true,

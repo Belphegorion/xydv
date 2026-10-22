@@ -24,7 +24,7 @@ describe('Brand Assets, Transparent Logo & Tab Icons Verification', () => {
   it('1. Animated xydv-logo-nobg.webp exists, is valid animated WebP with alpha transparency', () => {
     const webpPath = path.join(brandDir, 'xydv-logo-nobg.webp');
     assert.ok(fs.existsSync(webpPath), 'xydv-logo-nobg.webp must exist in public/brand/');
-    
+
     const stat = fs.statSync(webpPath);
     assert.ok(stat.size > 50000, 'WebP file size must be > 50KB');
     assert.ok(stat.size < 1000000, 'WebP file size must be < 1MB (optimized)');
@@ -63,9 +63,9 @@ describe('Brand Assets, Transparent Logo & Tab Icons Verification', () => {
     assert.ok(fs.existsSync(appleIconPath), 'apple-icon.png must exist in src/app');
 
     const iconBuf = fs.readFileSync(iconPath);
-    assert.equal(iconBuf.readUInt32BE(0), 0x89504E47, 'icon.png must have PNG magic header');
+    assert.equal(iconBuf.readUInt32BE(0), 0x89504e47, 'icon.png must have PNG magic header');
     const appleBuf = fs.readFileSync(appleIconPath);
-    assert.equal(appleBuf.readUInt32BE(0), 0x89504E47, 'apple-icon.png must have PNG magic header');
+    assert.equal(appleBuf.readUInt32BE(0), 0x89504e47, 'apple-icon.png must have PNG magic header');
   });
 
   it('4. layout.tsx configures Next.js metadata icons with light, dark, and apple icons', () => {
@@ -80,18 +80,24 @@ describe('Brand Assets, Transparent Logo & Tab Icons Verification', () => {
   });
 
   it('5. BrandLogo and BrandEmblem components use xydv-logo-nobg.webp without circular clipping', () => {
-    const logoContent = fs.readFileSync(path.join(webSrcDir, 'components', 'ui', 'BrandLogo.tsx'), 'utf-8');
+    const logoContent = fs.readFileSync(
+      path.join(webSrcDir, 'components', 'ui', 'BrandLogo.tsx'),
+      'utf-8',
+    );
     assert.match(logoContent, /\/brand\/xydv-logo-nobg\.webp/);
     assert.doesNotMatch(logoContent, /\/brand\/xydv-logo-dark\.gif/);
     assert.doesNotMatch(logoContent, /\/brand\/xydv-logo-light\.gif/);
-    
+
     // Check that circular clipping hacks are removed
     assert.doesNotMatch(logoContent, /scale-\[1\.72\]/);
     assert.match(logoContent, /object-contain/);
   });
 
   it('6. CartDrawer Razorpay checkout uses static xydv-logo.png', () => {
-    const cartContent = fs.readFileSync(path.join(webSrcDir, 'components', 'store', 'CartDrawer.tsx'), 'utf-8');
+    const cartContent = fs.readFileSync(
+      path.join(webSrcDir, 'components', 'store', 'CartDrawer.tsx'),
+      'utf-8',
+    );
     assert.match(cartContent, /image:\s*['"]\/brand\/xydv-logo\.png['"]/);
     assert.doesNotMatch(cartContent, /image:\s*['"]\/brand\/xydv-logo-dark\.gif['"]/);
   });

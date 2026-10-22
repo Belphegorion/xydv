@@ -26,7 +26,7 @@ export function AdminTopBar({ onOpenMobile }: AdminTopBarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#1f1f1f] bg-[#0a0a0a]/90 px-4 sm:px-6 lg:px-8 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#1f1f1f] bg-[#0a0a0a]/90 px-4 backdrop-blur-md sm:px-6 lg:px-8">
       <div className="flex items-center gap-4">
         {onOpenMobile && (
           <button
@@ -40,12 +40,12 @@ export function AdminTopBar({ onOpenMobile }: AdminTopBarProps) {
         )}
 
         <div>
-          <h1 className="font-mono text-sm font-bold uppercase tracking-wider text-[#f5f5f5]">
+          <h1 className="font-mono text-sm font-bold tracking-wider text-[#f5f5f5] uppercase">
             {getPageTitle(pathname)}
           </h1>
-          <div className="flex items-center gap-2 mt-0.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e] animate-pulse" />
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[#71717a]">
+          <div className="mt-0.5 flex items-center gap-2">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22c55e]" />
+            <span className="font-mono text-[10px] tracking-widest text-[#71717a] uppercase">
               API Synchronized
             </span>
           </div>
@@ -57,7 +57,7 @@ export function AdminTopBar({ onOpenMobile }: AdminTopBarProps) {
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden sm:inline-flex items-center gap-1.5 rounded border border-[#1f1f1f] bg-[#111111] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[#a0a0a0] hover:border-[#333333] hover:text-[#f5f5f5] transition-colors"
+          className="hidden items-center gap-1.5 rounded border border-[#1f1f1f] bg-[#111111] px-3 py-1.5 font-mono text-[11px] tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#333333] hover:text-[#f5f5f5] sm:inline-flex"
         >
           <span>Store</span>
           <ArrowSquareOut size={13} />
@@ -65,11 +65,11 @@ export function AdminTopBar({ onOpenMobile }: AdminTopBarProps) {
 
         <ThemeToggle />
 
-        <div className="flex items-center gap-2 pl-2 border-l border-[#1f1f1f]">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#181818] border border-[#262626] text-xs font-mono font-bold text-[#e8ff00]">
+        <div className="flex items-center gap-2 border-l border-[#1f1f1f] pl-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#262626] bg-[#181818] font-mono text-xs font-bold text-[#e8ff00]">
             {(user?.name || 'A')[0].toUpperCase()}
           </div>
-          <span className="hidden md:inline-block font-mono text-xs uppercase tracking-wider text-[#f5f5f5]">
+          <span className="hidden font-mono text-xs tracking-wider text-[#f5f5f5] uppercase md:inline-block">
             {user?.name?.split(' ')[0] || 'Admin'}
           </span>
         </div>

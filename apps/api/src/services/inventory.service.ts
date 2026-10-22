@@ -4,11 +4,15 @@ import { Reservation, type IReservationItem } from '../models/Reservation.model'
 import { Order } from '../models/Order.model';
 import { AppError } from '../middleware/errorHandler';
 import { COMMERCE_CONSTANTS } from '../constants/commerce';
+import { logger } from '../config/logger';
 
 export class InventoryService {
   private cleanerTimer: NodeJS.Timeout | null = null;
 
-  async syncProductInStock(productId: mongoose.Types.ObjectId | string, session?: mongoose.ClientSession): Promise<void> {
+  async syncProductInStock(
+    productId: mongoose.Types.ObjectId | string,
+    session?: mongoose.ClientSession,
+  ): Promise<void> {
     if (!productId || !mongoose.isValidObjectId(productId)) return;
     try {
       const query = Product.findById(productId).select('variants inStock');
@@ -17,7 +21,11 @@ export class InventoryService {
       if (product) {
         const hasStock = product.variants.some((v) => v.stock > 0);
         if (product.inStock !== hasStock) {
-          await Product.updateOne({ _id: product._id }, { inStock: hasStock }, session ? { session } : {});
+          await Product.updateOne(
+            { _id: product._id },
+            { inStock: hasStock },
+            session ? { session } : {},
+          );
         }
       }
     } catch (err) {
@@ -30,11 +38,21 @@ export class InventoryService {
    * Rolls back partial reservations on failure.
    */
   async reserveStock(
-    items: Array<{ productId: mongoose.Types.ObjectId; sku?: string; variantId?: string | mongoose.Types.ObjectId; quantity: number }>,
+    items: Array<{
+      productId: mongoose.Types.ObjectId;
+      sku?: string;
+      variantId?: string | mongoose.Types.ObjectId;
+      quantity: number;
+    }>,
     razorpayOrderId: string,
     orderId?: mongoose.Types.ObjectId,
   ) {
-    const reservedItems: Array<{ productId: mongoose.Types.ObjectId; sku: string; variantId?: string; quantity: number }> = [];
+    const reservedItems: Array<{
+      productId: mongoose.Types.ObjectId;
+      sku: string;
+      variantId?: string;
+      quantity: number;
+    }> = [];
 
     for (const item of items) {
       const variantFilter: Record<string, unknown> = { stock: { $gte: item.quantity } };
@@ -52,17 +70,17 @@ export class InventoryService {
         variants: { $elemMatch: variantFilter },
       };
 
-      const result = await Product.updateOne(
-        query,
-        {
-          $inc: {
-            'variants.$.stock': -item.quantity,
-            'variants.$.reservedStock': item.quantity,
-          },
+      const result = await Product.updateOne(query, {
+        $inc: {
+          'variants.$.stock': -item.quantity,
+          'variants.$.reservedStock': item.quantity,
         },
-      );
+      });
 
-      if (result.matchedCount === 0 || (result.modifiedCount !== undefined && result.modifiedCount === 0)) {
+      if (
+        result.matchedCount === 0 ||
+        (result.modifiedCount !== undefined && result.modifiedCount === 0)
+      ) {
         // Rollback already reserved items
         for (const rolled of reservedItems) {
           const rollbackFilter: Record<string, unknown> = {};
@@ -85,7 +103,10 @@ export class InventoryService {
           );
           await this.syncProductInStock(rolled.productId);
         }
-        throw new AppError(`INSUFFICIENT_STOCK: Insufficient stock for item (${item.sku || item.variantId})`, 400);
+        throw new AppError(
+          `INSUFFICIENT_STOCK: Insufficient stock for item (${item.sku || item.variantId})`,
+          400,
+        );
       }
 
       reservedItems.push({
@@ -121,7 +142,9 @@ export class InventoryService {
     variantIdOrSku: string | mongoose.Types.ObjectId,
     quantity: number,
   ): Promise<void> {
-    const prodId = mongoose.isValidObjectId(productId) ? new mongoose.Types.ObjectId(productId) : productId;
+    const prodId = mongoose.isValidObjectId(productId)
+      ? new mongoose.Types.ObjectId(productId)
+      : productId;
     const isObjectId = mongoose.isValidObjectId(variantIdOrSku);
     const variantMatch: Record<string, unknown> = {
       stock: { $gte: quantity },
@@ -144,8 +167,14 @@ export class InventoryService {
       $inc: { 'variants.$.stock': -quantity },
     });
 
-    if (result.matchedCount === 0 || (result.modifiedCount !== undefined && result.modifiedCount === 0)) {
-      throw new AppError(`INSUFFICIENT_STOCK: Insufficient stock for item (${variantIdOrSku})`, 400);
+    if (
+      result.matchedCount === 0 ||
+      (result.modifiedCount !== undefined && result.modifiedCount === 0)
+    ) {
+      throw new AppError(
+        `INSUFFICIENT_STOCK: Insufficient stock for item (${variantIdOrSku})`,
+        400,
+      );
     }
     await this.syncProductInStock(prodId);
   }
@@ -251,7 +280,7 @@ export class InventoryService {
       cleaned++;
     }
 
-    console.log(`[InventoryCleaner] Reclaimed ${cleaned} expired reservation holds`);
+    logger.info(`[InventoryCleaner] Reclaimed ${cleaned} expired reservation holds`, { cleaned });
     return cleaned;
   }
 
@@ -259,7 +288,9 @@ export class InventoryService {
     if (this.cleanerTimer) return;
     this.cleanerTimer = setInterval(() => {
       this.cleanExpiredReservations().catch((err) => {
-        console.error('[InventoryCleaner] Error during reconciliation:', err);
+        logger.error('[InventoryCleaner] Error during reconciliation:', {
+          error: err instanceof Error ? err.message : String(err),
+        });
       });
     }, intervalMs);
     this.cleanerTimer.unref(); // Do not block process exit

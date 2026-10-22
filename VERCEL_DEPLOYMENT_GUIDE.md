@@ -9,6 +9,7 @@ This package contains the complete, production-ready **XYDV Luxury Technical Per
 ### Option 1: Deploy via GitHub (Recommended)
 
 1. **Initialize Git & Push to GitHub**:
+
    ```bash
    cd project-v1-client
    git init
@@ -40,7 +41,7 @@ This package contains the complete, production-ready **XYDV Luxury Technical Per
    - Vercel builds the Turborepo package and deploys the Next.js app in under 60 seconds.
    - **Troubleshooting Node.js / Next.js Version Warnings or Stale Cache**:
      - If Vercel warns about an outdated Node or Next.js version from previous deployments, go to **Deployments → [Latest Deployment] → Three dots (...) → Redeploy**.
-     - **Uncheck** *"Use existing build cache"* (or select *Redeploy without cache*) to force a clean build with the updated Node runtime and dependencies.
+     - **Uncheck** _"Use existing build cache"_ (or select _Redeploy without cache_) to force a clean build with the updated Node runtime and dependencies.
      - Ensure `.vercelignore` is active in the repository root so that test fixtures (`tests/`), scripts (`scripts/`), and internal tools are omitted from the deployment bundle.
 
 ---
@@ -56,6 +57,7 @@ vercel
 ```
 
 Follow the prompts:
+
 - **Set up and deploy?**: `y`
 - **Which scope?**: Choose your personal account or team
 - **Link to existing project?**: `n`
@@ -63,6 +65,7 @@ Follow the prompts:
 - **In which directory is your code located?**: `./`
 
 For production deployment:
+
 ```bash
 vercel --prod
 ```
@@ -85,6 +88,7 @@ npm run dev
 ```
 
 To run complete verification and production build locally:
+
 ```bash
 # Run all 159 hermetic tests offline (<0.40s)
 npm test

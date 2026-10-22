@@ -28,7 +28,10 @@ describe('CollectionShowcase Architectural & Design Verification', () => {
   const showcaseContent = fs.readFileSync(showcasePath, 'utf-8');
 
   it('1. Replaces non-semantic divs with semantic <picture>, responsive <source>, and fallback <img>', () => {
-    assert.match(showcaseContent, /<picture[\s\S]*?>[\s\S]*?<source[\s\S]*?\/>[\s\S]*?<img[\s\S]*?\/>[\s\S]*?<\/picture>/);
+    assert.match(
+      showcaseContent,
+      /<picture[\s\S]*?>[\s\S]*?<source[\s\S]*?\/>[\s\S]*?<img[\s\S]*?\/>[\s\S]*?<\/picture>/,
+    );
     assert.match(showcaseContent, /media="\(min-width:\s*1024px\)"/);
     assert.match(showcaseContent, /media="\(min-width:\s*640px\)"/);
     assert.match(showcaseContent, /loading="lazy"/);
@@ -55,14 +58,23 @@ describe('CollectionShowcase Architectural & Design Verification', () => {
     assert.match(showcaseContent, /CORDURA®\s+RIPSTOP/);
     // Explicitly verify removal of fabricated material specs
     assert.ok(!showcaseContent.includes('180 GSM KNIT'), 'Fabricated 180 GSM KNIT must be removed');
-    assert.ok(!showcaseContent.includes('4-WAY REBOUND (94%)'), 'Fabricated rebound spec must be removed');
-    assert.ok(!showcaseContent.includes('ZERO ODOR BARRIER'), 'Fabricated odor barrier spec must be removed');
+    assert.ok(
+      !showcaseContent.includes('4-WAY REBOUND (94%)'),
+      'Fabricated rebound spec must be removed',
+    );
+    assert.ok(
+      !showcaseContent.includes('ZERO ODOR BARRIER'),
+      'Fabricated odor barrier spec must be removed',
+    );
   });
 
   it('4. Dual Men and Women navigation actions without invalid nested <button> tags', () => {
     assert.match(showcaseContent, /<Link[\s\S]*?href=\{item\.actions\.men\.href\}/);
     assert.match(showcaseContent, /<Link[\s\S]*?href=\{item\.actions\.women\.href\}/);
-    assert.ok(!showcaseContent.includes('<button'), 'Card must not contain invalid nested <button> tags');
+    assert.ok(
+      !showcaseContent.includes('<button'),
+      'Card must not contain invalid nested <button> tags',
+    );
   });
 
   it('5. Dual action buttons are styled as accessible tactile pills with active:scale-[0.97]', () => {
@@ -138,4 +150,3 @@ describe('CollectionShowcase Architectural & Design Verification', () => {
     assert.match(showcaseContent, /delay:\s*shouldReduceMotion\s*\?\s*0\s*:\s*idx\s*\*\s*0\.15/);
   });
 });
-

@@ -291,7 +291,7 @@ function BestsellerMedia({
 
   return (
     <div
-      className="group/media relative aspect-[3/4] w-full bg-[var(--bg-elevated)] border-b border-[var(--border)] overflow-hidden"
+      className="group/media relative aspect-[3/4] w-full overflow-hidden border-b border-[var(--border)] bg-[var(--bg-elevated)]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={() => setIsInteracting(true)}
@@ -301,7 +301,7 @@ function BestsellerMedia({
       <div
         ref={galleryRef}
         onScroll={handleScroll}
-        className="w-full h-full flex overflow-x-auto snap-x snap-mandatory no-scrollbar select-none"
+        className="no-scrollbar flex h-full w-full snap-x snap-mandatory overflow-x-auto select-none"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
@@ -314,7 +314,7 @@ function BestsellerMedia({
         {gallery.map((imgUrl, imgIdx) => (
           <div
             key={imgIdx}
-            className="w-full h-full flex-shrink-0 snap-center relative overflow-hidden"
+            className="relative h-full w-full flex-shrink-0 snap-center overflow-hidden"
           >
             <Image
               src={imgUrl}
@@ -331,7 +331,7 @@ function BestsellerMedia({
       {/* Progress Dots Indicator */}
       {gallery.length > 1 && (
         <div
-          className="absolute bottom-2.5 inset-x-0 z-10 flex items-center justify-center gap-1 px-4 pointer-events-none sm:group-hover/media:opacity-0 transition-opacity duration-200"
+          className="pointer-events-none absolute inset-x-0 bottom-2.5 z-10 flex items-center justify-center gap-1 px-4 transition-opacity duration-200 sm:group-hover/media:opacity-0"
           role="group"
           aria-label="Slide indicators"
         >
@@ -340,7 +340,7 @@ function BestsellerMedia({
               key={dotIdx}
               type="button"
               onClick={(e) => scrollToSlide(dotIdx, e)}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center p-0 bg-transparent border-0 cursor-pointer focus:outline-none pointer-events-auto"
+              className="pointer-events-auto flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center border-0 bg-transparent p-0 focus:outline-none"
               aria-label={`View slide ${dotIdx + 1}`}
             >
               <span
@@ -364,10 +364,10 @@ function BestsellerMedia({
               const prev = (activeImageIdx - 1 + gallery.length) % gallery.length;
               scrollToSlide(prev, e);
             }}
-            className="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 z-10 min-w-[44px] min-h-[44px] items-center justify-center opacity-0 group-hover/media:opacity-100 transition-opacity duration-200 focus:outline-none"
+            className="absolute top-1/2 left-1 z-10 hidden min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center opacity-0 transition-opacity duration-200 group-hover/media:opacity-100 focus:outline-none sm:flex"
             aria-label="Previous image"
           >
-            <span className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center hover:bg-black/90 transition-colors active:scale-[0.97]">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/90 active:scale-[0.97]">
               <CaretLeft size={14} weight="bold" />
             </span>
           </button>
@@ -377,10 +377,10 @@ function BestsellerMedia({
               const next = (activeImageIdx + 1) % gallery.length;
               scrollToSlide(next, e);
             }}
-            className="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 z-10 min-w-[44px] min-h-[44px] items-center justify-center opacity-0 group-hover/media:opacity-100 transition-opacity duration-200 focus:outline-none"
+            className="absolute top-1/2 right-1 z-10 hidden min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center opacity-0 transition-opacity duration-200 group-hover/media:opacity-100 focus:outline-none sm:flex"
             aria-label="Next image"
           >
-            <span className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center hover:bg-black/90 transition-colors active:scale-[0.97]">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/90 active:scale-[0.97]">
               <CaretRight size={14} weight="bold" />
             </span>
           </button>
@@ -388,20 +388,20 @@ function BestsellerMedia({
       )}
 
       {/* Rank Badge */}
-      <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 pointer-events-none">
+      <div className="pointer-events-none absolute top-2 left-2 z-10 sm:top-3 sm:left-3">
         <Badge variant="volt" size="sm" dot>
           TOP PERFORMER
         </Badge>
       </div>
 
       {/* Desktop Quick Size Selector Pill — Revealed on card hover / focus-within */}
-      <div className="absolute inset-x-2 sm:inset-x-2.5 bottom-2 sm:bottom-2.5 z-20 hidden sm:flex flex-col items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] pointer-events-none bg-white/92 dark:bg-[#0a0a0a]/92 backdrop-blur-md border border-black/10 dark:border-white/15 px-2 py-1.5 shadow-lg dark:shadow-2xl">
-        <div className="flex items-center justify-between w-full mb-1 px-0.5">
-          <span className="text-[8.5px] font-mono font-medium tracking-[0.2em] text-zinc-500 dark:text-zinc-400 uppercase leading-none">
+      <div className="pointer-events-none absolute inset-x-2 bottom-2 z-20 hidden translate-y-2 flex-col items-center justify-center border border-black/10 bg-white/92 px-2 py-1.5 opacity-0 shadow-lg backdrop-blur-md transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 sm:inset-x-2.5 sm:bottom-2.5 sm:flex dark:border-white/15 dark:bg-[#0a0a0a]/92 dark:shadow-2xl">
+        <div className="mb-1 flex w-full items-center justify-between px-0.5">
+          <span className="font-mono text-[8.5px] leading-none font-medium tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
             QUICK ADD SIZE
           </span>
           {isAdded && (
-            <span className="text-[8.5px] font-mono font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1 leading-none">
+            <span className="flex items-center gap-1 font-mono text-[8.5px] leading-none font-bold text-emerald-700 dark:text-emerald-400">
               <Check size={10} weight="bold" />
               ADDED
             </span>
@@ -416,19 +416,27 @@ function BestsellerMedia({
               e.stopPropagation();
               onSelectSize(sizes[0].size);
             }}
-            className={`w-full h-[26px] px-2 flex items-center justify-center font-mono text-[9.5px] font-bold tracking-widest uppercase transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white ${
+            className={`flex h-[26px] w-full items-center justify-center px-2 font-mono text-[9.5px] font-bold tracking-widest uppercase transition-[background-color,border-color,color,transform] duration-150 focus-visible:ring-1 focus-visible:ring-black focus-visible:outline-none active:scale-[0.97] dark:focus-visible:ring-white ${
               sizes[0].inStock
-                ? 'bg-black/5 hover:bg-black hover:text-white text-black border border-black/10 hover:border-black dark:bg-white/10 dark:hover:bg-white dark:hover:text-[#0a0a0a] dark:text-white dark:border-white/15 dark:hover:border-white shadow-xs cursor-pointer'
-                : 'bg-black/[0.02] text-zinc-400 border border-black/5 dark:bg-white/[0.02] dark:text-zinc-600 dark:border-white/10 line-through cursor-not-allowed select-none'
+                ? 'cursor-pointer border border-black/10 bg-black/5 text-black shadow-xs hover:border-black hover:bg-black hover:text-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white dark:hover:text-[#0a0a0a]'
+                : 'cursor-not-allowed border border-black/5 bg-black/[0.02] text-zinc-400 line-through select-none dark:border-white/10 dark:bg-white/[0.02] dark:text-zinc-600'
             }`}
-            aria-label={sizes[0].inStock ? `Add size ${sizes[0].size} to bag` : `Size ${sizes[0].size} out of stock`}
-            title={sizes[0].inStock ? `Add size ${sizes[0].size}` : `Size ${sizes[0].size} (Out of Stock)`}
+            aria-label={
+              sizes[0].inStock
+                ? `Add size ${sizes[0].size} to bag`
+                : `Size ${sizes[0].size} out of stock`
+            }
+            title={
+              sizes[0].inStock
+                ? `Add size ${sizes[0].size}`
+                : `Size ${sizes[0].size} (Out of Stock)`
+            }
           >
             QUICK ADD · ONE SIZE ({sizes[0].size})
           </button>
         ) : (
           <div
-            className="flex items-center justify-between gap-1 w-full"
+            className="flex w-full items-center justify-between gap-1"
             role="group"
             aria-label={`Select size for ${product.name}`}
           >
@@ -442,10 +450,10 @@ function BestsellerMedia({
                   e.stopPropagation();
                   onSelectSize(size);
                 }}
-                className={`flex-1 min-w-0 h-[26px] px-0.5 flex items-center justify-center font-mono text-[10px] font-bold tracking-tight transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white ${
+                className={`flex h-[26px] min-w-0 flex-1 items-center justify-center px-0.5 font-mono text-[10px] font-bold tracking-tight transition-[background-color,border-color,color,transform] duration-150 focus-visible:ring-1 focus-visible:ring-black focus-visible:outline-none active:scale-[0.97] dark:focus-visible:ring-white ${
                   inStock
-                    ? 'bg-black/5 hover:bg-black hover:text-white text-black border border-black/10 hover:border-black dark:bg-white/10 dark:hover:bg-white dark:hover:text-[#0a0a0a] dark:text-white dark:border-white/15 dark:hover:border-white shadow-xs cursor-pointer'
-                    : 'bg-black/[0.02] text-zinc-400 border border-black/5 dark:bg-white/[0.02] dark:text-zinc-600 dark:border-white/10 line-through cursor-not-allowed select-none'
+                    ? 'cursor-pointer border border-black/10 bg-black/5 text-black shadow-xs hover:border-black hover:bg-black hover:text-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white dark:hover:text-[#0a0a0a]'
+                    : 'cursor-not-allowed border border-black/5 bg-black/[0.02] text-zinc-400 line-through select-none dark:border-white/10 dark:bg-white/[0.02] dark:text-zinc-600'
                 }`}
                 aria-label={inStock ? `Add size ${size} to bag` : `Size ${size} out of stock`}
                 title={inStock ? `Add size ${size}` : `Size ${size} (Out of Stock)`}
@@ -498,14 +506,18 @@ export function BestsellerGrid() {
                           size: v.size || staticVar.size,
                           image: v.imageUrl || staticVar.image,
                           hoverImage: v.secondaryImageUrl || staticVar.hoverImage,
-                          gallery: Array.isArray(v.images) && v.images.length > 0 ? v.images : staticVar.gallery,
+                          gallery:
+                            Array.isArray(v.images) && v.images.length > 0
+                              ? v.images
+                              : staticVar.gallery,
                         };
                       })
                     : st.variants,
               };
             }
             const firstVar = item.variants?.[0];
-            const primaryImg = firstVar?.imageUrl || firstVar?.images?.[0] || '/products/image-4-1.jpg';
+            const primaryImg =
+              firstVar?.imageUrl || firstVar?.images?.[0] || '/products/image-4-1.jpg';
             const secondaryImg = firstVar?.secondaryImageUrl || firstVar?.images?.[1] || primaryImg;
             return {
               id: item._id || item.id || `prod_${item.slug}`,
@@ -524,7 +536,8 @@ export function BestsellerGrid() {
                       size: v.size || 'M',
                       image: v.imageUrl || primaryImg,
                       hoverImage: v.secondaryImageUrl || secondaryImg,
-                      gallery: Array.isArray(v.images) && v.images.length > 0 ? v.images : [primaryImg],
+                      gallery:
+                        Array.isArray(v.images) && v.images.length > 0 ? v.images : [primaryImg],
                     }))
                   : [
                       {
@@ -590,23 +603,26 @@ export function BestsellerGrid() {
   };
 
   return (
-    <section aria-labelledby="bestseller-heading" className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+    <section
+      aria-labelledby="bestseller-heading"
+      className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24"
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 border-b border-[var(--border)] pb-6">
+      <div className="mb-8 flex flex-col justify-between border-b border-[var(--border)] pb-6 sm:mb-12 md:flex-row md:items-end">
         <div>
-          <span className="text-[var(--text-secondary)] dark:text-[var(--accent)] text-xs font-mono font-semibold uppercase tracking-[0.25em]">
+          <span className="font-mono text-xs font-semibold tracking-[0.25em] text-[var(--text-secondary)] uppercase dark:text-[var(--accent)]">
             PROVEN IN TRAINING
           </span>
           <h2
             id="bestseller-heading"
-            className="text-[var(--text-primary)] text-3xl md:text-5xl font-bold uppercase tracking-tighter font-heading mt-2"
+            className="font-heading mt-2 text-3xl font-bold tracking-tighter text-[var(--text-primary)] uppercase md:text-5xl"
           >
             COMMUNITY BESTSELLERS
           </h2>
         </div>
         <Link
           href="/products?bestseller=true"
-          className="inline-flex items-center gap-2 text-[var(--text-primary)] dark:text-[var(--accent)] text-xs font-mono font-semibold uppercase tracking-widest hover:text-[var(--text-secondary)] dark:hover:text-[var(--accent)] transition-colors mt-4 md:mt-0"
+          className="mt-4 inline-flex items-center gap-2 font-mono text-xs font-semibold tracking-widest text-[var(--text-primary)] uppercase transition-colors hover:text-[var(--text-secondary)] md:mt-0 dark:text-[var(--accent)] dark:hover:text-[var(--accent)]"
         >
           <span>VIEW LEADERBOARD</span>
           <ArrowRight size={14} weight="bold" />
@@ -614,7 +630,7 @@ export function BestsellerGrid() {
       </div>
 
       {/* 2-Column Mobile / 3-Column Desktop Tactical Bestseller Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-3">
         {products.map((product, idx) => {
           const activeIdx = activeVariants[product.id] || 0;
           const activeVar = product.variants[activeIdx];
@@ -631,7 +647,7 @@ export function BestsellerGrid() {
                 delay: shouldReduceMotion ? 0 : idx * 0.08,
                 ease: EMIL_EASE,
               }}
-              className="group flex flex-col bg-[var(--bg-surface)] border border-[var(--border)] hover:border-[var(--text-primary)]/40 hover:shadow-lg transition-[border-color,box-shadow] duration-200"
+              className="group flex flex-col border border-[var(--border)] bg-[var(--bg-surface)] transition-[border-color,box-shadow] duration-200 hover:border-[var(--text-primary)]/40 hover:shadow-lg"
             >
               {/* Product Media Tile with CSS Scroll-Snap Gallery & Quick-Size Selector */}
               <BestsellerMedia
@@ -643,11 +659,11 @@ export function BestsellerGrid() {
               />
 
               {/* Meta */}
-              <div className="p-3 sm:p-5 flex flex-col flex-1 justify-between">
+              <div className="flex flex-1 flex-col justify-between p-3 sm:p-5">
                 <div>
                   {/* Swatches with Accessible Touch Targets */}
                   <div
-                    className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 min-w-0 overflow-hidden"
+                    className="mb-2 flex min-w-0 items-center gap-1.5 overflow-hidden sm:mb-3 sm:gap-2"
                     role="group"
                     aria-label={`Colorways for ${product.name}`}
                   >
@@ -655,21 +671,23 @@ export function BestsellerGrid() {
                       <button
                         key={v.id}
                         type="button"
-                        onClick={() => setActiveVariants((prev) => ({ ...prev, [product.id]: sIdx }))}
+                        onClick={() =>
+                          setActiveVariants((prev) => ({ ...prev, [product.id]: sIdx }))
+                        }
                         aria-label={`Select ${v.colorName}`}
-                        className="touch-target relative p-2 -m-2 focus:outline-none flex-shrink-0"
+                        className="touch-target relative -m-2 flex-shrink-0 p-2 focus:outline-none"
                       >
                         <span
-                          className={`block w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border transition-[transform,border-color] duration-150 active:scale-[0.97] ${
+                          className={`block h-3.5 w-3.5 rounded-full border transition-[transform,border-color] duration-150 active:scale-[0.97] sm:h-4 sm:w-4 ${
                             sIdx === activeIdx
-                              ? 'border-[#000000] ring-1 ring-[#000000] ring-offset-1 ring-offset-[var(--bg-surface)] dark:border-[var(--accent)] dark:ring-0 scale-125 shadow-sm'
-                              : 'border border-black/20 dark:border-white/20 hover:border-[var(--text-primary)]'
+                              ? 'scale-125 border-[#000000] shadow-sm ring-1 ring-[#000000] ring-offset-1 ring-offset-[var(--bg-surface)] dark:border-[var(--accent)] dark:ring-0'
+                              : 'border border-black/20 hover:border-[var(--text-primary)] dark:border-white/20'
                           }`}
                           style={{ backgroundColor: v.colorHex }}
                         />
                       </button>
                     ))}
-                    <span className="text-[9px] sm:text-[10px] text-[var(--text-muted)] font-mono uppercase ml-1 truncate min-w-0">
+                    <span className="ml-1 min-w-0 truncate font-mono text-[9px] text-[var(--text-muted)] uppercase sm:text-[10px]">
                       {activeVar.colorName}
                     </span>
                   </div>
@@ -677,22 +695,22 @@ export function BestsellerGrid() {
                   {/* Title & Link */}
                   <Link
                     href={`/products/${product.slug}`}
-                    className="hover:text-[var(--text-secondary)] dark:hover:text-zinc-300 transition-colors"
+                    className="transition-colors hover:text-[var(--text-secondary)] dark:hover:text-zinc-300"
                   >
-                    <h3 className="text-[var(--text-primary)] text-xs sm:text-base font-bold uppercase tracking-tight font-heading line-clamp-1">
+                    <h3 className="font-heading line-clamp-1 text-xs font-bold tracking-tight text-[var(--text-primary)] uppercase sm:text-base">
                       {product.name}
                     </h3>
                   </Link>
 
                   {/* Rating string */}
-                  <p className="text-[var(--text-secondary)] text-[10px] sm:text-xs font-mono mt-1">
+                  <p className="mt-1 font-mono text-[10px] text-[var(--text-secondary)] sm:text-xs">
                     {product.rating}
                   </p>
                 </div>
 
                 {/* Price & Stock Hairline Divider */}
-                <div className="mt-4 sm:mt-5 pt-2.5 sm:pt-3 border-t border-[var(--border)] flex items-center justify-between">
-                  <span className="text-[var(--text-primary)] text-xs sm:text-base font-mono font-bold">
+                <div className="mt-4 flex items-center justify-between border-t border-[var(--border)] pt-2.5 sm:mt-5 sm:pt-3">
+                  <span className="font-mono text-xs font-bold text-[var(--text-primary)] sm:text-base">
                     {formatPrice(product.price)}
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -701,9 +719,13 @@ export function BestsellerGrid() {
                       type="button"
                       onClick={() => handleQuickAdd(product)}
                       aria-label={`Quick add ${product.name} to bag`}
-                      className="sm:hidden touch-target min-w-[48px] min-h-[48px] flex items-center justify-center bg-[var(--accent)] text-white dark:text-[#0a0a0a] hover:bg-[var(--accent-hover)] transition-colors active:scale-[0.97]"
+                      className="touch-target flex min-h-[48px] min-w-[48px] items-center justify-center bg-[var(--accent)] text-white transition-colors hover:bg-[var(--accent-hover)] active:scale-[0.97] sm:hidden dark:text-[#0a0a0a]"
                     >
-                      {isAdded ? <Check size={14} weight="bold" /> : <ShoppingBag size={14} weight="bold" />}
+                      {isAdded ? (
+                        <Check size={14} weight="bold" />
+                      ) : (
+                        <ShoppingBag size={14} weight="bold" />
+                      )}
                     </button>
                     <span className="hidden sm:inline-flex">
                       <Badge variant="volt" size="sm">

@@ -41,7 +41,8 @@ describe('M3 Suite 1: Design Tokens & Anti-Slop Palette Verification', () => {
 
   it('1.4: Strict ban on clichéd AI purple/indigo gradients across all components', () => {
     const bannedColors = ['#8A2BE2', '#6366F1', '#8B5CF6', '#7C3AED', '#A855F7'];
-    const componentFiles = fs.readdirSync(path.join(webSrcDir, 'components', 'store'))
+    const componentFiles = fs
+      .readdirSync(path.join(webSrcDir, 'components', 'store'))
       .concat(fs.readdirSync(path.join(webSrcDir, 'components', 'layout')))
       .concat(fs.readdirSync(path.join(webSrcDir, 'components', 'ui')));
 
@@ -53,7 +54,10 @@ describe('M3 Suite 1: Design Tokens & Anti-Slop Palette Verification', () => {
 
       const content = fs.readFileSync(fullPath, 'utf-8');
       for (const banned of bannedColors) {
-        assert.ok(!content.toUpperCase().includes(banned), `File ${file} must not contain AI purple ${banned}`);
+        assert.ok(
+          !content.toUpperCase().includes(banned),
+          `File ${file} must not contain AI purple ${banned}`,
+        );
       }
     }
   });
@@ -76,7 +80,10 @@ describe('M3 Suite 2: Emil Kowalski Motion Physics & Anti-Patterns Prohibition',
       const fullPath = path.join(webSrcDir, rel);
       if (fs.existsSync(fullPath)) {
         const content = fs.readFileSync(fullPath, 'utf-8');
-        assert.ok(!content.includes('transition-all duration-'), `File ${rel} should not use unconstrained transition-all for interactive transitions`);
+        assert.ok(
+          !content.includes('transition-all duration-'),
+          `File ${rel} should not use unconstrained transition-all for interactive transitions`,
+        );
       }
     }
   });
@@ -90,7 +97,10 @@ describe('M3 Suite 2: Emil Kowalski Motion Physics & Anti-Patterns Prohibition',
           checkDir(full);
         } else if (entry.endsWith('.tsx')) {
           const content = fs.readFileSync(full, 'utf-8');
-          assert.ok(!content.includes('scale: 0,') && !content.includes('scale(0)'), `File ${entry} must not use scale(0) entry animation`);
+          assert.ok(
+            !content.includes('scale: 0,') && !content.includes('scale(0)'),
+            `File ${entry} must not use scale(0) entry animation`,
+          );
         }
       }
     };
@@ -98,7 +108,10 @@ describe('M3 Suite 2: Emil Kowalski Motion Physics & Anti-Patterns Prohibition',
   });
 
   it('2.3: Button primitive enforces active:scale-[0.97] press physics', () => {
-    const buttonContent = fs.readFileSync(path.join(webSrcDir, 'components', 'ui', 'Button.tsx'), 'utf-8');
+    const buttonContent = fs.readFileSync(
+      path.join(webSrcDir, 'components', 'ui', 'Button.tsx'),
+      'utf-8',
+    );
     assert.match(buttonContent, /active:scale-\[0\.97\]/);
   });
 
@@ -120,14 +133,20 @@ describe('M3 Suite 3: Design System Primitives Contracts', () => {
   });
 
   it('3.2: Badge.tsx exports brutalist technical chip with variants and dot option', () => {
-    const badgeSrc = fs.readFileSync(path.join(webSrcDir, 'components', 'ui', 'Badge.tsx'), 'utf-8');
+    const badgeSrc = fs.readFileSync(
+      path.join(webSrcDir, 'components', 'ui', 'Badge.tsx'),
+      'utf-8',
+    );
     assert.match(badgeSrc, /export function Badge/);
     assert.match(badgeSrc, /variant\?: 'volt' \| 'subtle' \| 'outline' \| 'success' \| 'danger'/);
     assert.match(badgeSrc, /dot\?: boolean/);
   });
 
   it('3.3: MetricTicker.tsx implements Motion useSpring and reduced-motion fallback', () => {
-    const tickerSrc = fs.readFileSync(path.join(webSrcDir, 'components', 'ui', 'MetricTicker.tsx'), 'utf-8');
+    const tickerSrc = fs.readFileSync(
+      path.join(webSrcDir, 'components', 'ui', 'MetricTicker.tsx'),
+      'utf-8',
+    );
     assert.match(tickerSrc, /export function MetricTicker/);
     assert.match(tickerSrc, /useSpring/);
     assert.match(tickerSrc, /useInView/);
@@ -143,7 +162,10 @@ describe('M3 Suite 3: Design System Primitives Contracts', () => {
 });
 
 describe('M3 Suite 4: Interactive Textile Inspector (TechFeatures) Verification', () => {
-  const techSrc = fs.readFileSync(path.join(webSrcDir, 'components', 'store', 'TechFeatures.tsx'), 'utf-8');
+  const techSrc = fs.readFileSync(
+    path.join(webSrcDir, 'components', 'store', 'TechFeatures.tsx'),
+    'utf-8',
+  );
 
   it('4.1: Contains all 4 proprietary textile science categories', () => {
     assert.match(techSrc, /SWEATSHIELD\+/);
@@ -177,14 +199,20 @@ describe('M3 Suite 4: Interactive Textile Inspector (TechFeatures) Verification'
 
 describe('M3 Suite 5: Storefront Visual & Commerce Contracts', () => {
   it('5.1: HeroSection occupies min-h-[100dvh] with video background and Motion stagger', () => {
-    const heroSrc = fs.readFileSync(path.join(webSrcDir, 'components', 'store', 'HeroSection.tsx'), 'utf-8');
+    const heroSrc = fs.readFileSync(
+      path.join(webSrcDir, 'components', 'store', 'HeroSection.tsx'),
+      'utf-8',
+    );
     assert.match(heroSrc, /min-h-\[100dvh\]/);
     assert.match(heroSrc, /<video/);
     assert.match(heroSrc, /staggerChildren/);
   });
 
   it('5.2: CategoryGrid strictly preserves the 5-cell diverse proportions', () => {
-    const catSrc = fs.readFileSync(path.join(webSrcDir, 'components', 'store', 'CategoryGrid.tsx'), 'utf-8');
+    const catSrc = fs.readFileSync(
+      path.join(webSrcDir, 'components', 'store', 'CategoryGrid.tsx'),
+      'utf-8',
+    );
     assert.match(catSrc, /ratio:\s*'16:10'/);
     assert.match(catSrc, /ratio:\s*'3:4'/);
     assert.match(catSrc, /ratio:\s*'16:9'/);
@@ -193,14 +221,20 @@ describe('M3 Suite 5: Storefront Visual & Commerce Contracts', () => {
   });
 
   it('5.3: Product cards enforce aspect-[3/4] ratio with secondary image crossfade', () => {
-    const featSrc = fs.readFileSync(path.join(webSrcDir, 'components', 'store', 'FeaturedCollection.tsx'), 'utf-8');
+    const featSrc = fs.readFileSync(
+      path.join(webSrcDir, 'components', 'store', 'FeaturedCollection.tsx'),
+      'utf-8',
+    );
     assert.match(featSrc, /aspect-\[3\/4\]/);
     assert.match(featSrc, /secondaryImage/);
     assert.match(featSrc, /group-hover:opacity-100/);
   });
 
   it('5.4: CartDrawer implements spring physics and Razorpay modal checkout integration', () => {
-    const cartSrc = fs.readFileSync(path.join(webSrcDir, 'components', 'store', 'CartDrawer.tsx'), 'utf-8');
+    const cartSrc = fs.readFileSync(
+      path.join(webSrcDir, 'components', 'store', 'CartDrawer.tsx'),
+      'utf-8',
+    );
     assert.match(cartSrc, /stiffness:\s*350,\s*damping:\s*35/);
     assert.match(cartSrc, /checkout\.razorpay\.com/);
     assert.match(cartSrc, /calculateCartMetrics/);

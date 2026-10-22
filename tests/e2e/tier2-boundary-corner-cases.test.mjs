@@ -152,7 +152,11 @@ describe('Tier 2: Boundary Group 3 - Cart Quantity & Bounds Clamping', () => {
 
     const updateRes = cart.updateQuantity(addRes.itemId, 9999);
     assert.equal(updateRes.success, true);
-    assert.equal(updateRes.quantity, variant.stock, `Quantity must clamp to maxStock (${variant.stock})`);
+    assert.equal(
+      updateRes.quantity,
+      variant.stock,
+      `Quantity must clamp to maxStock (${variant.stock})`,
+    );
     assert.equal(cart.items[0].quantity, variant.stock);
   });
 
@@ -179,7 +183,11 @@ describe('Tier 2: Boundary Group 4 - Free Shipping Delta Dollar & Penny Boundari
     assert.equal(metrics.isFreeShipping, false, '$149.99 must not unlock free shipping');
     assert.equal(metrics.shipping, COMMERCE_RULES.standardShippingFee); // 9.99
     assert.equal(metrics.freeShippingDelta, 0.01, 'Remaining delta must be exactly $0.01');
-    assert.equal(metrics.freeShippingProgress, 100.0, 'Progress rounded is ~100.0% but unlocked is false');
+    assert.equal(
+      metrics.freeShippingProgress,
+      100.0,
+      'Progress rounded is ~100.0% but unlocked is false',
+    );
   });
 
   it('T2.B4.2: Exact threshold ($150.00) unlocks free shipping with 0 delta and 100% progress', () => {
@@ -211,7 +219,10 @@ describe('Tier 2: Boundary Group 4 - Free Shipping Delta Dollar & Penny Boundari
     assert.equal(metrics.shipping, 0);
     assert.equal(metrics.freeShippingDelta, 150.0);
     assert.equal(metrics.freeShippingProgress, 0);
-    assert.ok(Number.isFinite(metrics.freeShippingProgress), 'Progress must be a valid finite number');
+    assert.ok(
+      Number.isFinite(metrics.freeShippingProgress),
+      'Progress must be a valid finite number',
+    );
   });
 
   it('T2.B4.5: Extreme high cart value ($10,000.00) clamps progress to exactly 100% without overflow', () => {
@@ -333,7 +344,13 @@ describe('Tier 2: Boundary Group 6 - Razorpay Edge Cases & Signature Verificatio
   it('T2.B6.4: Truncated or invalid length signature does not cause unhandled buffer exception', () => {
     const server = new ServerRuntimeSimulator();
     const orderRes = server.createRazorpayOrder({
-      items: [{ productId: CATALOG_FIXTURES[0]._id, variantId: CATALOG_FIXTURES[0].variants[0].id, quantity: 1 }],
+      items: [
+        {
+          productId: CATALOG_FIXTURES[0]._id,
+          variantId: CATALOG_FIXTURES[0].variants[0].id,
+          quantity: 1,
+        },
+      ],
       shippingAddress: { fullName: 'Alex', postalCode: '10001' },
     });
 

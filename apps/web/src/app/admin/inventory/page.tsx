@@ -41,7 +41,9 @@ function AdminInventoryContent() {
   const [totalItems, setTotalItems] = useState(0);
   const [totalLowStock, setTotalLowStock] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     const isLow = searchParams.get('lowStock') === 'true';
@@ -108,12 +110,9 @@ function AdminInventoryContent() {
 
     setIsUpdatingStock(true);
     try {
-      await api.patch(
-        `/admin/inventory/${editingItem.productId}/variants/${editingItem.sku}`,
-        {
-          stock: Number(newStock),
-        },
-      );
+      await api.patch(`/admin/inventory/${editingItem.productId}/variants/${editingItem.sku}`, {
+        stock: Number(newStock),
+      });
 
       setFeedback({
         type: 'success',
@@ -132,12 +131,12 @@ function AdminInventoryContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-xl font-bold uppercase tracking-wider text-[#f5f5f5]">
+          <h2 className="font-mono text-xl font-bold tracking-wider text-[#f5f5f5] uppercase">
             Inventory & Stock Control
           </h2>
-          <p className="font-mono text-xs text-[#71717a] mt-0.5">
+          <p className="mt-0.5 font-mono text-xs text-[#71717a]">
             Monitor SKU levels, configure low-stock safety limits, and audit real-time stock holds
           </p>
         </div>
@@ -145,7 +144,7 @@ function AdminInventoryContent() {
         <button
           type="button"
           onClick={fetchInventory}
-          className="inline-flex items-center gap-2 rounded border border-[#1f1f1f] bg-[#111111] px-3.5 py-2 font-mono text-xs uppercase tracking-wider text-[#a0a0a0] hover:text-[#f5f5f5] hover:border-[#333333] transition-colors active:scale-[0.97]"
+          className="inline-flex items-center gap-2 rounded border border-[#1f1f1f] bg-[#111111] px-3.5 py-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#333333] hover:text-[#f5f5f5] active:scale-[0.97]"
         >
           <ArrowClockwise size={14} className={isLoading ? 'animate-spin' : ''} />
           <span>Sync Matrix</span>
@@ -177,11 +176,12 @@ function AdminInventoryContent() {
           <div className="flex items-center gap-3">
             <Warning size={22} weight="bold" />
             <div>
-              <p className="font-mono text-xs font-bold uppercase tracking-wider">
+              <p className="font-mono text-xs font-bold tracking-wider uppercase">
                 Low-Stock SKU Alerts Active
               </p>
-              <p className="font-sans text-xs text-[#ff3b3b]/80 mt-0.5">
-                {totalLowStock} SKU variants currently have &le; {threshold} units remaining in inventory.
+              <p className="mt-0.5 font-sans text-xs text-[#ff3b3b]/80">
+                {totalLowStock} SKU variants currently have &le; {threshold} units remaining in
+                inventory.
               </p>
             </div>
           </div>
@@ -191,7 +191,7 @@ function AdminInventoryContent() {
               setLowStockOnly(!lowStockOnly);
               setPage(1);
             }}
-            className="rounded border border-[#ff3b3b]/40 bg-[#ff3b3b]/20 px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#ffffff] hover:bg-[#ff3b3b] transition-colors active:scale-[0.97]"
+            className="rounded border border-[#ff3b3b]/40 bg-[#ff3b3b]/20 px-3 py-1.5 font-mono text-xs font-bold tracking-wider text-[#ffffff] uppercase transition-colors hover:bg-[#ff3b3b] active:scale-[0.97]"
           >
             {lowStockOnly ? 'Show All SKUs' : 'Filter Low-Stock'}
           </button>
@@ -199,10 +199,13 @@ function AdminInventoryContent() {
       )}
 
       {/* Controls Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5">
+      <div className="grid grid-cols-1 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5 sm:grid-cols-3">
         {/* Search */}
         <div className="relative sm:col-span-2">
-          <MagnifyingGlass size={16} className="pointer-events-none absolute left-3 top-3 text-[#71717a]" />
+          <MagnifyingGlass
+            size={16}
+            className="pointer-events-none absolute top-3 left-3 text-[#71717a]"
+          />
           <input
             type="text"
             value={search}
@@ -211,13 +214,13 @@ function AdminInventoryContent() {
               setPage(1);
             }}
             placeholder="Search product name, SKU code, or colorway..."
-            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pl-9 pr-3 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
+            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-9 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
           />
         </div>
 
         {/* Configurable Threshold */}
         <div className="flex items-center gap-2">
-          <label className="font-mono text-xs uppercase text-[#a0a0a0] flex-shrink-0">
+          <label className="flex-shrink-0 font-mono text-xs text-[#a0a0a0] uppercase">
             Alert Threshold:
           </label>
           <input
@@ -229,7 +232,7 @@ function AdminInventoryContent() {
               setThreshold(Math.max(1, Number(e.target.value)));
               setPage(1);
             }}
-            className="w-20 rounded border border-[#1f1f1f] bg-[#0a0a0a] py-1.5 px-2 font-mono text-xs text-[#e8ff00] text-center focus:border-[#e8ff00] focus:outline-none"
+            className="w-20 rounded border border-[#1f1f1f] bg-[#0a0a0a] px-2 py-1.5 text-center font-mono text-xs text-[#e8ff00] focus:border-[#e8ff00] focus:outline-none"
           />
           <span className="font-mono text-[10px] text-[#71717a]">units</span>
         </div>
@@ -239,16 +242,16 @@ function AdminInventoryContent() {
       <div className="overflow-hidden rounded border border-[#1f1f1f] bg-[#111111]">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono uppercase tracking-wider text-[#a0a0a0]">
+            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono tracking-wider text-[#a0a0a0] uppercase">
               <tr>
-                <th className="py-3 px-4">SKU Identifier</th>
-                <th className="py-3 px-4">Product Name</th>
-                <th className="py-3 px-4">Colorway & Swatch</th>
-                <th className="py-3 px-4">Size</th>
-                <th className="py-3 px-4">Price</th>
-                <th className="py-3 px-4">Available Stock</th>
-                <th className="py-3 px-4">Reserved Hold</th>
-                <th className="py-3 px-4 text-right">Adjust</th>
+                <th className="px-4 py-3">SKU Identifier</th>
+                <th className="px-4 py-3">Product Name</th>
+                <th className="px-4 py-3">Colorway & Swatch</th>
+                <th className="px-4 py-3">Size</th>
+                <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Available Stock</th>
+                <th className="px-4 py-3">Reserved Hold</th>
+                <th className="px-4 py-3 text-right">Adjust</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1f1f1f]">
@@ -263,7 +266,7 @@ function AdminInventoryContent() {
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-[#71717a] font-mono uppercase">
+                  <td colSpan={8} className="py-12 text-center font-mono text-[#71717a] uppercase">
                     No variant inventory matching criteria.
                   </td>
                 </tr>
@@ -271,24 +274,22 @@ function AdminInventoryContent() {
                 items.map((item) => (
                   <tr
                     key={item.sku}
-                    className={`hover:bg-[#141414] transition-colors ${
+                    className={`transition-colors hover:bg-[#141414] ${
                       item.isLowStock ? 'bg-[#ff3b3b]/5' : ''
                     }`}
                   >
-                    <td className="py-3 px-4 font-mono font-bold text-[#e8ff00]">
-                      {item.sku}
-                    </td>
+                    <td className="px-4 py-3 font-mono font-bold text-[#e8ff00]">{item.sku}</td>
 
-                    <td className="py-3 px-4">
+                    <td className="px-4 py-3">
                       <p className="font-mono text-xs font-bold text-[#f5f5f5]">
                         {item.productName}
                       </p>
-                      <p className="font-mono text-[10px] uppercase text-[#71717a]">
+                      <p className="font-mono text-[10px] text-[#71717a] uppercase">
                         {item.category}
                       </p>
                     </td>
 
-                    <td className="py-3 px-4">
+                    <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span
                           className="h-3 w-3 rounded-full border border-[#333333]"
@@ -298,23 +299,19 @@ function AdminInventoryContent() {
                       </div>
                     </td>
 
-                    <td className="py-3 px-4 font-mono font-bold text-[#f5f5f5]">
-                      {item.size}
-                    </td>
+                    <td className="px-4 py-3 font-mono font-bold text-[#f5f5f5]">{item.size}</td>
 
-                    <td className="py-3 px-4 font-mono text-[#a0a0a0]">
-                      ₹{item.price}
-                    </td>
+                    <td className="px-4 py-3 font-mono text-[#a0a0a0]">₹{item.price}</td>
 
-                    <td className="py-3 px-4 font-mono">
+                    <td className="px-4 py-3 font-mono">
                       <div className="flex items-center gap-2">
                         <span
                           className={`font-bold ${
                             item.stock === 0
                               ? 'text-[#ff3b3b]'
                               : item.isLowStock
-                              ? 'text-[#ff3b3b]'
-                              : 'text-[#22c55e]'
+                                ? 'text-[#ff3b3b]'
+                                : 'text-[#22c55e]'
                           }`}
                         >
                           {item.stock} units
@@ -327,15 +324,15 @@ function AdminInventoryContent() {
                       </div>
                     </td>
 
-                    <td className="py-3 px-4 font-mono text-[#71717a]">
+                    <td className="px-4 py-3 font-mono text-[#71717a]">
                       {item.reservedStock} holds
                     </td>
 
-                    <td className="py-3 px-4 text-right">
+                    <td className="px-4 py-3 text-right">
                       <button
                         type="button"
                         onClick={() => handleOpenEditStock(item)}
-                        className="inline-flex items-center gap-1 rounded border border-[#1f1f1f] bg-[#161616] px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-[#a0a0a0] hover:border-[#e8ff00] hover:text-[#e8ff00] transition-colors"
+                        className="inline-flex items-center gap-1 rounded border border-[#1f1f1f] bg-[#161616] px-2.5 py-1 font-mono text-[11px] tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#e8ff00] hover:text-[#e8ff00]"
                       >
                         <PencilSimple size={13} />
                         <span>Set Stock</span>
@@ -349,25 +346,28 @@ function AdminInventoryContent() {
         </div>
 
         {/* Footer Info & Pagination Controls */}
-        <div className="border-t border-[#1f1f1f] px-4 py-3 font-mono text-xs text-[#a0a0a0] flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-[#1f1f1f] px-4 py-3 font-mono text-xs text-[#a0a0a0] sm:flex-row">
           <span>
-            {items.length} SKUs displayed ({totalLowStock} low-stock alerts) &bull; Page {page} of {totalPages}
+            {items.length} SKUs displayed ({totalLowStock} low-stock alerts) &bull; Page {page} of{' '}
+            {totalPages}
           </span>
           <div className="flex items-center gap-2">
             <button
               type="button"
               disabled={page <= 1 || isLoading}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-[#1f1f1f] bg-[#161616] px-3 py-1 font-mono text-xs uppercase text-[#f5f5f5] hover:border-[#333333] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="rounded border border-[#1f1f1f] bg-[#161616] px-3 py-1 font-mono text-xs text-[#f5f5f5] uppercase hover:border-[#333333] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Prev
             </button>
-            <span className="font-mono text-xs text-[#e8ff00] px-1">{page} / {totalPages}</span>
+            <span className="px-1 font-mono text-xs text-[#e8ff00]">
+              {page} / {totalPages}
+            </span>
             <button
               type="button"
               disabled={page >= totalPages || isLoading}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded border border-[#1f1f1f] bg-[#161616] px-3 py-1 font-mono text-xs uppercase text-[#f5f5f5] hover:border-[#333333] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="rounded border border-[#1f1f1f] bg-[#161616] px-3 py-1 font-mono text-xs text-[#f5f5f5] uppercase hover:border-[#333333] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Next
             </button>
@@ -381,14 +381,14 @@ function AdminInventoryContent() {
       {/* Edit Stock Modal */}
       {editingItem && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
         >
           <div className="w-full max-w-sm rounded border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#1f1f1f] pb-3 mb-4">
+            <div className="mb-4 flex items-center justify-between border-b border-[#1f1f1f] pb-3">
               <div>
-                <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-[#e8ff00]">
+                <h3 className="font-mono text-sm font-bold tracking-wider text-[#e8ff00] uppercase">
                   Adjust SKU Stock
                 </h3>
                 <p className="font-mono text-[10px] text-[#71717a]">{editingItem.sku}</p>
@@ -404,14 +404,18 @@ function AdminInventoryContent() {
 
             <form onSubmit={handleSaveStock} className="space-y-4">
               <div>
-                <p className="text-xs text-[#a0a0a0] mb-2 font-mono">
-                  Product: <span className="text-[#f5f5f5] font-bold">{editingItem.productName}</span>
+                <p className="mb-2 font-mono text-xs text-[#a0a0a0]">
+                  Product:{' '}
+                  <span className="font-bold text-[#f5f5f5]">{editingItem.productName}</span>
                 </p>
-                <p className="text-xs text-[#a0a0a0] mb-4 font-mono">
-                  Variant: <span className="text-[#f5f5f5]">{editingItem.color} / {editingItem.size}</span>
+                <p className="mb-4 font-mono text-xs text-[#a0a0a0]">
+                  Variant:{' '}
+                  <span className="text-[#f5f5f5]">
+                    {editingItem.color} / {editingItem.size}
+                  </span>
                 </p>
 
-                <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1.5">
+                <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
                   Available Warehouse Stock (Units)
                 </label>
                 <input
@@ -420,22 +424,22 @@ function AdminInventoryContent() {
                   required
                   value={newStock}
                   onChange={(e) => setNewStock(Math.max(0, Number(e.target.value)))}
-                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3 font-mono text-sm text-[#e8ff00] font-bold focus:border-[#e8ff00] focus:outline-none"
+                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3 font-mono text-sm font-bold text-[#e8ff00] focus:border-[#e8ff00] focus:outline-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1f1f1f]">
+              <div className="flex items-center justify-end gap-3 border-t border-[#1f1f1f] pt-4">
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}
-                  className="rounded border border-[#1f1f1f] bg-transparent px-4 py-2 font-mono text-xs uppercase text-[#a0a0a0] hover:text-[#f5f5f5]"
+                  className="rounded border border-[#1f1f1f] bg-transparent px-4 py-2 font-mono text-xs text-[#a0a0a0] uppercase hover:text-[#f5f5f5]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdatingStock}
-                  className="rounded border border-[#e8ff00] bg-[#e8ff00] px-5 py-2 font-mono text-xs font-bold uppercase text-[#0a0a0a] hover:bg-[#e8ff00]/90 disabled:opacity-50 active:scale-[0.97]"
+                  className="rounded border border-[#e8ff00] bg-[#e8ff00] px-5 py-2 font-mono text-xs font-bold text-[#0a0a0a] uppercase hover:bg-[#e8ff00]/90 active:scale-[0.97] disabled:opacity-50"
                 >
                   {isUpdatingStock ? 'Saving...' : 'Update Stock'}
                 </button>
@@ -450,7 +454,11 @@ function AdminInventoryContent() {
 
 export default function AdminInventoryPage() {
   return (
-    <Suspense fallback={<div className="p-8 font-mono text-xs text-[#71717a]">Loading inventory matrix...</div>}>
+    <Suspense
+      fallback={
+        <div className="p-8 font-mono text-xs text-[#71717a]">Loading inventory matrix...</div>
+      }
+    >
       <AdminInventoryContent />
     </Suspense>
   );

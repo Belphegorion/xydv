@@ -18,8 +18,22 @@ const webDir = path.join(rootDir, 'apps', 'web');
 const apiDir = path.join(rootDir, 'apps', 'api');
 
 describe('Batch 6: HIGH-05 - Route Telemetry & Analytics Pipeline', () => {
-  const telemetryComponentPath = path.join(webDir, 'src', 'components', 'telemetry', 'RouteTelemetry.tsx');
-  const analyticsRoutePath = path.join(webDir, 'src', 'app', 'api', 'analytics', 'track', 'route.ts');
+  const telemetryComponentPath = path.join(
+    webDir,
+    'src',
+    'components',
+    'telemetry',
+    'RouteTelemetry.tsx',
+  );
+  const analyticsRoutePath = path.join(
+    webDir,
+    'src',
+    'app',
+    'api',
+    'analytics',
+    'track',
+    'route.ts',
+  );
   const layoutPath = path.join(webDir, 'src', 'app', 'layout.tsx');
   const apiRoutesPath = path.join(apiDir, 'src', 'routes', 'index.ts');
 
@@ -61,11 +75,7 @@ describe('Batch 6: HIGH-05 - Route Telemetry & Analytics Pipeline', () => {
 
   it('layout.tsx mounts RouteTelemetry component inside application tree', () => {
     const layoutSrc = fs.readFileSync(layoutPath, 'utf-8');
-    assert.match(
-      layoutSrc,
-      /RouteTelemetry/,
-      'layout.tsx must import and mount RouteTelemetry',
-    );
+    assert.match(layoutSrc, /RouteTelemetry/, 'layout.tsx must import and mount RouteTelemetry');
   });
 
   it('apps/api/src/routes/index.ts provides public analytics tracking route', () => {
@@ -79,7 +89,16 @@ describe('Batch 6: HIGH-05 - Route Telemetry & Analytics Pipeline', () => {
 });
 
 describe('Batch 6: HIGH-07 - Storefront PDP Reviews Pipeline & Live Feedback', () => {
-  const reviewsProxyPath = path.join(webDir, 'src', 'app', 'api', 'products', '[slug]', 'reviews', 'route.ts');
+  const reviewsProxyPath = path.join(
+    webDir,
+    'src',
+    'app',
+    'api',
+    'products',
+    '[slug]',
+    'reviews',
+    'route.ts',
+  );
   const pdpPagePath = path.join(webDir, 'src', 'app', 'products', '[slug]', 'page.tsx');
 
   it('apps/web/src/app/api/products/[slug]/reviews/route.ts exists and supports GET and POST', () => {
@@ -107,16 +126,8 @@ describe('Batch 6: HIGH-07 - Storefront PDP Reviews Pipeline & Live Feedback', (
 
   it('PDP page.tsx fetches dynamic product reviews from reviews endpoint', () => {
     const pdpSrc = fs.readFileSync(pdpPagePath, 'utf-8');
-    assert.match(
-      pdpSrc,
-      /\/reviews/,
-      'PDP page.tsx must query product reviews endpoint',
-    );
-    assert.match(
-      pdpSrc,
-      /setReviews|reviews/,
-      'PDP page.tsx must manage reviews state',
-    );
+    assert.match(pdpSrc, /\/reviews/, 'PDP page.tsx must query product reviews endpoint');
+    assert.match(pdpSrc, /setReviews|reviews/, 'PDP page.tsx must manage reviews state');
   });
 
   it('PDP page.tsx includes interactive review submission form with ratings', () => {

@@ -18,12 +18,10 @@ router.get('/', async (_req, res, next) => {
           typeof setting?.shippingFee === 'number'
             ? setting.shippingFee
             : typeof setting?.standardShippingFee === 'number'
-            ? setting.standardShippingFee
-            : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE,
+              ? setting.standardShippingFee
+              : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE,
         taxRate:
-          typeof setting?.taxRate === 'number'
-            ? setting.taxRate
-            : COMMERCE_CONSTANTS.TAX_RATE,
+          typeof setting?.taxRate === 'number' ? setting.taxRate : COMMERCE_CONSTANTS.TAX_RATE,
         currency: setting?.currency || COMMERCE_CONSTANTS.CURRENCY,
         currencySymbol: setting?.currencySymbol || '₹',
         storeName: setting?.storeName || 'XYDV',

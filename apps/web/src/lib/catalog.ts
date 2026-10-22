@@ -66,7 +66,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     price: 58.0,
     compareAtPrice: 68.0,
     specsSummary: 'SweatShield+ / 180 GSM / UPF 50+',
-    headline: 'High-tenacity technical tee engineered for intense kinetic output and continuous thermal regulation.',
+    headline:
+      'High-tenacity technical tee engineered for intense kinetic output and continuous thermal regulation.',
     description:
       'Engineered with proprietary SweatShield+ micro-mesh, the Volt Performance Tee rapidly expels moisture while maintaining zero clinging saturation. Bonded shoulder seams eliminate chafing under weighted vests and running packs.',
     fabricDetails: {
@@ -177,11 +178,13 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     gender: 'men',
     price: 72.0,
     specsSummary: 'AeroFlex 5" / Compression Liner / YKK Aquaguard',
-    headline: 'Multi-functional training shorts built with a supportive compression liner and abrasion-resistant shell.',
+    headline:
+      'Multi-functional training shorts built with a supportive compression liner and abrasion-resistant shell.',
     description:
       'Engineered for maximum leg propulsion and heavy barbell friction. Features an integrated compression liner with dedicated zero-bounce phone pocket, laser-cut ventilation ports, and YKK Aquaguard zip pockets.',
     fabricDetails: {
-      composition: 'Shell: 88% Cordura® Ballistic Nylon, 12% Spandex; Liner: 80% Micro-Nylon, 20% Elastane',
+      composition:
+        'Shell: 88% Cordura® Ballistic Nylon, 12% Spandex; Liner: 80% Micro-Nylon, 20% Elastane',
       weightGsm: 165,
       technology: 'AeroFlex 4-Way Ballistic Weave',
       finish: 'DWR Water-Repellent & Anti-Friction Coating',
@@ -262,7 +265,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     price: 148.0,
     compareAtPrice: 165.0,
     specsSummary: 'Cordura® 500D / 20k Waterproof / Sealed Seams',
-    headline: 'Ultra-lightweight technical windcheater engineered to withstand torrential squalls and freezing wind.',
+    headline:
+      'Ultra-lightweight technical windcheater engineered to withstand torrential squalls and freezing wind.',
     description:
       'Engineered with 3-layer laminated Cordura® ripstop, the Storm-Shield Shell provides 20,000mm hydrostatic head waterproofing alongside 25,000 g/m²/24h breathability. Fully taped internal seams and an architectural storm collar protect against the elements.',
     fabricDetails: {
@@ -346,7 +350,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     gender: 'unisex',
     price: 42.0,
     specsSummary: 'Laser Vent / Fidlock V-Buckle / Quick-Dry',
-    headline: 'High-performance headwear with magnetic one-hand sizing adjustment and sweat-wicking internal headband.',
+    headline:
+      'High-performance headwear with magnetic one-hand sizing adjustment and sweat-wicking internal headband.',
     description:
       'Crafted from water-resistant ballistic ripstop with micro laser-perforated side panels for optimal cranial airflow. Anchored by an authentic German-engineered Fidlock magnetic buckle.',
     fabricDetails: {
@@ -413,7 +418,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     price: 52.0,
     compareAtPrice: 62.0,
     specsSummary: 'AeroFlex Knit / Ribbed Compression / Zero Chafing',
-    headline: 'Engineered seamless knit with graduated compression zones to stabilize the core during dynamic lifting.',
+    headline:
+      'Engineered seamless knit with graduated compression zones to stabilize the core during dynamic lifting.',
     description:
       'Constructed with circular seamless knitting technology, eliminating all side seams. Targeted compression zones provide medium-to-high support while open-knit ventilation zones expel body heat.',
     fabricDetails: {
@@ -581,7 +587,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     price: 88.0,
     compareAtPrice: 98.0,
     specsSummary: 'Cordura® Weave / Articulated Knee / Magnetic Pockets',
-    headline: 'High-tenacity athletic cargo jogger engineered for heavy outdoor sessions and operational utility.',
+    headline:
+      'High-tenacity athletic cargo jogger engineered for heavy outdoor sessions and operational utility.',
     description:
       'Engineered with a high-tenacity Cordura® stretch-ripstop construction. Features 6 functional technical pockets, magnetic flap enclosures, and elasticized cuffs that fit comfortably over running shoes or boots.',
     fabricDetails: {
@@ -783,7 +790,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     gender: 'women',
     price: 135.0,
     specsSummary: 'Feather-Ripstop / Windproof / Reflective Telemetry',
-    headline: 'High-visibility technical windbreaker cut with an articulated feminine athletic silhouette.',
+    headline:
+      'High-visibility technical windbreaker cut with an articulated feminine athletic silhouette.',
     description:
       'Engineered for damp dawn and twilight runs. Offers impenetrable windproofing and a lightweight water-repellent shell that never traps condensation.',
     fabricDetails: {
@@ -915,7 +923,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     gender: 'women',
     price: 48.0,
     specsSummary: 'AeroFlex 4-Way / Bonded Band / Medium-High Impact',
-    headline: 'High-impact compression sports bra designed to eliminate bounce across explosive training.',
+    headline:
+      'High-impact compression sports bra designed to eliminate bounce across explosive training.',
     description:
       'Engineered with dual-layer AeroFlex compression and a brushed elastic underband that never digs in. Clean bonded neckline prevents friction during jump rope and sprint drills.',
     fabricDetails: {
@@ -1016,8 +1025,11 @@ export function getRelatedProducts(currentId: string, limit = 4): CatalogProduct
   const current = getProductById(currentId);
   if (!current) return CATALOG_PRODUCTS.slice(0, limit);
 
-  return CATALOG_PRODUCTS.filter((p) => p.id !== currentId && (p.category === current.category || p.discipline === current.discipline))
-    .slice(0, limit);
+  return CATALOG_PRODUCTS.filter(
+    (p) =>
+      p.id !== currentId &&
+      (p.category === current.category || p.discipline === current.discipline),
+  ).slice(0, limit);
 }
 
 export function getFilteredProducts(filters: CatalogFilterParams): CatalogProduct[] {
@@ -1028,11 +1040,15 @@ export function getFilteredProducts(filters: CatalogFilterParams): CatalogProduc
   }
 
   if (filters.discipline && filters.discipline !== 'all') {
-    results = results.filter((p) => p.discipline.toLowerCase() === filters.discipline!.toLowerCase());
+    results = results.filter(
+      (p) => p.discipline.toLowerCase() === filters.discipline!.toLowerCase(),
+    );
   }
 
   if (filters.gender && filters.gender !== 'all') {
-    results = results.filter((p) => p.gender.toLowerCase() === filters.gender!.toLowerCase() || p.gender === 'unisex');
+    results = results.filter(
+      (p) => p.gender.toLowerCase() === filters.gender!.toLowerCase() || p.gender === 'unisex',
+    );
   }
 
   if (filters.search && filters.search.trim().length > 0) {
@@ -1065,7 +1081,10 @@ export function getFilteredProducts(filters: CatalogFilterParams): CatalogProduc
   } else if (filters.sort === 'price-desc') {
     results.sort((a, b) => b.price - a.price);
   } else if (filters.sort === 'bestseller') {
-    results.sort((a, b) => (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0) || b.reviewCount - a.reviewCount);
+    results.sort(
+      (a, b) =>
+        (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0) || b.reviewCount - a.reviewCount,
+    );
   } else if (filters.sort === 'newest') {
     results.reverse();
   } else {

@@ -128,7 +128,13 @@ export class AdminController {
       const id = getParam(req.params.id);
       const { status, trackingNumber } = req.body;
       const adminId = (req as AuthRequest).user?._id;
-      const order = await adminService.updateOrderStatus(id, status, trackingNumber, adminId, req.ip);
+      const order = await adminService.updateOrderStatus(
+        id,
+        status,
+        trackingNumber,
+        adminId,
+        req.ip,
+      );
       res.json({ data: order });
     } catch (err) {
       next(err);
@@ -163,7 +169,13 @@ export class AdminController {
       const sku = getParam(req.params.sku);
       const { stock } = req.body;
       const adminId = (req as AuthRequest).user?._id;
-      const result = await adminService.updateVariantStock(productId, sku, Number(stock), adminId, req.ip);
+      const result = await adminService.updateVariantStock(
+        productId,
+        sku,
+        Number(stock),
+        adminId,
+        req.ip,
+      );
       res.json({ data: result });
     } catch (err) {
       next(err);
@@ -217,7 +229,12 @@ export class AdminController {
       const id = getParam(req.params.id);
       const { isBlocked } = req.body;
       const currentAdminId = (req as AuthRequest).user?._id;
-      const result = await adminService.toggleBlockCustomer(id, Boolean(isBlocked), currentAdminId, req.ip);
+      const result = await adminService.toggleBlockCustomer(
+        id,
+        Boolean(isBlocked),
+        currentAdminId,
+        req.ip,
+      );
       res.json({ data: result });
     } catch (err) {
       next(err);

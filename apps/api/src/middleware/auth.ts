@@ -16,17 +16,34 @@ function getJwtSecret(): string {
     throw new AppError('Server configuration error: JWT secret is invalid or not configured', 500);
   }
   if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-    throw new AppError('Server configuration error: JWT_SECRET environment variable is missing in production', 500);
+    throw new AppError(
+      'Server configuration error: JWT_SECRET environment variable is missing in production',
+      500,
+    );
   }
   return secret;
 }
 
-function verifyToken(token: string): { _id: string; email: string; role: string; isBlocked?: boolean } {
+function verifyToken(token: string): {
+  _id: string;
+  email: string;
+  role: string;
+  isBlocked?: boolean;
+} {
   const secret = getJwtSecret();
-  return jwt.verify(token, secret, { algorithms: ['HS256'] }) as { _id: string; email: string; role: string; isBlocked?: boolean };
+  return jwt.verify(token, secret, { algorithms: ['HS256'] }) as {
+    _id: string;
+    email: string;
+    role: string;
+    isBlocked?: boolean;
+  };
 }
 
-export async function requireAuth(req: AuthRequest, _res: Response, next: NextFunction): Promise<void> {
+export async function requireAuth(
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction,
+): Promise<void> {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
     return next(new AppError('Authentication required', 401));
@@ -40,7 +57,11 @@ export async function requireAuth(req: AuthRequest, _res: Response, next: NextFu
       return next(new AppError('Your account has been suspended. Please contact support.', 403));
     }
 
-    if (mongoose.connection.readyState === 1 && payload._id && mongoose.isValidObjectId(payload._id)) {
+    if (
+      mongoose.connection.readyState === 1 &&
+      payload._id &&
+      mongoose.isValidObjectId(payload._id)
+    ) {
       const user = await User.findById(payload._id).select('isBlocked role').lean();
       if (!user) {
         return next(new AppError('User account no longer exists', 401));

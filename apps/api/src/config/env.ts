@@ -9,7 +9,7 @@ const envSchema = z.object({
     .default('5000')
     .transform((val) => parseInt(val, 10)),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  MONGODB_URI: z.string().default('mongodb://localhost:27017/vertex'),
+  MONGODB_URI: z.string().default('mongodb://localhost:27017/xydv'),
   JWT_SECRET: z.string().default('fnO7dehu28m0xLpQoi7yXG5GdjJYY7ZI84T5pUUGy3j'),
   JWT_REFRESH_SECRET: z.string().default('4044plbw7MAxaHGi1KJAsOrKttSRaTqP18QNxH2IzoE'),
   JWT_EXPIRE: z.string().default('15m'),

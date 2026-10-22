@@ -21,7 +21,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!isAuthenticated || isLoginPage) return;
 
     let isMounted = true;
-    api.get<{ count: number }>('/admin/inventory/low-stock?threshold=5')
+    api
+      .get<{ count: number }>('/admin/inventory/low-stock?threshold=5')
       .then((res) => {
         if (isMounted && typeof res?.count === 'number') {
           setLowStockCount(res.count);
@@ -39,7 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <AdminGuard>
       {isLoginPage ? (
-        <main className="min-h-screen bg-[#0a0a0a] text-[#f5f5f5] flex items-center justify-center p-4">
+        <main className="flex min-h-screen items-center justify-center bg-[#0a0a0a] p-4 text-[#f5f5f5]">
           {children}
         </main>
       ) : (

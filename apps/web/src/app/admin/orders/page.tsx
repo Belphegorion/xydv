@@ -32,7 +32,9 @@ function AdminOrdersContent() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     const s = searchParams.get('status');
@@ -110,13 +112,10 @@ function AdminOrdersContent() {
 
     setIsUpdatingStatus(true);
     try {
-      const res = await api.patch<{ data: Order }>(
-        `/admin/orders/${selectedOrder._id}/status`,
-        {
-          status: newStatus,
-          trackingNumber: trackingNumber.trim() || undefined,
-        },
-      );
+      const res = await api.patch<{ data: Order }>(`/admin/orders/${selectedOrder._id}/status`, {
+        status: newStatus,
+        trackingNumber: trackingNumber.trim() || undefined,
+      });
 
       setSelectedOrder(res.data);
       setFeedback({
@@ -174,7 +173,7 @@ function AdminOrdersContent() {
     const c = config[status.toLowerCase()] || config.pending;
     return (
       <span
-        className={`inline-flex items-center rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${c.bg} ${c.text}`}
+        className={`inline-flex items-center rounded px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider uppercase ${c.bg} ${c.text}`}
       >
         {status}
       </span>
@@ -184,20 +183,21 @@ function AdminOrdersContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-xl font-bold uppercase tracking-wider text-[#f5f5f5]">
+          <h2 className="font-mono text-xl font-bold tracking-wider text-[#f5f5f5] uppercase">
             Order Fulfillment & Invoicing
           </h2>
-          <p className="font-mono text-xs text-[#71717a] mt-0.5">
-            Track customer shipments, process status updates, print invoices and issue Razorpay refunds ({total} total orders)
+          <p className="mt-0.5 font-mono text-xs text-[#71717a]">
+            Track customer shipments, process status updates, print invoices and issue Razorpay
+            refunds ({total} total orders)
           </p>
         </div>
 
         <button
           type="button"
           onClick={fetchOrders}
-          className="inline-flex items-center gap-2 rounded border border-[#1f1f1f] bg-[#111111] px-3.5 py-2 font-mono text-xs uppercase tracking-wider text-[#a0a0a0] hover:text-[#f5f5f5] hover:border-[#333333] transition-colors active:scale-[0.97]"
+          className="inline-flex items-center gap-2 rounded border border-[#1f1f1f] bg-[#111111] px-3.5 py-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#333333] hover:text-[#f5f5f5] active:scale-[0.97]"
         >
           <ArrowClockwise size={14} className={isLoading ? 'animate-spin' : ''} />
           <span>Refresh Queue</span>
@@ -224,10 +224,13 @@ function AdminOrdersContent() {
       )}
 
       {/* Filters Toolbar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5">
+      <div className="grid grid-cols-1 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Search */}
         <div className="relative">
-          <MagnifyingGlass size={16} className="pointer-events-none absolute left-3 top-3 text-[#71717a]" />
+          <MagnifyingGlass
+            size={16}
+            className="pointer-events-none absolute top-3 left-3 text-[#71717a]"
+          />
           <input
             type="text"
             value={search}
@@ -236,7 +239,7 @@ function AdminOrdersContent() {
               setPage(1);
             }}
             placeholder="Search order ID, user, phone..."
-            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pl-9 pr-3 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
+            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-9 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
           />
         </div>
 
@@ -291,16 +294,16 @@ function AdminOrdersContent() {
       <div className="overflow-hidden rounded border border-[#1f1f1f] bg-[#111111]">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono uppercase tracking-wider text-[#a0a0a0]">
+            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono tracking-wider text-[#a0a0a0] uppercase">
               <tr>
-                <th className="py-3 px-4">Order Ref</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Recipient</th>
-                <th className="py-3 px-4">Items</th>
-                <th className="py-3 px-4">Amount</th>
-                <th className="py-3 px-4">Payment</th>
-                <th className="py-3 px-4">Fulfillment</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="px-4 py-3">Order Ref</th>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Recipient</th>
+                <th className="px-4 py-3">Items</th>
+                <th className="px-4 py-3">Amount</th>
+                <th className="px-4 py-3">Payment</th>
+                <th className="px-4 py-3">Fulfillment</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1f1f1f]">
@@ -315,7 +318,7 @@ function AdminOrdersContent() {
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-[#71717a] font-mono uppercase">
+                  <td colSpan={8} className="py-12 text-center font-mono text-[#71717a] uppercase">
                     No orders found matching active criteria.
                   </td>
                 </tr>
@@ -329,56 +332,52 @@ function AdminOrdersContent() {
                     o.shippingAddress?.fullName || userRef?.name || 'Guest Checkout';
 
                   return (
-                    <tr key={o._id} className="hover:bg-[#141414] transition-colors">
-                      <td className="py-3 px-4 font-mono font-bold text-[#e8ff00]">
-                        #{shortId}
-                      </td>
+                    <tr key={o._id} className="transition-colors hover:bg-[#141414]">
+                      <td className="px-4 py-3 font-mono font-bold text-[#e8ff00]">#{shortId}</td>
 
-                      <td className="py-3 px-4 font-mono text-[#a0a0a0]">
+                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">
                         {new Date(o.createdAt).toLocaleDateString()}
                       </td>
 
-                      <td className="py-3 px-4">
-                        <p className="font-medium text-[#f5f5f5] truncate max-w-[140px]">
+                      <td className="px-4 py-3">
+                        <p className="max-w-[140px] truncate font-medium text-[#f5f5f5]">
                           {customerName}
                         </p>
-                        <p className="font-mono text-[10px] text-[#71717a] truncate max-w-[140px]">
+                        <p className="max-w-[140px] truncate font-mono text-[10px] text-[#71717a]">
                           {o.shippingAddress?.city}, {o.shippingAddress?.country}
                         </p>
                       </td>
 
-                      <td className="py-3 px-4 font-mono text-[#a0a0a0]">
+                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">
                         {itemCount} units ({o.items?.length || 0} SKUs)
                       </td>
 
-                      <td className="py-3 px-4 font-mono font-bold text-[#f5f5f5]">
+                      <td className="px-4 py-3 font-mono font-bold text-[#f5f5f5]">
                         ₹{o.total.toFixed(2)}
                       </td>
 
-                      <td className="py-3 px-4">
+                      <td className="px-4 py-3">
                         <span
-                          className={`inline-block font-mono text-[10px] uppercase font-bold ${
+                          className={`inline-block font-mono text-[10px] font-bold uppercase ${
                             o.paymentStatus === 'captured'
                               ? 'text-[#22c55e]'
                               : o.paymentStatus === 'refunded'
-                              ? 'text-[#ff3b3b]'
-                              : 'text-[#f59e0b]'
+                                ? 'text-[#ff3b3b]'
+                                : 'text-[#f59e0b]'
                           }`}
                         >
                           {o.paymentStatus}
                         </span>
                       </td>
 
-                      <td className="py-3 px-4">
-                        {getStatusBadge(o.status)}
-                      </td>
+                      <td className="px-4 py-3">{getStatusBadge(o.status)}</td>
 
-                      <td className="py-3 px-4 text-right">
+                      <td className="px-4 py-3 text-right">
                         <div className="inline-flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => handleOpenDetail(o)}
-                            className="rounded p-1.5 text-[#a0a0a0] hover:bg-[#1f1f1f] hover:text-[#f5f5f5] transition-colors"
+                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#1f1f1f] hover:text-[#f5f5f5]"
                             title="Inspect Details"
                           >
                             <Eye size={16} />
@@ -387,7 +386,7 @@ function AdminOrdersContent() {
                           <button
                             type="button"
                             onClick={() => setInvoiceOrder(o)}
-                            className="rounded p-1.5 text-[#a0a0a0] hover:bg-[#1f1f1f] hover:text-[#e8ff00] transition-colors"
+                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#1f1f1f] hover:text-[#e8ff00]"
                             title="Print Invoice"
                           >
                             <Printer size={16} />
@@ -412,7 +411,7 @@ function AdminOrdersContent() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 uppercase text-[#f5f5f5] disabled:opacity-30 active:scale-[0.97]"
+              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
             >
               Previous
             </button>
@@ -420,7 +419,7 @@ function AdminOrdersContent() {
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 uppercase text-[#f5f5f5] disabled:opacity-30 active:scale-[0.97]"
+              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
             >
               Next
             </button>
@@ -431,20 +430,20 @@ function AdminOrdersContent() {
       {/* Order Detail & Fulfillment Modal */}
       {selectedOrder && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 shadow-2xl text-[#f5f5f5]">
-            <div className="flex items-center justify-between border-b border-[#1f1f1f] pb-4 mb-6">
+          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl">
+            <div className="mb-6 flex items-center justify-between border-b border-[#1f1f1f] pb-4">
               <div>
                 <div className="flex items-center gap-3">
-                  <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-[#e8ff00]">
+                  <h3 className="font-mono text-sm font-bold tracking-wider text-[#e8ff00] uppercase">
                     Order #{selectedOrder._id.slice(-6).toUpperCase()}
                   </h3>
                   {getStatusBadge(selectedOrder.status)}
                 </div>
-                <p className="font-mono text-[10px] text-[#71717a] mt-0.5">
+                <p className="mt-0.5 font-mono text-[10px] text-[#71717a]">
                   Placed on {new Date(selectedOrder.createdAt).toLocaleString()}
                 </p>
               </div>
@@ -453,7 +452,7 @@ function AdminOrdersContent() {
                 <button
                   type="button"
                   onClick={() => setInvoiceOrder(selectedOrder)}
-                  className="inline-flex items-center gap-1.5 rounded border border-[#1f1f1f] bg-[#181818] px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-[#f5f5f5] hover:border-[#e8ff00]"
+                  className="inline-flex items-center gap-1.5 rounded border border-[#1f1f1f] bg-[#181818] px-3 py-1.5 font-mono text-xs tracking-wider text-[#f5f5f5] uppercase hover:border-[#e8ff00]"
                 >
                   <Printer size={14} />
                   <span>Invoice</span>
@@ -471,9 +470,9 @@ function AdminOrdersContent() {
 
             <div className="space-y-6">
               {/* Customer & Shipping Summary */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded border border-[#1f1f1f] bg-[#0a0a0a] p-4 text-xs font-mono">
+              <div className="grid grid-cols-1 gap-4 rounded border border-[#1f1f1f] bg-[#0a0a0a] p-4 font-mono text-xs sm:grid-cols-2">
                 <div>
-                  <span className="text-[#71717a] block uppercase text-[10px] mb-1">
+                  <span className="mb-1 block text-[10px] text-[#71717a] uppercase">
                     Shipping Destination
                   </span>
                   <p className="font-bold text-[#f5f5f5]">
@@ -486,14 +485,15 @@ function AdminOrdersContent() {
                     <p className="text-[#a0a0a0]">{selectedOrder.shippingAddress.line2}</p>
                   )}
                   <p className="text-[#a0a0a0]">
-                    {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.postalCode}
+                    {selectedOrder.shippingAddress?.city},{' '}
+                    {selectedOrder.shippingAddress?.postalCode}
                   </p>
                   <p className="text-[#a0a0a0]">{selectedOrder.shippingAddress?.country}</p>
-                  <p className="text-[#71717a] mt-1">Tel: {selectedOrder.shippingAddress?.phone}</p>
+                  <p className="mt-1 text-[#71717a]">Tel: {selectedOrder.shippingAddress?.phone}</p>
                 </div>
 
                 <div>
-                  <span className="text-[#71717a] block uppercase text-[10px] mb-1">
+                  <span className="mb-1 block text-[10px] text-[#71717a] uppercase">
                     Payment Gateway Details
                   </span>
                   <p className="text-[#a0a0a0]">
@@ -504,10 +504,12 @@ function AdminOrdersContent() {
                     <span className="text-[#e8ff00]">{selectedOrder.razorpayPaymentId || '—'}</span>
                   </p>
                   <p className="text-[#a0a0a0]">
-                    Order ID: <span className="text-[#f5f5f5]">{selectedOrder.razorpayOrderId || '—'}</span>
+                    Order ID:{' '}
+                    <span className="text-[#f5f5f5]">{selectedOrder.razorpayOrderId || '—'}</span>
                   </p>
                   <p className="text-[#a0a0a0]">
-                    Status: <span className="font-bold text-[#f5f5f5]">{selectedOrder.paymentStatus}</span>
+                    Status:{' '}
+                    <span className="font-bold text-[#f5f5f5]">{selectedOrder.paymentStatus}</span>
                   </p>
 
                   {selectedOrder.refundId && (
@@ -521,47 +523,47 @@ function AdminOrdersContent() {
 
               {/* Items Table */}
               <div>
-                <h4 className="font-mono text-xs uppercase tracking-wider text-[#a0a0a0] mb-2">
+                <h4 className="mb-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase">
                   Line Items
                 </h4>
                 <div className="overflow-hidden rounded border border-[#1f1f1f]">
                   <table className="w-full text-left font-sans text-xs">
-                    <thead className="bg-[#181818] font-mono text-[10px] uppercase text-[#71717a] border-b border-[#1f1f1f]">
+                    <thead className="border-b border-[#1f1f1f] bg-[#181818] font-mono text-[10px] text-[#71717a] uppercase">
                       <tr>
-                        <th className="py-2.5 px-3">Item</th>
-                        <th className="py-2.5 px-3">SKU</th>
-                        <th className="py-2.5 px-3">Variant</th>
-                        <th className="py-2.5 px-3 text-right">Price</th>
-                        <th className="py-2.5 px-3 text-right">Qty</th>
-                        <th className="py-2.5 px-3 text-right">Total</th>
+                        <th className="px-3 py-2.5">Item</th>
+                        <th className="px-3 py-2.5">SKU</th>
+                        <th className="px-3 py-2.5">Variant</th>
+                        <th className="px-3 py-2.5 text-right">Price</th>
+                        <th className="px-3 py-2.5 text-right">Qty</th>
+                        <th className="px-3 py-2.5 text-right">Total</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#1f1f1f] bg-[#0a0a0a]">
                       {selectedOrder.items?.map((item, idx) => (
                         <tr key={idx}>
-                          <td className="py-2.5 px-3">
+                          <td className="px-3 py-2.5">
                             <div className="flex items-center gap-2.5">
                               {item.image && (
                                 <img
                                   src={item.image}
                                   alt={item.name}
-                                  className="h-9 w-8 object-cover rounded border border-[#222222]"
+                                  className="h-9 w-8 rounded border border-[#222222] object-cover"
                                 />
                               )}
                               <span className="font-medium text-[#f5f5f5]">{item.name}</span>
                             </div>
                           </td>
-                          <td className="py-2.5 px-3 font-mono text-[#a0a0a0]">{item.sku}</td>
-                          <td className="py-2.5 px-3 font-mono text-[#a0a0a0]">
+                          <td className="px-3 py-2.5 font-mono text-[#a0a0a0]">{item.sku}</td>
+                          <td className="px-3 py-2.5 font-mono text-[#a0a0a0]">
                             {item.color} / {item.size}
                           </td>
-                          <td className="py-2.5 px-3 font-mono text-right text-[#a0a0a0]">
+                          <td className="px-3 py-2.5 text-right font-mono text-[#a0a0a0]">
                             ₹{item.price}
                           </td>
-                          <td className="py-2.5 px-3 font-mono text-right text-[#f5f5f5]">
+                          <td className="px-3 py-2.5 text-right font-mono text-[#f5f5f5]">
                             {item.quantity}
                           </td>
-                          <td className="py-2.5 px-3 font-mono text-right font-bold text-[#f5f5f5]">
+                          <td className="px-3 py-2.5 text-right font-mono font-bold text-[#f5f5f5]">
                             ₹{(item.price * item.quantity).toFixed(2)}
                           </td>
                         </tr>
@@ -585,7 +587,7 @@ function AdminOrdersContent() {
                       <span>Tax:</span>
                       <span>₹{selectedOrder.tax?.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between border-t border-[#1f1f1f] pt-1.5 font-bold text-[#e8ff00] text-sm">
+                    <div className="flex justify-between border-t border-[#1f1f1f] pt-1.5 text-sm font-bold text-[#e8ff00]">
                       <span>Total Paid:</span>
                       <span>₹{selectedOrder.total?.toFixed(2)}</span>
                     </div>
@@ -594,14 +596,17 @@ function AdminOrdersContent() {
               </div>
 
               {/* Status Update & Actions */}
-              <div className="rounded border border-[#1f1f1f] bg-[#141414] p-4 space-y-4">
-                <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#e8ff00]">
+              <div className="space-y-4 rounded border border-[#1f1f1f] bg-[#141414] p-4">
+                <h4 className="font-mono text-xs font-bold tracking-wider text-[#e8ff00] uppercase">
                   Fulfillment Status & Logistics
                 </h4>
 
-                <form onSubmit={handleUpdateStatus} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <form
+                  onSubmit={handleUpdateStatus}
+                  className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+                >
                   <div>
-                    <label className="block font-mono text-[10px] uppercase text-[#a0a0a0] mb-1">
+                    <label className="mb-1 block font-mono text-[10px] text-[#a0a0a0] uppercase">
                       Order Status
                     </label>
                     {(() => {
@@ -624,7 +629,8 @@ function AdminOrdersContent() {
                           className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none disabled:opacity-50"
                         >
                           <option value={selectedOrder.status}>
-                            {selectedOrder.status.toUpperCase()} {isTerminal ? '(TERMINAL)' : '(CURRENT)'}
+                            {selectedOrder.status.toUpperCase()}{' '}
+                            {isTerminal ? '(TERMINAL)' : '(CURRENT)'}
                           </option>
                           {nextTransitions.map((st) => (
                             <option key={st} value={st}>
@@ -637,7 +643,7 @@ function AdminOrdersContent() {
                   </div>
 
                   <div>
-                    <label className="block font-mono text-[10px] uppercase text-[#a0a0a0] mb-1">
+                    <label className="mb-1 block font-mono text-[10px] text-[#a0a0a0] uppercase">
                       Tracking Number
                     </label>
                     <input
@@ -652,8 +658,12 @@ function AdminOrdersContent() {
                   <div className="flex items-end">
                     <button
                       type="submit"
-                      disabled={isUpdatingStatus || selectedOrder.status === 'delivered' || selectedOrder.status === 'cancelled'}
-                      className="w-full rounded border border-[#e8ff00] bg-[#e8ff00] py-2 font-mono text-xs font-bold uppercase text-[#0a0a0a] hover:bg-[#e8ff00]/90 disabled:opacity-50 active:scale-[0.97]"
+                      disabled={
+                        isUpdatingStatus ||
+                        selectedOrder.status === 'delivered' ||
+                        selectedOrder.status === 'cancelled'
+                      }
+                      className="w-full rounded border border-[#e8ff00] bg-[#e8ff00] py-2 font-mono text-xs font-bold text-[#0a0a0a] uppercase hover:bg-[#e8ff00]/90 active:scale-[0.97] disabled:opacity-50"
                     >
                       {isUpdatingStatus ? 'Updating...' : 'Save Fulfillment'}
                     </button>
@@ -662,7 +672,7 @@ function AdminOrdersContent() {
 
                 {/* Refund Action */}
                 {selectedOrder.paymentStatus !== 'refunded' && (
-                  <div className="pt-3 border-t border-[#1f1f1f] flex items-center justify-between">
+                  <div className="flex items-center justify-between border-t border-[#1f1f1f] pt-3">
                     <div>
                       <p className="font-mono text-xs text-[#a0a0a0]">
                         Need to issue a full payment refund?
@@ -675,7 +685,7 @@ function AdminOrdersContent() {
                     <button
                       type="button"
                       onClick={() => setRefundOrderTarget(selectedOrder)}
-                      className="rounded border border-[#ff3b3b]/40 bg-[#ff3b3b]/10 px-3.5 py-1.5 font-mono text-xs font-bold uppercase text-[#ff3b3b] hover:bg-[#ff3b3b] hover:text-white transition-colors active:scale-[0.97]"
+                      className="rounded border border-[#ff3b3b]/40 bg-[#ff3b3b]/10 px-3.5 py-1.5 font-mono text-xs font-bold text-[#ff3b3b] uppercase transition-colors hover:bg-[#ff3b3b] hover:text-white active:scale-[0.97]"
                     >
                       Issue Refund
                     </button>
@@ -690,20 +700,20 @@ function AdminOrdersContent() {
       {/* Printable Invoice Modal */}
       {invoiceOrder && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/85 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-2xl rounded border border-[#1f1f1f] bg-[#ffffff] p-8 text-[#0a0a0a] shadow-2xl print:m-0 print:p-0 print:border-none">
-            <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#e4e4e7] print:hidden">
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#0a0a0a]">
+          <div className="my-8 w-full max-w-2xl rounded border border-[#1f1f1f] bg-[#ffffff] p-8 text-[#0a0a0a] shadow-2xl print:m-0 print:border-none print:p-0">
+            <div className="mb-6 flex items-center justify-between border-b border-[#e4e4e7] pb-4 print:hidden">
+              <span className="font-mono text-xs font-bold tracking-wider text-[#0a0a0a] uppercase">
                 Print Preview: Invoice #{invoiceOrder._id.slice(-6).toUpperCase()}
               </span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handlePrintInvoice}
-                  className="inline-flex items-center gap-1.5 rounded bg-[#0a0a0a] px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider text-[#ffffff] hover:bg-[#333333]"
+                  className="inline-flex items-center gap-1.5 rounded bg-[#0a0a0a] px-3.5 py-1.5 font-mono text-xs tracking-wider text-[#ffffff] uppercase hover:bg-[#333333]"
                 >
                   <Printer size={15} />
                   <span>Print Document</span>
@@ -739,21 +749,19 @@ function AdminOrdersContent() {
                   }
                 }
               `}</style>
-              <div className="flex justify-between items-start border-b border-[#e4e4e7] pb-6">
+              <div className="flex items-start justify-between border-b border-[#e4e4e7] pb-6">
                 <div>
                   <h1 className="font-mono text-2xl font-bold tracking-widest text-[#0a0a0a]">
                     XYDV
                   </h1>
-                  <p className="font-mono text-[10px] uppercase text-[#71717a]">
+                  <p className="font-mono text-[10px] text-[#71717a] uppercase">
                     High Performance Technical Apparel
                   </p>
-                  <p className="text-[#52525b] mt-2">support@xydv.com</p>
+                  <p className="mt-2 text-[#52525b]">support@xydv.com</p>
                 </div>
                 <div className="text-right font-mono">
                   <h2 className="text-lg font-bold text-[#0a0a0a]">COMMERCIAL INVOICE</h2>
-                  <p className="text-[#71717a]">
-                    INV-{invoiceOrder._id.slice(-8).toUpperCase()}
-                  </p>
+                  <p className="text-[#71717a]">INV-{invoiceOrder._id.slice(-8).toUpperCase()}</p>
                   <p className="text-[#71717a]">
                     Date: {new Date(invoiceOrder.createdAt).toLocaleDateString()}
                   </p>
@@ -763,7 +771,7 @@ function AdminOrdersContent() {
               {/* Billed To */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-mono text-[10px] font-bold uppercase text-[#71717a] mb-1">
+                  <h3 className="mb-1 font-mono text-[10px] font-bold text-[#71717a] uppercase">
                     Billed & Shipped To:
                   </h3>
                   <p className="font-bold text-[#0a0a0a]">
@@ -779,16 +787,14 @@ function AdminOrdersContent() {
                     {invoiceOrder.shippingAddress?.city}, {invoiceOrder.shippingAddress?.postalCode}
                   </p>
                   <p className="text-[#52525b]">{invoiceOrder.shippingAddress?.country}</p>
-                  <p className="text-[#71717a] mt-1">Tel: {invoiceOrder.shippingAddress?.phone}</p>
+                  <p className="mt-1 text-[#71717a]">Tel: {invoiceOrder.shippingAddress?.phone}</p>
                 </div>
 
                 <div className="text-right font-mono text-[11px]">
-                  <h3 className="text-[10px] font-bold uppercase text-[#71717a] mb-1">
+                  <h3 className="mb-1 text-[10px] font-bold text-[#71717a] uppercase">
                     Payment Status:
                   </h3>
-                  <p className="font-bold uppercase text-[#15803d]">
-                    {invoiceOrder.paymentStatus}
-                  </p>
+                  <p className="font-bold text-[#15803d] uppercase">{invoiceOrder.paymentStatus}</p>
                   <p className="text-[#71717a]">
                     Transaction Ref: {invoiceOrder.razorpayPaymentId || 'N/A'}
                   </p>
@@ -796,7 +802,7 @@ function AdminOrdersContent() {
               </div>
 
               {/* Line items table */}
-              <table className="w-full text-left border-collapse">
+              <table className="w-full border-collapse text-left">
                 <thead>
                   <tr className="border-b-2 border-[#0a0a0a] font-mono text-[10px] uppercase">
                     <th className="py-2">Description</th>
@@ -813,9 +819,9 @@ function AdminOrdersContent() {
                         {item.name} ({item.color} - {item.size})
                       </td>
                       <td className="py-2 font-mono text-[#71717a]">{item.sku}</td>
-                      <td className="py-2 font-mono text-right">₹{item.price.toFixed(2)}</td>
-                      <td className="py-2 font-mono text-right">{item.quantity}</td>
-                      <td className="py-2 font-mono text-right font-bold">
+                      <td className="py-2 text-right font-mono">₹{item.price.toFixed(2)}</td>
+                      <td className="py-2 text-right font-mono">{item.quantity}</td>
+                      <td className="py-2 text-right font-mono font-bold">
                         ₹{(item.price * item.quantity).toFixed(2)}
                       </td>
                     </tr>
@@ -824,7 +830,7 @@ function AdminOrdersContent() {
               </table>
 
               {/* Totals */}
-              <div className="flex justify-end pt-4 border-t border-[#e4e4e7] font-mono text-xs">
+              <div className="flex justify-end border-t border-[#e4e4e7] pt-4 font-mono text-xs">
                 <div className="w-48 space-y-1.5">
                   <div className="flex justify-between text-[#71717a]">
                     <span>Subtotal:</span>
@@ -846,7 +852,7 @@ function AdminOrdersContent() {
               </div>
 
               {/* Legal Notice */}
-              <div className="pt-8 border-t border-[#e4e4e7] text-center font-mono text-[9px] text-[#71717a] uppercase">
+              <div className="border-t border-[#e4e4e7] pt-8 text-center font-mono text-[9px] text-[#71717a] uppercase">
                 Thank you for your order • Official XYDV High-Performance Guarantee
               </div>
             </div>
@@ -871,7 +877,9 @@ function AdminOrdersContent() {
 
 export default function AdminOrdersPage() {
   return (
-    <Suspense fallback={<div className="p-8 font-mono text-xs text-[#71717a]">Loading orders...</div>}>
+    <Suspense
+      fallback={<div className="p-8 font-mono text-xs text-[#71717a]">Loading orders...</div>}
+    >
       <AdminOrdersContent />
     </Suspense>
   );

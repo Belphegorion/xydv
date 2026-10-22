@@ -42,9 +42,15 @@ export const createOrderSchema = z.object({
 export const verifyPaymentSchema = z.object({
   body: z.object({
     orderId: z.string().optional(),
-    razorpayOrderId: z.string({ required_error: 'Missing payment verification parameters' }).min(1, 'Missing payment verification parameters'),
-    razorpayPaymentId: z.string({ required_error: 'Missing payment verification parameters' }).min(1, 'Missing payment verification parameters'),
-    razorpaySignature: z.string({ required_error: 'Missing payment verification parameters' }).min(1, 'Missing payment verification parameters'),
+    razorpayOrderId: z
+      .string({ required_error: 'Missing payment verification parameters' })
+      .min(1, 'Missing payment verification parameters'),
+    razorpayPaymentId: z
+      .string({ required_error: 'Missing payment verification parameters' })
+      .min(1, 'Missing payment verification parameters'),
+    razorpaySignature: z
+      .string({ required_error: 'Missing payment verification parameters' })
+      .min(1, 'Missing payment verification parameters'),
   }),
 });
 
@@ -52,7 +58,8 @@ export const updateOrderStatusSchema = z.object({
   body: z.object({
     status: z.enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'], {
       errorMap: () => ({
-        message: 'Invalid order status. Must be pending, confirmed, shipped, delivered, or cancelled.',
+        message:
+          'Invalid order status. Must be pending, confirmed, shipped, delivered, or cancelled.',
       }),
     }),
     trackingNumber: z.string().optional(),

@@ -25,5 +25,13 @@ apiRouter.use('/support', supportRoutes);
 
 // Direct public taxonomy and telemetry routes
 apiRouter.get('/categories', productController.getCategories.bind(productController));
-apiRouter.post('/analytics/track', validateRequest(trackViewSchema), adminController.trackPageView.bind(adminController));
-apiRouter.post('/admin/pageviews', validateRequest(trackViewSchema), adminController.trackPageView.bind(adminController));
+apiRouter.post(
+  '/analytics/track',
+  validateRequest(trackViewSchema),
+  adminController.trackPageView.bind(adminController),
+);
+apiRouter.post(
+  '/admin/pageviews',
+  validateRequest(trackViewSchema),
+  adminController.trackPageView.bind(adminController),
+);

@@ -19,9 +19,9 @@ function request(url, options = {}) {
             statusCode: res.statusCode,
             headers: res.headers,
             body: data,
-          })
+          }),
         );
-      }
+      },
     );
     req.on('error', reject);
     if (options.body) req.write(options.body);
@@ -82,7 +82,8 @@ async function run() {
       headers: {
         RSC: '1',
         'Next-Router-Prefetch': '1',
-        'Next-Router-State-Tree': '%5B%22%22%2C%7B%22children%22%3A%5B%22__PAGE__%22%2C%7B%7D%5D%7D%2Cnull%2Cnull%2Ctrue%5D',
+        'Next-Router-State-Tree':
+          '%5B%22%22%2C%7B%22children%22%3A%5B%22__PAGE__%22%2C%7B%7D%5D%7D%2Cnull%2Cnull%2Ctrue%5D',
       },
     });
     if (res.statusCode === 200) {
@@ -106,7 +107,10 @@ async function run() {
   }
 
   const apiSlug = await request('http://localhost:3000/api/products/volt-performance-tee');
-  if (apiSlug.statusCode === 200 && JSON.parse(apiSlug.body).product?.slug === 'volt-performance-tee') {
+  if (
+    apiSlug.statusCode === 200 &&
+    JSON.parse(apiSlug.body).product?.slug === 'volt-performance-tee'
+  ) {
     console.log('  ✓ 200 OK: /api/products/volt-performance-tee (valid product JSON)');
     passed++;
   } else {
@@ -143,7 +147,9 @@ async function run() {
   }
 
   console.log('\n[4] Probing Next.js Turbopack Development Manifests:');
-  const buildManifest = await request('http://localhost:3000/_next/static/development/_buildManifest.js');
+  const buildManifest = await request(
+    'http://localhost:3000/_next/static/development/_buildManifest.js',
+  );
   if (buildManifest.statusCode === 200 && buildManifest.body.includes('self.__BUILD_MANIFEST')) {
     console.log('  ✓ 200 OK: /_next/static/development/_buildManifest.js (manifest intact)');
     passed++;
@@ -152,7 +158,9 @@ async function run() {
     failed++;
   }
 
-  const ssgManifest = await request('http://localhost:3000/_next/static/development/_ssgManifest.js');
+  const ssgManifest = await request(
+    'http://localhost:3000/_next/static/development/_ssgManifest.js',
+  );
   if (ssgManifest.statusCode === 200 && ssgManifest.body.includes('self.__SSG_MANIFEST')) {
     console.log('  ✓ 200 OK: /_next/static/development/_ssgManifest.js (SSG manifest intact)');
     passed++;

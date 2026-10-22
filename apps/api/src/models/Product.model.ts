@@ -190,4 +190,5 @@ productSchema.index({ 'variants.stock': 1 });
 productSchema.index({ name: 'text', description: 'text', tags: 'text' });
 
 export const Product: Model<IProduct> =
-  (mongoose.models.Product as Model<IProduct>) || mongoose.model<IProduct>('Product', productSchema);
+  (mongoose.models.Product as Model<IProduct>) ||
+  mongoose.model<IProduct>('Product', productSchema);

@@ -9,7 +9,9 @@ import type { CategoryItem } from '@vertex/types';
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null,
+  );
 
   // Form modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -119,20 +121,21 @@ export default function AdminCategoriesPage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-xl font-bold uppercase tracking-wider text-[#f5f5f5]">
+          <h2 className="font-mono text-xl font-bold tracking-wider text-[#f5f5f5] uppercase">
             Catalog Categories
           </h2>
-          <p className="font-mono text-xs text-[#71717a] mt-0.5">
-            Organize and classify products into technical collections ({categories.length} categories)
+          <p className="mt-0.5 font-mono text-xs text-[#71717a]">
+            Organize and classify products into technical collections ({categories.length}{' '}
+            categories)
           </p>
         </div>
 
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 rounded-none border border-[#e8ff00] bg-[#e8ff00] px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-[#0a0a0a] hover:bg-[#e8ff00]/90 transition-colors active:scale-[0.97]"
+          className="inline-flex items-center gap-2 rounded-none border border-[#e8ff00] bg-[#e8ff00] px-4 py-2.5 font-mono text-xs font-bold tracking-wider text-[#0a0a0a] uppercase transition-colors hover:bg-[#e8ff00]/90 active:scale-[0.97]"
         >
           <Plus size={16} weight="bold" />
           <span>New Category</span>
@@ -161,13 +164,13 @@ export default function AdminCategoriesPage() {
       <div className="overflow-hidden rounded border border-[#1f1f1f] bg-[#111111]">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono uppercase tracking-wider text-[#a0a0a0]">
+            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono tracking-wider text-[#a0a0a0] uppercase">
               <tr>
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Slug Identifier</th>
-                <th className="py-3 px-4">Description</th>
-                <th className="py-3 px-4">Active Listings</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Slug Identifier</th>
+                <th className="px-4 py-3">Description</th>
+                <th className="px-4 py-3">Active Listings</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1f1f1f]">
@@ -182,37 +185,33 @@ export default function AdminCategoriesPage() {
                 </tr>
               ) : categories.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-[#71717a] font-mono uppercase">
+                  <td colSpan={5} className="py-12 text-center font-mono text-[#71717a] uppercase">
                     No categories defined yet.
                   </td>
                 </tr>
               ) : (
                 categories.map((c) => (
-                  <tr key={c._id || c.slug} className="hover:bg-[#141414] transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-[#f5f5f5]">
-                      {c.name}
-                    </td>
+                  <tr key={c._id || c.slug} className="transition-colors hover:bg-[#141414]">
+                    <td className="px-4 py-3 font-mono font-bold text-[#f5f5f5]">{c.name}</td>
 
-                    <td className="py-3 px-4 font-mono text-[#e8ff00]">
-                      /{c.slug}
-                    </td>
+                    <td className="px-4 py-3 font-mono text-[#e8ff00]">/{c.slug}</td>
 
-                    <td className="py-3 px-4 text-[#a0a0a0] max-w-xs truncate">
+                    <td className="max-w-xs truncate px-4 py-3 text-[#a0a0a0]">
                       {c.description || '—'}
                     </td>
 
-                    <td className="py-3 px-4 font-mono">
+                    <td className="px-4 py-3 font-mono">
                       <span className="rounded bg-[#1f1f1f] px-2 py-0.5 text-xs text-[#f5f5f5]">
                         {c.productCount ?? 0} products
                       </span>
                     </td>
 
-                    <td className="py-3 px-4 text-right">
+                    <td className="px-4 py-3 text-right">
                       <div className="inline-flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(c)}
-                          className="rounded p-1.5 text-[#a0a0a0] hover:bg-[#1f1f1f] hover:text-[#f5f5f5] transition-colors"
+                          className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#1f1f1f] hover:text-[#f5f5f5]"
                         >
                           <PencilSimple size={16} />
                         </button>
@@ -220,7 +219,7 @@ export default function AdminCategoriesPage() {
                         <button
                           type="button"
                           onClick={() => setCatToDelete({ id: c._id || '', name: c.name })}
-                          className="rounded p-1.5 text-[#a0a0a0] hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] transition-colors"
+                          className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b]"
                         >
                           <Trash size={16} />
                         </button>
@@ -237,13 +236,13 @@ export default function AdminCategoriesPage() {
       {/* Add / Edit Category Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
         >
           <div className="w-full max-w-md rounded border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#1f1f1f] pb-3 mb-4">
-              <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-[#e8ff00]">
+            <div className="mb-4 flex items-center justify-between border-b border-[#1f1f1f] pb-3">
+              <h3 className="font-mono text-sm font-bold tracking-wider text-[#e8ff00] uppercase">
                 {isEditing ? `Edit Category: ${name}` : 'New Category'}
               </h3>
               <button
@@ -257,7 +256,7 @@ export default function AdminCategoriesPage() {
 
             <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1">
+                <label className="mb-1 block font-mono text-xs text-[#a0a0a0] uppercase">
                   Category Name *
                 </label>
                 <input
@@ -272,7 +271,7 @@ export default function AdminCategoriesPage() {
 
               {!isEditing && (
                 <div>
-                  <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1">
+                  <label className="mb-1 block font-mono text-xs text-[#a0a0a0] uppercase">
                     Slug (Optional, auto-generated)
                   </label>
                   <input
@@ -286,7 +285,7 @@ export default function AdminCategoriesPage() {
               )}
 
               <div>
-                <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1">
+                <label className="mb-1 block font-mono text-xs text-[#a0a0a0] uppercase">
                   Description
                 </label>
                 <textarea
@@ -299,7 +298,7 @@ export default function AdminCategoriesPage() {
               </div>
 
               <div>
-                <label className="block font-mono text-xs uppercase text-[#a0a0a0] mb-1">
+                <label className="mb-1 block font-mono text-xs text-[#a0a0a0] uppercase">
                   Header Image URL (Optional)
                 </label>
                 <input
@@ -311,18 +310,18 @@ export default function AdminCategoriesPage() {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1f1f1f]">
+              <div className="flex items-center justify-end gap-3 border-t border-[#1f1f1f] pt-4">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded border border-[#1f1f1f] bg-transparent px-4 py-2 font-mono text-xs uppercase text-[#a0a0a0] hover:text-[#f5f5f5]"
+                  className="rounded border border-[#1f1f1f] bg-transparent px-4 py-2 font-mono text-xs text-[#a0a0a0] uppercase hover:text-[#f5f5f5]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="rounded border border-[#e8ff00] bg-[#e8ff00] px-5 py-2 font-mono text-xs font-bold uppercase text-[#0a0a0a] hover:bg-[#e8ff00]/90 disabled:opacity-50 active:scale-[0.97]"
+                  className="rounded border border-[#e8ff00] bg-[#e8ff00] px-5 py-2 font-mono text-xs font-bold text-[#0a0a0a] uppercase hover:bg-[#e8ff00]/90 active:scale-[0.97] disabled:opacity-50"
                 >
                   {isSaving ? 'Saving...' : isEditing ? 'Update' : 'Create Category'}
                 </button>

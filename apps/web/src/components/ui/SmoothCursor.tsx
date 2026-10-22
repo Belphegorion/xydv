@@ -106,7 +106,7 @@ export function SmoothCursor() {
           opacity: isVisible ? 1 : 0,
         }}
         transition={{ duration: 0.12 }}
-        className="fixed top-0 left-0 -ml-[3px] -mt-[3px] w-1.5 h-1.5 rounded-full pointer-events-none bg-[var(--accent)] dark:bg-[var(--accent)]"
+        className="pointer-events-none fixed top-0 left-0 -mt-[3px] -ml-[3px] h-1.5 w-1.5 rounded-full bg-[var(--accent)] dark:bg-[var(--accent)]"
       />
     </div>
   );
