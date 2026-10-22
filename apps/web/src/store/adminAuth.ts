@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import { api, setAccessToken, getAccessToken } from '../lib/api';
+import { api, setAccessToken, getAccessToken, onAccessTokenChange } from '../lib/api';
 
 export interface AdminUser {
   _id: string;
@@ -152,3 +152,13 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
 
   clearError: () => set({ error: null }),
 }));
+
+if (typeof window !== 'undefined') {
+  onAccessTokenChange((token) => {
+    if (!token) {
+      useAdminAuthStore.setState({ token: null, user: null, isAuthenticated: false });
+    } else {
+      useAdminAuthStore.setState((state) => ({ ...state, token, isAuthenticated: true }));
+    }
+  });
+}

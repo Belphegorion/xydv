@@ -3,16 +3,46 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
 interface FetchOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
   token?: string;
+  _isRetry?: boolean;
 }
 
 let inMemoryAccessToken: string | null = null;
+let refreshPromise: Promise<string | null> | null = null;
+
+type AuthTokenObserver = (token: string | null) => void;
+const tokenObservers: AuthTokenObserver[] = [];
+
+export function onAccessTokenChange(observer: AuthTokenObserver): () => void {
+  tokenObservers.push(observer);
+  return () => {
+    const idx = tokenObservers.indexOf(observer);
+    if (idx !== -1) tokenObservers.splice(idx, 1);
+  };
+}
 
 export function setAccessToken(token: string | null): void {
   inMemoryAccessToken = token;
+  tokenObservers.forEach((fn) => {
+    try {
+      fn(token);
+    } catch {}
+  });
 }
 
 export function getAccessToken(): string | null {
   return inMemoryAccessToken;
+}
+
+function clearAllAuthTokens(): void {
+  setAccessToken(null);
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem('xydv_admin_token');
+      localStorage.removeItem('xydv_admin_user');
+      localStorage.removeItem('vertex_admin_token');
+      localStorage.removeItem('vertex_admin_user');
+    } catch {}
+  }
 }
 
 function getStoredToken(): string | null {
@@ -30,8 +60,47 @@ function getStoredToken(): string | null {
   }
 }
 
+async function requestTokenRefresh(): Promise<string | null> {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(`${API_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({}),
+      });
+
+      if (!res.ok) {
+        clearAllAuthTokens();
+        return null;
+      }
+
+      const data = await res.json().catch(() => null);
+      const newToken = data?.token;
+      if (typeof newToken === 'string' && newToken.length > 0) {
+        setAccessToken(newToken);
+        return newToken;
+      }
+
+      clearAllAuthTokens();
+      return null;
+    } catch {
+      clearAllAuthTokens();
+      return null;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
 async function apiFetch<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
-  const { params, token, headers, body, ...init } = options;
+  const { params, token, headers, body, _isRetry, ...init } = options;
 
   let url = `${API_URL}${endpoint}`;
   if (params) {
@@ -79,21 +148,35 @@ async function apiFetch<T>(endpoint: string, options: FetchOptions = {}): Promis
   });
 
   if (!res.ok) {
-    if (res.status === 401 && typeof window !== 'undefined') {
-      try {
-        setAccessToken(null);
-        localStorage.removeItem('xydv_admin_token');
-        localStorage.removeItem('xydv_admin_user');
-        localStorage.removeItem('vertex_admin_token');
-        localStorage.removeItem('vertex_admin_user');
-        if (
-          window.location.pathname.startsWith('/admin') &&
-          window.location.pathname !== '/admin/login'
-        ) {
-          window.location.href = '/admin/login';
+    const isAuthEndpoint = endpoint.includes('/auth/refresh') || endpoint.includes('/auth/login');
+
+    if (res.status === 401) {
+      // If this was NOT a retry and NOT already an auth endpoint, attempt silent token refresh and retry
+      if (!_isRetry && !isAuthEndpoint) {
+        const refreshedToken = await requestTokenRefresh();
+        if (refreshedToken) {
+          return apiFetch<T>(endpoint, {
+            ...options,
+            token: refreshedToken,
+            _isRetry: true,
+          });
         }
-      } catch {}
+      }
+
+      // If refresh failed or was not applicable, clear auth tokens
+      clearAllAuthTokens();
+
+      // Only redirect on /admin if this wasn't an auth probe or login attempt
+      if (
+        typeof window !== 'undefined' &&
+        !isAuthEndpoint &&
+        window.location.pathname.startsWith('/admin') &&
+        window.location.pathname !== '/admin/login'
+      ) {
+        window.location.href = '/admin/login';
+      }
     }
+
     const error = await res.json().catch(() => ({ message: res.statusText }));
     throw new Error(error.message ?? `HTTP ${res.status}`);
   }
