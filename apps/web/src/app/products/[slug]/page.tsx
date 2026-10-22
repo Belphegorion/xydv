@@ -31,6 +31,7 @@ import { Badge } from '@/components/ui/Badge';
 import { formatPrice } from '@/lib/utils';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 import { api } from '@/lib/api';
+import { useCustomerAuthStore } from '@/store/customerAuth';
 
 interface ApiProductVariant {
   _id?: string;
@@ -172,6 +173,28 @@ export default function ProductDetailPage({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isNotFound, setIsNotFound] = useState(false);
 
+  const customerUser = useCustomerAuthStore((s) => s.user);
+  const isCustomerAuth = useCustomerAuthStore((s) => s.isAuthenticated);
+  const openAuthModal = useCustomerAuthStore((s) => s.openModal);
+
+  const [liveReviews, setLiveReviews] = useState<Array<{
+    id: string;
+    author: string;
+    discipline: string;
+    rating: number;
+    title: string;
+    content: string;
+    date: string;
+  }>>([]);
+  const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewBody, setReviewBody] = useState('');
+  const [reviewAuthor, setReviewAuthor] = useState('');
+
   useEffect(() => {
     let isMounted = true;
     setIsLoading(true);
@@ -185,6 +208,29 @@ export default function ProductDetailPage({ params }: PageProps) {
         if (apiProd) {
           setProduct(mapApiProductToCatalog(apiProd, staticProduct));
           setIsNotFound(false);
+
+          // Fetch live reviews from database
+          const reviewTarget = apiProd._id || apiProd.id || slug;
+          api
+            .get<{ data?: any[]; reviews?: any[] }>(`/products/${reviewTarget}/reviews`)
+            .then((rRes) => {
+              if (!isMounted) return;
+              const rList = rRes?.data || rRes?.reviews || (Array.isArray(rRes) ? rRes : []);
+              if (Array.isArray(rList) && rList.length > 0) {
+                setLiveReviews(
+                  rList.map((r: any) => ({
+                    id: r._id || r.id || String(Math.random()),
+                    author: r.userName || 'Anonymous Athlete',
+                    discipline: 'TRAINING',
+                    rating: Number(r.rating) || 5,
+                    title: r.title || 'Verified Performance',
+                    content: r.body || '',
+                    date: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : 'RECENT',
+                  }))
+                );
+              }
+            })
+            .catch(() => {});
         } else {
           setIsNotFound(true);
         }
@@ -203,6 +249,69 @@ export default function ProductDetailPage({ params }: PageProps) {
       isMounted = false;
     };
   }, [slug, staticProduct]);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isCustomerAuth) {
+      openAuthModal('login');
+      return;
+    }
+    if (!reviewTitle.trim() || !reviewBody.trim()) {
+      setReviewError('Please provide both a title and review body.');
+      return;
+    }
+
+    setReviewSubmitting(true);
+    setReviewError(null);
+
+    try {
+      const reviewTarget = product?.id || product?.slug || slug;
+      const res = await api.post<{ success: boolean; data?: any }>(
+        `/products/${reviewTarget}/reviews`,
+        {
+          rating: reviewRating,
+          title: reviewTitle.trim(),
+          body: reviewBody.trim(),
+          userName: reviewAuthor.trim() || customerUser?.name || 'Verified Athlete',
+        }
+      );
+
+      const rData = res?.data || {
+        _id: `rev_${Date.now()}`,
+        userName: reviewAuthor.trim() || customerUser?.name || 'Verified Athlete',
+        rating: reviewRating,
+        title: reviewTitle.trim(),
+        body: reviewBody.trim(),
+        createdAt: new Date().toISOString(),
+      };
+
+      setLiveReviews((prev) => [
+        {
+          id: rData._id || String(Date.now()),
+          author: rData.userName,
+          discipline: 'TRAINING',
+          rating: rData.rating,
+          title: rData.title,
+          content: rData.body,
+          date: 'JUST NOW',
+        },
+        ...prev,
+      ]);
+
+      setReviewSuccess(true);
+      setReviewTitle('');
+      setReviewBody('');
+      setTimeout(() => {
+        setIsReviewFormOpen(false);
+        setReviewSuccess(false);
+      }, 2000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to submit review';
+      setReviewError(msg);
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
 
   const [activeVariantIdx, setActiveVariantIdx] = useState(0);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
@@ -809,28 +918,134 @@ export default function ProductDetailPage({ params }: PageProps) {
         {/* ATHLETE REVIEWS SECTION                                   */}
         {/* ========================================================= */}
         <section aria-labelledby="reviews-heading" className="mt-20 pt-12 border-t border-[var(--border)]">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
               <span className="text-[11px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                 FIELD REPORTS
               </span>
               <h2 id="reviews-heading" className="text-2xl sm:text-3xl font-black uppercase font-heading text-[var(--text-primary)]">
-                VERIFIED ATHLETE REVIEWS ({product.reviewCount})
+                VERIFIED ATHLETE REVIEWS ({liveReviews.length > 0 ? liveReviews.length : product.reviewCount})
               </h2>
             </div>
-            <div className="mt-2 sm:mt-0 flex items-center gap-2">
-              <span className="text-2xl font-mono font-bold text-[var(--text-primary)]">{product.rating}</span>
-              <div className="flex text-amber-500">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={16} weight="fill" />
-                ))}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-mono font-bold text-[var(--text-primary)]">{product.rating}</span>
+                <div className="flex text-amber-500">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={16} weight="fill" />
+                  ))}
+                </div>
+                <span className="text-xs font-mono text-[var(--text-muted)]">BENCHMARK</span>
               </div>
-              <span className="text-xs font-mono text-[var(--text-muted)]">OVERALL BENCHMARK</span>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isCustomerAuth) {
+                    openAuthModal('login');
+                  } else {
+                    setIsReviewFormOpen(!isReviewFormOpen);
+                  }
+                }}
+                className="py-2.5 px-4 bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-primary)] text-xs font-mono font-bold uppercase tracking-wider transition-colors min-h-[44px]"
+              >
+                {isReviewFormOpen ? 'CANCEL REVIEW' : '+ WRITE REPORT'}
+              </button>
             </div>
           </div>
 
+          {/* Collapsible Review Submission Form */}
+          {isReviewFormOpen && (
+            <form onSubmit={handleReviewSubmit} className="mb-8 p-6 bg-[var(--bg-surface)] border border-[var(--border)] space-y-4">
+              <h3 className="text-xs font-heading font-bold uppercase text-[var(--text-primary)] tracking-wider">
+                SUBMIT FIELD PERFORMANCE REPORT
+              </h3>
+              {reviewError && (
+                <div role="alert" className="p-2.5 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-mono">
+                  {reviewError}
+                </div>
+              )}
+              {reviewSuccess && (
+                <div role="status" className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-xs font-mono">
+                  Report verified and logged to product telemetry.
+                </div>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                    PERFORMANCE RATING (1-5 STARS)
+                  </label>
+                  <div className="flex items-center gap-1.5 py-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewRating(star)}
+                        className="touch-target min-w-[36px] min-h-[36px] flex items-center justify-center text-amber-500"
+                        aria-label={`Rate ${star} stars`}
+                      >
+                        <Star size={20} weight={star <= reviewRating ? 'fill' : 'regular'} />
+                      </button>
+                    ))}
+                    <span className="ml-2 text-xs font-mono font-bold text-[var(--text-primary)]">
+                      {reviewRating} / 5
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                    ATHLETE CALLSIGN / NAME
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={customerUser?.name || 'e.g. Kai N.'}
+                    value={reviewAuthor}
+                    onChange={(e) => setReviewAuthor(e.target.value)}
+                    className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                  REPORT HEADLINE / TITLE *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Exceptional thermal regulation during 15K trail run"
+                  value={reviewTitle}
+                  onChange={(e) => setReviewTitle(e.target.value)}
+                  className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                  FIELD OBSERVATIONS / REVIEW CONTENT *
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  placeholder="Describe fit, abrasion resistance, moisture regulation, and biomechanics in the field..."
+                  value={reviewBody}
+                  onChange={(e) => setReviewBody(e.target.value)}
+                  className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={reviewSubmitting}
+                className="py-3 px-6 bg-[var(--accent)] text-black dark:text-black font-mono font-bold text-xs uppercase tracking-wider transition-transform active:scale-[0.98] disabled:opacity-50 min-h-[44px]"
+              >
+                {reviewSubmitting ? 'DISPATCHING REPORT...' : 'TRANSMIT REVIEW TO ARCHIVE'}
+              </button>
+            </form>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            {product.reviews.map((rev) => (
+            {(liveReviews.length > 0 ? liveReviews : product.reviews).map((rev) => (
               <div key={rev.id} className="p-5 bg-[var(--bg-surface)] border border-[var(--border)] space-y-3">
                 <div className="flex items-center justify-between">
                   <div>

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { Product, type IProduct } from '../models/Product.model';
+import { Category } from '../models/Category.model';
 import { Review } from '../models/Review.model';
 import { AppError } from '../middleware/errorHandler';
 
@@ -18,21 +19,24 @@ export interface ProductQueryFilters {
 
 export class ProductService {
   /**
-   * Aggregate catalog categories with product counts and sample imagery.
+   * Aggregate catalog categories dynamically from DB (Category & Product collections).
    */
   async getCategories() {
-    const rawCategories = await Product.aggregate([
-      { $match: { isPublished: true } },
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 },
-          minPrice: { $min: { $ifNull: ['$price', { $min: '$variants.price' }] } },
-          maxPrice: { $max: { $ifNull: ['$price', { $max: '$variants.price' }] } },
-          featuredProduct: { $first: '$$ROOT' },
+    const [rawCategories, dbCategories] = await Promise.all([
+      Product.aggregate([
+        { $match: { isPublished: true } },
+        {
+          $group: {
+            _id: '$category',
+            count: { $sum: 1 },
+            minPrice: { $min: { $ifNull: ['$price', { $min: '$variants.price' }] } },
+            maxPrice: { $max: { $ifNull: ['$price', { $max: '$variants.price' }] } },
+            featuredProduct: { $first: '$$ROOT' },
+          },
         },
-      },
-      { $sort: { _id: 1 } },
+        { $sort: { _id: 1 } },
+      ]),
+      Category.find().sort({ name: 1 }).lean().catch(() => []),
     ]);
 
     const categoryMetadata: Record<string, { name: string; description: string }> = {
@@ -54,17 +58,33 @@ export class ProductService {
       },
     };
 
-    const allCategories = ['tops', 'bottoms', 'outerwear', 'accessories'];
-    const categoriesMap = new Map(rawCategories.map((c) => [c._id, c]));
+    const categoriesMap = new Map(rawCategories.map((c) => [c._id ? String(c._id).toLowerCase() : '', c]));
+    const dbCategoriesMap = new Map(dbCategories.map((c) => [c.slug ? String(c.slug).toLowerCase() : '', c]));
 
-    return allCategories.map((slug) => {
+    // Dynamically derive all active categories from DB Category collection and active Products
+    const slugSet = new Set<string>();
+    for (const c of dbCategories) {
+      if (c.slug) slugSet.add(c.slug.toLowerCase());
+    }
+    for (const rc of rawCategories) {
+      if (rc._id) slugSet.add(String(rc._id).toLowerCase());
+    }
+
+    // Default fallback categories if database is completely empty
+    if (slugSet.size === 0) {
+      ['tops', 'bottoms', 'outerwear', 'accessories'].forEach((s) => slugSet.add(s));
+    }
+
+    return Array.from(slugSet).map((slug) => {
       const cat = categoriesMap.get(slug);
+      const dbCat = dbCategoriesMap.get(slug);
       const meta = categoryMetadata[slug] ?? {
-        name: slug.charAt(0).toUpperCase() + slug.slice(1),
-        description: `${slug} collection`,
+        name: dbCat?.name || slug.charAt(0).toUpperCase() + slug.slice(1),
+        description: dbCat?.description || `${slug} collection`,
       };
       const p = cat?.featuredProduct;
       const imageUrl =
+        dbCat?.image ||
         p?.images?.[0]?.url ||
         (typeof p?.images?.[0] === 'string' ? p?.images?.[0] : null) ||
         p?.variants?.[0]?.imageUrl ||
@@ -74,8 +94,8 @@ export class ProductService {
       return {
         id: slug,
         slug,
-        name: meta.name,
-        description: meta.description,
+        name: dbCat?.name || meta.name,
+        description: dbCat?.description || meta.description,
         count: cat ? cat.count : 0,
         minPrice: cat ? cat.minPrice : 0,
         maxPrice: cat ? cat.maxPrice : 0,

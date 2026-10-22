@@ -6,13 +6,14 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useCartStore } from '@/store/cart';
 import { useWishlistStore } from '@/store/wishlist';
-import { ShoppingBag, MagnifyingGlass, Heart, List, X } from '@phosphor-icons/react';
+import { ShoppingBag, MagnifyingGlass, Heart, List, X, User } from '@phosphor-icons/react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 
 import { AnnouncementBar } from '@/components/layout/AnnouncementBar';
 
 import { BrandLogo } from '@/components/ui/BrandLogo';
+import { useCustomerAuthStore } from '@/store/customerAuth';
 
 const NAV_LINKS = [
   { label: 'ALL GEAR', href: '/products' },
@@ -27,6 +28,8 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [navLinks, setNavLinks] = useState(NAV_LINKS);
+
   const itemCount = useCartStore((s) => s.itemCount());
   const openCart = useCartStore((s) => s.openCart);
   const closeCart = useCartStore((s) => s.closeCart);
@@ -36,8 +39,41 @@ export function Navbar() {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
 
+  const openAuthModal = useCustomerAuthStore((s) => s.openModal);
+  const customerUser = useCustomerAuthStore((s) => s.user);
+  const isCustomerAuthenticated = useCustomerAuthStore((s) => s.isAuthenticated);
+  const initCustomerAuth = useCustomerAuthStore((s) => s.initialize);
+
   useEffect(() => {
     setMounted(true);
+    initCustomerAuth();
+  }, [initCustomerAuth]);
+
+  // Fetch dynamic categories from DB / API
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/categories')
+      .then((res) => res.json())
+      .then((json) => {
+        if (!isMounted) return;
+        const categories = json.data || json.categories || (Array.isArray(json) ? json : []);
+        if (Array.isArray(categories) && categories.length > 0) {
+          const dynamicLinks = [
+            { label: 'ALL GEAR', href: '/products' },
+            ...categories.map((c: { name?: string; slug?: string }) => ({
+              label: (c.name || c.slug || '').toUpperCase(),
+              href: `/products?category=${c.slug}`,
+            })),
+          ];
+          setNavLinks(dynamicLinks);
+        }
+      })
+      .catch(() => {
+        // Fallback to NAV_LINKS default categories
+      });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const displayItemCount = mounted ? itemCount : 0;
@@ -241,11 +277,12 @@ export function Navbar() {
             </div>
 
             {/* Desktop Navigation Links */}
-            <div
+            <nav
+              aria-label="Main navigation"
               className="hidden md:flex items-center gap-3 lg:gap-6 relative"
               onMouseLeave={() => setHoveredLink(null)}
             >
-              {NAV_LINKS.map((link) => (
+              {navLinks.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
@@ -269,7 +306,7 @@ export function Navbar() {
                   )}
                 </Link>
               ))}
-            </div>
+            </nav>
           </div>
 
           {/* ============================================================ */}
@@ -329,6 +366,25 @@ export function Navbar() {
               </Link>
             </div>
 
+            {/* Customer Account Button - desktop */}
+            <div className="hidden md:flex items-center">
+              <button
+                type="button"
+                onClick={() => openAuthModal('login')}
+                aria-label={isCustomerAuthenticated ? `Account: ${customerUser?.name || 'Athlete'}` : 'Sign in to account'}
+                className={`touch-target min-w-[48px] min-h-[48px] btn-tactile transition-colors relative ${
+                  isElevated
+                    ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                    : 'text-zinc-300 hover:text-white'
+                }`}
+              >
+                <User size={20} weight={isCustomerAuthenticated ? 'fill' : 'bold'} />
+                {isCustomerAuthenticated && (
+                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[var(--accent)]" />
+                )}
+              </button>
+            </div>
+
             {/* Light / Dark Mode Toggle - hidden on mobile header, visible on desktop */}
             <div className="hidden md:flex items-center">
               <ThemeToggle />
@@ -378,8 +434,8 @@ export function Navbar() {
             transition={{ duration: 0.18, ease: EMIL_EASE }}
             className="md:hidden absolute inset-x-0 top-full bg-[var(--bg)] border-b border-[var(--border)] p-4 sm:p-6 shadow-2xl z-50 max-h-[calc(100dvh-6rem)] overflow-y-auto pb-[max(2.5rem,env(safe-area-inset-bottom))]"
           >
-              <div className="flex flex-col space-y-1">
-                {NAV_LINKS.map((link, idx) => (
+              <nav aria-label="Mobile navigation" className="flex flex-col space-y-1">
+                {navLinks.map((link, idx) => (
                   <motion.div
                     key={link.label}
                     initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -10 }}
@@ -400,10 +456,28 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
-              </div>
+              </nav>
 
-              {/* Utility / Extra Links in Drawer (Wishlist + Theme Toggle) */}
+              {/* Utility / Extra Links in Drawer (Account + Wishlist + Theme Toggle) */}
               <div className="mt-4 pt-3 border-t border-[var(--border)] space-y-2">
+                {/* Customer Account Trigger in Drawer */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    openAuthModal('login');
+                  }}
+                  className="w-full min-h-[48px] flex items-center justify-between p-3 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] hover:border-[var(--accent)] transition-colors active:scale-[0.98]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <User size={18} weight={isCustomerAuthenticated ? 'fill' : 'bold'} />
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider">
+                      {isCustomerAuthenticated ? (customerUser?.name || 'ATHLETE ACCOUNT').toUpperCase() : 'ATHLETE ACCESS / SIGN IN'}
+                    </span>
+                  </div>
+                  <span className="text-xs font-mono text-[var(--text-muted)]">↗</span>
+                </button>
+
                 {/* Wishlist Link with Live Badge */}
                 <Link
                   href="/wishlist"

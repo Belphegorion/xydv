@@ -7,6 +7,10 @@ import adminRoutes from './admin.routes';
 import webhookRoutes from './webhooks.routes';
 import settingsRoutes from './settings.routes';
 import supportRoutes from './support.routes';
+import { productController } from '../controllers/product.controller';
+import { adminController } from '../controllers/admin.controller';
+import { trackViewSchema } from '../validators/admin.schema';
+import { validateRequest } from '../middleware/validateRequest';
 
 export const apiRouter = Router();
 
@@ -18,3 +22,8 @@ apiRouter.use('/admin', adminRoutes);
 apiRouter.use('/webhooks', webhookRoutes);
 apiRouter.use('/settings', settingsRoutes);
 apiRouter.use('/support', supportRoutes);
+
+// Direct public taxonomy and telemetry routes
+apiRouter.get('/categories', productController.getCategories.bind(productController));
+apiRouter.post('/analytics/track', validateRequest(trackViewSchema), adminController.trackPageView.bind(adminController));
+apiRouter.post('/admin/pageviews', validateRequest(trackViewSchema), adminController.trackPageView.bind(adminController));

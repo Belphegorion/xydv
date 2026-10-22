@@ -7,11 +7,12 @@ import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
 import { calculateCartMetrics } from '@vertex/types';
-import { X, Minus, Plus, Trash, ShieldCheck, ArrowRight, CheckCircle } from '@phosphor-icons/react';
+import { X, Minus, Plus, Trash, ShieldCheck, ArrowRight, CheckCircle, MapPin } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { EMIL_EASE } from '@/lib/motion';
 import { api } from '@/lib/api';
+import { useCustomerAuthStore } from '@/store/customerAuth';
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, clearCart } = useCartStore();
@@ -20,6 +21,32 @@ export function CartDrawer() {
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
+
+  const customerUser = useCustomerAuthStore((s) => s.user);
+  const [shippingAddress, setShippingAddress] = useState({
+    fullName: '',
+    line1: '',
+    line2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'IN',
+    phone: '',
+    email: '',
+  });
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addressError, setAddressError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (customerUser) {
+      setShippingAddress((prev) => ({
+        ...prev,
+        fullName: prev.fullName || customerUser.name || '',
+        email: prev.email || customerUser.email || '',
+        phone: prev.phone || customerUser.phone || '',
+      }));
+    }
+  }, [customerUser]);
 
   const [storeSettings, setStoreSettings] = useState<{
     freeShippingThreshold: number;
@@ -129,8 +156,23 @@ export function CartDrawer() {
   // Razorpay Checkout Trigger
   const handleRazorpayCheckout = useCallback(async () => {
     if (items.length === 0) return;
-    setIsProcessing(true);
     setPaymentError(null);
+    setAddressError(null);
+
+    // Validate real customer shipping address
+    if (
+      !shippingAddress.fullName.trim() ||
+      !shippingAddress.line1.trim() ||
+      !shippingAddress.city.trim() ||
+      !shippingAddress.postalCode.trim() ||
+      !shippingAddress.phone.trim()
+    ) {
+      setShowAddressForm(true);
+      setAddressError('Please provide complete delivery address and phone number.');
+      return;
+    }
+
+    setIsProcessing(true);
 
     try {
       let razorpayOrderId: string | undefined;
@@ -155,6 +197,18 @@ export function CartDrawer() {
             sku: item.sku,
             quantity: item.quantity,
           })),
+          shippingAddress: {
+            fullName: shippingAddress.fullName.trim(),
+            line1: shippingAddress.line1.trim(),
+            line2: shippingAddress.line2.trim(),
+            city: shippingAddress.city.trim(),
+            state: shippingAddress.state.trim() || 'IN',
+            postalCode: shippingAddress.postalCode.trim(),
+            country: shippingAddress.country || 'IN',
+            phone: shippingAddress.phone.trim(),
+            email: (shippingAddress.email || customerUser?.email || '').trim(),
+          },
+          email: (shippingAddress.email || customerUser?.email || '').trim(),
         });
 
         const orderData = orderRes?.data;
@@ -195,9 +249,9 @@ export function CartDrawer() {
         image: '/brand/xydv-logo.png',
         order_id: razorpayOrderId,
         prefill: {
-          name: 'Athlete Customer',
-          email: 'customer@xydv-performance.com',
-          contact: '+919876543210',
+          name: shippingAddress.fullName.trim(),
+          email: (shippingAddress.email || customerUser?.email || 'customer@xydv.com').trim(),
+          contact: shippingAddress.phone.trim(),
         },
         theme: {
           color: '#0A0A0A',
@@ -483,6 +537,158 @@ export function CartDrawer() {
             {/* Footer Order Summary & Razorpay Trigger */}
             {items.length > 0 && (
               <div className="space-y-4 border-t border-[var(--border)] bg-[var(--bg-surface)] p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+                {/* Shipping Address Form Section */}
+                <div className="border border-[var(--border)] bg-[var(--bg-elevated)] p-3.5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase flex items-center gap-1.5">
+                        <MapPin size={12} weight="bold" />
+                        <span>DISPATCH DESTINATION</span>
+                      </span>
+                      <h4 className="text-xs font-heading font-bold uppercase text-[var(--text-primary)] mt-0.5">
+                        SHIPPING ADDRESS
+                      </h4>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddressForm(!showAddressForm)}
+                      className="text-[11px] font-mono font-bold text-[var(--text-primary)] hover:text-[var(--accent)] underline min-h-[32px] px-1"
+                    >
+                      {showAddressForm ? 'CLOSE' : shippingAddress.line1 ? 'EDIT' : '+ ADD ADDRESS'}
+                    </button>
+                  </div>
+
+                  {!showAddressForm && shippingAddress.line1 ? (
+                    <div className="text-xs font-mono text-[var(--text-secondary)] space-y-0.5 bg-[var(--bg)] p-2.5 border border-[var(--border)]">
+                      <p className="font-bold text-[var(--text-primary)]">{shippingAddress.fullName}</p>
+                      <p>{shippingAddress.line1}{shippingAddress.line2 ? `, ${shippingAddress.line2}` : ''}</p>
+                      <p>{shippingAddress.city}, {shippingAddress.state} {shippingAddress.postalCode}</p>
+                      <p className="text-[10px] text-[var(--text-muted)]">PHONE: {shippingAddress.phone}</p>
+                    </div>
+                  ) : null}
+
+                  {showAddressForm && (
+                    <div className="space-y-2.5 pt-1 border-t border-[var(--border)]">
+                      {addressError && (
+                        <div role="alert" className="p-2 bg-red-500/10 border border-red-500/30 text-red-500 text-[11px] font-mono">
+                          {addressError}
+                        </div>
+                      )}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                            FULL NAME *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Recipient name"
+                            value={shippingAddress.fullName}
+                            onChange={(e) => {
+                              setAddressError(null);
+                              setShippingAddress({ ...shippingAddress, fullName: e.target.value });
+                            }}
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                            PHONE NUMBER *
+                          </label>
+                          <input
+                            type="tel"
+                            required
+                            placeholder="+91 98765 43210"
+                            value={shippingAddress.phone}
+                            onChange={(e) => {
+                              setAddressError(null);
+                              setShippingAddress({ ...shippingAddress, phone: e.target.value });
+                            }}
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          STREET ADDRESS *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="House, building, street"
+                          value={shippingAddress.line1}
+                          onChange={(e) => {
+                            setAddressError(null);
+                            setShippingAddress({ ...shippingAddress, line1: e.target.value });
+                          }}
+                          className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          APARTMENT, SUITE, ETC. (OPTIONAL)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Apartment, unit, floor"
+                          value={shippingAddress.line2}
+                          onChange={(e) => setShippingAddress({ ...shippingAddress, line2: e.target.value })}
+                          className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="col-span-1">
+                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                            CITY *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="City"
+                            value={shippingAddress.city}
+                            onChange={(e) => {
+                              setAddressError(null);
+                              setShippingAddress({ ...shippingAddress, city: e.target.value });
+                            }}
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                          />
+                        </div>
+                        <div className="col-span-1">
+                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                            STATE
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="State"
+                            value={shippingAddress.state}
+                            onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                          />
+                        </div>
+                        <div className="col-span-1">
+                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                            PIN CODE *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="PIN code"
+                            value={shippingAddress.postalCode}
+                            onChange={(e) => {
+                              setAddressError(null);
+                              setShippingAddress({ ...shippingAddress, postalCode: e.target.value });
+                            }}
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-1.5 font-mono text-xs">
                   <div className="flex justify-between text-[var(--text-secondary)]">
                     <span>SUBTOTAL</span>

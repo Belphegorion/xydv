@@ -8,3 +8,4 @@ export * from './TechFeatures';
 export * from './SocialProof';
 export * from './NewsletterSection';
 export * from './CartDrawer';
+export * from './CustomerAuthModal';
