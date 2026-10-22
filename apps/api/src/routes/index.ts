@@ -5,6 +5,7 @@ import orderRoutes from './orders.routes';
 import userRoutes from './users.routes';
 import adminRoutes from './admin.routes';
 import webhookRoutes from './webhooks.routes';
+import settingsRoutes from './settings.routes';
 
 export const apiRouter = Router();
 
@@ -14,3 +15,4 @@ apiRouter.use('/orders', orderRoutes);
 apiRouter.use('/users', userRoutes);
 apiRouter.use('/admin', adminRoutes);
 apiRouter.use('/webhooks', webhookRoutes);
+apiRouter.use('/settings', settingsRoutes);

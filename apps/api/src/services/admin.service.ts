@@ -12,6 +12,7 @@ import { Setting, type ISetting } from '../models/Setting.model';
 import { razorpay } from '../config/razorpay';
 import { AppError } from '../middleware/errorHandler';
 import { inventoryService } from './inventory.service';
+import { invalidateStoreSettingsCache } from './order.service';
 import { UPLOADS_DIR } from '../middleware/upload';
 
 function escapeRegex(text: string): string {
@@ -1372,6 +1373,8 @@ export class AdminService {
       details: data,
       ip,
     });
+
+    invalidateStoreSettingsCache();
 
     return settings;
   }

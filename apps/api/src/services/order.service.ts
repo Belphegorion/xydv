@@ -4,10 +4,77 @@ import { razorpay, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } from '../config/razorp
 import { Order, type IOrder } from '../models/Order.model';
 import { Product } from '../models/Product.model';
 import { User } from '../models/User.model';
+import { Setting } from '../models/Setting.model';
 import { AppError } from '../middleware/errorHandler';
 import { inventoryService } from './inventory.service';
 import { COMMERCE_CONSTANTS } from '../constants/commerce';
 import { STATIC_CATALOG } from '../fixtures/catalog';
+
+export interface StorePricingSettings {
+  shippingFee: number;
+  freeShippingThreshold: number;
+  taxRate: number;
+  currency: string;
+}
+
+export interface OrderTotals {
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+  amountInPaise: number;
+  currency: string;
+}
+
+let cachedSettings: StorePricingSettings | null = null;
+let lastSettingsFetch = 0;
+const SETTINGS_CACHE_TTL_MS = 10_000;
+
+export function invalidateStoreSettingsCache(): void {
+  cachedSettings = null;
+  lastSettingsFetch = 0;
+}
+
+export async function getLiveStoreSettings(): Promise<StorePricingSettings> {
+  const now = Date.now();
+  if (cachedSettings && now - lastSettingsFetch < SETTINGS_CACHE_TTL_MS) {
+    return cachedSettings;
+  }
+
+  try {
+    const setting = await Setting.findOne({ key: 'global_store_settings' }).lean();
+    if (setting) {
+      cachedSettings = {
+        shippingFee:
+          typeof (setting as any).shippingFee === 'number'
+            ? (setting as any).shippingFee
+            : typeof setting.standardShippingFee === 'number'
+            ? setting.standardShippingFee
+            : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE,
+        freeShippingThreshold:
+          typeof setting.freeShippingThreshold === 'number'
+            ? setting.freeShippingThreshold
+            : COMMERCE_CONSTANTS.FREE_SHIPPING_THRESHOLD,
+        taxRate:
+          typeof setting.taxRate === 'number'
+            ? setting.taxRate
+            : COMMERCE_CONSTANTS.TAX_RATE,
+        currency: setting.currency || COMMERCE_CONSTANTS.CURRENCY,
+      };
+      lastSettingsFetch = now;
+      return cachedSettings;
+    }
+  } catch {
+    // If DB is temporarily unavailable, fall back to safe INR defaults
+  }
+
+  return {
+    shippingFee: COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE,
+    freeShippingThreshold: COMMERCE_CONSTANTS.FREE_SHIPPING_THRESHOLD,
+    taxRate: COMMERCE_CONSTANTS.TAX_RATE,
+    currency: COMMERCE_CONSTANTS.CURRENCY,
+  };
+}
 
 export interface CreateOrderItemInput {
   productId: string;
@@ -33,6 +100,32 @@ export interface ShippingAddressInput {
 }
 
 export class OrderService {
+  /**
+   * Authoritative server-side price calculation using live settings or safe INR fallbacks.
+   */
+  async calculateOrderTotals(
+    subtotal: number,
+    settingsOverride?: Partial<StorePricingSettings>,
+  ): Promise<OrderTotals> {
+    const settings = settingsOverride
+      ? { ...(await getLiveStoreSettings()), ...settingsOverride }
+      : await getLiveStoreSettings();
+
+    const shipping = subtotal >= settings.freeShippingThreshold ? 0 : settings.shippingFee;
+    const tax = Math.round(subtotal * settings.taxRate * 100) / 100;
+    const total = Math.round((subtotal + shipping + tax) * 100) / 100;
+    const amountInPaise = Math.round(total * 100);
+
+    return {
+      subtotal,
+      shipping,
+      tax,
+      total,
+      amountInPaise,
+      currency: settings.currency,
+    };
+  }
+
   /**
    * Authoritative server-side price calculation and Razorpay order creation.
    */
@@ -218,20 +311,15 @@ export class OrderService {
       });
     }
 
-    const shipping =
-      subtotal >= COMMERCE_CONSTANTS.FREE_SHIPPING_THRESHOLD
-        ? 0
-        : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE;
-    const tax = Math.round(subtotal * COMMERCE_CONSTANTS.TAX_RATE * 100) / 100;
-    const total = Math.round((subtotal + shipping + tax) * 100) / 100;
-    const amountInPaise = Math.round(total * 100);
+    const { shipping, tax, total, amountInPaise, currency } =
+      await this.calculateOrderTotals(subtotal);
 
     // Create Razorpay Order
     let razorpayOrder: { id: string; amount: number; currency: string };
     try {
       razorpayOrder = await razorpay.orders.create({
         amount: amountInPaise,
-        currency: COMMERCE_CONSTANTS.CURRENCY,
+        currency: currency || COMMERCE_CONSTANTS.CURRENCY,
         receipt: `rcpt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         notes: {
           userId: userId ? String(userId) : 'guest',
@@ -248,7 +336,7 @@ export class OrderService {
         razorpayOrder = {
           id: `order_mock_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
           amount: amountInPaise,
-          currency: COMMERCE_CONSTANTS.CURRENCY,
+          currency: currency || COMMERCE_CONSTANTS.CURRENCY,
         };
       } else {
         throw rzpErr;
@@ -484,13 +572,11 @@ export class OrderService {
       });
     }
 
-    const calculatedShipping =
-      calculatedSubtotal >= COMMERCE_CONSTANTS.FREE_SHIPPING_THRESHOLD
-        ? 0
-        : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE;
-    const calculatedTax = Math.round(calculatedSubtotal * COMMERCE_CONSTANTS.TAX_RATE * 100) / 100;
-    const calculatedTotal =
-      Math.round((calculatedSubtotal + calculatedShipping + calculatedTax) * 100) / 100;
+    const {
+      shipping: calculatedShipping,
+      tax: calculatedTax,
+      total: calculatedTotal,
+    } = await this.calculateOrderTotals(calculatedSubtotal);
 
     let paymentStatus: 'pending' | 'captured' = 'pending';
 

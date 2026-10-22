@@ -43,26 +43,38 @@ export interface CartState {
   shippingDelta?: ShippingDelta;
 }
 
-export const COMMERCE_RULES = {
+export interface CommerceRules {
+  freeShippingThreshold: number;
+  standardShippingFee: number;
+  taxRate: number;
+  currency: string;
+  currencyDecimals: number;
+}
+
+export const COMMERCE_RULES: CommerceRules = {
   freeShippingThreshold: 150.0,
-  standardShippingFee: 9.99,
-  taxRate: 0.08,
+  standardShippingFee: 15.0,
+  taxRate: 0.18,
   currency: 'INR',
   currencyDecimals: 2,
 };
 
-export function calculateCartMetrics(items: Array<{ price: number; quantity: number }> = []) {
+export function calculateCartMetrics(
+  items: Array<{ price: number; quantity: number }> = [],
+  customRules?: Partial<CommerceRules>,
+) {
+  const rules = customRules ? { ...COMMERCE_RULES, ...customRules } : COMMERCE_RULES;
   const subtotal = Number(
     items.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0).toFixed(2),
   );
-  const isFreeShipping = subtotal >= COMMERCE_RULES.freeShippingThreshold;
-  const shipping = items.length === 0 ? 0 : isFreeShipping ? 0 : COMMERCE_RULES.standardShippingFee;
-  const freeShippingDelta = Math.max(0, Number((COMMERCE_RULES.freeShippingThreshold - subtotal).toFixed(2)));
+  const isFreeShipping = subtotal >= rules.freeShippingThreshold;
+  const shipping = items.length === 0 ? 0 : isFreeShipping ? 0 : rules.standardShippingFee;
+  const freeShippingDelta = Math.max(0, Number((rules.freeShippingThreshold - subtotal).toFixed(2)));
   const freeShippingProgress = Math.min(
     100,
-    Number(((subtotal / COMMERCE_RULES.freeShippingThreshold) * 100).toFixed(1)),
+    Number(((subtotal / rules.freeShippingThreshold) * 100).toFixed(1)),
   );
-  const tax = Number((subtotal * COMMERCE_RULES.taxRate).toFixed(2));
+  const tax = Number((subtotal * rules.taxRate).toFixed(2));
   const total = Number((subtotal + shipping + tax).toFixed(2));
   const amountPaise = Math.round(total * 100);
 
