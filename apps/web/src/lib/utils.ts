@@ -43,7 +43,29 @@ export interface SizeOption {
   inStock: boolean;
 }
 
-export function getAvailableSizes(category: string, sku?: string): SizeOption[] {
+export function getAvailableSizes(
+  category: string,
+  sku?: string,
+  variants?: Array<{ size?: string; stock?: number; inStock?: boolean }>,
+): SizeOption[] {
+  if (variants && Array.isArray(variants) && variants.length > 0) {
+    const sizeMap = new Map<string, boolean>();
+    for (const v of variants) {
+      const s = v.size || (category === 'accessories' ? 'OS' : 'M');
+      const inStock =
+        typeof v.stock === 'number'
+          ? v.stock > 0
+          : typeof v.inStock === 'boolean'
+          ? v.inStock
+          : true;
+      const current = sizeMap.get(s);
+      sizeMap.set(s, current !== undefined ? current || inStock : inStock);
+    }
+    if (sizeMap.size > 0) {
+      return Array.from(sizeMap.entries()).map(([size, inStock]) => ({ size, inStock }));
+    }
+  }
+
   if (category === 'accessories') {
     return [{ size: 'OS', inStock: true }];
   }
@@ -52,7 +74,7 @@ export function getAvailableSizes(category: string, sku?: string): SizeOption[] 
     { size: 'S', inStock: true },
     { size: 'M', inStock: true },
     { size: 'L', inStock: true },
-    { size: 'XL', inStock: sku?.startsWith('VPT-VLT') ? false : true },
+    { size: 'XL', inStock: true },
     { size: 'XXL', inStock: true },
   ];
 }
