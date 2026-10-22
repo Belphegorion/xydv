@@ -137,4 +137,32 @@ describe('Batch 6: HIGH-07 - Storefront PDP Reviews Pipeline & Live Feedback', (
       'PDP page.tsx must collect user review comment',
     );
   });
+
+  it('PDP page.tsx review star buttons enforce >= 44px touch target constraint', () => {
+    const pdpSrc = fs.readFileSync(pdpPagePath, 'utf-8');
+    assert.match(
+      pdpSrc,
+      /min-w-\[44px\]\s+min-h-\[44px\]/,
+      'Review star rating buttons must satisfy >= 44px accessible touch targets',
+    );
+  });
+
+  it('PDP page.tsx review form inputs provide accessible label associations (htmlFor / id)', () => {
+    const pdpSrc = fs.readFileSync(pdpPagePath, 'utf-8');
+    assert.match(
+      pdpSrc,
+      /htmlFor=["']review-author["']/,
+      'Review author input must have matching htmlFor',
+    );
+    assert.match(
+      pdpSrc,
+      /htmlFor=["']review-title["']/,
+      'Review title input must have matching htmlFor',
+    );
+    assert.match(
+      pdpSrc,
+      /htmlFor=["']review-body["']/,
+      'Review body textarea must have matching htmlFor',
+    );
+  });
 });

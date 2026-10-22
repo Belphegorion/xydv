@@ -54,6 +54,16 @@ describe('Batch 5: HIGH-03 - Customer Auth Storefront Store', () => {
       /logout\s*:\s*\(\)/,
       'customerAuth.ts must implement logout action',
     );
+    assert.match(
+      storeSrc,
+      /localStorage\.setItem\(['"]xydv_auth_token['"]/,
+      'customerAuth.ts must persist xydv_auth_token in localStorage on login/register',
+    );
+    assert.match(
+      storeSrc,
+      /setAccessToken\(storedToken\)/,
+      'customerAuth.ts must restore access token in api client during initialize()',
+    );
   });
 });
 
@@ -87,6 +97,20 @@ describe('Batch 5: HIGH-03 - CustomerAuthModal Component & Layout Integration', 
       modalSrc,
       /transition:\s*all/,
       'CustomerAuthModal must not use unconstrained transition: all',
+    );
+  });
+
+  it('CustomerAuthModal.tsx renders active athlete profile and session termination when authenticated', () => {
+    const modalSrc = fs.readFileSync(modalPath, 'utf-8');
+    assert.match(
+      modalSrc,
+      /ACTIVE ATHLETE SESSION|logout/i,
+      'CustomerAuthModal must support active authenticated session display and sign out',
+    );
+    assert.match(
+      modalSrc,
+      /TERMINATE SESSION|SIGN OUT/i,
+      'CustomerAuthModal must provide a sign-out trigger for logged-in athletes',
     );
   });
 
@@ -174,6 +198,37 @@ describe('Batch 5: HIGH-03 - CartDrawer Interactive Shipping Destination Form', 
       cartDrawerSrc,
       /validate|shippingError|formError|!shippingAddress/i,
       'CartDrawer.tsx must validate required shipping fields before checkout execution',
+    );
+  });
+
+  it('CartDrawer.tsx includes shippingAddress in handleRazorpayCheckout dependency array to avoid stale closures', () => {
+    assert.match(
+      cartDrawerSrc,
+      /,\s*\[[^\]]*shippingAddress[^\]]*\]/,
+      'handleRazorpayCheckout must include shippingAddress in dependency array',
+    );
+  });
+
+  it('CartDrawer.tsx provides accessible label associations (htmlFor / id) for all shipping inputs', () => {
+    assert.match(
+      cartDrawerSrc,
+      /htmlFor=["']shipping-fullName["']/,
+      'Full Name field must have matching htmlFor',
+    );
+    assert.match(
+      cartDrawerSrc,
+      /htmlFor=["']shipping-line1["']/,
+      'Street Address field must have matching htmlFor',
+    );
+    assert.match(
+      cartDrawerSrc,
+      /htmlFor=["']shipping-city["']/,
+      'City field must have matching htmlFor',
+    );
+    assert.match(
+      cartDrawerSrc,
+      /htmlFor=["']shipping-postalCode["']/,
+      'PIN code field must have matching htmlFor',
     );
   });
 });

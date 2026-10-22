@@ -39,6 +39,8 @@ function clearAllAuthTokens(): void {
     try {
       localStorage.removeItem('xydv_admin_token');
       localStorage.removeItem('xydv_admin_user');
+      localStorage.removeItem('xydv_auth_token');
+      localStorage.removeItem('xydv_customer_user');
       localStorage.removeItem('vertex_admin_token');
       localStorage.removeItem('vertex_admin_user');
     } catch {}

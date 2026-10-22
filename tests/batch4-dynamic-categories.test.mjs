@@ -54,6 +54,14 @@ describe('Batch 4: HIGH-02 - Dynamic Categories & Taxonomy in Product Service', 
       'apps/api/src/routes/index.ts must mount the /categories route',
     );
   });
+
+  it('product.service.ts aggregates categories case-insensitively with $toLower', () => {
+    assert.match(
+      productServiceSrc,
+      /\$toLower:\s*['"]\$category['"]/,
+      'product.service.ts must group categories with $toLower for case-insensitive normalization',
+    );
+  });
 });
 
 describe('Batch 4: HIGH-02 - Next.js Route Proxy & Storefront Navbar Integration', () => {

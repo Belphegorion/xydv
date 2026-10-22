@@ -14,6 +14,9 @@ export function CustomerAuthModal() {
     setAuthMode,
     login,
     register,
+    logout,
+    isAuthenticated,
+    user: customerUser,
     isLoading,
     error,
     clearError,
@@ -98,165 +101,225 @@ export function CustomerAuthModal() {
               <X size={20} weight="bold" />
             </button>
 
-            {/* Header Badge */}
-            <div className="mb-6">
-              <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
-                AUTHENTICATION PORTAL
-              </span>
-              <h2 className="text-xl sm:text-2xl font-black uppercase font-heading text-[var(--text-primary)] mt-1">
-                {authMode === 'login' ? 'ATHLETE ACCESS' : 'ENLIST NEW MEMBER'}
-              </h2>
-              <p className="text-xs font-mono text-[var(--text-muted)] mt-1">
-                {authMode === 'login'
-                  ? 'Sign in to access order archives and synchronized checkouts.'
-                  : 'Register for tactical apparel telemetry and member drops.'}
-              </p>
-            </div>
+            {isAuthenticated && customerUser ? (
+              <div>
+                <div className="mb-6">
+                  <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+                    ACTIVE ATHLETE SESSION
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-black uppercase font-heading text-[var(--text-primary)] mt-1">
+                    {customerUser.name || 'ATHLETE PROFILE'}
+                  </h2>
+                  <p className="text-xs font-mono text-[var(--text-muted)] mt-1">
+                    {customerUser.email}
+                  </p>
+                </div>
 
-            {/* Mode Switch Tabs */}
-            <div className="grid grid-cols-2 gap-1 p-1 bg-[var(--bg-elevated)] border border-[var(--border)] mb-6">
-              <button
-                type="button"
-                onClick={() => setAuthMode('login')}
-                className={`py-2 text-xs font-mono font-bold uppercase tracking-wider transition-colors min-h-[44px] ${
-                  authMode === 'login'
-                    ? 'bg-[var(--bg)] text-[var(--text-primary)] shadow-sm border border-[var(--border)]'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                SIGN IN
-              </button>
-              <button
-                type="button"
-                onClick={() => setAuthMode('register')}
-                className={`py-2 text-xs font-mono font-bold uppercase tracking-wider transition-colors min-h-[44px] ${
-                  authMode === 'register'
-                    ? 'bg-[var(--bg)] text-[var(--text-primary)] shadow-sm border border-[var(--border)]'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                CREATE ACCOUNT
-              </button>
-            </div>
-
-            {/* Error Banner */}
-            {error && (
-              <div
-                role="alert"
-                className="mb-5 p-3 bg-red-500/10 border border-red-500/30 text-red-500 dark:text-red-400 text-xs font-mono leading-relaxed"
-              >
-                {error}
-              </div>
-            )}
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {authMode === 'register' && (
-                <div>
-                  <label
-                    htmlFor="auth-name"
-                    className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
-                  >
-                    FULL ATHLETE NAME
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
-                      <User size={16} weight="bold" />
+                <div className="space-y-4 mb-6">
+                  <div className="p-4 bg-[var(--bg-elevated)] border border-[var(--border)] font-mono text-xs space-y-2">
+                    <div className="flex justify-between items-center text-[10px] uppercase">
+                      <span className="text-[var(--text-muted)]">TELEMETRY STATUS</span>
+                      <span className="text-emerald-500 font-bold flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+                        SYNCHRONIZED
+                      </span>
                     </div>
-                    <input
-                      ref={firstInputRef}
-                      id="auth-name"
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Kai Nakamura"
-                      className="w-full pl-9 pr-3 py-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
-                    />
+                    <div className="flex justify-between items-center text-[var(--text-primary)] pt-1 border-t border-[var(--border)]/50">
+                      <span className="text-[var(--text-secondary)]">DESIGNATION</span>
+                      <span className="font-bold uppercase text-[var(--accent)]">{customerUser.role || 'ATHLETE'}</span>
+                    </div>
+                    {customerUser.phone && (
+                      <div className="flex justify-between items-center text-[var(--text-primary)] pt-1 border-t border-[var(--border)]/50">
+                        <span className="text-[var(--text-secondary)]">COMMUNICATION</span>
+                        <span>{customerUser.phone}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
 
-              <div>
-                <label
-                  htmlFor="auth-email"
-                  className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
-                >
-                  EMAIL ADDRESS
-                </label>
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
-                    <Envelope size={16} weight="bold" />
-                  </div>
-                  <input
-                    ref={authMode === 'login' ? firstInputRef : undefined}
-                    id="auth-email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="athlete@domain.com"
-                    className="w-full pl-9 pr-3 py-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
-                  />
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      logout();
+                      closeModal();
+                    }}
+                    className="w-full py-3 px-4 bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-red-500/50 text-red-500 hover:text-red-400 font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors active:scale-[0.98] min-h-[48px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500"
+                  >
+                    TERMINATE SESSION / SIGN OUT
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="w-full py-2.5 text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors min-h-[44px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                  >
+                    RETURN TO STOREFRONT
+                  </button>
                 </div>
               </div>
-
-              <div>
-                <label
-                  htmlFor="auth-password"
-                  className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
-                >
-                  PASSWORD {authMode === 'register' && <span className="text-[10px] text-[var(--text-muted)]">(MIN 8 CHARS)</span>}
-                </label>
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
-                    <LockKey size={16} weight="bold" />
-                  </div>
-                  <input
-                    id="auth-password"
-                    type="password"
-                    required
-                    minLength={authMode === 'register' ? 8 : 1}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full pl-9 pr-3 py-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
-                  />
+            ) : (
+              <>
+                {/* Header Badge */}
+                <div className="mb-6">
+                  <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+                    AUTHENTICATION PORTAL
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-black uppercase font-heading text-[var(--text-primary)] mt-1">
+                    {authMode === 'login' ? 'ATHLETE ACCESS' : 'ENLIST NEW MEMBER'}
+                  </h2>
+                  <p className="text-xs font-mono text-[var(--text-muted)] mt-1">
+                    {authMode === 'login'
+                      ? 'Sign in to access order archives and synchronized checkouts.'
+                      : 'Register for tactical apparel telemetry and member drops.'}
+                  </p>
                 </div>
-              </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full mt-2 py-3 px-4 bg-[var(--accent)] text-black dark:text-black font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-transform active:scale-[0.98] disabled:opacity-50 min-h-[48px]"
-              >
-                {isLoading ? (
-                  <>
-                    <SpinnerGap size={16} className="animate-spin" />
-                    <span>AUTHENTICATING...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>{authMode === 'login' ? 'INITIALIZE SESSION' : 'SUBMIT ENLISTMENT'}</span>
-                    <ArrowRight size={14} weight="bold" />
-                  </>
+                {/* Mode Switch Tabs */}
+                <div className="grid grid-cols-2 gap-1 p-1 bg-[var(--bg-elevated)] border border-[var(--border)] mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode('login')}
+                    className={`py-2 text-xs font-mono font-bold uppercase tracking-wider transition-colors min-h-[44px] ${
+                      authMode === 'login'
+                        ? 'bg-[var(--bg)] text-[var(--text-primary)] shadow-sm border border-[var(--border)]'
+                        : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    SIGN IN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode('register')}
+                    className={`py-2 text-xs font-mono font-bold uppercase tracking-wider transition-colors min-h-[44px] ${
+                      authMode === 'register'
+                        ? 'bg-[var(--bg)] text-[var(--text-primary)] shadow-sm border border-[var(--border)]'
+                        : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    CREATE ACCOUNT
+                  </button>
+                </div>
+
+                {/* Error Banner */}
+                {error && (
+                  <div
+                    role="alert"
+                    className="mb-5 p-3 bg-red-500/10 border border-red-500/30 text-red-500 dark:text-red-400 text-xs font-mono leading-relaxed"
+                  >
+                    {error}
+                  </div>
                 )}
-              </button>
-            </form>
 
-            {/* Footer switcher note */}
-            <div className="mt-6 pt-4 border-t border-[var(--border)] text-center">
-              <button
-                type="button"
-                onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
-                className="text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors min-h-[44px] flex items-center justify-center w-full"
-              >
-                {authMode === 'login'
-                  ? "Don't have an account? Enlist as a new member"
-                  : 'Already registered? Return to sign in'}
-              </button>
-            </div>
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {authMode === 'register' && (
+                    <div>
+                      <label
+                        htmlFor="auth-name"
+                        className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
+                      >
+                        FULL ATHLETE NAME
+                      </label>
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
+                          <User size={16} weight="bold" />
+                        </div>
+                        <input
+                          ref={firstInputRef}
+                          id="auth-name"
+                          type="text"
+                          required
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="e.g. Kai Nakamura"
+                          className="w-full pl-9 pr-3 py-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <label
+                      htmlFor="auth-email"
+                      className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
+                    >
+                      EMAIL ADDRESS
+                    </label>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
+                        <Envelope size={16} weight="bold" />
+                      </div>
+                      <input
+                        ref={authMode === 'login' ? firstInputRef : undefined}
+                        id="auth-email"
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="athlete@domain.com"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="auth-password"
+                      className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
+                    >
+                      PASSWORD {authMode === 'register' && <span className="text-[10px] text-[var(--text-muted)]">(MIN 8 CHARS)</span>}
+                    </label>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
+                        <LockKey size={16} weight="bold" />
+                      </div>
+                      <input
+                        id="auth-password"
+                        type="password"
+                        required
+                        minLength={authMode === 'register' ? 8 : 1}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••••••"
+                        className="w-full pl-9 pr-3 py-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full mt-2 py-3 px-4 bg-[var(--accent)] text-black dark:text-black font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-transform active:scale-[0.98] disabled:opacity-50 min-h-[48px]"
+                  >
+                    {isLoading ? (
+                      <>
+                        <SpinnerGap size={16} className="animate-spin" />
+                        <span>AUTHENTICATING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{authMode === 'login' ? 'INITIALIZE SESSION' : 'SUBMIT ENLISTMENT'}</span>
+                        <ArrowRight size={14} weight="bold" />
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                {/* Footer switcher note */}
+                <div className="mt-6 pt-4 border-t border-[var(--border)] text-center">
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+                    className="text-xs font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors min-h-[44px] flex items-center justify-center w-full"
+                  >
+                    {authMode === 'login'
+                      ? "Don't have an account? Enlist as a new member"
+                      : 'Already registered? Return to sign in'}
+                  </button>
+                </div>
+              </>
+            )}
           </motion.div>
         </div>
       )}

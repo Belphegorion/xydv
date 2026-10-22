@@ -47,10 +47,14 @@ export const useCustomerAuthStore = create<CustomerAuthState>((set) => ({
   initialize: async () => {
     if (typeof window === 'undefined') return;
     try {
-      const stored = localStorage.getItem('xydv_customer_user');
-      if (stored) {
-        const user = JSON.parse(stored);
-        set({ user, isAuthenticated: true });
+      const storedUser = localStorage.getItem('xydv_customer_user');
+      const storedToken = localStorage.getItem('xydv_auth_token');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        if (storedToken) {
+          setAccessToken(storedToken);
+        }
+        set({ user, token: storedToken || null, isAuthenticated: true });
       }
     } catch {}
   },
@@ -76,6 +80,7 @@ export const useCustomerAuthStore = create<CustomerAuthState>((set) => ({
       setAccessToken(token);
       if (typeof window !== 'undefined') {
         try {
+          localStorage.setItem('xydv_auth_token', token);
           localStorage.setItem('xydv_customer_user', JSON.stringify(user));
         } catch {}
       }
@@ -122,6 +127,7 @@ export const useCustomerAuthStore = create<CustomerAuthState>((set) => ({
       setAccessToken(token);
       if (typeof window !== 'undefined') {
         try {
+          localStorage.setItem('xydv_auth_token', token);
           localStorage.setItem('xydv_customer_user', JSON.stringify(user));
         } catch {}
       }
@@ -147,6 +153,7 @@ export const useCustomerAuthStore = create<CustomerAuthState>((set) => ({
     setAccessToken(null);
     if (typeof window !== 'undefined') {
       try {
+        localStorage.removeItem('xydv_auth_token');
         localStorage.removeItem('xydv_customer_user');
       } catch {}
     }

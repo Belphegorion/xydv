@@ -332,7 +332,7 @@ export function CartDrawer() {
       setPaymentError(errMsg);
       setIsProcessing(false);
     }
-  }, [items, metrics, storeSettings, clearCart, closeCart]);
+  }, [items, metrics, storeSettings, clearCart, closeCart, shippingAddress, customerUser]);
 
   const pathname = usePathname();
   if (pathname?.startsWith('/admin')) {
@@ -552,7 +552,7 @@ export function CartDrawer() {
                     <button
                       type="button"
                       onClick={() => setShowAddressForm(!showAddressForm)}
-                      className="text-[11px] font-mono font-bold text-[var(--text-primary)] hover:text-[var(--accent)] underline min-h-[32px] px-1"
+                      className="text-[11px] font-mono font-bold text-[var(--text-primary)] hover:text-[var(--accent)] underline min-h-[44px] min-w-[44px] inline-flex items-center px-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                     >
                       {showAddressForm ? 'CLOSE' : shippingAddress.line1 ? 'EDIT' : '+ ADD ADDRESS'}
                     </button>
@@ -576,10 +576,11 @@ export function CartDrawer() {
                       )}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label htmlFor="shipping-fullName" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                             FULL NAME *
                           </label>
                           <input
+                            id="shipping-fullName"
                             type="text"
                             required
                             placeholder="Recipient name"
@@ -588,14 +589,15 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, fullName: e.target.value });
                             }}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label htmlFor="shipping-phone" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                             PHONE NUMBER *
                           </label>
                           <input
+                            id="shipping-phone"
                             type="tel"
                             required
                             placeholder="+91 98765 43210"
@@ -604,16 +606,17 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, phone: e.target.value });
                             }}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                        <label htmlFor="shipping-line1" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                           STREET ADDRESS *
                         </label>
                         <input
+                          id="shipping-line1"
                           type="text"
                           required
                           placeholder="House, building, street"
@@ -622,29 +625,31 @@ export function CartDrawer() {
                             setAddressError(null);
                             setShippingAddress({ ...shippingAddress, line1: e.target.value });
                           }}
-                          className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                          className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                        <label htmlFor="shipping-line2" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                           APARTMENT, SUITE, ETC. (OPTIONAL)
                         </label>
                         <input
+                          id="shipping-line2"
                           type="text"
                           placeholder="Apartment, unit, floor"
                           value={shippingAddress.line2}
                           onChange={(e) => setShippingAddress({ ...shippingAddress, line2: e.target.value })}
-                          className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                          className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
                         />
                       </div>
 
                       <div className="grid grid-cols-3 gap-2">
                         <div className="col-span-1">
-                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label htmlFor="shipping-city" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                             CITY *
                           </label>
                           <input
+                            id="shipping-city"
                             type="text"
                             required
                             placeholder="City"
@@ -653,26 +658,28 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, city: e.target.value });
                             }}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
                           />
                         </div>
                         <div className="col-span-1">
-                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label htmlFor="shipping-state" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                             STATE
                           </label>
                           <input
+                            id="shipping-state"
                             type="text"
                             placeholder="State"
                             value={shippingAddress.state}
                             onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
                           />
                         </div>
                         <div className="col-span-1">
-                          <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                          <label htmlFor="shipping-postalCode" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                             PIN CODE *
                           </label>
                           <input
+                            id="shipping-postalCode"
                             type="text"
                             required
                             placeholder="PIN code"
@@ -681,7 +688,7 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, postalCode: e.target.value });
                             }}
-                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                            className="w-full p-2 text-xs font-mono bg-[var(--bg)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
                           />
                         </div>
                       </div>

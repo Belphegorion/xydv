@@ -295,7 +295,7 @@ export default function ProductDetailPage({ params }: PageProps) {
           content: rData.body,
           date: 'JUST NOW',
         },
-        ...prev,
+        ...(prev.length > 0 ? prev : (product?.reviews || [])),
       ]);
 
       setReviewSuccess(true);
@@ -972,16 +972,16 @@ export default function ProductDetailPage({ params }: PageProps) {
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                  <span className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                     PERFORMANCE RATING (1-5 STARS)
-                  </label>
+                  </span>
                   <div className="flex items-center gap-1.5 py-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
                         type="button"
                         onClick={() => setReviewRating(star)}
-                        className="touch-target min-w-[36px] min-h-[36px] flex items-center justify-center text-amber-500"
+                        className="touch-target min-w-[44px] min-h-[44px] flex items-center justify-center text-amber-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                         aria-label={`Rate ${star} stars`}
                       >
                         <Star size={20} weight={star <= reviewRating ? 'fill' : 'regular'} />
@@ -993,51 +993,54 @@ export default function ProductDetailPage({ params }: PageProps) {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                  <label htmlFor="review-author" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                     ATHLETE CALLSIGN / NAME
                   </label>
                   <input
+                    id="review-author"
                     type="text"
                     placeholder={customerUser?.name || 'e.g. Kai N.'}
                     value={reviewAuthor}
                     onChange={(e) => setReviewAuthor(e.target.value)}
-                    className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                    className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                <label htmlFor="review-title" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                   REPORT HEADLINE / TITLE *
                 </label>
                 <input
+                  id="review-title"
                   type="text"
                   required
                   placeholder="e.g. Exceptional thermal regulation during 15K trail run"
                   value={reviewTitle}
                   onChange={(e) => setReviewTitle(e.target.value)}
-                  className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] min-h-[44px]"
+                  className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[44px]"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
+                <label htmlFor="review-body" className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">
                   FIELD OBSERVATIONS / REVIEW CONTENT *
                 </label>
                 <textarea
+                  id="review-body"
                   required
                   rows={4}
                   placeholder="Describe fit, abrasion resistance, moisture regulation, and biomechanics in the field..."
                   value={reviewBody}
                   onChange={(e) => setReviewBody(e.target.value)}
-                  className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                  className="w-full p-2.5 text-xs font-mono bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={reviewSubmitting}
-                className="py-3 px-6 bg-[var(--accent)] text-black dark:text-black font-mono font-bold text-xs uppercase tracking-wider transition-transform active:scale-[0.98] disabled:opacity-50 min-h-[44px]"
+                className="py-3 px-6 bg-[var(--accent)] text-black dark:text-black font-mono font-bold text-xs uppercase tracking-wider transition-transform active:scale-[0.97] disabled:opacity-50 min-h-[48px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
               >
                 {reviewSubmitting ? 'DISPATCHING REPORT...' : 'TRANSMIT REVIEW TO ARCHIVE'}
               </button>

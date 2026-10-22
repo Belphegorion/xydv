@@ -9,6 +9,7 @@ export function RouteTelemetry() {
 
   useEffect(() => {
     if (!pathname || pathname === lastTrackedRef.current) return;
+    if (pathname.startsWith('/admin')) return;
     lastTrackedRef.current = pathname;
 
     const payload = JSON.stringify({

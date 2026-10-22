@@ -27,7 +27,7 @@ export class ProductService {
         { $match: { isPublished: true } },
         {
           $group: {
-            _id: '$category',
+            _id: { $toLower: '$category' },
             count: { $sum: 1 },
             minPrice: { $min: { $ifNull: ['$price', { $min: '$variants.price' }] } },
             maxPrice: { $max: { $ifNull: ['$price', { $max: '$variants.price' }] } },
@@ -36,7 +36,7 @@ export class ProductService {
         },
         { $sort: { _id: 1 } },
       ]),
-      Category.find().sort({ name: 1 }).lean().catch(() => []),
+      Category.find({ isActive: { $ne: false } }).sort({ name: 1 }).lean().catch(() => []),
     ]);
 
     const categoryMetadata: Record<string, { name: string; description: string }> = {
