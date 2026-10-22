@@ -162,18 +162,42 @@ function AdminOrdersContent() {
   };
 
   const getStatusBadge = (status: OrderStatus) => {
-    const config: Record<string, { bg: string; text: string }> = {
-      delivered: { bg: 'bg-[#22c55e]/15', text: 'text-[#22c55e]' },
-      shipped: { bg: 'bg-[#38bdf8]/15', text: 'text-[#38bdf8]' },
-      processing: { bg: 'bg-[#e8ff00]/15', text: 'text-[#e8ff00]' },
-      confirmed: { bg: 'bg-[#f59e0b]/15', text: 'text-[#f59e0b]' },
-      pending: { bg: 'bg-[#a0a0a0]/15', text: 'text-[#a0a0a0]' },
-      cancelled: { bg: 'bg-[#ff3b3b]/15', text: 'text-[#ff3b3b]' },
+    const config: Record<string, { bg: string; text: string; border: string }> = {
+      delivered: {
+        bg: 'bg-[#22c55e]/10',
+        text: 'text-[#15803d] dark:text-[#22c55e]',
+        border: 'border-[#22c55e]/30',
+      },
+      shipped: {
+        bg: 'bg-[#38bdf8]/10',
+        text: 'text-[#0284c7] dark:text-[#38bdf8]',
+        border: 'border-[#38bdf8]/30',
+      },
+      processing: {
+        bg: 'bg-[var(--text-primary)]/10 dark:bg-[#e8ff00]/10',
+        text: 'text-[var(--text-primary)] dark:text-[#e8ff00]',
+        border: 'border-[var(--text-primary)]/30 dark:border-[#e8ff00]/40',
+      },
+      confirmed: {
+        bg: 'bg-[#f59e0b]/10',
+        text: 'text-[#b45309] dark:text-[#f59e0b]',
+        border: 'border-[#f59e0b]/30',
+      },
+      pending: {
+        bg: 'bg-[var(--bg-elevated)]',
+        text: 'text-[var(--text-muted)]',
+        border: 'border-[var(--border)]',
+      },
+      cancelled: {
+        bg: 'bg-[#ff3b3b]/10',
+        text: 'text-[#ff3b3b]',
+        border: 'border-[#ff3b3b]/30',
+      },
     };
     const c = config[status.toLowerCase()] || config.pending;
     return (
       <span
-        className={`inline-flex items-center rounded px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider uppercase ${c.bg} ${c.text}`}
+        className={`inline-flex items-center rounded-none border px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider uppercase ${c.bg} ${c.text} ${c.border}`}
       >
         {status}
       </span>
@@ -185,10 +209,10 @@ function AdminOrdersContent() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-xl font-bold tracking-wider text-[#f5f5f5] uppercase">
+          <h2 className="font-mono text-xl font-bold tracking-wider text-[var(--text-primary)] uppercase">
             Order Fulfillment & Invoicing
           </h2>
-          <p className="mt-0.5 font-mono text-xs text-[#71717a]">
+          <p className="mt-0.5 font-mono text-xs text-[var(--text-muted)]">
             Track customer shipments, process status updates, print invoices and issue Razorpay
             refunds ({total} total orders)
           </p>
@@ -197,7 +221,7 @@ function AdminOrdersContent() {
         <button
           type="button"
           onClick={fetchOrders}
-          className="inline-flex items-center gap-2 rounded border border-[#1f1f1f] bg-[#111111] px-3.5 py-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#333333] hover:text-[#f5f5f5] active:scale-[0.97]"
+          className="btn-tactile inline-flex items-center gap-2 rounded-none border border-[var(--border)] bg-[var(--bg-surface)] px-3.5 py-2 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97]"
         >
           <ArrowClockwise size={14} className={isLoading ? 'animate-spin' : ''} />
           <span>Refresh Queue</span>
@@ -207,9 +231,9 @@ function AdminOrdersContent() {
       {/* Notifications */}
       {feedback && (
         <div
-          className={`flex items-center justify-between rounded border p-3 font-mono text-xs ${
+          className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
-              ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#22c55e]'
+              ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
               : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
           }`}
         >
@@ -217,19 +241,24 @@ function AdminOrdersContent() {
             {feedback.type === 'success' ? <CheckCircle size={16} /> : <Warning size={16} />}
             <span>{feedback.message}</span>
           </div>
-          <button type="button" onClick={() => setFeedback(null)} className="p-1 hover:opacity-70">
+          <button
+            type="button"
+            onClick={() => setFeedback(null)}
+            className="p-1 hover:opacity-70"
+            aria-label="Dismiss feedback"
+          >
             <X size={14} />
           </button>
         </div>
       )}
 
       {/* Filters Toolbar */}
-      <div className="grid grid-cols-1 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-3.5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Search */}
         <div className="relative">
           <MagnifyingGlass
             size={16}
-            className="pointer-events-none absolute top-3 left-3 text-[#71717a]"
+            className="pointer-events-none absolute top-3 left-3 text-[var(--text-muted)]"
           />
           <input
             type="text"
@@ -239,7 +268,7 @@ function AdminOrdersContent() {
               setPage(1);
             }}
             placeholder="Search order ID, user, phone..."
-            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-9 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
+            className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] py-2 pr-3 pl-9 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
           />
         </div>
 
@@ -250,7 +279,7 @@ function AdminOrdersContent() {
             setStatusFilter(e.target.value);
             setPage(1);
           }}
-          className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+          className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
         >
           <option value="all">All Statuses</option>
           <option value="pending">Pending</option>
@@ -270,7 +299,7 @@ function AdminOrdersContent() {
               setStartDate(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+            className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
             title="Start Date"
           />
         </div>
@@ -284,17 +313,17 @@ function AdminOrdersContent() {
               setEndDate(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+            className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
             title="End Date"
           />
         </div>
       </div>
 
       {/* Orders Table */}
-      <div className="overflow-hidden rounded border border-[#1f1f1f] bg-[#111111]">
+      <div className="overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-surface)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono tracking-wider text-[#a0a0a0] uppercase">
+            <thead className="border-b border-[var(--border)] bg-[var(--bg-elevated)] font-mono tracking-wider text-[var(--text-muted)] uppercase">
               <tr>
                 <th className="px-4 py-3">Order Ref</th>
                 <th className="px-4 py-3">Date</th>
@@ -306,19 +335,19 @@ function AdminOrdersContent() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1f1f1f]">
+            <tbody className="divide-y divide-[var(--border)]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-[#71717a]">
+                  <td colSpan={8} className="py-12 text-center text-[var(--text-muted)]">
                     <div className="flex flex-col items-center gap-2">
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#e8ff00] border-t-transparent" />
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--text-primary)] border-t-transparent dark:border-[#e8ff00]" />
                       <span className="font-mono text-xs uppercase">Loading Orders Queue...</span>
                     </div>
                   </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center font-mono text-[#71717a] uppercase">
+                  <td colSpan={8} className="py-12 text-center font-mono text-[var(--text-muted)] uppercase">
                     No orders found matching active criteria.
                   </td>
                 </tr>
@@ -332,27 +361,29 @@ function AdminOrdersContent() {
                     o.shippingAddress?.fullName || userRef?.name || 'Guest Checkout';
 
                   return (
-                    <tr key={o._id} className="transition-colors hover:bg-[#141414]">
-                      <td className="px-4 py-3 font-mono font-bold text-[#e8ff00]">#{shortId}</td>
+                    <tr key={o._id} className="transition-colors hover:bg-[var(--bg-elevated)]">
+                      <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
+                        #{shortId}
+                      </td>
 
-                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">
+                      <td className="px-4 py-3 font-mono text-[var(--text-secondary)]">
                         {new Date(o.createdAt).toLocaleDateString()}
                       </td>
 
                       <td className="px-4 py-3">
-                        <p className="max-w-[140px] truncate font-medium text-[#f5f5f5]">
+                        <p className="max-w-[140px] truncate font-medium text-[var(--text-primary)]">
                           {customerName}
                         </p>
-                        <p className="max-w-[140px] truncate font-mono text-[10px] text-[#71717a]">
+                        <p className="max-w-[140px] truncate font-mono text-[10px] text-[var(--text-muted)]">
                           {o.shippingAddress?.city}, {o.shippingAddress?.country}
                         </p>
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">
+                      <td className="px-4 py-3 font-mono text-[var(--text-secondary)]">
                         {itemCount} units ({o.items?.length || 0} SKUs)
                       </td>
 
-                      <td className="px-4 py-3 font-mono font-bold text-[#f5f5f5]">
+                      <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)]">
                         ₹{o.total.toFixed(2)}
                       </td>
 
@@ -360,10 +391,10 @@ function AdminOrdersContent() {
                         <span
                           className={`inline-block font-mono text-[10px] font-bold uppercase ${
                             o.paymentStatus === 'captured'
-                              ? 'text-[#22c55e]'
+                              ? 'text-[#15803d] dark:text-[#22c55e]'
                               : o.paymentStatus === 'refunded'
                                 ? 'text-[#ff3b3b]'
-                                : 'text-[#f59e0b]'
+                                : 'text-[#b45309] dark:text-[#f59e0b]'
                           }`}
                         >
                           {o.paymentStatus}
@@ -377,8 +408,9 @@ function AdminOrdersContent() {
                           <button
                             type="button"
                             onClick={() => handleOpenDetail(o)}
-                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#1f1f1f] hover:text-[#f5f5f5]"
+                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                             title="Inspect Details"
+                            aria-label={`Inspect order #${shortId}`}
                           >
                             <Eye size={16} />
                           </button>
@@ -386,8 +418,9 @@ function AdminOrdersContent() {
                           <button
                             type="button"
                             onClick={() => setInvoiceOrder(o)}
-                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#1f1f1f] hover:text-[#e8ff00]"
+                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] dark:hover:text-[#e8ff00] active:scale-[0.97]"
                             title="Print Invoice"
+                            aria-label={`Print invoice for order #${shortId}`}
                           >
                             <Printer size={16} />
                           </button>
@@ -402,7 +435,7 @@ function AdminOrdersContent() {
         </div>
 
         {/* Pagination Bar */}
-        <div className="flex items-center justify-between border-t border-[#1f1f1f] px-4 py-3 font-mono text-xs text-[#a0a0a0]">
+        <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3 font-mono text-xs text-[var(--text-muted)]">
           <span>
             Page {page} of {totalPages} ({total} orders)
           </span>
@@ -411,7 +444,7 @@ function AdminOrdersContent() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
+              className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97] disabled:opacity-30"
             >
               Previous
             </button>
@@ -419,7 +452,7 @@ function AdminOrdersContent() {
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
+              className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97] disabled:opacity-30"
             >
               Next
             </button>
@@ -430,20 +463,20 @@ function AdminOrdersContent() {
       {/* Order Detail & Fulfillment Modal */}
       {selectedOrder && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm dark:bg-black/80"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl">
-            <div className="mb-6 flex items-center justify-between border-b border-[#1f1f1f] pb-4">
+          <div className="my-8 w-full max-w-3xl rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-[var(--text-primary)] shadow-2xl">
+            <div className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
               <div>
                 <div className="flex items-center gap-3">
-                  <h3 className="font-mono text-sm font-bold tracking-wider text-[#e8ff00] uppercase">
+                  <h3 className="font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
                     Order #{selectedOrder._id.slice(-6).toUpperCase()}
                   </h3>
                   {getStatusBadge(selectedOrder.status)}
                 </div>
-                <p className="mt-0.5 font-mono text-[10px] text-[#71717a]">
+                <p className="mt-0.5 font-mono text-[10px] text-[var(--text-muted)]">
                   Placed on {new Date(selectedOrder.createdAt).toLocaleString()}
                 </p>
               </div>
@@ -452,7 +485,7 @@ function AdminOrdersContent() {
                 <button
                   type="button"
                   onClick={() => setInvoiceOrder(selectedOrder)}
-                  className="inline-flex items-center gap-1.5 rounded border border-[#1f1f1f] bg-[#181818] px-3 py-1.5 font-mono text-xs tracking-wider text-[#f5f5f5] uppercase hover:border-[#e8ff00]"
+                  className="btn-tactile inline-flex items-center gap-1.5 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1.5 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97]"
                 >
                   <Printer size={14} />
                   <span>Invoice</span>
@@ -461,7 +494,8 @@ function AdminOrdersContent() {
                 <button
                   type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className="p-1 text-[#71717a] hover:text-[#f5f5f5]"
+                  className="btn-tactile p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                  aria-label="Close details"
                 >
                   <X size={20} />
                 </button>
@@ -470,50 +504,50 @@ function AdminOrdersContent() {
 
             <div className="space-y-6">
               {/* Customer & Shipping Summary */}
-              <div className="grid grid-cols-1 gap-4 rounded border border-[#1f1f1f] bg-[#0a0a0a] p-4 font-mono text-xs sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-4 font-mono text-xs sm:grid-cols-2">
                 <div>
-                  <span className="mb-1 block text-[10px] text-[#71717a] uppercase">
+                  <span className="mb-1 block text-[10px] text-[var(--text-muted)] uppercase">
                     Shipping Destination
                   </span>
-                  <p className="font-bold text-[#f5f5f5]">
+                  <p className="font-bold text-[var(--text-primary)]">
                     {selectedOrder.shippingAddress?.fullName}
                   </p>
-                  <p className="text-[#a0a0a0]">
+                  <p className="text-[var(--text-secondary)]">
                     {selectedOrder.shippingAddress?.line1 || selectedOrder.shippingAddress?.street}
                   </p>
                   {selectedOrder.shippingAddress?.line2 && (
-                    <p className="text-[#a0a0a0]">{selectedOrder.shippingAddress.line2}</p>
+                    <p className="text-[var(--text-secondary)]">{selectedOrder.shippingAddress.line2}</p>
                   )}
-                  <p className="text-[#a0a0a0]">
+                  <p className="text-[var(--text-secondary)]">
                     {selectedOrder.shippingAddress?.city},{' '}
                     {selectedOrder.shippingAddress?.postalCode}
                   </p>
-                  <p className="text-[#a0a0a0]">{selectedOrder.shippingAddress?.country}</p>
-                  <p className="mt-1 text-[#71717a]">Tel: {selectedOrder.shippingAddress?.phone}</p>
+                  <p className="text-[var(--text-secondary)]">{selectedOrder.shippingAddress?.country}</p>
+                  <p className="mt-1 text-[var(--text-muted)]">Tel: {selectedOrder.shippingAddress?.phone}</p>
                 </div>
 
                 <div>
-                  <span className="mb-1 block text-[10px] text-[#71717a] uppercase">
+                  <span className="mb-1 block text-[10px] text-[var(--text-muted)] uppercase">
                     Payment Gateway Details
                   </span>
-                  <p className="text-[#a0a0a0]">
-                    Method: <span className="text-[#f5f5f5]">Razorpay Authorized</span>
+                  <p className="text-[var(--text-secondary)]">
+                    Method: <span className="text-[var(--text-primary)]">Razorpay Authorized</span>
                   </p>
-                  <p className="text-[#a0a0a0]">
+                  <p className="text-[var(--text-secondary)]">
                     Payment ID:{' '}
-                    <span className="text-[#e8ff00]">{selectedOrder.razorpayPaymentId || '—'}</span>
+                    <span className="text-[var(--text-primary)] dark:text-[#e8ff00]">{selectedOrder.razorpayPaymentId || '—'}</span>
                   </p>
-                  <p className="text-[#a0a0a0]">
+                  <p className="text-[var(--text-secondary)]">
                     Order ID:{' '}
-                    <span className="text-[#f5f5f5]">{selectedOrder.razorpayOrderId || '—'}</span>
+                    <span className="text-[var(--text-primary)]">{selectedOrder.razorpayOrderId || '—'}</span>
                   </p>
-                  <p className="text-[#a0a0a0]">
+                  <p className="text-[var(--text-secondary)]">
                     Status:{' '}
-                    <span className="font-bold text-[#f5f5f5]">{selectedOrder.paymentStatus}</span>
+                    <span className="font-bold text-[var(--text-primary)]">{selectedOrder.paymentStatus}</span>
                   </p>
 
                   {selectedOrder.refundId && (
-                    <div className="mt-2 rounded border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-2 text-[11px] text-[#ff3b3b]">
+                    <div className="mt-2 rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-2 text-[11px] text-[#ff3b3b]">
                       Refund ID: {selectedOrder.refundId}
                       {selectedOrder.refundReason && <p>Reason: {selectedOrder.refundReason}</p>}
                     </div>
@@ -523,12 +557,12 @@ function AdminOrdersContent() {
 
               {/* Items Table */}
               <div>
-                <h4 className="mb-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase">
+                <h4 className="mb-2 font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase">
                   Line Items
                 </h4>
-                <div className="overflow-hidden rounded border border-[#1f1f1f]">
+                <div className="overflow-hidden rounded-none border border-[var(--border)]">
                   <table className="w-full text-left font-sans text-xs">
-                    <thead className="border-b border-[#1f1f1f] bg-[#181818] font-mono text-[10px] text-[#71717a] uppercase">
+                    <thead className="border-b border-[var(--border)] bg-[var(--bg-surface)] font-mono text-[10px] text-[var(--text-muted)] uppercase">
                       <tr>
                         <th className="px-3 py-2.5">Item</th>
                         <th className="px-3 py-2.5">SKU</th>
@@ -538,7 +572,7 @@ function AdminOrdersContent() {
                         <th className="px-3 py-2.5 text-right">Total</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#1f1f1f] bg-[#0a0a0a]">
+                    <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-elevated)]">
                       {selectedOrder.items?.map((item, idx) => (
                         <tr key={idx}>
                           <td className="px-3 py-2.5">
@@ -547,23 +581,23 @@ function AdminOrdersContent() {
                                 <img
                                   src={item.image}
                                   alt={item.name}
-                                  className="h-9 w-8 rounded border border-[#222222] object-cover"
+                                  className="h-9 w-8 rounded-none border border-[var(--border)] object-cover"
                                 />
                               )}
-                              <span className="font-medium text-[#f5f5f5]">{item.name}</span>
+                              <span className="font-medium text-[var(--text-primary)]">{item.name}</span>
                             </div>
                           </td>
-                          <td className="px-3 py-2.5 font-mono text-[#a0a0a0]">{item.sku}</td>
-                          <td className="px-3 py-2.5 font-mono text-[#a0a0a0]">
+                          <td className="px-3 py-2.5 font-mono text-[var(--text-secondary)]">{item.sku}</td>
+                          <td className="px-3 py-2.5 font-mono text-[var(--text-secondary)]">
                             {item.color} / {item.size}
                           </td>
-                          <td className="px-3 py-2.5 text-right font-mono text-[#a0a0a0]">
+                          <td className="px-3 py-2.5 text-right font-mono text-[var(--text-secondary)]">
                             ₹{item.price}
                           </td>
-                          <td className="px-3 py-2.5 text-right font-mono text-[#f5f5f5]">
+                          <td className="px-3 py-2.5 text-right font-mono text-[var(--text-primary)]">
                             {item.quantity}
                           </td>
-                          <td className="px-3 py-2.5 text-right font-mono font-bold text-[#f5f5f5]">
+                          <td className="px-3 py-2.5 text-right font-mono font-bold text-[var(--text-primary)]">
                             ₹{(item.price * item.quantity).toFixed(2)}
                           </td>
                         </tr>
@@ -574,20 +608,20 @@ function AdminOrdersContent() {
 
                 {/* Totals Summary */}
                 <div className="mt-3 flex justify-end font-mono text-xs">
-                  <div className="w-64 space-y-1.5 rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3">
-                    <div className="flex justify-between text-[#71717a]">
+                  <div className="w-64 space-y-1.5 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
+                    <div className="flex justify-between text-[var(--text-muted)]">
                       <span>Subtotal:</span>
                       <span>₹{selectedOrder.subtotal?.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-[#71717a]">
+                    <div className="flex justify-between text-[var(--text-muted)]">
                       <span>Shipping:</span>
                       <span>₹{selectedOrder.shipping?.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-[#71717a]">
+                    <div className="flex justify-between text-[var(--text-muted)]">
                       <span>Tax:</span>
                       <span>₹{selectedOrder.tax?.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between border-t border-[#1f1f1f] pt-1.5 text-sm font-bold text-[#e8ff00]">
+                    <div className="flex justify-between border-t border-[var(--border)] pt-1.5 text-sm font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
                       <span>Total Paid:</span>
                       <span>₹{selectedOrder.total?.toFixed(2)}</span>
                     </div>
@@ -596,8 +630,8 @@ function AdminOrdersContent() {
               </div>
 
               {/* Status Update & Actions */}
-              <div className="space-y-4 rounded border border-[#1f1f1f] bg-[#141414] p-4">
-                <h4 className="font-mono text-xs font-bold tracking-wider text-[#e8ff00] uppercase">
+              <div className="space-y-4 rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-4">
+                <h4 className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
                   Fulfillment Status & Logistics
                 </h4>
 
@@ -606,7 +640,7 @@ function AdminOrdersContent() {
                   className="grid grid-cols-1 gap-3 sm:grid-cols-3"
                 >
                   <div>
-                    <label className="mb-1 block font-mono text-[10px] text-[#a0a0a0] uppercase">
+                    <label className="mb-1 block font-mono text-[10px] text-[var(--text-secondary)] uppercase">
                       Order Status
                     </label>
                     {(() => {
@@ -626,7 +660,7 @@ function AdminOrdersContent() {
                           value={newStatus}
                           disabled={isTerminal}
                           onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
-                          className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none disabled:opacity-50"
+                          className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none disabled:opacity-50 dark:focus:border-[#e8ff00]"
                         >
                           <option value={selectedOrder.status}>
                             {selectedOrder.status.toUpperCase()}{' '}
@@ -643,7 +677,7 @@ function AdminOrdersContent() {
                   </div>
 
                   <div>
-                    <label className="mb-1 block font-mono text-[10px] text-[#a0a0a0] uppercase">
+                    <label className="mb-1 block font-mono text-[10px] text-[var(--text-secondary)] uppercase">
                       Tracking Number
                     </label>
                     <input
@@ -651,7 +685,7 @@ function AdminOrdersContent() {
                       value={trackingNumber}
                       onChange={(e) => setTrackingNumber(e.target.value)}
                       placeholder="e.g. FEDEX-98124018"
-                      className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                      className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                     />
                   </div>
 
@@ -663,7 +697,7 @@ function AdminOrdersContent() {
                         selectedOrder.status === 'delivered' ||
                         selectedOrder.status === 'cancelled'
                       }
-                      className="w-full rounded border border-[#e8ff00] bg-[#e8ff00] py-2 font-mono text-xs font-bold text-[#0a0a0a] uppercase hover:bg-[#e8ff00]/90 active:scale-[0.97] disabled:opacity-50"
+                      className="btn-tactile w-full rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] py-2 font-mono text-xs font-bold text-[var(--bg)] uppercase transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]"
                     >
                       {isUpdatingStatus ? 'Updating...' : 'Save Fulfillment'}
                     </button>
@@ -672,12 +706,12 @@ function AdminOrdersContent() {
 
                 {/* Refund Action */}
                 {selectedOrder.paymentStatus !== 'refunded' && (
-                  <div className="flex items-center justify-between border-t border-[#1f1f1f] pt-3">
+                  <div className="flex items-center justify-between border-t border-[var(--border)] pt-3">
                     <div>
-                      <p className="font-mono text-xs text-[#a0a0a0]">
+                      <p className="font-mono text-xs text-[var(--text-secondary)]">
                         Need to issue a full payment refund?
                       </p>
-                      <p className="font-sans text-[11px] text-[#71717a]">
+                      <p className="font-sans text-[11px] text-[var(--text-muted)]">
                         Calls Razorpay Refund API and restores reserved item stock automatically.
                       </p>
                     </div>
@@ -685,7 +719,7 @@ function AdminOrdersContent() {
                     <button
                       type="button"
                       onClick={() => setRefundOrderTarget(selectedOrder)}
-                      className="rounded border border-[#ff3b3b]/40 bg-[#ff3b3b]/10 px-3.5 py-1.5 font-mono text-xs font-bold text-[#ff3b3b] uppercase transition-colors hover:bg-[#ff3b3b] hover:text-white active:scale-[0.97]"
+                      className="btn-tactile rounded-none border border-[#ff3b3b]/40 bg-[#ff3b3b]/10 px-3.5 py-1.5 font-mono text-xs font-bold text-[#ff3b3b] uppercase transition-colors hover:bg-[#ff3b3b] hover:text-white active:scale-[0.97]"
                     >
                       Issue Refund
                     </button>
@@ -700,11 +734,11 @@ function AdminOrdersContent() {
       {/* Printable Invoice Modal */}
       {invoiceOrder && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/85 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/75 p-4 backdrop-blur-sm dark:bg-black/85"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-2xl rounded border border-[#1f1f1f] bg-[#ffffff] p-8 text-[#0a0a0a] shadow-2xl print:m-0 print:border-none print:p-0">
+          <div className="my-8 w-full max-w-2xl rounded-none border border-[var(--border)] bg-white p-8 text-[#0a0a0a] shadow-2xl print:m-0 print:border-none print:p-0">
             <div className="mb-6 flex items-center justify-between border-b border-[#e4e4e7] pb-4 print:hidden">
               <span className="font-mono text-xs font-bold tracking-wider text-[#0a0a0a] uppercase">
                 Print Preview: Invoice #{invoiceOrder._id.slice(-6).toUpperCase()}
@@ -713,7 +747,7 @@ function AdminOrdersContent() {
                 <button
                   type="button"
                   onClick={handlePrintInvoice}
-                  className="inline-flex items-center gap-1.5 rounded bg-[#0a0a0a] px-3.5 py-1.5 font-mono text-xs tracking-wider text-[#ffffff] uppercase hover:bg-[#333333]"
+                  className="btn-tactile inline-flex items-center gap-1.5 rounded-none bg-[#0a0a0a] px-3.5 py-1.5 font-mono text-xs tracking-wider text-[#ffffff] uppercase transition-colors hover:bg-[#333333] active:scale-[0.97]"
                 >
                   <Printer size={15} />
                   <span>Print Document</span>
@@ -721,7 +755,8 @@ function AdminOrdersContent() {
                 <button
                   type="button"
                   onClick={() => setInvoiceOrder(null)}
-                  className="p-1 text-[#71717a] hover:text-[#0a0a0a]"
+                  className="btn-tactile p-1 text-[#71717a] hover:text-[#0a0a0a] active:scale-[0.97]"
+                  aria-label="Close invoice preview"
                 >
                   <X size={20} />
                 </button>
@@ -866,6 +901,7 @@ function AdminOrdersContent() {
         title="Execute Payment Refund"
         description={`Are you sure you want to refund ₹${refundOrderTarget?.total.toFixed(2)} for Order #${refundOrderTarget?._id.slice(-6).toUpperCase()}? This will issue a payment refund through Razorpay and automatically restore product stock.`}
         confirmText="Confirm Refund"
+        cancelText="Cancel"
         isDestructive={true}
         isLoading={isRefunding}
         onConfirm={handleExecuteRefund}
@@ -878,7 +914,7 @@ function AdminOrdersContent() {
 export default function AdminOrdersPage() {
   return (
     <Suspense
-      fallback={<div className="p-8 font-mono text-xs text-[#71717a]">Loading orders...</div>}
+      fallback={<div className="p-8 font-mono text-xs text-[var(--text-muted)]">Loading orders...</div>}
     >
       <AdminOrdersContent />
     </Suspense>
