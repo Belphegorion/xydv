@@ -6,6 +6,7 @@ import userRoutes from './users.routes';
 import adminRoutes from './admin.routes';
 import webhookRoutes from './webhooks.routes';
 import settingsRoutes from './settings.routes';
+import supportRoutes from './support.routes';
 
 export const apiRouter = Router();
 
@@ -16,3 +17,4 @@ apiRouter.use('/users', userRoutes);
 apiRouter.use('/admin', adminRoutes);
 apiRouter.use('/webhooks', webhookRoutes);
 apiRouter.use('/settings', settingsRoutes);
+apiRouter.use('/support', supportRoutes);
