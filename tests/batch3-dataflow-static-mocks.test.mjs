@@ -107,6 +107,14 @@ describe('Batch 3: CRIT-02 - Catalog & PDP Real-Time Data Flow (No Zombie Persis
       'products/[slug]/page.tsx must invoke Next.js notFound() when product is null',
     );
   });
+
+  it('products/page.tsx displays total count of loaded database products rather than static catalog', () => {
+    assert.match(
+      productsPageSrc,
+      /SHOWING\s*\{filteredProducts\.length\}\s*OF\s*\{catalogProducts\.length\}\s*PIECES/,
+      'products/page.tsx must show catalogProducts.length in header counter',
+    );
+  });
 });
 
 describe('Batch 3: CRIT-06 - Support Ticket Model, Express Persistence & Contact Proxy', () => {
@@ -178,6 +186,40 @@ describe('Batch 3: CRIT-07 - Dynamic Variant Sizes & Stock Derivation', () => {
       productSlugPageSrc,
       /matchingVariant\.stock\s*<=\s*0/,
       'PDP [slug]/page.tsx isSizeDisabled must check matchingVariant.stock <= 0 dynamically',
+    );
+  });
+
+  it('eliminates hardcoded XS-XXL size array from utils.ts and PDP', () => {
+    assert.doesNotMatch(
+      utilsSrc,
+      /'XXL'/,
+      'utils.ts must not contain hardcoded XXL size fallback',
+    );
+    assert.doesNotMatch(
+      productSlugPageSrc,
+      /'XXL'/,
+      'PDP [slug]/page.tsx must not contain hardcoded XXL size fallback',
+    );
+  });
+
+  it('BestsellerGrid and FeaturedCollection pass product.variants to getAvailableSizes', () => {
+    const bestsellerSrc = fs.readFileSync(
+      path.join(webDir, 'src', 'components', 'store', 'BestsellerGrid.tsx'),
+      'utf-8',
+    );
+    const featuredSrc = fs.readFileSync(
+      path.join(webDir, 'src', 'components', 'store', 'FeaturedCollection.tsx'),
+      'utf-8',
+    );
+    assert.match(
+      bestsellerSrc,
+      /getAvailableSizes\(product\.category,\s*activeVariant\.sku,\s*product\.variants\)/,
+      'BestsellerGrid must pass product.variants to getAvailableSizes',
+    );
+    assert.match(
+      featuredSrc,
+      /getAvailableSizes\(product\.category,\s*activeVariant\.sku,\s*product\.variants\)/,
+      'FeaturedCollection must pass product.variants to getAvailableSizes',
     );
   });
 });

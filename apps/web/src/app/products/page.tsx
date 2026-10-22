@@ -658,7 +658,7 @@ function CatalogContent() {
 
           <div className="flex items-center gap-3">
             <span className="text-xs font-mono text-[var(--text-muted)] uppercase">
-              SHOWING {filteredProducts.length} OF {CATALOG_PRODUCTS.length} PIECES
+              SHOWING {filteredProducts.length} OF {catalogProducts.length} PIECES
             </span>
           </div>
         </div>

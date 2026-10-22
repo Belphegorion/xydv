@@ -196,19 +196,28 @@ export default function WishlistPage() {
               {items.map((item) => {
                 const catalogProduct = getProductById(item.productId);
                 const liveProd = liveProducts[item.productId];
-                const isAccessories = (catalogProduct?.category || liveProd?.category) === 'accessories';
-                const availableSizes = isAccessories
+                const isAccessories =
+                  (catalogProduct?.category || liveProd?.category) === 'accessories';
+                const variants: Array<{ size?: string }> | undefined =
+                  liveProd?.variants || catalogProduct?.variants;
+                const derivedSizes: string[] =
+                  variants && variants.length > 0
+                    ? Array.from(
+                        new Set(
+                          variants
+                            .map((v) => v.size)
+                            .filter((s): s is string => typeof s === 'string' && s.length > 0),
+                        ),
+                      )
+                    : [];
+                const availableSizes: string[] = isAccessories
                   ? ['OS']
-                  : liveProd?.variants && liveProd.variants.length > 0
-                  ? Array.from(
-                      new Set(
-                        liveProd.variants
-                          .map((v) => v.size)
-                          .filter((s): s is string => Boolean(s)),
-                      ),
-                    )
-                  : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-                const curSize = selectedSizes[item.productId] || (isAccessories ? 'OS' : (availableSizes[0] || 'M'));
+                  : derivedSizes.length > 0
+                  ? derivedSizes
+                  : ['OS'];
+                const curSize: string =
+                  selectedSizes[item.productId] ||
+                  (isAccessories ? 'OS' : (availableSizes[0] || 'OS'));
                 const isAdded = Boolean(addedIds[item.productId]);
 
                 return (

@@ -245,7 +245,7 @@ export default function ProductDetailPage({ params }: PageProps) {
       );
       if (derived.length > 0) return derived;
     }
-    return ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    return ['OS'];
   }, [product]);
 
   useEffect(() => {

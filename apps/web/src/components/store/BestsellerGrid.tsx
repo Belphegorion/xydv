@@ -286,7 +286,7 @@ function BestsellerMedia({
     setActiveImageIdx(idx);
   };
 
-  const sizes = getAvailableSizes(product.category, activeVariant.sku);
+  const sizes = getAvailableSizes(product.category, activeVariant.sku, product.variants);
 
   return (
     <div

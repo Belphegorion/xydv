@@ -45,36 +45,30 @@ export interface SizeOption {
 
 export function getAvailableSizes(
   category: string,
-  sku?: string,
+  _sku?: string,
   variants?: Array<{ size?: string; stock?: number; inStock?: boolean }>,
 ): SizeOption[] {
+  if (category === 'accessories') {
+    return [{ size: 'OS', inStock: true }];
+  }
+
   if (variants && Array.isArray(variants) && variants.length > 0) {
     const sizeMap = new Map<string, boolean>();
     for (const v of variants) {
-      const s = v.size || (category === 'accessories' ? 'OS' : 'M');
+      if (!v.size) continue;
       const inStock =
         typeof v.stock === 'number'
           ? v.stock > 0
           : typeof v.inStock === 'boolean'
           ? v.inStock
           : true;
-      const current = sizeMap.get(s);
-      sizeMap.set(s, current !== undefined ? current || inStock : inStock);
+      const current = sizeMap.get(v.size);
+      sizeMap.set(v.size, current !== undefined ? current || inStock : inStock);
     }
     if (sizeMap.size > 0) {
       return Array.from(sizeMap.entries()).map(([size, inStock]) => ({ size, inStock }));
     }
   }
 
-  if (category === 'accessories') {
-    return [{ size: 'OS', inStock: true }];
-  }
-  return [
-    { size: 'XS', inStock: true },
-    { size: 'S', inStock: true },
-    { size: 'M', inStock: true },
-    { size: 'L', inStock: true },
-    { size: 'XL', inStock: true },
-    { size: 'XXL', inStock: true },
-  ];
+  return [{ size: 'OS', inStock: true }];
 }
