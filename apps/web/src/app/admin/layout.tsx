@@ -40,11 +40,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <AdminGuard>
       {isLoginPage ? (
-        <main className="flex min-h-screen items-center justify-center bg-[#0a0a0a] p-4 text-[#f5f5f5]">
+        <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] p-4 text-[var(--text-primary)]">
           {children}
         </main>
       ) : (
-        <div className="flex min-h-screen bg-[#0a0a0a] text-[#f5f5f5]">
+        <div className="flex min-h-screen bg-[var(--bg)] text-[var(--text-primary)]">
           <AdminSidebar
             mobileOpen={mobileOpen}
             onCloseMobile={() => setMobileOpen(false)}
@@ -52,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           />
           <div className="flex flex-1 flex-col overflow-hidden">
             <AdminTopBar onOpenMobile={() => setMobileOpen(true)} />
-            <main className="flex-1 overflow-y-auto bg-[#0a0a0a] p-4 sm:p-6 lg:p-8">
+            <main className="flex-1 overflow-y-auto bg-[var(--bg)] p-4 sm:p-6 lg:p-8">
               <div className="mx-auto max-w-7xl">{children}</div>
             </main>
           </div>

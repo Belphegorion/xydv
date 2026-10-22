@@ -16,7 +16,7 @@ export function RevenueTimelineChart({ data }: { data: RevenuePoint[] }) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="flex h-56 w-full items-center justify-center rounded border border-[#1f1f1f] bg-[#111111] p-6 text-center font-mono text-xs tracking-wider text-[#71717a] uppercase">
+      <div className="flex h-56 w-full items-center justify-center rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-center font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase">
         No revenue transactions recorded in this interval
       </div>
     );
@@ -28,23 +28,23 @@ export function RevenueTimelineChart({ data }: { data: RevenuePoint[] }) {
   const paddingY = 20;
 
   return (
-    <div className="relative rounded border border-[#1f1f1f] bg-[#111111] p-5">
+    <div className="relative rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-5">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
+          <h3 className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
             Revenue Trajectory
           </h3>
-          <p className="mt-0.5 font-mono text-[11px] text-[#71717a]">
+          <p className="mt-0.5 font-mono text-[11px] text-[var(--text-muted)]">
             Daily consolidated revenue & order throughput
           </p>
         </div>
         {hovered && (
-          <div className="rounded border border-[#e8ff00]/40 bg-[#181818] px-2.5 py-1 font-mono text-xs">
-            <span className="text-[#a0a0a0]">{hovered.date}: </span>
-            <span className="font-bold text-[#e8ff00]">
+          <div className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1 font-mono text-xs shadow-sm">
+            <span className="text-[var(--text-secondary)]">{hovered.date}: </span>
+            <span className="font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
               ₹{hovered.revenue.toLocaleString('en-IN')}
             </span>
-            <span className="ml-1.5 text-[#71717a]">({hovered.orders} orders)</span>
+            <span className="ml-1.5 text-[var(--text-muted)]">({hovered.orders} orders)</span>
           </div>
         )}
       </div>
@@ -67,14 +67,15 @@ export function RevenueTimelineChart({ data }: { data: RevenuePoint[] }) {
                   y1={y}
                   x2={Math.max(600, data.length * 48) - 10}
                   y2={y}
-                  stroke="#1f1f1f"
+                  stroke="currentColor"
+                  className="text-[var(--border)]"
                   strokeDasharray="4 4"
                 />
                 <text
                   x={paddingX - 8}
                   y={y + 3}
                   textAnchor="end"
-                  className="fill-[#52525b] font-mono text-[9px]"
+                  className="fill-[var(--text-muted)] font-mono text-[9px]"
                 >
                   ₹{val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val}
                 </text>
@@ -104,15 +105,18 @@ export function RevenueTimelineChart({ data }: { data: RevenuePoint[] }) {
                   y={y}
                   width={barWidth}
                   height={barHeight}
-                  fill={isHovered ? '#e8ff00' : '#ffffff'}
-                  opacity={isHovered ? 1 : 0.85}
-                  rx="1"
+                  className={
+                    isHovered
+                      ? 'fill-[#0a0a0a] dark:fill-[#e8ff00]'
+                      : 'fill-[var(--text-secondary)] opacity-80 hover:opacity-100'
+                  }
+                  rx="0"
                 />
                 <text
                   x={x + barWidth / 2}
                   y={chartHeight + paddingY + 14}
                   textAnchor="middle"
-                  className="fill-[#71717a] font-mono text-[9px]"
+                  className="fill-[var(--text-muted)] font-mono text-[9px]"
                 >
                   {d.date.slice(5)}
                 </text>
@@ -147,7 +151,7 @@ export function OrderStatusDonutChart({ data }: { data: StatusBreakdown[] }) {
 
   if (total === 0) {
     return (
-      <div className="flex h-56 w-full items-center justify-center rounded border border-[#1f1f1f] bg-[#111111] p-6 text-center font-mono text-xs tracking-wider text-[#71717a] uppercase">
+      <div className="flex h-56 w-full items-center justify-center rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-center font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase">
         No active orders recorded
       </div>
     );
@@ -160,8 +164,8 @@ export function OrderStatusDonutChart({ data }: { data: StatusBreakdown[] }) {
   let accumulatedAngle = 0;
 
   return (
-    <div className="rounded border border-[#1f1f1f] bg-[#111111] p-5">
-      <h3 className="mb-4 font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
+    <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+      <h3 className="mb-4 font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
         Order Status Breakdown
       </h3>
 
@@ -173,7 +177,8 @@ export function OrderStatusDonutChart({ data }: { data: StatusBreakdown[] }) {
               cy="80"
               r={radius}
               fill="transparent"
-              stroke="#1f1f1f"
+              stroke="currentColor"
+              className="text-[var(--border)]"
               strokeWidth={strokeWidth}
             />
             {data.map((item) => {
@@ -200,8 +205,8 @@ export function OrderStatusDonutChart({ data }: { data: StatusBreakdown[] }) {
             })}
           </svg>
           <div className="absolute flex flex-col items-center">
-            <span className="font-mono text-xl font-bold text-[#f5f5f5]">{total}</span>
-            <span className="font-mono text-[9px] tracking-wider text-[#71717a] uppercase">
+            <span className="font-mono text-xl font-bold text-[var(--text-primary)]">{total}</span>
+            <span className="font-mono text-[9px] tracking-wider text-[var(--text-muted)] uppercase">
               Orders
             </span>
           </div>
@@ -219,11 +224,11 @@ export function OrderStatusDonutChart({ data }: { data: StatusBreakdown[] }) {
               >
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
-                  <span className="text-[#a0a0a0] capitalize">{item.status}</span>
+                  <span className="text-[var(--text-secondary)] capitalize">{item.status}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-[#f5f5f5]">{item.count}</span>
-                  <span className="text-[10px] text-[#52525b]">({pct}%)</span>
+                  <span className="font-bold text-[var(--text-primary)]">{item.count}</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">({pct}%)</span>
                 </div>
               </div>
             );
@@ -247,7 +252,7 @@ interface TopProduct {
 export function TopProductsChart({ data }: { data: TopProduct[] }) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex h-56 w-full items-center justify-center rounded border border-[#1f1f1f] bg-[#111111] p-6 text-center font-mono text-xs tracking-wider text-[#71717a] uppercase">
+      <div className="flex h-56 w-full items-center justify-center rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-center font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase">
         No item sales recorded yet
       </div>
     );
@@ -256,12 +261,12 @@ export function TopProductsChart({ data }: { data: TopProduct[] }) {
   const maxRevenue = Math.max(...data.map((d) => d.revenue), 1);
 
   return (
-    <div className="rounded border border-[#1f1f1f] bg-[#111111] p-5">
+    <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-5">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-mono text-xs font-bold tracking-wider text-[#f5f5f5] uppercase">
+        <h3 className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
           Top Selling Velocity
         </h3>
-        <span className="font-mono text-[10px] text-[#71717a] uppercase">Units & Revenue</span>
+        <span className="font-mono text-[10px] text-[var(--text-muted)] uppercase">Units & Revenue</span>
       </div>
 
       <div className="space-y-3.5">
@@ -270,19 +275,19 @@ export function TopProductsChart({ data }: { data: TopProduct[] }) {
           return (
             <div key={prod.id || idx} className="space-y-1">
               <div className="flex items-center justify-between font-mono text-xs">
-                <span className="max-w-[200px] truncate pr-2 font-medium text-[#f5f5f5] sm:max-w-[260px]">
+                <span className="max-w-[200px] truncate pr-2 font-medium text-[var(--text-primary)] sm:max-w-[260px]">
                   {prod.name}
                 </span>
                 <div className="flex items-center gap-3 text-right">
-                  <span className="text-[11px] text-[#71717a]">{prod.quantity} sold</span>
-                  <span className="font-bold text-[#e8ff00]">
+                  <span className="text-[11px] text-[var(--text-muted)]">{prod.quantity} sold</span>
+                  <span className="font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
                     ₹{prod.revenue.toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-none bg-[#181818]">
+              <div className="h-2 w-full overflow-hidden rounded-none border border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
                 <div
-                  className="h-full bg-[#ffffff] transition-[width] duration-300"
+                  className="h-full bg-[var(--text-primary)] dark:bg-white transition-[width] duration-300"
                   style={{ width: `${widthPct}%` }}
                 />
               </div>

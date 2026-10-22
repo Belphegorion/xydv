@@ -52,23 +52,23 @@ export function ConfirmDialog({
       aria-labelledby="confirm-dialog-title"
     >
       <div
-        className="w-full max-w-md rounded-none border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl"
+        className="w-full max-w-md rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-[var(--text-primary)] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <div
-              className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded border ${
+              className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-none border ${
                 isDestructive
                   ? 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
-                  : 'border-[#e8ff00]/30 bg-[#e8ff00]/10 text-[#e8ff00]'
+                  : 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#22c55e] dark:border-[#e8ff00]/40 dark:bg-[#e8ff00]/10 dark:text-[#e8ff00]'
               }`}
             >
               <Warning size={22} weight="bold" />
             </div>
             <h2
               id="confirm-dialog-title"
-              className="font-mono text-sm font-bold tracking-wider uppercase"
+              className="font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase"
             >
               {title}
             </h2>
@@ -78,21 +78,21 @@ export function ConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={isLoading}
-            className="p-1 text-[#71717a] transition-colors hover:text-[#f5f5f5]"
+            className="p-1 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             aria-label="Close dialog"
           >
             <X size={18} />
           </button>
         </div>
 
-        <p className="mb-6 font-sans text-xs leading-relaxed text-[#a0a0a0]">{description}</p>
+        <p className="mb-6 font-sans text-xs leading-relaxed text-[var(--text-secondary)]">{description}</p>
 
-        <div className="flex items-center justify-end gap-3 border-t border-[#1f1f1f] pt-2">
+        <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] pt-4">
           <button
             type="button"
             onClick={onCancel}
             disabled={isLoading}
-            className="border border-[#1f1f1f] px-4 py-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#333333] hover:text-[#f5f5f5] active:scale-[0.97]"
+            className="btn-tactile rounded-none border border-[var(--border)] bg-transparent px-4 py-2 font-mono text-xs tracking-wider text-[var(--text-secondary)] uppercase transition-colors hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
           >
             {cancelText}
           </button>
@@ -101,10 +101,10 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className={`inline-flex items-center justify-center gap-2 px-5 py-2 font-mono text-xs font-bold tracking-wider uppercase transition-colors active:scale-[0.97] ${
+            className={`btn-tactile inline-flex items-center justify-center gap-2 rounded-none px-5 py-2 font-mono text-xs font-bold tracking-wider uppercase transition-colors active:scale-[0.97] ${
               isDestructive
-                ? 'border border-[#ff3b3b] bg-[#ff3b3b] text-[#ffffff] hover:bg-[#ff3b3b]/90'
-                : 'border border-[#e8ff00] bg-[#e8ff00] text-[#0a0a0a] hover:bg-[#e8ff00]/90'
+                ? 'border border-[#ff3b3b] bg-[#ff3b3b] text-white hover:bg-[#ff3b3b]/90'
+                : 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a] hover:opacity-90'
             }`}
           >
             {isLoading && (

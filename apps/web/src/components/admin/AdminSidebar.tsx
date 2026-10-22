@@ -16,6 +16,7 @@ import {
   X,
   Gear,
 } from '@phosphor-icons/react';
+import { BrandLogo } from '../ui/BrandLogo';
 import { useAdminAuthStore } from '../../store/adminAuth';
 
 interface AdminSidebarProps {
@@ -49,14 +50,15 @@ export function AdminSidebar({
   ];
 
   const sidebarContent = (
-    <div className="flex h-full flex-col justify-between border-r border-[#1f1f1f] bg-[#0a0a0a] text-[#f5f5f5]">
+    <div className="flex h-full flex-col justify-between border-r border-[var(--border)] bg-[var(--bg)] text-[var(--text-primary)]">
       {/* Brand Header */}
       <div>
-        <div className="flex h-16 items-center justify-between border-b border-[#1f1f1f] px-6">
-          <Link href="/admin" className="group flex items-center gap-2.5">
-            <span className="font-mono text-sm font-bold tracking-widest text-[#e8ff00]">XYDV</span>
-            <span className="h-3 w-[1px] bg-[#333333]" />
-            <span className="font-mono text-[10px] tracking-wider text-[#a0a0a0] uppercase transition-colors group-hover:text-[#f5f5f5]">
+        <div className="flex h-16 items-center justify-between border-b border-[var(--border)] px-5">
+          <Link href="/admin" className="group flex items-center gap-2.5" aria-label="XYDV Admin Control">
+            <BrandLogo size={28} showWordmark={false} />
+            <span className="font-mono text-sm font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00]">XYDV</span>
+            <span className="h-3 w-[1px] bg-[var(--border)]" />
+            <span className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase transition-colors group-hover:text-[var(--text-primary)]">
               ADMIN CONTROL
             </span>
           </Link>
@@ -65,7 +67,7 @@ export function AdminSidebar({
             <button
               type="button"
               onClick={onCloseMobile}
-              className="p-1.5 text-[#a0a0a0] hover:text-[#f5f5f5] lg:hidden"
+              className="touch-target btn-tactile p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] lg:hidden"
               aria-label="Close navigation"
             >
               <X size={20} />
@@ -90,22 +92,22 @@ export function AdminSidebar({
                 onClick={onCloseMobile}
                 className={`group flex items-center justify-between px-3 py-2.5 font-mono text-xs tracking-wider uppercase transition-[background-color,color] duration-150 ${
                   isActive
-                    ? 'border-l-2 border-[#e8ff00] bg-[#181818] text-[#f5f5f5]'
-                    : 'text-[#a0a0a0] hover:bg-[#141414] hover:text-[#f5f5f5]'
+                    ? 'border-l-2 border-[var(--text-primary)] dark:border-[#e8ff00] bg-[var(--bg-elevated)] text-[var(--text-primary)] font-bold'
+                    : 'border-l-2 border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon
                     size={18}
                     className={
-                      isActive ? 'text-[#e8ff00]' : 'text-[#71717a] group-hover:text-[#f5f5f5]'
+                      isActive ? 'text-[var(--text-primary)] dark:text-[#e8ff00]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-primary)]'
                     }
                   />
                   <span>{item.label}</span>
                 </div>
 
                 {item.badge && (
-                  <span className="rounded bg-[#ff3b3b]/20 px-1.5 py-0.5 text-[10px] font-bold text-[#ff3b3b]">
+                  <span className="rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#ff3b3b]">
                     {item.badge}
                   </span>
                 )}
@@ -116,28 +118,28 @@ export function AdminSidebar({
       </div>
 
       {/* Footer / User / Storefront */}
-      <div className="space-y-3 border-t border-[#1f1f1f] p-4">
+      <div className="space-y-3 border-t border-[var(--border)] p-4">
         <Link
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between px-3 py-2 font-mono text-[11px] tracking-wider text-[#71717a] uppercase transition-colors hover:text-[#f5f5f5]"
+          className="flex items-center justify-between px-3 py-2 font-mono text-[11px] tracking-wider text-[var(--text-muted)] uppercase transition-colors hover:text-[var(--text-primary)]"
         >
           <span>View Live Storefront</span>
           <ArrowSquareOut size={14} />
         </Link>
 
-        <div className="rounded border border-[#1f1f1f] bg-[#111111] p-3">
+        <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between">
             <div className="truncate pr-2">
-              <p className="truncate text-xs font-medium text-[#f5f5f5]">
+              <p className="truncate text-xs font-medium text-[var(--text-primary)]">
                 {user?.name || 'Administrator'}
               </p>
-              <p className="truncate font-mono text-[10px] text-[#71717a]">
+              <p className="truncate font-mono text-[10px] text-[var(--text-muted)]">
                 {user?.email || 'admin@xydv.com'}
               </p>
             </div>
-            <span className="flex-shrink-0 rounded bg-[#e8ff00]/10 px-1.5 py-0.5 font-mono text-[9px] tracking-wider text-[#e8ff00] uppercase">
+            <span className="flex-shrink-0 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-1.5 py-0.5 font-mono text-[9px] tracking-wider text-[var(--text-secondary)] uppercase dark:border-[#e8ff00]/40 dark:bg-[#e8ff00]/10 dark:text-[#e8ff00]">
               ADMIN
             </span>
           </div>
@@ -145,7 +147,7 @@ export function AdminSidebar({
           <button
             type="button"
             onClick={logout}
-            className="flex w-full items-center justify-center gap-2 rounded border border-[#1f1f1f] bg-transparent py-1.5 font-mono text-[10px] tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#ff3b3b]/40 hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] active:scale-[0.97]"
+            className="btn-tactile flex w-full items-center justify-center gap-2 rounded-none border border-[var(--border)] bg-transparent py-1.5 font-mono text-[10px] tracking-wider text-[var(--text-secondary)] uppercase transition-colors hover:border-[#ff3b3b]/40 hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] active:scale-[0.97]"
           >
             <SignOut size={13} />
             <span>Sign Out</span>
