@@ -244,12 +244,12 @@ export class ProductService {
       ? { $or: [{ slug }, { _id: slug }], isPublished: true }
       : { slug, isPublished: true };
 
-    const product = await Product.findOne(query).lean();
+    const product = await Product.findOne(query);
     if (!product) {
       throw new AppError(`Product not found: ${slug}`, 404);
     }
 
-    return product as unknown as IProduct;
+    return product;
   }
 
   /**

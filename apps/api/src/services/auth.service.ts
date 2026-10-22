@@ -231,8 +231,8 @@ export class AuthService {
   }
 
   async getCurrentUser(userId: string): Promise<IUser | null> {
-    const user = await User.findById(userId).lean();
-    return user as unknown as IUser;
+    const user = await User.findById(userId);
+    return user;
   }
 
   async forgotPassword(email: string) {

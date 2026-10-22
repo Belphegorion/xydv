@@ -743,11 +743,11 @@ export class OrderService {
       ? { _id: orderId }
       : { _id: orderId, userId: new mongoose.Types.ObjectId(userId) };
 
-    const order = await Order.findOne(query).lean();
+    const order = await Order.findOne(query);
     if (!order) {
       throw new AppError('Order not found', 404);
     }
-    return order as unknown as IOrder;
+    return order;
   }
 }
 

@@ -28,7 +28,7 @@ router.post(
 );
 
 // All subsequent admin routes require authenticated admin credentials
-router.use(requireAdmin as unknown as (req: Request, res: Response, next: NextFunction) => void);
+router.use(requireAdmin);
 
 // --- FILE UPLOADS ---
 router.post(

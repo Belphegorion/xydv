@@ -6,6 +6,14 @@ import { User } from '../models/User.model';
 
 import env from '../config/env';
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: { _id: string; email: string; role: string; isBlocked?: boolean };
+    }
+  }
+}
+
 export interface AuthRequest extends Request {
   user?: { _id: string; email: string; role: string; isBlocked?: boolean };
 }
@@ -39,11 +47,7 @@ function verifyToken(token: string): {
   };
 }
 
-export async function requireAuth(
-  req: AuthRequest,
-  _res: Response,
-  next: NextFunction,
-): Promise<void> {
+export async function requireAuth(req: Request, _res: Response, next: NextFunction): Promise<void> {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
     return next(new AppError('Authentication required', 401));
@@ -81,7 +85,7 @@ export async function requireAuth(
   }
 }
 
-export function requireAdmin(req: AuthRequest, _res: Response, next: NextFunction): void {
+export function requireAdmin(req: Request, _res: Response, next: NextFunction): void {
   requireAuth(req, _res, (err) => {
     if (err) return next(err);
     if (req.user?.role !== 'admin') {
