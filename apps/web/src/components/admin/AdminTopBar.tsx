@@ -22,6 +22,7 @@ export function AdminTopBar({ onOpenMobile }: AdminTopBarProps) {
     if (path.startsWith('/admin/orders')) return 'Order Fulfillment';
     if (path.startsWith('/admin/inventory')) return 'Inventory Control';
     if (path.startsWith('/admin/customers')) return 'Customer Management';
+    if (path.startsWith('/admin/settings')) return 'Store Settings';
     return 'Admin Console';
   };
 

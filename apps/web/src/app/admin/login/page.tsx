@@ -53,9 +53,9 @@ export default function AdminLoginPage() {
               XYDV
             </span>
             <span className="h-4 w-[1px] bg-[var(--border)]" />
-            <span className="font-mono text-xs tracking-widest text-[var(--text-muted)] uppercase">
+            <h1 className="font-mono text-xs tracking-widest text-[var(--text-muted)] uppercase">
               ADMIN ACCESS
-            </span>
+            </h1>
           </div>
           <p className="font-sans text-xs leading-relaxed text-[var(--text-secondary)]">
             Enter authorized administrator credentials to manage catalog, orders, and telemetry.
@@ -63,7 +63,7 @@ export default function AdminLoginPage() {
         </div>
 
         {displayedError && (
-          <div className="mb-6 flex items-start gap-3 rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-3 text-xs text-[#ff3b3b]">
+          <div className="mb-6 flex items-start gap-3 rounded-none border border-[#b91c1c]/30 bg-[#b91c1c]/10 p-3 text-xs text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]">
             <Warning size={18} className="mt-0.5 flex-shrink-0" />
             <p className="font-mono">{displayedError}</p>
           </div>

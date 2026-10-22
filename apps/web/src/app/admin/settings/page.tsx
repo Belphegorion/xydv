@@ -127,9 +127,9 @@ export default function AdminSettingsPage() {
         <div>
           <div className="flex items-center gap-2">
             <Gear size={20} className="text-[var(--text-primary)] dark:text-[#e8ff00]" />
-            <h1 className="font-mono text-xl font-bold tracking-wider text-[var(--text-primary)] uppercase">
+            <h2 className="font-mono text-xl font-bold tracking-wider text-[var(--text-primary)] uppercase">
               Store Settings
-            </h1>
+            </h2>
           </div>
           <p className="mt-1 font-mono text-xs text-[var(--text-muted)]">
             Authoritative parameters for checkout calculations, taxation, thresholds, and brand
@@ -150,7 +150,7 @@ export default function AdminSettingsPage() {
           className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
               ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
-              : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
+              : 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
           }`}
           role="alert"
         >

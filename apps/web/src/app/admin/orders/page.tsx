@@ -189,9 +189,9 @@ function AdminOrdersContent() {
         border: 'border-[var(--border)]',
       },
       cancelled: {
-        bg: 'bg-[#ff3b3b]/10',
-        text: 'text-[#ff3b3b]',
-        border: 'border-[#ff3b3b]/30',
+        bg: 'bg-[#b91c1c]/10 dark:bg-[#ff3b3b]/10',
+        text: 'text-[#b91c1c] dark:text-[#ff3b3b]',
+        border: 'border-[#b91c1c]/30 dark:border-[#ff3b3b]/30',
       },
     };
     const c = config[status.toLowerCase()] || config.pending;
@@ -234,7 +234,7 @@ function AdminOrdersContent() {
           className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
               ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
-              : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
+              : 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -396,7 +396,7 @@ function AdminOrdersContent() {
                             o.paymentStatus === 'captured'
                               ? 'text-[#15803d] dark:text-[#22c55e]'
                               : o.paymentStatus === 'refunded'
-                                ? 'text-[#ff3b3b]'
+                                ? 'text-[#b91c1c] dark:text-[#ff3b3b]'
                                 : 'text-[#b45309] dark:text-[#f59e0b]'
                           }`}
                         >
@@ -407,11 +407,11 @@ function AdminOrdersContent() {
                       <td className="px-4 py-3">{getStatusBadge(o.status)}</td>
 
                       <td className="px-4 py-3 text-right">
-                        <div className="inline-flex items-center gap-1.5">
+                        <div className="inline-flex items-center gap-1">
                           <button
                             type="button"
                             onClick={() => handleOpenDetail(o)}
-                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                            className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                             title="Inspect Details"
                             aria-label={`Inspect order #${shortId}`}
                           >
@@ -421,7 +421,7 @@ function AdminOrdersContent() {
                           <button
                             type="button"
                             onClick={() => setInvoiceOrder(o)}
-                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] dark:hover:text-[#e8ff00]"
+                            className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] dark:hover:text-[#e8ff00]"
                             title="Print Invoice"
                             aria-label={`Print invoice for order #${shortId}`}
                           >
@@ -562,7 +562,7 @@ function AdminOrdersContent() {
                   </p>
 
                   {selectedOrder.refundId && (
-                    <div className="mt-2 rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-2 text-[11px] text-[#ff3b3b]">
+                    <div className="mt-2 rounded-none border border-[#b91c1c]/30 bg-[#b91c1c]/10 p-2 text-[11px] text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]">
                       Refund ID: {selectedOrder.refundId}
                       {selectedOrder.refundReason && <p>Reason: {selectedOrder.refundReason}</p>}
                     </div>

@@ -226,7 +226,7 @@ export default function AdminCustomersPage() {
           className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
               ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
-              : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
+              : 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -364,7 +364,7 @@ export default function AdminCustomersPage() {
 
                       <td className="px-4 py-3">
                         {c.isBlocked ? (
-                          <span className="inline-flex items-center gap-1 rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#ff3b3b] uppercase">
+                          <span className="inline-flex items-center gap-1 rounded-none border border-[#b91c1c]/30 bg-[#b91c1c]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#b91c1c] uppercase dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]">
                             <Prohibit size={12} />
                             <span>Suspended</span>
                           </span>
@@ -388,11 +388,11 @@ export default function AdminCustomersPage() {
                       </td>
 
                       <td className="px-4 py-3 text-right">
-                        <div className="inline-flex items-center gap-1.5">
+                        <div className="inline-flex items-center gap-1">
                           <button
                             type="button"
                             onClick={() => handleOpenProfile(c._id)}
-                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                            className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                             title="Inspect History"
                             aria-label={`Inspect ${c.name}'s profile`}
                           >
@@ -409,7 +409,7 @@ export default function AdminCustomersPage() {
                                   newRole: c.role === 'admin' ? 'customer' : 'admin',
                                 })
                               }
-                              className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] dark:hover:text-[#e8ff00]"
+                              className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] dark:hover:text-[#e8ff00]"
                               title={c.role === 'admin' ? 'Demote to Customer' : 'Promote to Admin'}
                               aria-label={
                                 c.role === 'admin' ? 'Demote to Customer' : 'Promote to Admin'
@@ -429,10 +429,10 @@ export default function AdminCustomersPage() {
                                   block: !c.isBlocked,
                                 })
                               }
-                              className={`btn-tactile rounded-none p-1.5 transition-colors active:scale-[0.97] ${
+                              className={`btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 transition-colors active:scale-[0.97] ${
                                 c.isBlocked
                                   ? 'text-[#15803d] hover:bg-[#22c55e]/10 dark:text-[#22c55e]'
-                                  : 'text-[var(--text-muted)] hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b]'
+                                  : 'text-[var(--text-muted)] hover:bg-[#b91c1c]/10 hover:text-[#b91c1c] dark:hover:bg-[#ff3b3b]/10 dark:hover:text-[#ff3b3b]'
                               }`}
                               title={c.isBlocked ? 'Unblock Account' : 'Suspend Account'}
                               aria-label={c.isBlocked ? 'Unblock Account' : 'Suspend Account'}
@@ -518,7 +518,7 @@ export default function AdminCustomersPage() {
                   <span
                     className={`mt-1 inline-block font-mono text-xs font-bold uppercase ${
                       customerDetail.user.isBlocked
-                        ? 'text-[#ff3b3b]'
+                        ? 'text-[#b91c1c] dark:text-[#ff3b3b]'
                         : 'text-[#15803d] dark:text-[#22c55e]'
                     }`}
                   >
@@ -594,7 +594,7 @@ export default function AdminCustomersPage() {
                                   o.paymentStatus === 'captured'
                                     ? 'text-[#15803d] dark:text-[#22c55e]'
                                     : o.paymentStatus === 'refunded'
-                                      ? 'text-[#ff3b3b]'
+                                      ? 'text-[#b91c1c] dark:text-[#ff3b3b]'
                                       : 'text-[#b45309] dark:text-[#f59e0b]'
                                 }
                               >

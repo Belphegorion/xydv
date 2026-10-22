@@ -115,7 +115,7 @@ export function AdminSidebar({
                 </div>
 
                 {item.badge && (
-                  <span className="rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#ff3b3b]">
+                  <span className="rounded-none border border-[#b91c1c]/30 bg-[#b91c1c]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]">
                     {item.badge}
                   </span>
                 )}
@@ -155,7 +155,7 @@ export function AdminSidebar({
           <button
             type="button"
             onClick={logout}
-            className="btn-tactile flex w-full items-center justify-center gap-2 rounded-none border border-[var(--border)] bg-transparent py-1.5 font-mono text-[10px] tracking-wider text-[var(--text-secondary)] uppercase transition-colors hover:border-[#ff3b3b]/40 hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] active:scale-[0.97]"
+            className="btn-tactile flex w-full items-center justify-center gap-2 rounded-none border border-[var(--border)] bg-transparent py-1.5 font-mono text-[10px] tracking-wider text-[var(--text-secondary)] uppercase transition-colors hover:border-[#b91c1c]/40 hover:bg-[#b91c1c]/10 hover:text-[#b91c1c] active:scale-[0.97] dark:hover:border-[#ff3b3b]/40 dark:hover:bg-[#ff3b3b]/10 dark:hover:text-[#ff3b3b]"
           >
             <SignOut size={13} />
             <span>Sign Out</span>

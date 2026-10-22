@@ -448,7 +448,7 @@ function AdminProductsContent() {
           className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
               ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
-              : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
+              : 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -626,7 +626,7 @@ function AdminProductsContent() {
                       <td className="px-4 py-3">
                         {p.inStock && totalStock > 0 ? (
                           totalStock <= 5 ? (
-                            <span className="inline-flex items-center rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#ff3b3b] uppercase">
+                            <span className="inline-flex items-center rounded-none border border-[#b91c1c]/30 bg-[#b91c1c]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#b91c1c] uppercase dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]">
                               Low Stock ({totalStock})
                             </span>
                           ) : (
@@ -642,11 +642,11 @@ function AdminProductsContent() {
                       </td>
 
                       <td className="px-4 py-3 text-right">
-                        <div className="inline-flex items-center gap-2">
+                        <div className="inline-flex items-center gap-1">
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(p)}
-                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                            className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                             aria-label={`Edit ${p.name}`}
                           >
                             <PencilSimple size={16} />
@@ -660,7 +660,7 @@ function AdminProductsContent() {
                                 name: p.name,
                               })
                             }
-                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] active:scale-[0.97]"
+                            className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[#b91c1c]/10 hover:text-[#b91c1c] active:scale-[0.97] dark:hover:bg-[#ff3b3b]/10 dark:hover:text-[#ff3b3b]"
                             aria-label={`Delete ${p.name}`}
                           >
                             <Trash size={16} />
@@ -728,7 +728,7 @@ function AdminProductsContent() {
                 className={`mb-6 flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
                   feedback.type === 'success'
                     ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
-                    : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
+                    : 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
                 }`}
                 role="alert"
               >
@@ -1089,7 +1089,7 @@ function AdminProductsContent() {
                             setIsDirty(true);
                             handleRemoveVariant(idx);
                           }}
-                          className="btn-tactile mt-3.5 p-1 text-[#ff3b3b] hover:opacity-75 active:scale-[0.97]"
+                          className="btn-tactile mt-3.5 p-1 text-[#b91c1c] hover:opacity-75 active:scale-[0.97] dark:text-[#ff3b3b]"
                           title="Remove variant"
                           aria-label="Remove variant"
                         >

@@ -157,7 +157,7 @@ function AdminInventoryContent() {
           className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
               ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
-              : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
+              : 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -177,14 +177,14 @@ function AdminInventoryContent() {
 
       {/* Low-stock Warning Header Banner */}
       {totalLowStock > 0 && (
-        <div className="flex items-center justify-between rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-4 text-[#ff3b3b]">
+        <div className="flex items-center justify-between rounded-none border border-[#b91c1c]/30 bg-[#b91c1c]/10 p-4 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]">
           <div className="flex items-center gap-3">
             <Warning size={22} weight="bold" />
             <div>
               <p className="font-mono text-xs font-bold tracking-wider uppercase">
                 Low-Stock SKU Alerts Active
               </p>
-              <p className="mt-0.5 font-sans text-xs text-[#ff3b3b]/80">
+              <p className="mt-0.5 font-sans text-xs text-[#b91c1c]/90 dark:text-[#ff3b3b]/80">
                 {totalLowStock} SKU variants currently have &le; {threshold} units remaining in
                 inventory.
               </p>
@@ -196,7 +196,7 @@ function AdminInventoryContent() {
               setLowStockOnly(!lowStockOnly);
               setPage(1);
             }}
-            className="btn-tactile rounded-none border border-[#ff3b3b]/40 bg-[#ff3b3b]/20 px-3 py-1.5 font-mono text-xs font-bold tracking-wider text-[#ff3b3b] uppercase transition-colors hover:bg-[#ff3b3b] hover:text-white active:scale-[0.97] dark:text-white"
+            className="btn-tactile rounded-none border border-[#b91c1c]/40 bg-[#b91c1c]/20 px-3 py-1.5 font-mono text-xs font-bold tracking-wider text-[#b91c1c] uppercase transition-colors hover:bg-[#b91c1c] hover:text-white active:scale-[0.97] dark:border-[#ff3b3b]/40 dark:bg-[#ff3b3b]/20 dark:text-white dark:hover:bg-[#ff3b3b]"
           >
             {lowStockOnly ? 'Show All SKUs' : 'Filter Low-Stock'}
           </button>
@@ -322,16 +322,16 @@ function AdminInventoryContent() {
                         <span
                           className={`font-bold ${
                             item.stock === 0
-                              ? 'text-[#ff3b3b]'
+                              ? 'text-[#b91c1c] dark:text-[#ff3b3b]'
                               : item.isLowStock
-                                ? 'text-[#ff3b3b]'
+                                ? 'text-[#b91c1c] dark:text-[#ff3b3b]'
                                 : 'text-[#15803d] dark:text-[#22c55e]'
                           }`}
                         >
                           {item.stock} units
                         </span>
                         {item.isLowStock && (
-                          <span className="rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#ff3b3b] uppercase">
+                          <span className="rounded-none border border-[#b91c1c]/30 bg-[#b91c1c]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#b91c1c] uppercase dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/20 dark:text-[#ff3b3b]">
                             LOW
                           </span>
                         )}
@@ -346,7 +346,7 @@ function AdminInventoryContent() {
                       <button
                         type="button"
                         onClick={() => handleOpenEditStock(item)}
-                        className="btn-tactile inline-flex items-center gap-1 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1 font-mono text-[11px] tracking-wider text-[var(--text-muted)] uppercase transition-colors hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                        className="btn-tactile inline-flex min-h-[36px] items-center gap-1.5 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1.5 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97]"
                         aria-label={`Adjust stock for SKU ${item.sku}`}
                       >
                         <PencilSimple size={13} />

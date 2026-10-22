@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { LoadingSymbol } from '../ui/LoadingSymbol';
 import { useAdminAuthStore } from '../../store/adminAuth';
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
@@ -38,8 +39,8 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   if (!mounted) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[var(--bg)] text-[var(--text-primary)]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--text-primary)] border-t-transparent dark:border-[#e8ff00] dark:border-t-transparent" />
+        <div className="flex flex-col items-center gap-4">
+          <LoadingSymbol size={44} variant="pulse" priority={true} />
           <span className="font-mono text-xs tracking-widest text-[var(--text-muted)] uppercase">
             Initializing XYDV Control...
           </span>
@@ -52,8 +53,8 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   if (!isAuthenticated && !isLoginPage) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[var(--bg)] text-[var(--text-primary)]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--text-primary)] border-t-transparent dark:border-[#e8ff00] dark:border-t-transparent" />
+        <div className="flex flex-col items-center gap-4">
+          <LoadingSymbol size={44} variant="pulse" priority={true} />
           <span className="font-mono text-xs tracking-widest text-[var(--text-muted)] uppercase">
             Redirecting to Admin Portal...
           </span>

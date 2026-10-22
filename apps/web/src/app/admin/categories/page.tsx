@@ -147,7 +147,7 @@ export default function AdminCategoriesPage() {
           className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
               ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
-              : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
+              : 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -222,11 +222,11 @@ export default function AdminCategoriesPage() {
                     </td>
 
                     <td className="px-4 py-3 text-right">
-                      <div className="inline-flex items-center gap-2">
+                      <div className="inline-flex items-center gap-1">
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(c)}
-                          className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                          className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                           aria-label={`Edit ${c.name}`}
                         >
                           <PencilSimple size={16} />
@@ -235,7 +235,7 @@ export default function AdminCategoriesPage() {
                         <button
                           type="button"
                           onClick={() => setCatToDelete({ id: c._id || '', name: c.name })}
-                          className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] active:scale-[0.97]"
+                          className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[#b91c1c]/10 hover:text-[#b91c1c] active:scale-[0.97] dark:hover:bg-[#ff3b3b]/10 dark:hover:text-[#ff3b3b]"
                           aria-label={`Delete ${c.name}`}
                         >
                           <Trash size={16} />

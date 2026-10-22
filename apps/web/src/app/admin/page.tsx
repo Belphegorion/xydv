@@ -102,14 +102,14 @@ export default function AdminDashboardPage() {
 
       {/* Low-stock Warning Banner */}
       {data && data.lowStockCount > 0 && (
-        <div className="flex items-center justify-between rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-4 text-[#ff3b3b]">
+        <div className="flex items-center justify-between rounded-none border border-[#b91c1c]/30 bg-[#b91c1c]/10 p-4 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]">
           <div className="flex items-center gap-3">
             <Warning size={20} weight="bold" />
             <div>
               <p className="font-mono text-xs font-bold tracking-wider uppercase">
                 Critical Inventory Alert
               </p>
-              <p className="mt-0.5 font-sans text-xs text-[#ff3b3b]/80">
+              <p className="mt-0.5 font-sans text-xs text-[#b91c1c]/90 dark:text-[#ff3b3b]/80">
                 {data.lowStockCount} product variants are currently below the safety threshold (5
                 units).
               </p>
@@ -117,7 +117,7 @@ export default function AdminDashboardPage() {
           </div>
           <Link
             href="/admin/inventory?lowStock=true"
-            className="btn-tactile inline-flex items-center gap-1.5 rounded-none border border-[#ff3b3b]/40 bg-[#ff3b3b]/20 px-3 py-1.5 font-mono text-xs font-bold tracking-wider text-white uppercase transition-colors hover:bg-[#ff3b3b] active:scale-[0.97]"
+            className="btn-tactile inline-flex items-center gap-1.5 rounded-none border border-[#b91c1c]/40 bg-[#b91c1c]/20 px-3 py-1.5 font-mono text-xs font-bold tracking-wider text-[#b91c1c] uppercase transition-colors hover:bg-[#b91c1c] hover:text-white active:scale-[0.97] dark:border-[#ff3b3b]/40 dark:bg-[#ff3b3b]/20 dark:text-white dark:hover:bg-[#ff3b3b]"
           >
             <span>Resolve</span>
             <ArrowRight size={13} />
@@ -126,7 +126,7 @@ export default function AdminDashboardPage() {
       )}
 
       {error && (
-        <div className="rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-4 font-mono text-xs text-[#ff3b3b]">
+        <div className="rounded-none border border-[#b91c1c]/30 bg-[#b91c1c]/10 p-4 font-mono text-xs text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]">
           {error}
         </div>
       )}
@@ -183,7 +183,7 @@ export default function AdminDashboardPage() {
               size={18}
               className={
                 data && data.lowStockCount > 0
-                  ? 'text-[#ff3b3b]'
+                  ? 'text-[#b91c1c] dark:text-[#ff3b3b]'
                   : 'text-[#15803d] dark:text-[#22c55e]'
               }
             />

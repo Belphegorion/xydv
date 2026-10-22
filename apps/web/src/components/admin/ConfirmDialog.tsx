@@ -60,8 +60,8 @@ export function ConfirmDialog({
             <div
               className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-none border ${
                 isDestructive
-                  ? 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
-                  : 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#22c55e] dark:border-[#e8ff00]/40 dark:bg-[#e8ff00]/10 dark:text-[#e8ff00]'
+                  ? 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
+                  : 'border-[#15803d]/30 bg-[#15803d]/10 text-[#15803d] dark:border-[#e8ff00]/40 dark:bg-[#e8ff00]/10 dark:text-[#e8ff00]'
               }`}
             >
               <Warning size={22} weight="bold" />
@@ -105,7 +105,7 @@ export function ConfirmDialog({
             disabled={isLoading}
             className={`btn-tactile inline-flex items-center justify-center gap-2 rounded-none px-5 py-2 font-mono text-xs font-bold tracking-wider uppercase transition-colors active:scale-[0.97] ${
               isDestructive
-                ? 'border border-[#ff3b3b] bg-[#ff3b3b] text-white hover:bg-[#ff3b3b]/90'
+                ? 'border border-[#b91c1c] bg-[#b91c1c] text-white hover:bg-[#b91c1c]/90 dark:border-[#ff3b3b] dark:bg-[#ff3b3b] dark:text-[#0a0a0a] dark:hover:bg-[#ff3b3b]/90'
                 : 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] hover:opacity-90 dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]'
             }`}
           >
