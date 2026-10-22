@@ -423,10 +423,10 @@ function AdminProductsContent() {
       {/* Header & Controls */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-xl font-bold tracking-wider text-[#f5f5f5] uppercase">
+          <h2 className="font-mono text-xl font-bold tracking-wider text-[var(--text-primary)] uppercase">
             Product Catalog
           </h2>
-          <p className="mt-0.5 font-mono text-xs text-[#71717a]">
+          <p className="mt-0.5 font-mono text-xs text-[var(--text-muted)]">
             Manage listings, multi-angle imagery, and size/color inventory variants ({total} total
             products)
           </p>
@@ -435,7 +435,7 @@ function AdminProductsContent() {
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 rounded-none border border-[#e8ff00] bg-[#e8ff00] px-4 py-2.5 font-mono text-xs font-bold tracking-wider text-[#0a0a0a] uppercase transition-colors hover:bg-[#e8ff00]/90 active:scale-[0.97]"
+          className="btn-tactile inline-flex items-center gap-2 rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] px-4 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-colors hover:opacity-90 active:scale-[0.97] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]"
         >
           <Plus size={16} weight="bold" />
           <span>New Product</span>
@@ -445,9 +445,9 @@ function AdminProductsContent() {
       {/* Notifications */}
       {feedback && (
         <div
-          className={`flex items-center justify-between rounded border p-3 font-mono text-xs ${
+          className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
-              ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#22c55e]'
+              ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
               : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
           }`}
         >
@@ -455,19 +455,24 @@ function AdminProductsContent() {
             {feedback.type === 'success' ? <CheckCircle size={16} /> : <Warning size={16} />}
             <span>{feedback.message}</span>
           </div>
-          <button type="button" onClick={() => setFeedback(null)} className="p-1 hover:opacity-70">
+          <button
+            type="button"
+            onClick={() => setFeedback(null)}
+            className="p-1 hover:opacity-70"
+            aria-label="Dismiss feedback"
+          >
             <X size={14} />
           </button>
         </div>
       )}
 
       {/* Search, Filter & Sort Toolbar */}
-      <div className="grid grid-cols-1 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-3.5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Search */}
         <div className="relative">
           <MagnifyingGlass
             size={16}
-            className="pointer-events-none absolute top-3 left-3 text-[#71717a]"
+            className="pointer-events-none absolute top-3 left-3 text-[var(--text-muted)]"
           />
           <input
             type="text"
@@ -477,7 +482,7 @@ function AdminProductsContent() {
               setPage(1);
             }}
             placeholder="Search title, SKU, tag..."
-            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-9 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
+            className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] py-2 pr-3 pl-9 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
           />
         </div>
 
@@ -488,7 +493,7 @@ function AdminProductsContent() {
             setCategoryFilter(e.target.value);
             setPage(1);
           }}
-          className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+          className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
         >
           <option value="all">All Categories</option>
           {categories.map((c) => (
@@ -505,7 +510,7 @@ function AdminProductsContent() {
             setInStockFilter(e.target.value);
             setPage(1);
           }}
-          className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+          className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
         >
           <option value="">All Stock Statuses</option>
           <option value="true">In Stock Only</option>
@@ -519,7 +524,7 @@ function AdminProductsContent() {
             setSort(e.target.value);
             setPage(1);
           }}
-          className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+          className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
         >
           <option value="newest">Newest First</option>
           <option value="price-asc">Price: Low to High</option>
@@ -529,10 +534,10 @@ function AdminProductsContent() {
       </div>
 
       {/* Products Table */}
-      <div className="overflow-hidden rounded border border-[#1f1f1f] bg-[#111111]">
+      <div className="overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-surface)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono tracking-wider text-[#a0a0a0] uppercase">
+            <thead className="border-b border-[var(--border)] bg-[var(--bg-elevated)] font-mono tracking-wider text-[var(--text-muted)] uppercase">
               <tr>
                 <th className="px-4 py-3">Product</th>
                 <th className="px-4 py-3">Category</th>
@@ -542,19 +547,19 @@ function AdminProductsContent() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1f1f1f]">
+            <tbody className="divide-y divide-[var(--border)]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-[#71717a]">
+                  <td colSpan={6} className="py-12 text-center text-[var(--text-muted)]">
                     <div className="flex flex-col items-center gap-2">
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#e8ff00] border-t-transparent" />
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--text-primary)] border-t-transparent dark:border-[#e8ff00]" />
                       <span className="font-mono text-xs uppercase">Loading Catalog...</span>
                     </div>
                   </td>
                 </tr>
               ) : products.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center font-mono text-[#71717a] uppercase">
+                  <td colSpan={6} className="py-12 text-center font-mono text-[var(--text-muted)] uppercase">
                     No products found matching active filters.
                   </td>
                 </tr>
@@ -569,10 +574,10 @@ function AdminProductsContent() {
                   const totalStock = (p.variants || []).reduce((acc, v) => acc + (v.stock || 0), 0);
 
                   return (
-                    <tr key={p._id || p.id} className="transition-colors hover:bg-[#141414]">
+                    <tr key={p._id || p.id} className="transition-colors hover:bg-[var(--bg-elevated)]">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="relative h-12 w-10 flex-shrink-0 overflow-hidden rounded border border-[#222222] bg-[#181818]">
+                          <div className="relative h-12 w-10 flex-shrink-0 overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-elevated)]">
                             <img
                               src={primaryImage}
                               alt={p.name}
@@ -580,27 +585,27 @@ function AdminProductsContent() {
                             />
                           </div>
                           <div>
-                            <p className="font-mono text-xs font-bold text-[#f5f5f5]">{p.name}</p>
-                            <p className="font-mono text-[10px] text-[#71717a]">slug: {p.slug}</p>
+                            <p className="font-mono text-xs font-bold text-[var(--text-primary)]">{p.name}</p>
+                            <p className="font-mono text-[10px] text-[var(--text-muted)]">slug: {p.slug}</p>
                           </div>
                         </div>
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[#a0a0a0] uppercase">{p.category}</td>
+                      <td className="px-4 py-3 font-mono text-[var(--text-secondary)] uppercase">{p.category}</td>
 
                       <td className="px-4 py-3 font-mono">
-                        <span className="font-bold text-[#f5f5f5]">₹{p.price}</span>
+                        <span className="font-bold text-[var(--text-primary)]">₹{p.price}</span>
                         {p.compareAt && (
-                          <span className="ml-1.5 text-[10px] text-[#71717a] line-through">
+                          <span className="ml-1.5 text-[10px] text-[var(--text-muted)] line-through">
                             ₹{p.compareAt}
                           </span>
                         )}
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">
+                      <td className="px-4 py-3 font-mono text-[var(--text-secondary)]">
                         <div className="flex items-center gap-1.5">
                           <span>{p.variants?.length || 0} SKUs</span>
-                          <span className="text-[10px] text-[#71717a]">
+                          <span className="text-[10px] text-[var(--text-muted)]">
                             ({totalStock} total units)
                           </span>
                         </div>
@@ -609,16 +614,16 @@ function AdminProductsContent() {
                       <td className="px-4 py-3">
                         {p.inStock && totalStock > 0 ? (
                           totalStock <= 5 ? (
-                            <span className="inline-flex items-center rounded bg-[#ff3b3b]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#ff3b3b] uppercase">
+                            <span className="inline-flex items-center rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#ff3b3b] uppercase">
                               Low Stock ({totalStock})
                             </span>
                           ) : (
-                            <span className="inline-flex items-center rounded bg-[#22c55e]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#22c55e] uppercase">
+                            <span className="inline-flex items-center rounded-none border border-[#22c55e]/30 bg-[#22c55e]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#15803d] uppercase dark:text-[#22c55e]">
                               In Stock
                             </span>
                           )
                         ) : (
-                          <span className="inline-flex items-center rounded bg-[#71717a]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#71717a] uppercase">
+                          <span className="inline-flex items-center rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-2 py-0.5 font-mono text-[10px] font-bold text-[var(--text-muted)] uppercase">
                             Exhausted
                           </span>
                         )}
@@ -629,7 +634,7 @@ function AdminProductsContent() {
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(p)}
-                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#1f1f1f] hover:text-[#f5f5f5]"
+                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                             aria-label={`Edit ${p.name}`}
                           >
                             <PencilSimple size={16} />
@@ -643,7 +648,7 @@ function AdminProductsContent() {
                                 name: p.name,
                               })
                             }
-                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b]"
+                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] active:scale-[0.97]"
                             aria-label={`Delete ${p.name}`}
                           >
                             <Trash size={16} />
@@ -659,7 +664,7 @@ function AdminProductsContent() {
         </div>
 
         {/* Pagination Bar */}
-        <div className="flex items-center justify-between border-t border-[#1f1f1f] px-4 py-3 font-mono text-xs text-[#a0a0a0]">
+        <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3 font-mono text-xs text-[var(--text-muted)]">
           <span>
             Page {page} of {totalPages} ({total} products)
           </span>
@@ -668,7 +673,7 @@ function AdminProductsContent() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
+              className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97] disabled:opacity-30"
             >
               Previous
             </button>
@@ -676,7 +681,7 @@ function AdminProductsContent() {
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
+              className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97] disabled:opacity-30"
             >
               Next
             </button>
@@ -687,19 +692,20 @@ function AdminProductsContent() {
       {/* Product Create / Edit Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm dark:bg-black/80"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl">
-            <div className="mb-6 flex items-center justify-between border-b border-[#1f1f1f] pb-4">
-              <h3 className="font-mono text-sm font-bold tracking-wider text-[#e8ff00] uppercase">
+          <div className="my-8 w-full max-w-3xl rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-[var(--text-primary)] shadow-2xl">
+            <div className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
+              <h3 className="font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
                 {isEditing ? `Edit Product: ${name}` : 'Create New Product'}
               </h3>
               <button
                 type="button"
                 onClick={handleRequestCloseModal}
-                className="p-1 text-[#71717a] hover:text-[#f5f5f5]"
+                className="btn-tactile p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                aria-label="Close modal"
               >
                 <X size={20} />
               </button>
@@ -707,9 +713,9 @@ function AdminProductsContent() {
 
             {feedback && (
               <div
-                className={`mb-6 flex items-center justify-between rounded border p-3 font-mono text-xs ${
+                className={`mb-6 flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
                   feedback.type === 'success'
-                    ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#22c55e]'
+                    ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
                     : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
                 }`}
                 role="alert"
@@ -733,7 +739,7 @@ function AdminProductsContent() {
               {/* Basic Info */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
+                  <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
                     Product Title *
                   </label>
                   <input
@@ -745,12 +751,12 @@ function AdminProductsContent() {
                       setName(e.target.value);
                     }}
                     placeholder="e.g. Waterproof Technical Shell"
-                    className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                    className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
+                  <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
                     Brand
                   </label>
                   <input
@@ -760,12 +766,12 @@ function AdminProductsContent() {
                       setIsDirty(true);
                       setBrand(e.target.value);
                     }}
-                    className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                    className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
+                  <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
                     Category *
                   </label>
                   <select
@@ -774,7 +780,7 @@ function AdminProductsContent() {
                       setIsDirty(true);
                       setCategory(e.target.value);
                     }}
-                    className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                    className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                   >
                     {categories.map((c) => (
                       <option key={c.slug} value={c.slug}>
@@ -786,7 +792,7 @@ function AdminProductsContent() {
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
+                    <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
                       Price (₹) *
                     </label>
                     <input
@@ -805,12 +811,12 @@ function AdminProductsContent() {
                           ),
                         );
                       }}
-                      className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                      className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                     />
                   </div>
 
                   <div>
-                    <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
+                    <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
                       Compare Price (₹)
                     </label>
                     <input
@@ -822,14 +828,14 @@ function AdminProductsContent() {
                         setCompareAt(e.target.value ? Number(e.target.value) : undefined);
                       }}
                       placeholder="Discount"
-                      className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                      className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 sm:col-span-2">
                   <div>
-                    <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
+                    <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
                       Low Stock Threshold
                     </label>
                     <input
@@ -840,7 +846,7 @@ function AdminProductsContent() {
                         setIsDirty(true);
                         setLowStockThreshold(Number(e.target.value));
                       }}
-                      className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                      className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                     />
                   </div>
 
@@ -853,9 +859,9 @@ function AdminProductsContent() {
                           setIsDirty(true);
                           setIsPublished(e.target.checked);
                         }}
-                        className="h-4 w-4 cursor-pointer rounded border-[#1f1f1f] bg-[#0a0a0a] text-[#e8ff00] accent-[#e8ff00] focus:ring-0"
+                        className="h-4 w-4 cursor-pointer rounded-none border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] accent-[var(--text-primary)] focus:ring-0 dark:accent-[#e8ff00] dark:text-[#e8ff00]"
                       />
-                      <span className="font-mono text-xs text-[#f5f5f5] uppercase">
+                      <span className="font-mono text-xs text-[var(--text-primary)] uppercase">
                         Published (Storefront Visible)
                       </span>
                     </label>
@@ -865,40 +871,46 @@ function AdminProductsContent() {
 
               {/* Description */}
               <div>
-                <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
+                <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
                   Technical Description *
                 </label>
                 <textarea
                   rows={3}
                   required
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => {
+                    setIsDirty(true);
+                    setDescription(e.target.value);
+                  }}
                   placeholder="Specify fabric engineering, membrane ratings, and tactical ergonomics..."
-                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-sans text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                  className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-sans text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                 />
               </div>
 
               {/* Tags */}
               <div>
-                <label className="mb-1.5 block font-mono text-xs text-[#a0a0a0] uppercase">
+                <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
                   Search Tags (Comma separated)
                 </label>
                 <input
                   type="text"
                   value={tagsInput}
-                  onChange={(e) => setTagsInput(e.target.value)}
+                  onChange={(e) => {
+                    setIsDirty(true);
+                    setTagsInput(e.target.value);
+                  }}
                   placeholder="tactical, waterproof, gore-tex, training"
-                  className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                  className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                 />
               </div>
 
               {/* Multiple Images Upload & Gallery */}
-              <div className="space-y-3 border-t border-[#1f1f1f] pt-2">
+              <div className="space-y-3 border-t border-[var(--border)] pt-2">
                 <div className="flex items-center justify-between">
-                  <label className="block font-mono text-xs tracking-wider text-[#e8ff00] uppercase">
+                  <label className="block font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
                     Product Images ({images.length})
                   </label>
-                  <label className="inline-flex cursor-pointer items-center gap-1.5 rounded border border-[#1f1f1f] bg-[#181818] px-3 py-1 font-mono text-xs tracking-wider text-[#f5f5f5] uppercase hover:bg-[#222222]">
+                  <label className="btn-tactile inline-flex cursor-pointer items-center gap-1.5 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97]">
                     <UploadSimple size={14} />
                     <span>{isUploading ? 'Uploading...' : 'Upload Images'}</span>
                     <input
@@ -917,13 +929,17 @@ function AdminProductsContent() {
                     {images.map((img, idx) => (
                       <div
                         key={img.url || idx}
-                        className="group relative h-20 w-full overflow-hidden rounded border border-[#1f1f1f] bg-[#0a0a0a]"
+                        className="group relative h-20 w-full overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-elevated)]"
                       >
                         <img src={img.url} alt="Upload" className="h-full w-full object-cover" />
                         <button
                           type="button"
-                          onClick={() => setImages((prev) => prev.filter((_, i) => i !== idx))}
-                          className="absolute top-1 right-1 rounded bg-black/80 p-1 text-[#ff3b3b] opacity-0 transition-opacity group-hover:opacity-100"
+                          onClick={() => {
+                            setIsDirty(true);
+                            setImages((prev) => prev.filter((_, i) => i !== idx));
+                          }}
+                          className="btn-tactile absolute top-1 right-1 rounded-none bg-black/80 p-1 text-[#ff3b3b] opacity-0 transition-opacity group-hover:opacity-100 active:scale-[0.97]"
+                          aria-label="Remove image"
                         >
                           <X size={12} />
                         </button>
@@ -931,22 +947,25 @@ function AdminProductsContent() {
                     ))}
                   </div>
                 ) : (
-                  <div className="rounded border border-dashed border-[#1f1f1f] bg-[#0a0a0a] p-4 text-center font-mono text-xs text-[#71717a]">
+                  <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--bg-elevated)] p-4 text-center font-mono text-xs text-[var(--text-muted)]">
                     No images uploaded yet. Click &quot;Upload Images&quot; to select files.
                   </div>
                 )}
               </div>
 
               {/* Variant Management Matrix */}
-              <div className="space-y-3 border-t border-[#1f1f1f] pt-2">
+              <div className="space-y-3 border-t border-[var(--border)] pt-2">
                 <div className="flex items-center justify-between">
-                  <label className="block font-mono text-xs tracking-wider text-[#e8ff00] uppercase">
+                  <label className="block font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
                     Variants & Stock Matrix ({variants.length})
                   </label>
                   <button
                     type="button"
-                    onClick={handleAddVariant}
-                    className="inline-flex items-center gap-1 font-mono text-xs text-[#e8ff00] uppercase hover:underline"
+                    onClick={() => {
+                      setIsDirty(true);
+                      handleAddVariant();
+                    }}
+                    className="inline-flex items-center gap-1 font-mono text-xs text-[var(--text-primary)] uppercase hover:underline dark:text-[#e8ff00]"
                   >
                     <Plus size={14} />
                     <span>Add Variant</span>
@@ -957,25 +976,31 @@ function AdminProductsContent() {
                   {variants.map((v, idx) => (
                     <div
                       key={v.sku || idx}
-                      className="grid grid-cols-1 items-center gap-2 rounded border border-[#1f1f1f] bg-[#0a0a0a] p-2.5 font-mono text-xs sm:grid-cols-6"
+                      className="grid grid-cols-1 items-center gap-2 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs sm:grid-cols-6"
                     >
                       <div className="sm:col-span-2">
-                        <label className="block text-[10px] text-[#71717a]">SKU</label>
+                        <label className="block text-[10px] text-[var(--text-muted)]">SKU</label>
                         <input
                           type="text"
                           required
                           value={v.sku}
-                          onChange={(e) => handleUpdateVariant(idx, 'sku', e.target.value)}
-                          className="w-full border-b border-[#222222] bg-transparent py-0.5 text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                          onChange={(e) => {
+                            setIsDirty(true);
+                            handleUpdateVariant(idx, 'sku', e.target.value);
+                          }}
+                          className="w-full border-b border-[var(--border)] bg-transparent py-0.5 text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[10px] text-[#71717a]">Size</label>
+                        <label className="block text-[10px] text-[var(--text-muted)]">Size</label>
                         <select
                           value={v.size}
-                          onChange={(e) => handleUpdateVariant(idx, 'size', e.target.value)}
-                          className="w-full border border-[#222222] bg-[#111111] px-1 py-0.5 text-[#f5f5f5] focus:outline-none"
+                          onChange={(e) => {
+                            setIsDirty(true);
+                            handleUpdateVariant(idx, 'size', e.target.value);
+                          }}
+                          className="w-full border border-[var(--border)] bg-[var(--bg-surface)] px-1 py-0.5 text-[var(--text-primary)] focus:outline-none"
                         >
                           {['XS', 'S', 'M', 'L', 'XL', 'XXL', 'ONE SIZE'].map((s) => (
                             <option key={s} value={s}>
@@ -987,58 +1012,70 @@ function AdminProductsContent() {
 
                       <div className="flex items-center gap-2">
                         <div className="flex-1">
-                          <label className="block text-[10px] text-[#71717a]">Color</label>
+                          <label className="block text-[10px] text-[var(--text-muted)]">Color</label>
                           <input
                             type="text"
                             value={v.color || ''}
-                            onChange={(e) => handleUpdateVariant(idx, 'color', e.target.value)}
+                            onChange={(e) => {
+                              setIsDirty(true);
+                              handleUpdateVariant(idx, 'color', e.target.value);
+                            }}
                             placeholder="Black"
-                            className="w-full border-b border-[#222222] bg-transparent py-0.5 text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                            className="w-full border-b border-[var(--border)] bg-transparent py-0.5 text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                           />
                         </div>
                         <input
                           type="color"
                           value={v.colorHex || '#000000'}
-                          onChange={(e) => handleUpdateVariant(idx, 'colorHex', e.target.value)}
+                          onChange={(e) => {
+                            setIsDirty(true);
+                            handleUpdateVariant(idx, 'colorHex', e.target.value);
+                          }}
                           className="mt-3.5 h-6 w-6 cursor-pointer border-0 bg-transparent"
                           title="Choose Color Hex"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[10px] text-[#71717a]">Stock</label>
+                        <label className="block text-[10px] text-[var(--text-muted)]">Stock</label>
                         <input
                           type="number"
                           min={0}
                           required
                           value={v.stock}
-                          onChange={(e) =>
-                            handleUpdateVariant(idx, 'stock', Number(e.target.value))
-                          }
-                          className="w-full border-b border-[#222222] bg-transparent py-0.5 text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                          onChange={(e) => {
+                            setIsDirty(true);
+                            handleUpdateVariant(idx, 'stock', Number(e.target.value));
+                          }}
+                          className="w-full border-b border-[var(--border)] bg-transparent py-0.5 text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                         />
                       </div>
 
                       <div className="flex items-center justify-between gap-2 pt-2 sm:justify-end sm:pt-0">
                         <div>
-                          <label className="block text-[10px] text-[#71717a]">Price (₹)</label>
+                          <label className="block text-[10px] text-[var(--text-muted)]">Price (₹)</label>
                           <input
                             type="number"
                             min={0}
                             required
                             value={v.price}
-                            onChange={(e) =>
-                              handleUpdateVariant(idx, 'price', Number(e.target.value))
-                            }
-                            className="w-16 border-b border-[#222222] bg-transparent py-0.5 text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+                            onChange={(e) => {
+                              setIsDirty(true);
+                              handleUpdateVariant(idx, 'price', Number(e.target.value));
+                            }}
+                            className="w-16 border-b border-[var(--border)] bg-transparent py-0.5 text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                           />
                         </div>
 
                         <button
                           type="button"
-                          onClick={() => handleRemoveVariant(idx)}
-                          className="mt-3.5 p-1 text-[#ff3b3b] hover:opacity-75"
+                          onClick={() => {
+                            setIsDirty(true);
+                            handleRemoveVariant(idx);
+                          }}
+                          className="btn-tactile mt-3.5 p-1 text-[#ff3b3b] hover:opacity-75 active:scale-[0.97]"
                           title="Remove variant"
+                          aria-label="Remove variant"
                         >
                           <Trash size={16} />
                         </button>
@@ -1049,11 +1086,11 @@ function AdminProductsContent() {
               </div>
 
               {/* Form Actions */}
-              <div className="flex items-center justify-end gap-3 border-t border-[#1f1f1f] pt-4">
+              <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] pt-4">
                 <button
                   type="button"
                   onClick={handleRequestCloseModal}
-                  className="rounded border border-[#1f1f1f] bg-transparent px-4 py-2 font-mono text-xs text-[#a0a0a0] uppercase hover:text-[#f5f5f5]"
+                  className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2 font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase transition-colors hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                 >
                   Cancel
                 </button>
@@ -1061,7 +1098,7 @@ function AdminProductsContent() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="rounded border border-[#e8ff00] bg-[#e8ff00] px-6 py-2 font-mono text-xs font-bold text-[#0a0a0a] uppercase hover:bg-[#e8ff00]/90 active:scale-[0.97] disabled:opacity-50"
+                  className="btn-tactile rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] px-6 py-2 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]"
                 >
                   {isSaving ? 'Saving...' : isEditing ? 'Update Listing' : 'Publish Product'}
                 </button>
@@ -1093,6 +1130,7 @@ function AdminProductsContent() {
         title="Delete Product Listing"
         description={`Are you sure you want to permanently delete "${productToDelete?.name}"? All associated variant inventory records will be removed.`}
         confirmText="Delete Product"
+        cancelText="Cancel"
         isDestructive={true}
         isLoading={isDeleting}
         onConfirm={handleDeleteProduct}
@@ -1105,7 +1143,7 @@ function AdminProductsContent() {
 export default function AdminProductsPage() {
   return (
     <Suspense
-      fallback={<div className="p-8 font-mono text-xs text-[#71717a]">Loading catalog...</div>}
+      fallback={<div className="p-8 font-mono text-xs text-[var(--text-muted)]">Loading catalog...</div>}
     >
       <AdminProductsContent />
     </Suspense>
