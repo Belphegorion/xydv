@@ -149,6 +149,33 @@ describe('Batch 2: CRIT-04 - Dynamic Order Price Calculation & Store Settings Sy
       'CartDrawer must display dynamic tax percentage matching live storeSettings',
     );
   });
+
+  it('Fixes type problems at source with zero (setting as any) or (res as any) assertions', () => {
+    const settingModelSrc = fs.readFileSync(
+      path.join(apiDir, 'src', 'models', 'Setting.model.ts'),
+      'utf-8',
+    );
+    assert.match(
+      settingModelSrc,
+      /shippingFee\?:\s*number;/,
+      'Setting.model.ts must declare optional shippingFee on ISetting interface',
+    );
+    assert.doesNotMatch(
+      orderServiceSrc,
+      /\(setting as any\)/,
+      'order.service.ts must not use (setting as any)',
+    );
+    assert.doesNotMatch(
+      settingsRoutesSrc,
+      /\(setting as any\)/,
+      'settings.routes.ts must not use (setting as any)',
+    );
+    assert.doesNotMatch(
+      cartDrawerSrc,
+      /\(orderRes as any\)|\(res as any\)|\(resp as any\)/,
+      'CartDrawer.tsx must not use (orderRes as any), (res as any), or (resp as any)',
+    );
+  });
 });
 
 describe('Batch 2: HIGH-06 - Address Country Default Schema Alignment', () => {

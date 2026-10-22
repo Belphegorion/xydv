@@ -46,8 +46,8 @@ export async function getLiveStoreSettings(): Promise<StorePricingSettings> {
     if (setting) {
       cachedSettings = {
         shippingFee:
-          typeof (setting as any).shippingFee === 'number'
-            ? (setting as any).shippingFee
+          typeof setting.shippingFee === 'number'
+            ? setting.shippingFee
             : typeof setting.standardShippingFee === 'number'
             ? setting.standardShippingFee
             : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE,

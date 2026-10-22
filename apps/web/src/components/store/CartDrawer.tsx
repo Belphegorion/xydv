@@ -45,7 +45,7 @@ export function CartDrawer() {
       };
     }>('/settings')
       .then((res) => {
-        const data = (res as any)?.data ?? res;
+        const data = res?.data;
         if (isMounted && data?.freeShippingThreshold !== undefined) {
           setStoreSettings({
             freeShippingThreshold: Number(data.freeShippingThreshold),
@@ -157,7 +157,7 @@ export function CartDrawer() {
           })),
         });
 
-        const orderData = (orderRes as any)?.data ?? orderRes;
+        const orderData = orderRes?.data;
         if (orderData?.razorpayOrderId) {
           razorpayOrderId = orderData.razorpayOrderId;
           backendOrderId = orderData.orderId;
@@ -168,11 +168,13 @@ export function CartDrawer() {
         } else {
           throw new Error('Order creation did not return order details.');
         }
-      } catch (orderApiErr: any) {
+      } catch (orderApiErr: unknown) {
         console.error('Backend order creation failed:', orderApiErr);
-        setPaymentError(
-          orderApiErr?.message || 'Failed to initialize order with server. Please try again.',
-        );
+        const errMsg =
+          orderApiErr instanceof Error
+            ? orderApiErr.message
+            : 'Failed to initialize order with server. Please try again.';
+        setPaymentError(errMsg);
         setIsProcessing(false);
         return;
       }
@@ -230,11 +232,13 @@ export function CartDrawer() {
               setPaymentSuccess(null);
               closeCart();
             }, 4000);
-          } catch (verifyErr: any) {
+          } catch (verifyErr: unknown) {
             console.error('Payment verification failed:', verifyErr);
-            setPaymentError(
-              verifyErr?.message || 'Payment verification failed. Your bag has been preserved.',
-            );
+            const errMsg =
+              verifyErr instanceof Error
+                ? verifyErr.message
+                : 'Payment verification failed. Your bag has been preserved.';
+            setPaymentError(errMsg);
           } finally {
             setIsProcessing(false);
           }
@@ -243,10 +247,20 @@ export function CartDrawer() {
 
       if (typeof window !== 'undefined' && window.Razorpay) {
         const rzp = new window.Razorpay(options);
-        rzp.on('payment.failed', (resp: any) => {
+        rzp.on('payment.failed', (resp: unknown) => {
           setIsProcessing(false);
+          let failureDesc: string | undefined;
+          if (typeof resp === 'object' && resp !== null && 'error' in resp) {
+            const maybeError = Reflect.get(resp, 'error');
+            if (typeof maybeError === 'object' && maybeError !== null && 'description' in maybeError) {
+              const maybeDesc = Reflect.get(maybeError, 'description');
+              if (typeof maybeDesc === 'string') {
+                failureDesc = maybeDesc;
+              }
+            }
+          }
           setPaymentError(
-            resp?.error?.description ||
+            failureDesc ||
               'Payment was declined or failed at gateway. Your bag has been preserved.',
           );
         });
@@ -257,9 +271,11 @@ export function CartDrawer() {
         );
         setIsProcessing(false);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Razorpay initialization failure:', err);
-      setPaymentError(err?.message || 'Failed to initialize checkout. Please try again.');
+      const errMsg =
+        err instanceof Error ? err.message : 'Failed to initialize checkout. Please try again.';
+      setPaymentError(errMsg);
       setIsProcessing(false);
     }
   }, [items, metrics, storeSettings, clearCart, closeCart]);

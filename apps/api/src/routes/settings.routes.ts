@@ -15,8 +15,8 @@ router.get('/', async (_req, res, next) => {
             ? setting.freeShippingThreshold
             : COMMERCE_CONSTANTS.FREE_SHIPPING_THRESHOLD,
         standardShippingFee:
-          typeof (setting as any)?.shippingFee === 'number'
-            ? (setting as any).shippingFee
+          typeof setting?.shippingFee === 'number'
+            ? setting.shippingFee
             : typeof setting?.standardShippingFee === 'number'
             ? setting.standardShippingFee
             : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE,
