@@ -21,8 +21,50 @@ export function CartDrawer() {
   const drawerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  // Compute live metrics
-  const metrics = calculateCartMetrics(items);
+  const [storeSettings, setStoreSettings] = useState<{
+    freeShippingThreshold: number;
+    standardShippingFee: number;
+    taxRate: number;
+    currency: string;
+  }>({
+    freeShippingThreshold: 150,
+    standardShippingFee: 15,
+    taxRate: 0.18,
+    currency: 'INR',
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    api.get<{
+      success: boolean;
+      data: {
+        freeShippingThreshold: number;
+        standardShippingFee: number;
+        taxRate: number;
+        currency: string;
+      };
+    }>('/settings')
+      .then((res) => {
+        const data = (res as any)?.data ?? res;
+        if (isMounted && data?.freeShippingThreshold !== undefined) {
+          setStoreSettings({
+            freeShippingThreshold: Number(data.freeShippingThreshold),
+            standardShippingFee: Number(data.standardShippingFee ?? 15),
+            taxRate: Number(data.taxRate ?? 0.18),
+            currency: data.currency ?? 'INR',
+          });
+        }
+      })
+      .catch(() => {
+        // Safe fallbacks already configured
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Compute live metrics using active store settings
+  const metrics = calculateCartMetrics(items, storeSettings);
 
   // Keyboard accessibility: Close on Escape key & Modal Focus Trap
   useEffect(() => {
@@ -91,7 +133,7 @@ export function CartDrawer() {
     setPaymentError(null);
 
     try {
-      let razorpayOrderId = `order_sim_${Date.now()}`;
+      let razorpayOrderId: string | undefined;
       let backendOrderId: string | undefined;
       let orderAmount: number | undefined;
       let rzpKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_xydv2026';
@@ -123,16 +165,29 @@ export function CartDrawer() {
           if (orderData.keyId) {
             rzpKey = orderData.keyId;
           }
+        } else {
+          throw new Error('Order creation did not return order details.');
         }
-      } catch (orderApiErr) {
-        console.warn('Backend order creation offline/fallback:', orderApiErr);
+      } catch (orderApiErr: any) {
+        console.error('Backend order creation failed:', orderApiErr);
+        setPaymentError(
+          orderApiErr?.message || 'Failed to initialize order with server. Please try again.',
+        );
+        setIsProcessing(false);
+        return;
+      }
+
+      if (!razorpayOrderId || !backendOrderId) {
+        setPaymentError('Failed to initialize checkout session. Please try again.');
+        setIsProcessing(false);
+        return;
       }
 
       // Setup Razorpay checkout options
       const options = {
         key: rzpKey,
         amount: orderAmount ?? metrics.amountPaise,
-        currency: 'INR',
+        currency: storeSettings.currency || 'INR',
         name: 'XYDV TECHNICAL DIVISION',
         description: `Order Checkout — ${items.length} items`,
         image: '/brand/xydv-logo.png',
@@ -149,6 +204,7 @@ export function CartDrawer() {
         modal: {
           ondismiss: () => {
             setIsProcessing(false);
+            setPaymentError('Payment window was closed. Your bag has been preserved.');
           },
         },
         handler: async (response: {
@@ -156,11 +212,16 @@ export function CartDrawer() {
           razorpay_order_id?: string;
           razorpay_signature?: string;
         }) => {
+          if (!response.razorpay_payment_id || !response.razorpay_signature) {
+            setPaymentError('Payment failed: missing verification signature.');
+            setIsProcessing(false);
+            return;
+          }
           try {
             await api.post('/orders/razorpay/verify-payment', {
               razorpayOrderId: response.razorpay_order_id || razorpayOrderId,
               razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature || 'sim_sig',
+              razorpaySignature: response.razorpay_signature,
               orderId: backendOrderId,
             });
             setPaymentSuccess(response.razorpay_payment_id);
@@ -180,42 +241,28 @@ export function CartDrawer() {
         },
       };
 
-      if (typeof window !== 'undefined' && window.Razorpay && backendOrderId) {
+      if (typeof window !== 'undefined' && window.Razorpay) {
         const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', (resp: any) => {
+          setIsProcessing(false);
+          setPaymentError(
+            resp?.error?.description ||
+              'Payment was declined or failed at gateway. Your bag has been preserved.',
+          );
+        });
         rzp.open();
       } else {
-        // Fallback simulation for headless / test environments
-        setTimeout(async () => {
-          const simPaymentId = `pay_sim_${Date.now()}`;
-          try {
-            await api.post('/orders/razorpay/verify-payment', {
-              razorpayOrderId,
-              razorpayPaymentId: simPaymentId,
-              razorpaySignature: 'simulated_offline_signature',
-              orderId: backendOrderId,
-            });
-            setPaymentSuccess(simPaymentId);
-            clearCart();
-            setTimeout(() => {
-              setPaymentSuccess(null);
-              closeCart();
-            }, 3500);
-          } catch (verifyErr: any) {
-            console.error('Offline payment verification failed:', verifyErr);
-            setPaymentError(
-              verifyErr?.message || 'Payment verification failed. Your bag has been preserved.',
-            );
-          } finally {
-            setIsProcessing(false);
-          }
-        }, 1200);
+        setPaymentError(
+          'Payment gateway could not be loaded. Please disable ad-blockers or check your connection.',
+        );
+        setIsProcessing(false);
       }
     } catch (err: any) {
       console.error('Razorpay initialization failure:', err);
       setPaymentError(err?.message || 'Failed to initialize checkout. Please try again.');
       setIsProcessing(false);
     }
-  }, [items, metrics, clearCart, closeCart]);
+  }, [items, metrics, storeSettings, clearCart, closeCart]);
 
   const pathname = usePathname();
   if (pathname?.startsWith('/admin')) {
@@ -428,7 +475,7 @@ export function CartDrawer() {
                     </span>
                   </div>
                   <div className="flex justify-between text-[var(--text-secondary)]">
-                    <span>ESTIMATED TAX (8%)</span>
+                    <span>ESTIMATED TAX ({Math.round(storeSettings.taxRate * 100)}%)</span>
                     <span>{formatPrice(metrics.tax)}</span>
                   </div>
                   <div className="flex justify-between text-[var(--text-secondary)]">
