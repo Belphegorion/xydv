@@ -201,10 +201,10 @@ export default function AdminCustomersPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-xl font-bold tracking-wider text-[#f5f5f5] uppercase">
+          <h2 className="font-mono text-xl font-bold tracking-wider text-[var(--text-primary)] uppercase">
             Customer Directory & Permissions
           </h2>
-          <p className="mt-0.5 font-mono text-xs text-[#71717a]">
+          <p className="mt-0.5 font-mono text-xs text-[var(--text-muted)]">
             Audit customer accounts, manage administrative roles, and enforce security suspensions (
             {total} registered users)
           </p>
@@ -213,7 +213,7 @@ export default function AdminCustomersPage() {
         <button
           type="button"
           onClick={fetchCustomers}
-          className="inline-flex items-center gap-2 rounded border border-[#1f1f1f] bg-[#111111] px-3.5 py-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#333333] hover:text-[#f5f5f5] active:scale-[0.97]"
+          className="btn-tactile inline-flex items-center gap-2 rounded-none border border-[var(--border)] bg-[var(--bg-surface)] px-3.5 py-2 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97]"
         >
           <ArrowClockwise size={14} className={isLoading ? 'animate-spin' : ''} />
           <span>Refresh Users</span>
@@ -223,9 +223,9 @@ export default function AdminCustomersPage() {
       {/* Notifications */}
       {feedback && (
         <div
-          className={`flex items-center justify-between rounded border p-3 font-mono text-xs ${
+          className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
-              ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#22c55e]'
+              ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
               : 'border-[#ff3b3b]/30 bg-[#ff3b3b]/10 text-[#ff3b3b]'
           }`}
         >
@@ -233,18 +233,23 @@ export default function AdminCustomersPage() {
             {feedback.type === 'success' ? <CheckCircle size={16} /> : <Warning size={16} />}
             <span>{feedback.message}</span>
           </div>
-          <button type="button" onClick={() => setFeedback(null)} className="p-1 hover:opacity-70">
+          <button
+            type="button"
+            onClick={() => setFeedback(null)}
+            className="p-1 hover:opacity-70"
+            aria-label="Dismiss feedback"
+          >
             <X size={14} />
           </button>
         </div>
       )}
 
       {/* Toolbar */}
-      <div className="grid grid-cols-1 gap-3 rounded border border-[#1f1f1f] bg-[#111111] p-3.5 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-3.5 sm:grid-cols-3">
         <div className="relative">
           <MagnifyingGlass
             size={16}
-            className="pointer-events-none absolute top-3 left-3 text-[#71717a]"
+            className="pointer-events-none absolute top-3 left-3 text-[var(--text-muted)]"
           />
           <input
             type="text"
@@ -254,7 +259,7 @@ export default function AdminCustomersPage() {
               setPage(1);
             }}
             placeholder="Search name, email address..."
-            className="w-full rounded border border-[#1f1f1f] bg-[#0a0a0a] py-2 pr-3 pl-9 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] focus:border-[#e8ff00] focus:outline-none"
+            className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] py-2 pr-3 pl-9 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
           />
         </div>
 
@@ -264,7 +269,7 @@ export default function AdminCustomersPage() {
             setRoleFilter(e.target.value);
             setPage(1);
           }}
-          className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+          className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
         >
           <option value="all">All Roles</option>
           <option value="customer">Customers Only</option>
@@ -277,7 +282,7 @@ export default function AdminCustomersPage() {
             setStatusFilter(e.target.value);
             setPage(1);
           }}
-          className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-2 font-mono text-xs text-[#f5f5f5] focus:border-[#e8ff00] focus:outline-none"
+          className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
         >
           <option value="all">All Account Statuses</option>
           <option value="active">Active Accounts</option>
@@ -286,10 +291,10 @@ export default function AdminCustomersPage() {
       </div>
 
       {/* Customers Table */}
-      <div className="overflow-hidden rounded border border-[#1f1f1f] bg-[#111111]">
+      <div className="overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-surface)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left font-sans text-xs">
-            <thead className="border-b border-[#1f1f1f] bg-[#161616] font-mono tracking-wider text-[#a0a0a0] uppercase">
+            <thead className="border-b border-[var(--border)] bg-[var(--bg-elevated)] font-mono tracking-wider text-[var(--text-muted)] uppercase">
               <tr>
                 <th className="px-4 py-3">User</th>
                 <th className="px-4 py-3">Email Address</th>
@@ -301,19 +306,19 @@ export default function AdminCustomersPage() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1f1f1f]">
+            <tbody className="divide-y divide-[var(--border)]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-[#71717a]">
+                  <td colSpan={8} className="py-12 text-center text-[var(--text-muted)]">
                     <div className="flex flex-col items-center gap-2">
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#e8ff00] border-t-transparent" />
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--text-primary)] border-t-transparent dark:border-[#e8ff00]" />
                       <span className="font-mono text-xs uppercase">Loading Directory...</span>
                     </div>
                   </td>
                 </tr>
               ) : customers.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center font-mono text-[#71717a] uppercase">
+                  <td colSpan={8} className="py-12 text-center font-mono text-[var(--text-muted)] uppercase">
                     No customers found matching filter criteria.
                   </td>
                 </tr>
@@ -322,16 +327,16 @@ export default function AdminCustomersPage() {
                   const isCurrentAdmin = c._id === currentAdmin?._id;
 
                   return (
-                    <tr key={c._id} className="transition-colors hover:bg-[#141414]">
+                    <tr key={c._id} className="transition-colors hover:bg-[var(--bg-elevated)]">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full border border-[#262626] bg-[#181818] font-mono text-xs font-bold text-[#e8ff00]">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] font-mono text-xs font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
                             {c.name[0].toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-medium text-[#f5f5f5]">{c.name}</p>
+                            <p className="font-medium text-[var(--text-primary)]">{c.name}</p>
                             {isCurrentAdmin && (
-                              <span className="font-mono text-[9px] text-[#e8ff00] uppercase">
+                              <span className="font-mono text-[9px] text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
                                 (You)
                               </span>
                             )}
@@ -339,14 +344,14 @@ export default function AdminCustomersPage() {
                         </div>
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">{c.email}</td>
+                      <td className="px-4 py-3 font-mono text-[var(--text-muted)]">{c.email}</td>
 
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-flex items-center gap-1 rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
+                          className={`inline-flex items-center gap-1 rounded-none border px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
                             c.role === 'admin'
-                              ? 'bg-[#e8ff00]/15 text-[#e8ff00]'
-                              : 'bg-[#1f1f1f] text-[#a0a0a0]'
+                              ? 'border-[var(--text-primary)]/30 bg-[var(--text-primary)]/10 text-[var(--text-primary)] dark:border-[#e8ff00]/40 dark:bg-[#e8ff00]/10 dark:text-[#e8ff00]'
+                              : 'border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-muted)]'
                           }`}
                         >
                           {c.role === 'admin' && <ShieldCheck size={12} />}
@@ -356,24 +361,24 @@ export default function AdminCustomersPage() {
 
                       <td className="px-4 py-3">
                         {c.isBlocked ? (
-                          <span className="inline-flex items-center gap-1 rounded bg-[#ff3b3b]/15 px-2 py-0.5 font-mono text-[10px] font-bold text-[#ff3b3b] uppercase">
+                          <span className="inline-flex items-center gap-1 rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#ff3b3b] uppercase">
                             <Prohibit size={12} />
                             <span>Suspended</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center rounded bg-[#22c55e]/15 px-2 py-0.5 font-mono text-[10px] font-bold text-[#22c55e] uppercase">
+                          <span className="inline-flex items-center rounded-none border border-[#22c55e]/30 bg-[#22c55e]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#15803d] uppercase dark:text-[#22c55e]">
                             Active
                           </span>
                         )}
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[#a0a0a0]">{c.orderCount}</td>
+                      <td className="px-4 py-3 font-mono text-[var(--text-muted)]">{c.orderCount}</td>
 
-                      <td className="px-4 py-3 font-mono font-bold text-[#f5f5f5]">
+                      <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)]">
                         ₹{c.totalSpent.toFixed(2)}
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[#71717a]">
+                      <td className="px-4 py-3 font-mono text-[var(--text-muted)]">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
 
@@ -382,8 +387,9 @@ export default function AdminCustomersPage() {
                           <button
                             type="button"
                             onClick={() => handleOpenProfile(c._id)}
-                            className="rounded p-1.5 text-[#a0a0a0] transition-colors hover:bg-[#1f1f1f] hover:text-[#f5f5f5]"
+                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                             title="Inspect History"
+                            aria-label={`Inspect ${c.name}'s profile`}
                           >
                             <Eye size={16} />
                           </button>
@@ -398,12 +404,9 @@ export default function AdminCustomersPage() {
                                   newRole: c.role === 'admin' ? 'customer' : 'admin',
                                 })
                               }
-                              className={`rounded p-1.5 transition-colors ${
-                                c.role === 'admin'
-                                  ? 'text-[#a0a0a0] hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b]'
-                                  : 'text-[#a0a0a0] hover:bg-[#e8ff00]/10 hover:text-[#e8ff00]'
-                              }`}
+                              className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] dark:hover:text-[#e8ff00]"
                               title={c.role === 'admin' ? 'Demote to Customer' : 'Promote to Admin'}
+                              aria-label={c.role === 'admin' ? 'Demote to Customer' : 'Promote to Admin'}
                             >
                               <ShieldCheck size={16} />
                             </button>
@@ -419,12 +422,13 @@ export default function AdminCustomersPage() {
                                   block: !c.isBlocked,
                                 })
                               }
-                              className={`rounded p-1.5 transition-colors ${
+                              className={`btn-tactile rounded-none p-1.5 transition-colors active:scale-[0.97] ${
                                 c.isBlocked
-                                  ? 'text-[#22c55e] hover:bg-[#22c55e]/10'
-                                  : 'text-[#a0a0a0] hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b]'
+                                  ? 'text-[#15803d] hover:bg-[#22c55e]/10 dark:text-[#22c55e]'
+                                  : 'text-[var(--text-muted)] hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b]'
                               }`}
                               title={c.isBlocked ? 'Unblock Account' : 'Suspend Account'}
+                              aria-label={c.isBlocked ? 'Unblock Account' : 'Suspend Account'}
                             >
                               <Prohibit size={16} />
                             </button>
@@ -440,7 +444,7 @@ export default function AdminCustomersPage() {
         </div>
 
         {/* Pagination Bar */}
-        <div className="flex items-center justify-between border-t border-[#1f1f1f] px-4 py-3 font-mono text-xs text-[#a0a0a0]">
+        <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3 font-mono text-xs text-[var(--text-muted)]">
           <span>
             Page {page} of {totalPages} ({total} users)
           </span>
@@ -449,7 +453,7 @@ export default function AdminCustomersPage() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
+              className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97] disabled:opacity-30"
             >
               Previous
             </button>
@@ -457,7 +461,7 @@ export default function AdminCustomersPage() {
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded border border-[#1f1f1f] bg-[#0a0a0a] px-3 py-1 text-[#f5f5f5] uppercase active:scale-[0.97] disabled:opacity-30"
+              className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97] disabled:opacity-30"
             >
               Next
             </button>
@@ -468,17 +472,17 @@ export default function AdminCustomersPage() {
       {/* Customer Profile & Purchase History Modal */}
       {selectedCustomerId && customerDetail && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm dark:bg-black/80"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-3xl rounded border border-[#1f1f1f] bg-[#111111] p-6 text-[#f5f5f5] shadow-2xl">
-            <div className="mb-6 flex items-center justify-between border-b border-[#1f1f1f] pb-4">
+          <div className="my-8 w-full max-w-3xl rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-[var(--text-primary)] shadow-2xl">
+            <div className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
               <div>
-                <h3 className="font-mono text-sm font-bold tracking-wider text-[#e8ff00] uppercase">
+                <h3 className="font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
                   Customer Profile: {customerDetail.user.name}
                 </h3>
-                <p className="font-mono text-[10px] text-[#71717a]">
+                <p className="font-mono text-[10px] text-[var(--text-muted)]">
                   Member since {new Date(customerDetail.user.createdAt).toLocaleDateString()} •{' '}
                   {customerDetail.orderCount} total orders
                 </p>
@@ -490,7 +494,8 @@ export default function AdminCustomersPage() {
                   setSelectedCustomerId(null);
                   setCustomerDetail(null);
                 }}
-                className="p-1 text-[#71717a] hover:text-[#f5f5f5]"
+                className="btn-tactile p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                aria-label="Close profile"
               >
                 <X size={20} />
               </button>
@@ -499,33 +504,33 @@ export default function AdminCustomersPage() {
             <div className="space-y-6">
               {/* Account Overview Cards */}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3">
-                  <span className="block font-mono text-[10px] text-[#71717a] uppercase">
+                <div className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
+                  <span className="block font-mono text-[10px] text-[var(--text-muted)] uppercase">
                     Account Status
                   </span>
                   <span
                     className={`mt-1 inline-block font-mono text-xs font-bold uppercase ${
-                      customerDetail.user.isBlocked ? 'text-[#ff3b3b]' : 'text-[#22c55e]'
+                      customerDetail.user.isBlocked ? 'text-[#ff3b3b]' : 'text-[#15803d] dark:text-[#22c55e]'
                     }`}
                   >
                     {customerDetail.user.isBlocked ? 'Suspended' : 'Active Account'}
                   </span>
                 </div>
 
-                <div className="rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3">
-                  <span className="block font-mono text-[10px] text-[#71717a] uppercase">
+                <div className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
+                  <span className="block font-mono text-[10px] text-[var(--text-muted)] uppercase">
                     Assigned Role
                   </span>
-                  <span className="mt-1 inline-block font-mono text-xs font-bold text-[#e8ff00] uppercase">
+                  <span className="mt-1 inline-block font-mono text-xs font-bold text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
                     {customerDetail.user.role}
                   </span>
                 </div>
 
-                <div className="rounded border border-[#1f1f1f] bg-[#0a0a0a] p-3">
-                  <span className="block font-mono text-[10px] text-[#71717a] uppercase">
+                <div className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
+                  <span className="block font-mono text-[10px] text-[var(--text-muted)] uppercase">
                     Lifetime Spend
                   </span>
-                  <span className="mt-1 inline-block font-mono text-xs font-bold text-[#f5f5f5]">
+                  <span className="mt-1 inline-block font-mono text-xs font-bold text-[var(--text-primary)]">
                     ₹{customerDetail.totalSpent.toFixed(2)}
                   </span>
                 </div>
@@ -533,13 +538,13 @@ export default function AdminCustomersPage() {
 
               {/* Purchase History Table */}
               <div>
-                <h4 className="mb-2 font-mono text-xs tracking-wider text-[#a0a0a0] uppercase">
+                <h4 className="mb-2 font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase">
                   Order & Transaction History ({customerDetail.orders.length})
                 </h4>
 
-                <div className="overflow-hidden rounded border border-[#1f1f1f]">
+                <div className="overflow-hidden rounded-none border border-[var(--border)]">
                   <table className="w-full text-left font-sans text-xs">
-                    <thead className="border-b border-[#1f1f1f] bg-[#181818] font-mono text-[10px] text-[#71717a] uppercase">
+                    <thead className="border-b border-[var(--border)] bg-[var(--bg-surface)] font-mono text-[10px] text-[var(--text-muted)] uppercase">
                       <tr>
                         <th className="px-3 py-2.5">Order Ref</th>
                         <th className="px-3 py-2.5">Date</th>
@@ -549,42 +554,42 @@ export default function AdminCustomersPage() {
                         <th className="px-3 py-2.5">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#1f1f1f] bg-[#0a0a0a]">
+                    <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-elevated)]">
                       {customerDetail.orders.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="py-6 text-center font-mono text-[#71717a]">
+                          <td colSpan={6} className="py-6 text-center font-mono text-[var(--text-muted)]">
                             No orders placed by this account yet.
                           </td>
                         </tr>
                       ) : (
                         customerDetail.orders.map((o) => (
                           <tr key={o._id}>
-                            <td className="px-3 py-2.5 font-mono font-bold text-[#e8ff00]">
+                            <td className="px-3 py-2.5 font-mono font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
                               #{o._id.slice(-6).toUpperCase()}
                             </td>
-                            <td className="px-3 py-2.5 font-mono text-[#a0a0a0]">
+                            <td className="px-3 py-2.5 font-mono text-[var(--text-muted)]">
                               {new Date(o.createdAt).toLocaleDateString()}
                             </td>
-                            <td className="px-3 py-2.5 font-mono text-[#a0a0a0]">
+                            <td className="px-3 py-2.5 font-mono text-[var(--text-muted)]">
                               {o.items?.length || 0} products
                             </td>
-                            <td className="px-3 py-2.5 font-mono font-bold text-[#f5f5f5]">
+                            <td className="px-3 py-2.5 font-mono font-bold text-[var(--text-primary)]">
                               ₹{o.total.toFixed(2)}
                             </td>
                             <td className="px-3 py-2.5 font-mono text-[11px] uppercase">
                               <span
                                 className={
                                   o.paymentStatus === 'captured'
-                                    ? 'text-[#22c55e]'
+                                    ? 'text-[#15803d] dark:text-[#22c55e]'
                                     : o.paymentStatus === 'refunded'
                                       ? 'text-[#ff3b3b]'
-                                      : 'text-[#f59e0b]'
+                                      : 'text-[#b45309] dark:text-[#f59e0b]'
                                 }
                               >
                                 {o.paymentStatus}
                               </span>
                             </td>
-                            <td className="px-3 py-2.5 font-mono text-[10px] text-[#f5f5f5] uppercase">
+                            <td className="px-3 py-2.5 font-mono text-[10px] text-[var(--text-primary)] uppercase">
                               {o.status}
                             </td>
                           </tr>
@@ -605,6 +610,7 @@ export default function AdminCustomersPage() {
         title={`Change Role: ${roleChangeTarget?.newRole.toUpperCase()}`}
         description={`Are you sure you want to change permissions for "${roleChangeTarget?.customer.name}" (${roleChangeTarget?.customer.email}) from ${roleChangeTarget?.customer.role} to ${roleChangeTarget?.newRole}?`}
         confirmText="Confirm Role Update"
+        cancelText="Cancel"
         isDestructive={roleChangeTarget?.newRole === 'customer'}
         isLoading={isUpdatingRole}
         onConfirm={handleConfirmRoleChange}
@@ -621,6 +627,7 @@ export default function AdminCustomersPage() {
             : 'restore account access for this customer?'
         }`}
         confirmText={blockTarget?.block ? 'Suspend Account' : 'Restore Access'}
+        cancelText="Cancel"
         isDestructive={Boolean(blockTarget?.block)}
         isLoading={isUpdatingBlock}
         onConfirm={handleConfirmBlockChange}
