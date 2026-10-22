@@ -4,14 +4,16 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { X, CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { EMIL_EASE } from '@/lib/motion';
+import { api } from '@/lib/api';
 
-const MESSAGES = [
+const DEFAULT_MESSAGES = [
   'FREE COMPLIMENTARY DISPATCH ON ORDERS OVER ₹150',
   'RAZORPAY SECURED CHECKOUT — ZERO TRANSACTION FRICTION',
   'XYDV SS26 TACTICAL DIVISION — LIMITED BATCH ALLOCATIONS',
 ];
 
 export function AnnouncementBar() {
+  const [messages, setMessages] = useState<string[]>(DEFAULT_MESSAGES);
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const shouldReduceMotion = useReducedMotion();
@@ -31,12 +33,49 @@ export function AnnouncementBar() {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
+    api
+      .get<{
+        success?: boolean;
+        data?: {
+          freeShippingThreshold?: number;
+          currencySymbol?: string;
+          announcementText?: string;
+        };
+      }>('/settings')
+      .then((res) => {
+        if (!isMounted) return;
+        const d = res?.data;
+        if (d) {
+          const threshold = d.freeShippingThreshold ?? 150;
+          const symbol = d.currencySymbol ?? '₹';
+          const dynamicShippingMsg = `FREE COMPLIMENTARY DISPATCH ON ORDERS OVER ${symbol}${threshold}`;
+          setMessages((prev) => {
+            const next = [...prev];
+            next[0] = dynamicShippingMsg;
+            if (d.announcementText && !next.includes(d.announcementText)) {
+              next.push(d.announcementText);
+            }
+            return next;
+          });
+        }
+      })
+      .catch(() => {
+        // Retain default messages
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!visible) return;
     const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % MESSAGES.length);
+      setIndex((prev) => (prev + 1) % messages.length);
     }, 4500);
     return () => clearInterval(timer);
-  }, [visible]);
+  }, [visible, messages.length]);
 
   const handleDismiss = () => {
     setVisible(false);
@@ -61,7 +100,7 @@ export function AnnouncementBar() {
 
       {/* Prev button (desktop only) */}
       <button
-        onClick={() => setIndex((prev) => (prev - 1 + MESSAGES.length) % MESSAGES.length)}
+        onClick={() => setIndex((prev) => (prev - 1 + messages.length) % messages.length)}
         aria-label="Previous announcement"
         className="touch-target btn-tactile relative z-10 hidden min-h-[48px] min-w-[48px] items-center justify-center text-zinc-400 transition-colors hover:text-white active:scale-[0.97] sm:flex"
       >
@@ -79,7 +118,7 @@ export function AnnouncementBar() {
             transition={{ duration: 0.22, ease: EMIL_EASE }}
             className="absolute inset-x-0 block truncate text-center text-[9px] leading-tight sm:text-[11px]"
           >
-            {MESSAGES[index]}
+            {messages[index]}
           </motion.span>
         </AnimatePresence>
       </div>
@@ -87,7 +126,7 @@ export function AnnouncementBar() {
       {/* Next and Close button */}
       <div className="relative z-10 flex items-center gap-0.5">
         <button
-          onClick={() => setIndex((prev) => (prev + 1) % MESSAGES.length)}
+          onClick={() => setIndex((prev) => (prev + 1) % messages.length)}
           aria-label="Next announcement"
           className="touch-target btn-tactile hidden min-h-[48px] min-w-[48px] items-center justify-center text-zinc-400 transition-colors hover:text-white active:scale-[0.97] sm:flex"
         >
