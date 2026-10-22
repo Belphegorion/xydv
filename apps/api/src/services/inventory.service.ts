@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Product } from '../models/Product.model';
+import { Product, type IProduct } from '../models/Product.model';
 import { Reservation, type IReservationItem } from '../models/Reservation.model';
 import { Order } from '../models/Order.model';
 import { AppError } from '../middleware/errorHandler';
@@ -37,7 +37,7 @@ export class InventoryService {
     const reservedItems: Array<{ productId: mongoose.Types.ObjectId; sku: string; variantId?: string; quantity: number }> = [];
 
     for (const item of items) {
-      const variantFilter: Record<string, any> = { stock: { $gte: item.quantity } };
+      const variantFilter: Record<string, unknown> = { stock: { $gte: item.quantity } };
       if (item.variantId && mongoose.isValidObjectId(item.variantId)) {
         variantFilter._id = new mongoose.Types.ObjectId(item.variantId);
       } else if (item.variantId) {
@@ -47,7 +47,7 @@ export class InventoryService {
         variantFilter.sku = item.sku;
       }
 
-      const query: Record<string, any> = {
+      const query: mongoose.FilterQuery<IProduct> = {
         _id: item.productId,
         variants: { $elemMatch: variantFilter },
       };
@@ -65,7 +65,7 @@ export class InventoryService {
       if (result.matchedCount === 0 || (result.modifiedCount !== undefined && result.modifiedCount === 0)) {
         // Rollback already reserved items
         for (const rolled of reservedItems) {
-          const rollbackFilter: Record<string, any> = {};
+          const rollbackFilter: Record<string, unknown> = {};
           if (rolled.variantId && mongoose.isValidObjectId(rolled.variantId)) {
             rollbackFilter._id = new mongoose.Types.ObjectId(rolled.variantId);
           } else if (rolled.variantId) {
@@ -123,7 +123,7 @@ export class InventoryService {
   ): Promise<void> {
     const prodId = mongoose.isValidObjectId(productId) ? new mongoose.Types.ObjectId(productId) : productId;
     const isObjectId = mongoose.isValidObjectId(variantIdOrSku);
-    const variantMatch: Record<string, any> = {
+    const variantMatch: Record<string, unknown> = {
       stock: { $gte: quantity },
     };
     if (isObjectId) {
@@ -135,7 +135,7 @@ export class InventoryService {
       variantMatch.sku = String(variantIdOrSku);
     }
 
-    const query: Record<string, any> = {
+    const query: mongoose.FilterQuery<IProduct> = {
       _id: prodId,
       variants: { $elemMatch: variantMatch },
     };

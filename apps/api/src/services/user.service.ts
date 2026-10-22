@@ -21,11 +21,11 @@ export interface AddressInput {
 
 export class UserService {
   async getProfile(userId: string): Promise<IUser> {
-    const user = await User.findById(userId).lean();
+    const user = await User.findById(userId);
     if (!user) {
       throw new AppError('User not found', 404);
     }
-    return user as unknown as IUser;
+    return user;
   }
 
   async updateProfile(userId: string, data: UpdateProfileInput): Promise<IUser> {
@@ -38,12 +38,12 @@ export class UserService {
     const user = await User.findByIdAndUpdate(userId, updates, {
       new: true,
       runValidators: true,
-    }).lean();
+    });
 
     if (!user) {
       throw new AppError('User not found', 404);
     }
-    return user as unknown as IUser;
+    return user;
   }
 
   async addAddress(userId: string, addressData: AddressInput): Promise<IAddress[]> {
@@ -60,7 +60,20 @@ export class UserService {
       addressData.isDefault = true;
     }
 
-    user.addresses.push(addressData as any);
+    const newAddress: IAddress = {
+      label: addressData.label || 'Home',
+      fullName: addressData.fullName,
+      line1: addressData.line1,
+      line2: addressData.line2,
+      city: addressData.city,
+      state: addressData.state,
+      postalCode: addressData.postalCode,
+      country: addressData.country || 'IN',
+      phone: addressData.phone,
+      isDefault: Boolean(addressData.isDefault),
+    };
+
+    user.addresses.push(newAddress);
     await user.save();
     return user.addresses;
   }
@@ -72,11 +85,11 @@ export class UserService {
     }
 
     const wasDefault = user.addresses.some(
-      (addr: any) => (addr._id?.toString() === addressId || addr.id === addressId) && addr.isDefault,
+      (addr: IAddress) => (addr._id?.toString() === addressId || addr.id === addressId) && addr.isDefault,
     );
 
     user.addresses = user.addresses.filter(
-      (addr: any) => addr._id?.toString() !== addressId && addr.id !== addressId,
+      (addr: IAddress) => addr._id?.toString() !== addressId && addr.id !== addressId,
     );
 
     // If default address was deleted and others remain, designate first address as default

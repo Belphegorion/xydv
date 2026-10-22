@@ -45,8 +45,9 @@ export default function AdminDashboardPage() {
     try {
       const res = await api.get<{ data: AnalyticsPayload }>(`/admin/analytics?period=${period}`);
       setData(res.data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load system analytics');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to load system analytics';
+      setError(msg);
     } finally {
       setIsLoading(false);
     }

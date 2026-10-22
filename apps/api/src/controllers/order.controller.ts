@@ -1,5 +1,5 @@
 import type { Response, NextFunction } from 'express';
-import { orderService } from '../services/order.service';
+import { orderService, type ShippingAddressInput } from '../services/order.service';
 import type { AuthRequest } from '../middleware/auth';
 
 function getParam(param: string | string[] | undefined): string {
@@ -12,13 +12,13 @@ export class OrderController {
     try {
       const { items, shippingAddress, customerEmail, email } = req.body;
       const guestEmail = shippingAddress?.email || customerEmail || email;
-      const resolvedShipping = shippingAddress
+      const resolvedShipping: ShippingAddressInput | undefined = shippingAddress
         ? {
             ...shippingAddress,
             ...(guestEmail ? { email: guestEmail } : {}),
           }
         : guestEmail
-        ? ({ email: guestEmail } as any)
+        ? { email: guestEmail }
         : undefined;
       const data = await orderService.createRazorpayOrder(
         items,

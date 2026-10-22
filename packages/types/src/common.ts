@@ -2,6 +2,21 @@
  * Common System, User, and API Types
  */
 
+export interface UserAddress {
+  _id?: string;
+  id?: string;
+  fullName: string;
+  street?: string;
+  line1?: string;
+  line2?: string;
+  city: string;
+  state?: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+  isDefault?: boolean;
+}
+
 export interface User {
   _id: string;
   name: string;
@@ -10,6 +25,7 @@ export interface User {
   avatar?: string;
   loyaltyPoints: number;
   isBlocked?: boolean;
+  addresses?: UserAddress[];
   createdAt: string;
 }
 

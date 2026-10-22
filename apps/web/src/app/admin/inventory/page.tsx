@@ -84,8 +84,9 @@ function AdminInventoryContent() {
       if (page > calculatedPages && calculatedPages > 0) {
         setPage(calculatedPages);
       }
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to fetch inventory' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch inventory';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsLoading(false);
     }
@@ -120,8 +121,9 @@ function AdminInventoryContent() {
       });
       setEditingItem(null);
       fetchInventory();
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to update stock' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to update stock';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsUpdatingStock(false);
     }

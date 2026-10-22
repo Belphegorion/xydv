@@ -32,6 +32,7 @@ import { formatPrice } from '@/lib/utils';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 import { api } from '@/lib/api';
 import { useCustomerAuthStore } from '@/store/customerAuth';
+import type { Review } from '@vertex/types';
 
 interface ApiProductVariant {
   _id?: string;
@@ -212,14 +213,14 @@ export default function ProductDetailPage({ params }: PageProps) {
           // Fetch live reviews from database
           const reviewTarget = apiProd._id || apiProd.id || slug;
           api
-            .get<{ data?: any[]; reviews?: any[] }>(`/products/${reviewTarget}/reviews`)
+            .get<{ data?: Review[]; reviews?: Review[] }>(`/products/${reviewTarget}/reviews`)
             .then((rRes) => {
               if (!isMounted) return;
-              const rList = rRes?.data || rRes?.reviews || (Array.isArray(rRes) ? rRes : []);
+              const rList = rRes?.data || rRes?.reviews;
               if (Array.isArray(rList) && rList.length > 0) {
                 setLiveReviews(
-                  rList.map((r: any) => ({
-                    id: r._id || r.id || String(Math.random()),
+                  rList.map((r: Review) => ({
+                    id: r._id || String(Math.random()),
                     author: r.userName || 'Anonymous Athlete',
                     discipline: 'TRAINING',
                     rating: Number(r.rating) || 5,
@@ -266,7 +267,7 @@ export default function ProductDetailPage({ params }: PageProps) {
 
     try {
       const reviewTarget = product?.id || product?.slug || slug;
-      const res = await api.post<{ success: boolean; data?: any }>(
+      const res = await api.post<{ success: boolean; data?: Review }>(
         `/products/${reviewTarget}/reviews`,
         {
           rating: reviewRating,

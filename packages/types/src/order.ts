@@ -36,11 +36,15 @@ export interface ShippingAddress {
   email?: string;
 }
 
-export type Address = ShippingAddress;
+export interface OrderUserRef {
+  _id: string;
+  name?: string;
+  email?: string;
+}
 
 export interface Order {
   _id: string;
-  userId?: string | null;
+  userId?: string | OrderUserRef | null;
   items: OrderItem[];
   subtotal: number;
   shipping: number;

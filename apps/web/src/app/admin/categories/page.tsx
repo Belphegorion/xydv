@@ -30,8 +30,9 @@ export default function AdminCategoriesPage() {
     try {
       const res = await api.get<{ data: CategoryItem[] }>('/admin/categories');
       setCategories(res.data);
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to fetch categories' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch categories';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsLoading(false);
     }
@@ -87,8 +88,9 @@ export default function AdminCategoriesPage() {
 
       setIsModalOpen(false);
       fetchCategories();
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to save category' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to save category';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsSaving(false);
     }
@@ -106,8 +108,9 @@ export default function AdminCategoriesPage() {
       });
       setCatToDelete(null);
       fetchCategories();
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to delete category' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete category';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsDeleting(false);
     }

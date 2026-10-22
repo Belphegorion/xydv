@@ -14,8 +14,18 @@ export class AppError extends Error {
   }
 }
 
+export interface ApiError extends Error {
+  statusCode?: number;
+  code?: number;
+  path?: string;
+  value?: unknown;
+  issues?: Array<{ path: (string | number)[]; message: string }>;
+  errors?: Record<string, { message: string }>;
+  keyValue?: Record<string, unknown>;
+}
+
 export function errorHandler(
-  err: any,
+  err: ApiError,
   _req: Request,
   res: Response,
   _next: NextFunction,
@@ -24,17 +34,23 @@ export function errorHandler(
   let message = err.message || 'Internal Server Error';
 
   // 1. Zod Validation Errors
-  if (err instanceof ZodError || err.name === 'ZodError') {
+  if (err instanceof ZodError) {
     statusCode = 400;
-    const issueMessages = err.issues?.map(
-      (issue: any) => `${issue.path.join('.')}: ${issue.message}`,
+    const issueMessages = err.issues.map(
+      (issue) => `${issue.path.join('.')}: ${issue.message}`,
     );
-    message = issueMessages?.length ? issueMessages.join(', ') : 'Validation error';
+    message = issueMessages.length ? issueMessages.join(', ') : 'Validation error';
+  } else if (err.name === 'ZodError' && err.issues) {
+    statusCode = 400;
+    const issueMessages = err.issues.map(
+      (issue) => `${issue.path.join('.')}: ${issue.message}`,
+    );
+    message = issueMessages.length ? issueMessages.join(', ') : 'Validation error';
   }
   // 2. Mongoose Validation Errors
   else if (err.name === 'ValidationError' && err.errors) {
     statusCode = 400;
-    const errors = Object.values(err.errors).map((e: any) => e.message);
+    const errors = Object.values(err.errors).map((e) => e.message);
     message = errors.join(', ');
   }
   // 3. Mongoose CastError (e.g. invalid ObjectId)
@@ -79,7 +95,7 @@ export function errorHandler(
     });
   }
 
-  const responseBody: Record<string, any> = {
+  const responseBody: Record<string, unknown> = {
     success: false,
     error: message,
     message,

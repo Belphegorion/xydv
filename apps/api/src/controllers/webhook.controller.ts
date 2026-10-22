@@ -84,7 +84,7 @@ export class WebhookController {
       return;
     }
 
-    const eventId = (event as any).id || (event as any).event_id;
+    const eventId = event.id || event.event_id;
 
     // 4. Webhook Idempotency Check: reject duplicate event IDs cleanly with 200
     if (eventId) {
@@ -113,8 +113,8 @@ export class WebhookController {
 
         await ProcessedWebhookEvent.create({ eventId, eventType: event.event });
         recordProcessedEvent(eventId);
-      } catch (dbErr: any) {
-        if (dbErr.code === 11000) {
+      } catch (dbErr) {
+        if (typeof dbErr === 'object' && dbErr !== null && 'code' in dbErr && dbErr.code === 11000) {
           recordProcessedEvent(eventId);
           res.json({
             status: 'ok',

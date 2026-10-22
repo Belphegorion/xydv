@@ -41,7 +41,7 @@ export function HeroSection() {
   // Flowing kinetic ladder transforms for STAGE 1: MATERIAL SPECS (MOISTURE & REBOUND)
   // Window: 0.00 -> 0.36
   const stage1Opacity = useTransform(scrollYProgress, [0, 0.22, 0.32], [1, 1, 0]);
-  const stage1Visibility = useTransform(scrollYProgress, (v) => (v > 0.35 ? 'hidden' : 'visible'));
+  const stage1Visibility = useTransform<number, 'hidden' | 'visible'>(scrollYProgress, (v) => (v > 0.35 ? 'hidden' : 'visible'));
   const stage1Rung1X = useTransform(scrollYProgress, [0, 0.20, 0.32], [0, -12, -35]);
   const stage1Rung1Y = useTransform(scrollYProgress, [0, 0.20, 0.32], [0, -4, -14]);
   const stage1Rung2X = useTransform(scrollYProgress, [0, 0.22, 0.32], [0, 16, 42]);
@@ -53,7 +53,7 @@ export function HeroSection() {
   // Flowing kinetic ladder transforms for STAGE 2: MATERIAL SPECS (BALLISTIC ARMOR & CORDURA)
   // Window: 0.32 -> 0.68
   const stage2Opacity = useTransform(scrollYProgress, [0.32, 0.40, 0.58, 0.68], [0, 1, 1, 0]);
-  const stage2Visibility = useTransform(scrollYProgress, (v) => (v < 0.30 || v > 0.70 ? 'hidden' : 'visible'));
+  const stage2Visibility = useTransform<number, 'hidden' | 'visible'>(scrollYProgress, (v) => (v < 0.30 || v > 0.70 ? 'hidden' : 'visible'));
   const stage2Rung1X = useTransform(scrollYProgress, [0.32, 0.45, 0.68], [-30, 0, 30]);
   const stage2Rung1Y = useTransform(scrollYProgress, [0.32, 0.45, 0.68], [15, 0, -15]);
   const stage2Rung2X = useTransform(scrollYProgress, [0.32, 0.48, 0.68], [-20, 0, 40]);
@@ -65,8 +65,8 @@ export function HeroSection() {
   // Flowing kinetic ladder transforms for STAGE 3: CLIMAX (ENGINEERED FOR THE RELENTLESS)
   // Window: 0.68 -> 1.00
   const climaxOpacity = useTransform(scrollYProgress, [0.68, 0.78, 1.0], [0, 1, 1]);
-  const climaxVisibility = useTransform(scrollYProgress, (v) => (v < 0.66 ? 'hidden' : 'visible'));
-  const climaxPointerEvents = useTransform(scrollYProgress, (v) => (v < 0.75 ? 'none' : 'auto'));
+  const climaxVisibility = useTransform<number, 'hidden' | 'visible'>(scrollYProgress, (v) => (v < 0.66 ? 'hidden' : 'visible'));
+  const climaxPointerEvents = useTransform<number, 'none' | 'auto'>(scrollYProgress, (v) => (v < 0.75 ? 'none' : 'auto'));
   const climaxRung1X = useTransform(scrollYProgress, [0.68, 0.82, 1.0], [-25, 0, 0]);
   const climaxRung1Y = useTransform(scrollYProgress, [0.68, 0.82, 1.0], [20, 0, 0]);
   const climaxRung2X = useTransform(scrollYProgress, [0.70, 0.85, 1.0], [-15, 0, 0]);
@@ -459,7 +459,7 @@ export function HeroSection() {
             {/* ========================================================================= */}
             <motion.div
               style={{
-                visibility: (shouldReduceMotion ? 'hidden' : stage1Visibility) as any,
+                visibility: shouldReduceMotion ? 'hidden' : stage1Visibility,
                 opacity: shouldReduceMotion ? 0 : stage1Opacity,
               }}
               className={cn(
@@ -543,7 +543,7 @@ export function HeroSection() {
             {/* ========================================================================= */}
             <motion.div
               style={{
-                visibility: (shouldReduceMotion ? 'hidden' : stage2Visibility) as any,
+                visibility: shouldReduceMotion ? 'hidden' : stage2Visibility,
                 opacity: shouldReduceMotion ? 0 : stage2Opacity,
               }}
               className={cn(
@@ -627,9 +627,9 @@ export function HeroSection() {
             {/* ========================================================================= */}
             <motion.div
               style={{
-                visibility: (shouldReduceMotion ? 'visible' : climaxVisibility) as any,
+                visibility: shouldReduceMotion ? 'visible' : climaxVisibility,
                 opacity: shouldReduceMotion ? 1 : climaxOpacity,
-                pointerEvents: (shouldReduceMotion ? 'auto' : climaxPointerEvents) as any,
+                pointerEvents: shouldReduceMotion ? 'auto' : climaxPointerEvents,
               }}
               className={cn(
                 'w-full flex flex-col items-start',

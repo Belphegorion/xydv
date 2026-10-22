@@ -87,7 +87,7 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
         token: string;
       }>('/auth/login', { email, password });
 
-      const user = (res as any).user ?? (res as any).data;
+      const user = res.user ?? res.data;
       const token = res.token;
 
       if (!user || user.role !== 'admin') {
@@ -128,8 +128,8 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
       });
 
       return { success: true };
-    } catch (err: any) {
-      const msg = err.message || 'Authentication failed. Please check credentials.';
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Authentication failed. Please check credentials.';
       set({ error: msg, isLoading: false });
       return { success: false, error: msg };
     }

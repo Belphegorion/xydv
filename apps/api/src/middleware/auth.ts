@@ -52,7 +52,7 @@ export async function requireAuth(req: AuthRequest, _res: Response, next: NextFu
     }
 
     next();
-  } catch (err: any) {
+  } catch (err) {
     if (err instanceof AppError) {
       return next(err);
     }

@@ -1,6 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
 
-interface FetchOptions extends RequestInit {
+interface FetchOptions extends Omit<RequestInit, 'body'> {
+  body?: unknown;
   params?: Record<string, string | number | boolean | undefined>;
   token?: string;
   _isRetry?: boolean;
@@ -190,11 +191,11 @@ export const api = {
   get: <T>(endpoint: string, options?: FetchOptions) =>
     apiFetch<T>(endpoint, { method: 'GET', ...options }),
   post: <T>(endpoint: string, body?: unknown, options?: FetchOptions) =>
-    apiFetch<T>(endpoint, { method: 'POST', body: body as any, ...options }),
+    apiFetch<T>(endpoint, { method: 'POST', body, ...options }),
   patch: <T>(endpoint: string, body?: unknown, options?: FetchOptions) =>
-    apiFetch<T>(endpoint, { method: 'PATCH', body: body as any, ...options }),
+    apiFetch<T>(endpoint, { method: 'PATCH', body, ...options }),
   put: <T>(endpoint: string, body?: unknown, options?: FetchOptions) =>
-    apiFetch<T>(endpoint, { method: 'PUT', body: body as any, ...options }),
+    apiFetch<T>(endpoint, { method: 'PUT', body, ...options }),
   delete: <T>(endpoint: string, options?: FetchOptions) =>
     apiFetch<T>(endpoint, { method: 'DELETE', ...options }),
 };

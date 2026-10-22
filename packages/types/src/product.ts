@@ -59,10 +59,12 @@ export interface Product {
   category: Category;
   tags: string[];
   specs?: ProductSpec[];
+  specsSummary?: string;
   variants: ProductVariant[];
   features?: string[];
   materials?: string[];
   images?: Array<ProductImage | string>;
+  imageUrl?: string;
   sizeChart?: Record<string, Record<string, string>>;
   inStock?: boolean;
   isPublished?: boolean;

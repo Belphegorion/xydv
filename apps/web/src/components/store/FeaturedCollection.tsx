@@ -10,6 +10,7 @@ import { ArrowRight, ShoppingBag, Check, CaretLeft, CaretRight } from '@phosphor
 import { Badge } from '@/components/ui/Badge';
 import { EMIL_EASE } from '@/lib/motion';
 import { api } from '@/lib/api';
+import type { Product, ProductVariant } from '@vertex/types';
 
 const FEATURED_PRODUCTS = [
   {
@@ -501,7 +502,7 @@ export function FeaturedCollection() {
   useEffect(() => {
     let isMounted = true;
     api
-      .get<{ data?: any[]; products?: any[] }>('/products?featured=true')
+      .get<{ data?: Product[]; products?: Product[] }>('/products?featured=true')
       .then((res) => {
         if (!isMounted) return;
         const raw = res?.data ?? res?.products;
@@ -515,7 +516,7 @@ export function FeaturedCollection() {
                 price: typeof item.price === 'number' ? item.price : st.price,
                 variants:
                   Array.isArray(item.variants) && item.variants.length > 0
-                    ? item.variants.map((v: any, idx: number) => {
+                    ? item.variants.map((v: ProductVariant, idx: number) => {
                         const staticVar = st.variants[idx] || st.variants[0];
                         return {
                           id: v._id || v.id || staticVar.id,
@@ -539,12 +540,12 @@ export function FeaturedCollection() {
               id: item._id || item.id || `prod_${item.slug}`,
               name: item.name,
               slug: item.slug,
-              category: item.category || 'tops',
+              category: typeof item.category === 'string' ? item.category : 'tops',
               price: item.price ?? 50,
-              specs: item.specsSummary || 'Engineered Activewear / High Performance',
+              specs: item.specsSummary || (item.specs ? item.specs.map((s) => s.value).join(' / ') : 'Engineered Activewear / High Performance'),
               variants:
                 Array.isArray(item.variants) && item.variants.length > 0
-                  ? item.variants.map((v: any, idx: number) => ({
+                  ? item.variants.map((v: ProductVariant, idx: number) => ({
                       id: v._id || v.id || `var_${item.slug}_${idx}`,
                       sku: v.sku || `SKU-${idx}`,
                       colorName: v.colorName || v.color || 'Void Obsidian',

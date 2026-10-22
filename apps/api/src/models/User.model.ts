@@ -19,6 +19,8 @@ export interface IUser extends Document {
 }
 
 export interface IAddress {
+  _id?: mongoose.Types.ObjectId | string;
+  id?: string;
   label: string;
   fullName: string;
   line1: string;

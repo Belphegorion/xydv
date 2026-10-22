@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import mongoose from 'mongoose';
 import { razorpay, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } from '../config/razorpay';
 import { Order, type IOrder } from '../models/Order.model';
-import { Product } from '../models/Product.model';
+import { Product, type IProduct } from '../models/Product.model';
 import { User } from '../models/User.model';
 import { Setting } from '../models/Setting.model';
 import { AppError } from '../middleware/errorHandler';
@@ -97,6 +97,7 @@ export interface ShippingAddressInput {
   country?: string;
   phone?: string;
   email?: string;
+  customerEmail?: string;
 }
 
 export class OrderService {
@@ -141,7 +142,7 @@ export class OrderService {
       }
     }
 
-    const guestEmail = (shippingAddress as any)?.email || (shippingAddress as any)?.customerEmail;
+    const guestEmail = shippingAddress?.email || shippingAddress?.customerEmail;
     if (guestEmail) {
       const normalizedEmail = String(guestEmail).toLowerCase().trim();
       const blockedCustomer = await User.findOne({
@@ -158,7 +159,16 @@ export class OrderService {
     }
 
     let subtotal = 0;
-    const validatedItems = [];
+    const validatedItems: Array<{
+      productId: mongoose.Types.ObjectId;
+      name: string;
+      sku: string;
+      color: string;
+      size: string;
+      price: number;
+      quantity: number;
+      image: string;
+    }> = [];
     const reservationItems: Array<{
       productId: mongoose.Types.ObjectId;
       sku?: string;
@@ -179,7 +189,7 @@ export class OrderService {
         );
       }
 
-      const orConditions: any[] = [{ slug: item.productId }];
+      const orConditions: mongoose.FilterQuery<IProduct>[] = [{ slug: item.productId }];
       if (item.sku) {
         orConditions.push({ 'variants.sku': item.sku });
       }
@@ -259,8 +269,7 @@ export class OrderService {
             (v) =>
               (item.sku && v.sku === item.sku) ||
               (item.variantId &&
-                ((v as any).id === item.variantId ||
-                  (v as any)._id?.toString() === item.variantId)),
+                (v.id === item.variantId || v._id?.toString() === item.variantId)),
           )
         : product.variants[0];
 
@@ -280,11 +289,13 @@ export class OrderService {
       subtotal += itemPrice * item.quantity;
 
       const primaryProductImg =
-        (product as any).imageUrl ||
+        product.imageUrl ||
         (Array.isArray(product.images) && product.images.length > 0
           ? typeof product.images[0] === 'string'
             ? product.images[0]
-            : (product.images[0] as any)?.url
+            : typeof product.images[0] === 'object' && product.images[0] !== null
+              ? product.images[0].url
+              : undefined
           : undefined);
 
       const validatedItem = {
@@ -297,7 +308,7 @@ export class OrderService {
         quantity: item.quantity,
         image:
           variant.imageUrl ||
-          (variant as any).images?.[0] ||
+          variant.images?.[0] ||
           primaryProductImg ||
           '/products/image-4-1.jpg',
       };
@@ -306,7 +317,7 @@ export class OrderService {
       reservationItems.push({
         productId: product._id as mongoose.Types.ObjectId,
         sku: variant.sku,
-        variantId: (variant as any)._id?.toString() || (variant as any).id,
+        variantId: variant._id?.toString() || variant.id,
         quantity: item.quantity,
       });
     }
@@ -325,13 +336,17 @@ export class OrderService {
           userId: userId ? String(userId) : 'guest',
         },
       });
-    } catch (rzpErr: any) {
+    } catch (rzpErr) {
+      const errObj =
+        typeof rzpErr === 'object' && rzpErr !== null
+          ? (rzpErr as { statusCode?: number; error?: { code?: string } })
+          : undefined;
       if (
         process.env.NODE_ENV !== 'production' &&
         (RAZORPAY_KEY_ID === 'rzp_test_xydv_key' ||
           RAZORPAY_KEY_ID === 'rzp_test_vertex_key' ||
-          rzpErr?.statusCode === 401 ||
-          rzpErr?.error?.code === 'BAD_REQUEST_ERROR')
+          errObj?.statusCode === 401 ||
+          errObj?.error?.code === 'BAD_REQUEST_ERROR')
       ) {
         razorpayOrder = {
           id: `order_mock_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -345,13 +360,13 @@ export class OrderService {
 
     const resolvedAddress = shippingAddress
       ? {
-          fullName: shippingAddress.fullName || (shippingAddress as any).name || 'Customer',
-          line1: shippingAddress.line1 ?? (shippingAddress as any).street ?? 'Standard Shipping',
+          fullName: shippingAddress.fullName || shippingAddress.name || 'Customer',
+          line1: shippingAddress.line1 ?? shippingAddress.street ?? 'Standard Shipping',
           line2: shippingAddress.line2,
           city: shippingAddress.city || 'Standard City',
           state: shippingAddress.state || 'Standard State',
           postalCode:
-            (shippingAddress as any).postalCode || (shippingAddress as any).zip || '000000',
+            shippingAddress.postalCode || shippingAddress.zip || '000000',
           country: shippingAddress.country ?? 'IN',
           phone: shippingAddress.phone || '0000000000',
         }
@@ -384,7 +399,7 @@ export class OrderService {
         postalCode: resolvedAddress.postalCode,
         country: resolvedAddress.country ?? 'IN',
         phone: resolvedAddress.phone,
-        email: (shippingAddress as any)?.email,
+        email: shippingAddress?.email,
       },
       razorpayOrderId: razorpayOrder.id,
     });
@@ -517,7 +532,18 @@ export class OrderService {
     }
 
     let calculatedSubtotal = 0;
-    const validatedItems = [];
+    interface VerifiedOrderItem {
+      productId: mongoose.Types.ObjectId;
+      name: string;
+      sku: string;
+      variantId?: string;
+      color: string;
+      size: string;
+      price: number;
+      quantity: number;
+      image: string;
+    }
+    const validatedItems: VerifiedOrderItem[] = [];
 
     // Recalculate line items against authoritative Product database
     for (const item of items) {
@@ -542,7 +568,7 @@ export class OrderService {
           (v) =>
             (item.sku && v.sku === item.sku) ||
             (item.variantId &&
-              ((v as any).id === item.variantId || (v as any)._id?.toString() === item.variantId)),
+              (v.id === item.variantId || v._id?.toString() === item.variantId)),
         ) ?? product.variants[0];
 
       if (!variant) {
@@ -560,10 +586,10 @@ export class OrderService {
       calculatedSubtotal += itemPrice * item.quantity;
 
       validatedItems.push({
-        productId: product._id,
+        productId: product._id as mongoose.Types.ObjectId,
         name: product.name,
         sku: variant.sku,
-        variantId: (variant as any)._id?.toString() || (variant as any).id,
+        variantId: variant._id?.toString() || variant.id,
         color: variant.color ?? 'Standard',
         size: variant.size,
         price: itemPrice,
@@ -617,8 +643,8 @@ export class OrderService {
       quantity: number;
     }> = [];
     for (const item of validatedItems) {
-      const vId = (item as any).variantId;
-      const variantFilter: Record<string, any> = { stock: { $gte: item.quantity } };
+      const vId = item.variantId;
+      const variantFilter: Record<string, unknown> = { stock: { $gte: item.quantity } };
       if (vId && mongoose.isValidObjectId(vId)) {
         variantFilter._id = new mongoose.Types.ObjectId(vId);
       } else if (vId) {
@@ -642,7 +668,7 @@ export class OrderService {
       ) {
         // Rollback previously decremented items to prevent partial stock exhaustion
         for (const dec of decrementedItems) {
-          const rollbackFilter: Record<string, any> = {};
+          const rollbackFilter: Record<string, unknown> = {};
           if (dec.variantId && mongoose.isValidObjectId(dec.variantId)) {
             rollbackFilter._id = new mongoose.Types.ObjectId(dec.variantId);
           } else if (dec.variantId) {
@@ -689,7 +715,7 @@ export class OrderService {
     } catch (createErr) {
       // Rollback stock decrements if document creation fails
       for (const dec of decrementedItems) {
-        const rollbackFilter: Record<string, any> = {};
+        const rollbackFilter: Record<string, unknown> = {};
         if (dec.variantId && mongoose.isValidObjectId(dec.variantId)) {
           rollbackFilter._id = new mongoose.Types.ObjectId(dec.variantId);
         } else if (dec.variantId) {

@@ -13,6 +13,7 @@ export interface IProductImage {
 }
 
 export interface IProductVariant {
+  _id?: mongoose.Types.ObjectId | string;
   id?: string;
   sku: string;
   color: string;
@@ -41,7 +42,8 @@ export interface IProduct extends Document {
   tags: string[];
   specs: IProductSpec[];
   variants: IProductVariant[];
-  images: IProductImage[];
+  images: (IProductImage | string)[];
+  imageUrl?: string;
   features: string[];
   materials: string[];
   sizeChart?: Record<string, Record<string, string>>;

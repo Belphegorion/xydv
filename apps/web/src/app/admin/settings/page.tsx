@@ -52,8 +52,9 @@ export default function AdminSettingsPage() {
       if (res.data) {
         setSettings(res.data);
       }
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to load store settings' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to load store settings';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsLoading(false);
     }
@@ -86,8 +87,9 @@ export default function AdminSettingsPage() {
       }
       setIsDirty(false);
       setFeedback({ type: 'success', message: 'Store settings successfully synchronized and saved.' });
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to save store settings' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to save store settings';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsSaving(false);
     }

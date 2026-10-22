@@ -85,8 +85,9 @@ function AdminOrdersContent() {
       setOrders(res.data);
       setTotal(res.total);
       setTotalPages(res.totalPages);
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to fetch customer orders' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch customer orders';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsLoading(false);
     }
@@ -123,8 +124,9 @@ function AdminOrdersContent() {
         message: `Order #${selectedOrder._id.slice(-6)} status updated to "${newStatus}".`,
       });
       fetchOrders();
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to update order status' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to update order status';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -148,8 +150,9 @@ function AdminOrdersContent() {
         setSelectedOrder(null);
       }
       fetchOrders();
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Refund processing failed' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Refund processing failed';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsRefunding(false);
     }
@@ -320,8 +323,10 @@ function AdminOrdersContent() {
                 orders.map((o) => {
                   const itemCount = (o.items || []).reduce((acc, i) => acc + (i.quantity || 0), 0);
                   const shortId = o._id.slice(-6).toUpperCase();
+                  const userRef =
+                    typeof o.userId === 'object' && o.userId !== null ? o.userId : null;
                   const customerName =
-                    o.shippingAddress?.fullName || (o.userId as any)?.name || 'Guest Checkout';
+                    o.shippingAddress?.fullName || userRef?.name || 'Guest Checkout';
 
                   return (
                     <tr key={o._id} className="hover:bg-[#141414] transition-colors">

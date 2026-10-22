@@ -15,7 +15,7 @@ import {
 import { api } from '../../../lib/api';
 import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
 import { useAdminAuthStore } from '../../../store/adminAuth';
-import type { User, Order } from '@vertex/types';
+import type { User, Order, UserAddress } from '@vertex/types';
 
 interface CustomerSummary {
   _id: string;
@@ -37,7 +37,7 @@ interface CustomerDetailPayload {
     role: 'customer' | 'admin';
     isBlocked: boolean;
     loyaltyPoints: number;
-    addresses: any[];
+    addresses: UserAddress[];
     createdAt: string;
     updatedAt: string;
   };
@@ -96,8 +96,9 @@ export default function AdminCustomersPage() {
       setCustomers(res.data);
       setTotal(res.total);
       setTotalPages(res.totalPages);
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to fetch customer directory' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch customer directory';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsLoading(false);
     }
@@ -114,8 +115,9 @@ export default function AdminCustomersPage() {
     try {
       const res = await api.get<{ data: CustomerDetailPayload }>(`/admin/customers/${id}`);
       setCustomerDetail(res.data);
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to load customer profile' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to load customer profile';
+      setFeedback({ type: 'error', message: msg });
       setSelectedCustomerId(null);
     } finally {
       setIsLoadingDetail(false);
@@ -148,8 +150,9 @@ export default function AdminCustomersPage() {
       if (selectedCustomerId === roleChangeTarget.customer._id) {
         handleOpenProfile(roleChangeTarget.customer._id);
       }
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to update account role' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to update account role';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsUpdatingRole(false);
     }
@@ -183,8 +186,9 @@ export default function AdminCustomersPage() {
       if (selectedCustomerId === blockTarget.customer._id) {
         handleOpenProfile(blockTarget.customer._id);
       }
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to update account status' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to update account status';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsUpdatingBlock(false);
     }

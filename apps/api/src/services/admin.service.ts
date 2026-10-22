@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import mongoose from 'mongoose';
 import slugify from 'slugify';
-import { Product } from '../models/Product.model';
-import { Order } from '../models/Order.model';
+import { Product, type IProduct, type IProductVariant, type IProductImage } from '../models/Product.model';
+import { Order, type OrderStatus } from '../models/Order.model';
 import { User } from '../models/User.model';
 import { Category } from '../models/Category.model';
 import { PageView } from '../models/PageView.model';
@@ -14,6 +14,12 @@ import { AppError } from '../middleware/errorHandler';
 import { inventoryService } from './inventory.service';
 import { invalidateStoreSettingsCache } from './order.service';
 import { UPLOADS_DIR } from '../middleware/upload';
+
+export interface AdminProductInput extends Partial<Omit<IProduct, 'variants' | 'images'>> {
+  variants?: Array<Partial<IProductVariant>>;
+  images?: Array<IProductImage | string>;
+  [key: string]: unknown;
+}
 
 function escapeRegex(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -138,7 +144,7 @@ export class AdminService {
     return product;
   }
 
-  async createProduct(data: any, adminId?: string, ip?: string) {
+  async createProduct(data: AdminProductInput, adminId?: string, ip?: string) {
     const { name, slug: customSlug, ...rest } = data;
     if (!name) throw new AppError('Product name is required', 400);
 
@@ -155,12 +161,12 @@ export class AdminService {
     // Determine initial inStock from variants
     const variants = Array.isArray(data.variants) ? data.variants : [];
     if (variants.length > 0) {
-      const skus = variants.map((v: any) => v.sku?.trim().toUpperCase()).filter(Boolean);
+      const skus = variants.map((v) => v.sku?.trim().toUpperCase()).filter(Boolean);
       if (new Set(skus).size !== skus.length) {
         throw new AppError('Each variant must have a unique SKU code', 400);
       }
     }
-    const inStock = variants.length > 0 ? variants.some((v: any) => (v.stock || 0) > 0) : true;
+    const inStock = variants.length > 0 ? variants.some((v) => (v.stock || 0) > 0) : true;
 
     const product = await Product.create({
       name,
@@ -181,7 +187,7 @@ export class AdminService {
     return product;
   }
 
-  async updateProduct(id: string, data: any, adminId?: string, ip?: string) {
+  async updateProduct(id: string, data: AdminProductInput, adminId?: string, ip?: string) {
     if (!mongoose.isValidObjectId(id)) {
       throw new AppError('Product not found', 404);
     }
@@ -196,7 +202,7 @@ export class AdminService {
     // Synchronize variant prices if product price is changed
     if (data.price !== undefined) {
       if (Array.isArray(data.variants)) {
-        data.variants = data.variants.map((v: any) => ({
+        data.variants = data.variants.map((v) => ({
           ...v,
           price:
             v.price === undefined || v.price === null || v.price === existingProduct.price
@@ -204,35 +210,33 @@ export class AdminService {
               : v.price,
         }));
       } else if (existingProduct.variants && existingProduct.variants.length > 0) {
-        data.variants = existingProduct.variants.map((v: any) => {
-          const vObj = v.toObject ? v.toObject() : v;
-          return {
-            ...vObj,
-            price:
-              vObj.price === undefined || vObj.price === null || vObj.price === existingProduct.price
-                ? data.price
-                : vObj.price,
-          };
-        });
+        const plainVariants = existingProduct.toObject().variants;
+        data.variants = plainVariants.map((v) => ({
+          ...v,
+          price:
+            v.price === undefined || v.price === null || v.price === existingProduct.price
+              ? data.price
+              : v.price,
+        }));
       }
     }
 
     if (Array.isArray(data.variants)) {
-      const skus = data.variants.map((v: any) => v.sku?.trim().toUpperCase()).filter(Boolean);
+      const skus = data.variants.map((v) => v.sku?.trim().toUpperCase()).filter(Boolean);
       if (new Set(skus).size !== skus.length) {
         throw new AppError('Each variant must have a unique SKU code', 400);
       }
-      data.inStock = data.variants.some((v: any) => (v.stock || 0) > 0);
+      data.inStock = data.variants.some((v) => (v.stock || 0) > 0);
     }
 
     // Orphan asset cleanup on edit (PIPE-HIGH-04)
     if (data.images && Array.isArray(data.images)) {
       const newUrls = new Set(
-        data.images.map((img: any) => (typeof img === 'string' ? img : img?.url)),
+        data.images.map((img) => (typeof img === 'string' ? img : img?.url)),
       );
       if (existingProduct.images && Array.isArray(existingProduct.images)) {
         for (const oldImg of existingProduct.images) {
-          const oldUrl = typeof oldImg === 'string' ? oldImg : (oldImg as any)?.url;
+          const oldUrl = typeof oldImg === 'string' ? oldImg : (typeof oldImg === 'object' && oldImg !== null ? (oldImg as IProductImage).url : undefined);
           if (oldUrl && oldUrl.includes('/uploads/') && !newUrls.has(oldUrl)) {
             const filename = path.basename(oldUrl);
             const localPath = path.join(UPLOADS_DIR, filename);
@@ -287,7 +291,7 @@ export class AdminService {
     const imageUrlsToClean = new Set<string>();
     if (product.images && Array.isArray(product.images)) {
       for (const img of product.images) {
-        const imgUrl = typeof img === 'string' ? img : (img as any)?.url;
+        const imgUrl = typeof img === 'string' ? img : (typeof img === 'object' && img !== null ? (img as IProductImage).url : undefined);
         if (imgUrl) imageUrlsToClean.add(imgUrl);
       }
     }
@@ -614,7 +618,7 @@ export class AdminService {
       throw new AppError(`Cannot transition order from '${previousStatus}' to '${status}'.`, 400);
     }
 
-    order.status = status as any;
+    order.status = status as OrderStatus;
     if (trackingNumber !== undefined) {
       order.trackingNumber = trackingNumber;
     }
@@ -736,21 +740,25 @@ export class AdminService {
     // Issue refund via Razorpay if payment ID exists
     if (order.razorpayPaymentId) {
       try {
-        const refund = (await razorpay.payments.refund(order.razorpayPaymentId, {
+        const refund = await razorpay.payments.refund(order.razorpayPaymentId, {
           amount: Math.round(refundAmountToIssue * 100), // convert to paise
           notes: { reason: reason || 'Admin requested refund', orderId: String(order._id) },
-        })) as any;
+        });
         if (refund && refund.id) {
           refundId = refund.id;
         }
-      } catch (err: any) {
+      } catch (err) {
+        const errObj =
+          typeof err === 'object' && err !== null
+            ? (err as { message?: string; statusCode?: number })
+            : undefined;
         await Order.findByIdAndUpdate(id, {
           $set: { paymentStatus: currentRefunded > 0 ? 'partially_refunded' : 'captured' },
         });
-        console.error('[AdminService] Razorpay refund API failure:', err?.message || err);
+        console.error('[AdminService] Razorpay refund API failure:', errObj?.message || err);
         throw new AppError(
-          `Failed to process refund with Razorpay: ${err?.message || 'Payment gateway refund failed'}`,
-          err?.statusCode || 502,
+          `Failed to process refund with Razorpay: ${errObj?.message || 'Payment gateway refund failed'}`,
+          errObj?.statusCode || 502,
         );
       }
     }
@@ -840,7 +848,7 @@ export class AdminService {
     const page = params.page ? Math.max(1, parseInt(params.page, 10)) : undefined;
     const limit = params.limit ? Math.max(1, Math.min(200, parseInt(params.limit, 10))) : undefined;
 
-    const pipeline: any[] = [];
+    const pipeline: mongoose.PipelineStage[] = [];
     if (search) {
       const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       pipeline.push({

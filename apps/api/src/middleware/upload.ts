@@ -1,3 +1,4 @@
+import type { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -113,7 +114,7 @@ export function validateImageMagicBytes(filePath: string): boolean {
 /**
  * Middleware: Validates magic bytes of all uploaded files.
  */
-export function validateUploadMagicBytes(req: any, _res: any, next: any): void {
+export function validateUploadMagicBytes(req: Request, _res: Response, next: NextFunction): void {
   const files: Express.Multer.File[] = [];
   if (req.file) files.push(req.file);
   if (Array.isArray(req.files)) {

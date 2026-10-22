@@ -14,16 +14,12 @@ export function validateRequest(schema: AnyZodObject) {
       // Assign parsed/coerced values back to request
       if (parsed.body) req.body = parsed.body;
       if (parsed.query) {
-        try {
-          (req as any).query = parsed.query;
-        } catch {
-          Object.defineProperty(req, 'query', {
-            value: parsed.query,
-            writable: true,
-            configurable: true,
-            enumerable: true,
-          });
-        }
+        Object.defineProperty(req, 'query', {
+          value: parsed.query,
+          writable: true,
+          configurable: true,
+          enumerable: true,
+        });
       }
       if (parsed.params) req.params = parsed.params;
 

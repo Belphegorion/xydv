@@ -104,8 +104,9 @@ function AdminProductsContent() {
       setProducts(res.data);
       setTotal(res.total);
       setTotalPages(res.totalPages);
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to fetch catalog products' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch catalog products';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsLoading(false);
     }
@@ -162,6 +163,7 @@ function AdminProductsContent() {
       const timer = setTimeout(() => setFeedback(null), 6000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [feedback]);
 
   // Handle image file upload with client-side validation
@@ -209,8 +211,9 @@ function AdminProductsContent() {
         }));
         setImages((prev) => [...prev, ...newImages]);
       }
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Image upload failed' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Image upload failed';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsUploading(false);
       e.target.value = '';
@@ -248,7 +251,7 @@ function AdminProductsContent() {
   // Open modal for Edit
   const handleOpenEdit = (p: Product) => {
     setIsEditing(true);
-    setCurrentProductId(p._id || (p as any).id);
+    setCurrentProductId(p._id || p.id || null);
     setName(p.name);
     setBrand(p.brand || 'XYDV');
     setDescription(p.description || '');
@@ -330,8 +333,9 @@ function AdminProductsContent() {
       setIsDirty(false);
       setIsModalOpen(false);
       fetchProducts();
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to save product' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to save product';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsSaving(false);
     }
@@ -350,8 +354,9 @@ function AdminProductsContent() {
       });
       setProductToDelete(null);
       fetchProducts();
-    } catch (err: any) {
-      setFeedback({ type: 'error', message: err.message || 'Failed to delete product' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete product';
+      setFeedback({ type: 'error', message: msg });
     } finally {
       setIsDeleting(false);
     }
@@ -373,7 +378,11 @@ function AdminProductsContent() {
     ]);
   };
 
-  const handleUpdateVariant = (idx: number, field: keyof ProductVariant, val: any) => {
+  const handleUpdateVariant = (
+    idx: number,
+    field: keyof ProductVariant,
+    val: ProductVariant[keyof ProductVariant]
+  ) => {
     setVariants((prev) => {
       const copy = [...prev];
       copy[idx] = { ...copy[idx], [field]: val };
@@ -534,7 +543,7 @@ function AdminProductsContent() {
                   const totalStock = (p.variants || []).reduce((acc, v) => acc + (v.stock || 0), 0);
 
                   return (
-                    <tr key={p._id || (p as any).id} className="hover:bg-[#141414] transition-colors">
+                    <tr key={p._id || p.id} className="hover:bg-[#141414] transition-colors">
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           <div className="relative h-12 w-10 flex-shrink-0 overflow-hidden rounded border border-[#222222] bg-[#181818]">
@@ -604,7 +613,7 @@ function AdminProductsContent() {
                             type="button"
                             onClick={() =>
                               setProductToDelete({
-                                id: p._id || (p as any).id,
+                                id: p._id || p.id || '',
                                 name: p.name,
                               })
                             }

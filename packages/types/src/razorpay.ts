@@ -103,6 +103,8 @@ export interface RazorpayWebhookOrderEntity {
 }
 
 export interface RazorpayWebhookEvent {
+  id?: string;
+  event_id?: string;
   entity: string;
   account_id: string;
   event:

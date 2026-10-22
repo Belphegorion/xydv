@@ -10,6 +10,7 @@ import { ShoppingBag, ArrowRight, Check, CaretLeft, CaretRight } from '@phosphor
 import { Badge } from '@/components/ui/Badge';
 import { EMIL_EASE } from '@/lib/motion';
 import { api } from '@/lib/api';
+import type { Product, ProductVariant } from '@vertex/types';
 
 const BESTSELLERS = [
   {
@@ -464,7 +465,7 @@ export function BestsellerGrid() {
   useEffect(() => {
     let isMounted = true;
     api
-      .get<{ data?: any[]; products?: any[] }>('/products?bestseller=true')
+      .get<{ data?: Product[]; products?: Product[] }>('/products?bestseller=true')
       .then((res) => {
         if (!isMounted) return;
         const raw = res?.data ?? res?.products;
@@ -472,13 +473,18 @@ export function BestsellerGrid() {
           const staticMap = new Map(BESTSELLERS.map((p) => [p.slug, p]));
           const mapped = raw.slice(0, 3).map((item) => {
             const st = staticMap.get(item.slug);
+            const dynamicRating =
+              typeof item.averageRating === 'number' && item.averageRating > 0
+                ? `${item.averageRating.toFixed(1)} / 5.0 (${item.reviewCount ?? 0} reviews)`
+                : null;
             if (st) {
               return {
                 ...st,
                 price: typeof item.price === 'number' ? item.price : st.price,
+                rating: dynamicRating || st.rating,
                 variants:
                   Array.isArray(item.variants) && item.variants.length > 0
-                    ? item.variants.map((v: any, idx: number) => {
+                    ? item.variants.map((v: ProductVariant, idx: number) => {
                         const staticVar = st.variants[idx] || st.variants[0];
                         return {
                           id: v._id || v.id || staticVar.id,
@@ -501,12 +507,12 @@ export function BestsellerGrid() {
               id: item._id || item.id || `prod_${item.slug}`,
               name: item.name,
               slug: item.slug,
-              category: item.category || 'tops',
+              category: typeof item.category === 'string' ? item.category : 'tops',
               price: item.price ?? 50,
-              rating: '4.9 / 5.0 (200+ reviews)',
+              rating: dynamicRating || '4.9 / 5.0 (200+ reviews)',
               variants:
                 Array.isArray(item.variants) && item.variants.length > 0
-                  ? item.variants.map((v: any, idx: number) => ({
+                  ? item.variants.map((v: ProductVariant, idx: number) => ({
                       id: v._id || v.id || `var_${item.slug}_${idx}`,
                       sku: v.sku || `SKU-${idx}`,
                       colorName: v.colorName || v.color || 'Void Obsidian',

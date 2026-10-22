@@ -42,6 +42,16 @@ declare module 'razorpay' {
     created_at: number;
   }
 
+  export interface RazorpayRefund {
+    id: string;
+    entity: string;
+    amount: number;
+    currency: string;
+    payment_id: string;
+    status: string;
+    [key: string]: unknown;
+  }
+
   class Razorpay {
     constructor(options: RazorpayOptions);
     orders: {
@@ -52,7 +62,7 @@ declare module 'razorpay' {
     payments: {
       fetch(paymentId: string): Promise<RazorpayPayment>;
       capture(paymentId: string, amount: number, currency: string): Promise<RazorpayPayment>;
-      refund(paymentId: string, options?: Record<string, unknown>): Promise<unknown>;
+      refund(paymentId: string, options?: Record<string, unknown>): Promise<RazorpayRefund>;
     };
   }
 
@@ -63,7 +73,12 @@ declare module 'razorpay' {
 declare module 'mongoose' {
   interface Query<ResultType, DocType, THelpers = {}, RawDocType = DocType, QueryOp = 'find', TVM = {}> {
     sort(
-      arg?: string | { [key: string]: any } | [string, any][] | undefined | null,
+      arg?:
+        | string
+        | Record<string, 1 | -1 | 'asc' | 'desc' | number>
+        | [string, 1 | -1 | 'asc' | 'desc' | number][]
+        | undefined
+        | null,
       options?: { override?: boolean }
     ): this;
   }
