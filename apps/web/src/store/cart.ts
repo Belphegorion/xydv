@@ -57,17 +57,13 @@ export const useCartStore = create<CartStore>()(
           }));
         } else {
           set((state) => ({
-            items: [
-              ...state.items,
-              { ...newItem, quantity: Math.min(flooredQty, maxLimit) },
-            ],
+            items: [...state.items, { ...newItem, quantity: Math.min(flooredQty, maxLimit) }],
             isOpen: true,
           }));
         }
       },
 
-      removeItem: (id) =>
-        set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
+      removeItem: (id) => set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
 
       updateQuantity: (id, quantity) => {
         if (!Number.isFinite(quantity) || quantity <= 0) {
@@ -90,8 +86,32 @@ export const useCartStore = create<CartStore>()(
       subtotal: () => get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
     }),
     {
-      name: 'vertex-cart',
-      storage: createJSONStorage(() => localStorage),
+      name: 'xydv-cart',
+      storage: createJSONStorage(() => ({
+        getItem: (name: string): string | null => {
+          if (typeof window === 'undefined') return null;
+          try {
+            const val = localStorage.getItem(name);
+            if (val) return val;
+            return localStorage.getItem('vertex-cart');
+          } catch {
+            return null;
+          }
+        },
+        setItem: (name: string, value: string): void => {
+          if (typeof window === 'undefined') return;
+          try {
+            localStorage.setItem(name, value);
+          } catch {}
+        },
+        removeItem: (name: string): void => {
+          if (typeof window === 'undefined') return;
+          try {
+            localStorage.removeItem(name);
+            localStorage.removeItem('vertex-cart');
+          } catch {}
+        },
+      })),
     },
   ),
 );

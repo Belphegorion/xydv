@@ -66,7 +66,12 @@ export class OrderService {
 
     let subtotal = 0;
     const validatedItems = [];
-    const reservationItems: Array<{ productId: mongoose.Types.ObjectId; sku?: string; variantId?: string; quantity: number }> = [];
+    const reservationItems: Array<{
+      productId: mongoose.Types.ObjectId;
+      sku?: string;
+      variantId?: string;
+      quantity: number;
+    }> = [];
 
     for (const item of items) {
       // Strict quantity validation: must be a positive integer
@@ -171,10 +176,14 @@ export class OrderService {
       }
 
       if (variant.stock < item.quantity) {
-        throw new AppError(`INSUFFICIENT_STOCK: Insufficient stock for ${product.name} (${variant.sku})`, 400);
+        throw new AppError(
+          `INSUFFICIENT_STOCK: Insufficient stock for ${product.name} (${variant.sku})`,
+          400,
+        );
       }
 
-      const itemPrice = (variant.price !== undefined && variant.price !== null) ? variant.price : product.price;
+      const itemPrice =
+        variant.price !== undefined && variant.price !== null ? variant.price : product.price;
       subtotal += itemPrice * item.quantity;
 
       const primaryProductImg =
@@ -209,7 +218,10 @@ export class OrderService {
       });
     }
 
-    const shipping = subtotal >= COMMERCE_CONSTANTS.FREE_SHIPPING_THRESHOLD ? 0 : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE;
+    const shipping =
+      subtotal >= COMMERCE_CONSTANTS.FREE_SHIPPING_THRESHOLD
+        ? 0
+        : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE;
     const tax = Math.round(subtotal * COMMERCE_CONSTANTS.TAX_RATE * 100) / 100;
     const total = Math.round((subtotal + shipping + tax) * 100) / 100;
     const amountInPaise = Math.round(total * 100);
@@ -228,7 +240,8 @@ export class OrderService {
     } catch (rzpErr: any) {
       if (
         process.env.NODE_ENV !== 'production' &&
-        (RAZORPAY_KEY_ID === 'rzp_test_vertex_key' ||
+        (RAZORPAY_KEY_ID === 'rzp_test_xydv_key' ||
+          RAZORPAY_KEY_ID === 'rzp_test_vertex_key' ||
           rzpErr?.statusCode === 401 ||
           rzpErr?.error?.code === 'BAD_REQUEST_ERROR')
       ) {
@@ -249,7 +262,8 @@ export class OrderService {
           line2: shippingAddress.line2,
           city: shippingAddress.city || 'Standard City',
           state: shippingAddress.state || 'Standard State',
-          postalCode: (shippingAddress as any).postalCode || (shippingAddress as any).zip || '000000',
+          postalCode:
+            (shippingAddress as any).postalCode || (shippingAddress as any).zip || '000000',
           country: shippingAddress.country ?? 'IN',
           phone: shippingAddress.phone || '0000000000',
         }
@@ -264,7 +278,8 @@ export class OrderService {
         };
 
     const order = await Order.create({
-      userId: userId && mongoose.isValidObjectId(userId) ? new mongoose.Types.ObjectId(userId) : null,
+      userId:
+        userId && mongoose.isValidObjectId(userId) ? new mongoose.Types.ObjectId(userId) : null,
       items: validatedItems,
       subtotal,
       shipping,
@@ -371,9 +386,7 @@ export class OrderService {
     if (!updatedOrder) {
       // Check if order exists and is already captured
       const checkQuery =
-        orderId && mongoose.isValidObjectId(orderId)
-          ? { _id: orderId }
-          : { razorpayOrderId };
+        orderId && mongoose.isValidObjectId(orderId) ? { _id: orderId } : { razorpayOrderId };
       const existing = await Order.findOne(checkQuery);
       if (!existing) {
         throw new AppError('Order not found', 404);
@@ -441,8 +454,7 @@ export class OrderService {
           (v) =>
             (item.sku && v.sku === item.sku) ||
             (item.variantId &&
-              ((v as any).id === item.variantId ||
-                (v as any)._id?.toString() === item.variantId)),
+              ((v as any).id === item.variantId || (v as any)._id?.toString() === item.variantId)),
         ) ?? product.variants[0];
 
       if (!variant) {
@@ -450,7 +462,10 @@ export class OrderService {
       }
 
       if (variant.stock < item.quantity) {
-        throw new AppError(`INSUFFICIENT_STOCK: Insufficient stock for ${product.name} (${variant.sku})`, 400);
+        throw new AppError(
+          `INSUFFICIENT_STOCK: Insufficient stock for ${product.name} (${variant.sku})`,
+          400,
+        );
       }
 
       const itemPrice = variant.price;
@@ -474,14 +489,18 @@ export class OrderService {
         ? 0
         : COMMERCE_CONSTANTS.STANDARD_SHIPPING_FEE;
     const calculatedTax = Math.round(calculatedSubtotal * COMMERCE_CONSTANTS.TAX_RATE * 100) / 100;
-    const calculatedTotal = Math.round((calculatedSubtotal + calculatedShipping + calculatedTax) * 100) / 100;
+    const calculatedTotal =
+      Math.round((calculatedSubtotal + calculatedShipping + calculatedTax) * 100) / 100;
 
     let paymentStatus: 'pending' | 'captured' = 'pending';
 
     // Verify HMAC signature if setting payment status to 'captured'
     if (razorpayPaymentId) {
       if (!razorpayOrderId || !razorpaySignature) {
-        throw new AppError('Missing razorpayOrderId or razorpaySignature for captured payment', 400);
+        throw new AppError(
+          'Missing razorpayOrderId or razorpaySignature for captured payment',
+          400,
+        );
       }
 
       const hmacBody = `${razorpayOrderId}|${razorpayPaymentId}`;
@@ -505,7 +524,12 @@ export class OrderService {
     }
 
     // Decrement stock with atomic concurrency guard: matching variantId/sku and stock >= quantity
-    const decrementedItems: Array<{ productId: mongoose.Types.ObjectId; sku: string; variantId?: string; quantity: number }> = [];
+    const decrementedItems: Array<{
+      productId: mongoose.Types.ObjectId;
+      sku: string;
+      variantId?: string;
+      quantity: number;
+    }> = [];
     for (const item of validatedItems) {
       const vId = (item as any).variantId;
       const variantFilter: Record<string, any> = { stock: { $gte: item.quantity } };
@@ -526,7 +550,10 @@ export class OrderService {
         { $inc: { 'variants.$.stock': -item.quantity } },
       );
 
-      if (updateResult.matchedCount === 0 || (updateResult.modifiedCount !== undefined && updateResult.modifiedCount === 0)) {
+      if (
+        updateResult.matchedCount === 0 ||
+        (updateResult.modifiedCount !== undefined && updateResult.modifiedCount === 0)
+      ) {
         // Rollback previously decremented items to prevent partial stock exhaustion
         for (const dec of decrementedItems) {
           const rollbackFilter: Record<string, any> = {};
@@ -543,7 +570,10 @@ export class OrderService {
           );
           await inventoryService.syncProductInStock(dec.productId);
         }
-        throw new AppError(`INSUFFICIENT_STOCK: Insufficient stock for ${item.name} (${item.sku})`, 400);
+        throw new AppError(
+          `INSUFFICIENT_STOCK: Insufficient stock for ${item.name} (${item.sku})`,
+          400,
+        );
       }
       decrementedItems.push({
         productId: item.productId as mongoose.Types.ObjectId,

@@ -13,7 +13,7 @@ async function seedAdmin() {
     );
   }
 
-  const adminEmail = (process.env.ADMIN_EMAIL || 'admin@vertex.com').toLowerCase().trim();
+  const adminEmail = (process.env.ADMIN_EMAIL || 'admin@xydv.com').toLowerCase().trim();
   const adminPassword = process.env.ADMIN_PASSWORD || 'AdminPassword123!';
   const adminName = process.env.ADMIN_NAME || 'XYDV System Administrator';
 
@@ -43,10 +43,26 @@ async function seedAdmin() {
 
   // Also seed default categories if not already present
   const defaultCategories = [
-    { name: 'Tops', slug: 'tops', description: 'Technical tees, tanks, and compression long sleeves.' },
-    { name: 'Bottoms', slug: 'bottoms', description: 'Cargo joggers, training shorts, and lined utility tights.' },
-    { name: 'Outerwear', slug: 'outerwear', description: 'Waterproof shells, modular vests, and storm windbreakers.' },
-    { name: 'Accessories', slug: 'accessories', description: 'Technical caps, ballistic bags, and training socks.' },
+    {
+      name: 'Tops',
+      slug: 'tops',
+      description: 'Technical tees, tanks, and compression long sleeves.',
+    },
+    {
+      name: 'Bottoms',
+      slug: 'bottoms',
+      description: 'Cargo joggers, training shorts, and lined utility tights.',
+    },
+    {
+      name: 'Outerwear',
+      slug: 'outerwear',
+      description: 'Waterproof shells, modular vests, and storm windbreakers.',
+    },
+    {
+      name: 'Accessories',
+      slug: 'accessories',
+      description: 'Technical caps, ballistic bags, and training socks.',
+    },
   ];
 
   for (const cat of defaultCategories) {

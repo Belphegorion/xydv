@@ -113,14 +113,14 @@ let server: Server | null = null;
 connectDB()
   .then(() => {
     server = app.listen(PORT, () => {
-      console.log(`\n🚀 VERTEX API running on http://localhost:${PORT}`);
+      console.log(`\n🚀 XYDV API running on http://localhost:${PORT}`);
       console.log(`   Environment: ${env.NODE_ENV}\n`);
       // Start background inventory hold reconciliation cleaner
       inventoryService.startReconciliationWorker();
     });
   })
   .catch((err) => {
-    console.error('❌ Failed to start VERTEX API server:', err);
+    console.error('❌ Failed to start XYDV API server:', err);
     process.exit(1);
   });
 

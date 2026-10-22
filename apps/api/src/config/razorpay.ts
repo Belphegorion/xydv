@@ -7,7 +7,10 @@ export const RAZORPAY_WEBHOOK_SECRET = env.RAZORPAY_WEBHOOK_SECRET;
 
 if (
   env.NODE_ENV === 'production' &&
-  (RAZORPAY_KEY_ID === 'rzp_test_vertex_key' || RAZORPAY_KEY_SECRET === 'vertex_test_secret')
+  (RAZORPAY_KEY_ID === 'rzp_test_xydv_key' ||
+    RAZORPAY_KEY_ID === 'rzp_test_vertex_key' ||
+    RAZORPAY_KEY_SECRET === 'xydv_test_secret' ||
+    RAZORPAY_KEY_SECRET === 'vertex_test_secret')
 ) {
   console.warn(
     '⚠️  [SECURITY WARNING] RAZORPAY credentials are using default test placeholders in production mode!',

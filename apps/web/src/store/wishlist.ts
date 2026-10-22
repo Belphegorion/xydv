@@ -36,8 +36,32 @@ export const useWishlistStore = create<WishlistStore>()(
         set((state) => ({ items: state.items.filter((i) => i.productId !== productId) })),
     }),
     {
-      name: 'vertex-wishlist',
-      storage: createJSONStorage(() => localStorage),
+      name: 'xydv-wishlist',
+      storage: createJSONStorage(() => ({
+        getItem: (name: string): string | null => {
+          if (typeof window === 'undefined') return null;
+          try {
+            const val = localStorage.getItem(name);
+            if (val) return val;
+            return localStorage.getItem('vertex-wishlist');
+          } catch {
+            return null;
+          }
+        },
+        setItem: (name: string, value: string): void => {
+          if (typeof window === 'undefined') return;
+          try {
+            localStorage.setItem(name, value);
+          } catch {}
+        },
+        removeItem: (name: string): void => {
+          if (typeof window === 'undefined') return;
+          try {
+            localStorage.removeItem(name);
+            localStorage.removeItem('vertex-wishlist');
+          } catch {}
+        },
+      })),
     },
   ),
 );

@@ -49,16 +49,14 @@ export function AdminSidebar({
   ];
 
   const sidebarContent = (
-    <div className="flex h-full flex-col justify-between bg-[#0a0a0a] text-[#f5f5f5] border-r border-[#1f1f1f]">
+    <div className="flex h-full flex-col justify-between border-r border-[#1f1f1f] bg-[#0a0a0a] text-[#f5f5f5]">
       {/* Brand Header */}
       <div>
-        <div className="flex h-16 items-center justify-between px-6 border-b border-[#1f1f1f]">
-          <Link href="/admin" className="flex items-center gap-2.5 group">
-            <span className="font-mono text-sm font-bold tracking-widest text-[#e8ff00]">
-              XYDV
-            </span>
+        <div className="flex h-16 items-center justify-between border-b border-[#1f1f1f] px-6">
+          <Link href="/admin" className="group flex items-center gap-2.5">
+            <span className="font-mono text-sm font-bold tracking-widest text-[#e8ff00]">XYDV</span>
             <span className="h-3 w-[1px] bg-[#333333]" />
-            <span className="font-mono text-[10px] uppercase tracking-wider text-[#a0a0a0] group-hover:text-[#f5f5f5] transition-colors">
+            <span className="font-mono text-[10px] tracking-wider text-[#a0a0a0] uppercase transition-colors group-hover:text-[#f5f5f5]">
               ADMIN CONTROL
             </span>
           </Link>
@@ -76,13 +74,13 @@ export function AdminSidebar({
         </div>
 
         {/* Navigation Items */}
-        <nav className="p-3 space-y-1" aria-label="Admin Navigation">
+        <nav className="space-y-1 p-3" aria-label="Admin Navigation">
           {navItems.map((item) => {
             const isActive = item.exact
               ? pathname === item.href
               : item.href.includes('#')
-              ? false
-              : pathname.startsWith(item.href);
+                ? false
+                : pathname.startsWith(item.href);
             const Icon = item.icon;
 
             return (
@@ -90,16 +88,18 @@ export function AdminSidebar({
                 key={item.href}
                 href={item.href}
                 onClick={onCloseMobile}
-                className={`group flex items-center justify-between px-3 py-2.5 font-mono text-xs uppercase tracking-wider transition-[background-color,color] duration-150 ${
+                className={`group flex items-center justify-between px-3 py-2.5 font-mono text-xs tracking-wider uppercase transition-[background-color,color] duration-150 ${
                   isActive
-                    ? 'bg-[#181818] text-[#f5f5f5] border-l-2 border-[#e8ff00]'
+                    ? 'border-l-2 border-[#e8ff00] bg-[#181818] text-[#f5f5f5]'
                     : 'text-[#a0a0a0] hover:bg-[#141414] hover:text-[#f5f5f5]'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon
                     size={18}
-                    className={isActive ? 'text-[#e8ff00]' : 'text-[#71717a] group-hover:text-[#f5f5f5]'}
+                    className={
+                      isActive ? 'text-[#e8ff00]' : 'text-[#71717a] group-hover:text-[#f5f5f5]'
+                    }
                   />
                   <span>{item.label}</span>
                 </div>
@@ -116,24 +116,28 @@ export function AdminSidebar({
       </div>
 
       {/* Footer / User / Storefront */}
-      <div className="p-4 border-t border-[#1f1f1f] space-y-3">
+      <div className="space-y-3 border-t border-[#1f1f1f] p-4">
         <Link
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-[#71717a] hover:text-[#f5f5f5] transition-colors"
+          className="flex items-center justify-between px-3 py-2 font-mono text-[11px] tracking-wider text-[#71717a] uppercase transition-colors hover:text-[#f5f5f5]"
         >
           <span>View Live Storefront</span>
           <ArrowSquareOut size={14} />
         </Link>
 
-        <div className="rounded bg-[#111111] p-3 border border-[#1f1f1f]">
-          <div className="flex items-center justify-between mb-2">
+        <div className="rounded border border-[#1f1f1f] bg-[#111111] p-3">
+          <div className="mb-2 flex items-center justify-between">
             <div className="truncate pr-2">
-              <p className="truncate text-xs font-medium text-[#f5f5f5]">{user?.name || 'Administrator'}</p>
-              <p className="truncate font-mono text-[10px] text-[#71717a]">{user?.email || 'admin@vertex.com'}</p>
+              <p className="truncate text-xs font-medium text-[#f5f5f5]">
+                {user?.name || 'Administrator'}
+              </p>
+              <p className="truncate font-mono text-[10px] text-[#71717a]">
+                {user?.email || 'admin@xydv.com'}
+              </p>
             </div>
-            <span className="flex-shrink-0 rounded bg-[#e8ff00]/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[#e8ff00]">
+            <span className="flex-shrink-0 rounded bg-[#e8ff00]/10 px-1.5 py-0.5 font-mono text-[9px] tracking-wider text-[#e8ff00] uppercase">
               ADMIN
             </span>
           </div>
@@ -141,7 +145,7 @@ export function AdminSidebar({
           <button
             type="button"
             onClick={logout}
-            className="flex w-full items-center justify-center gap-2 rounded border border-[#1f1f1f] bg-transparent py-1.5 font-mono text-[10px] uppercase tracking-wider text-[#a0a0a0] transition-colors hover:border-[#ff3b3b]/40 hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] active:scale-[0.97]"
+            className="flex w-full items-center justify-center gap-2 rounded border border-[#1f1f1f] bg-transparent py-1.5 font-mono text-[10px] tracking-wider text-[#a0a0a0] uppercase transition-colors hover:border-[#ff3b3b]/40 hover:bg-[#ff3b3b]/10 hover:text-[#ff3b3b] active:scale-[0.97]"
           >
             <SignOut size={13} />
             <span>Sign Out</span>
@@ -154,7 +158,7 @@ export function AdminSidebar({
   return (
     <>
       {/* Desktop Persistent Sidebar */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-shrink-0 lg:flex-col lg:h-screen lg:sticky lg:top-0">
+      <aside className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:flex-shrink-0 lg:flex-col">
         {sidebarContent}
       </aside>
 
@@ -166,9 +170,7 @@ export function AdminSidebar({
             onClick={onCloseMobile}
             aria-hidden="true"
           />
-          <div className="relative flex w-full max-w-xs flex-1 flex-col">
-            {sidebarContent}
-          </div>
+          <div className="relative flex w-full max-w-xs flex-1 flex-col">{sidebarContent}</div>
         </div>
       )}
     </>

@@ -14,9 +14,9 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().default('4044plbw7MAxaHGi1KJAsOrKttSRaTqP18QNxH2IzoE'),
   JWT_EXPIRE: z.string().default('15m'),
   JWT_REFRESH_EXPIRE: z.string().default('30d'),
-  RAZORPAY_KEY_ID: z.string().default('rzp_test_vertex_key'),
-  RAZORPAY_KEY_SECRET: z.string().default('vertex_test_secret'),
-  RAZORPAY_WEBHOOK_SECRET: z.string().default('vertex_webhook_secret'),
+  RAZORPAY_KEY_ID: z.string().default('rzp_test_xydv_key'),
+  RAZORPAY_KEY_SECRET: z.string().default('xydv_test_secret'),
+  RAZORPAY_WEBHOOK_SECRET: z.string().default('xydv_webhook_secret'),
   CLIENT_URL: z.string().default('http://localhost:3000'),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
@@ -35,17 +35,25 @@ if (!parsed.success) {
 const DEFAULT_PLACEHOLDERS = {
   JWT_SECRET: 'fnO7dehu28m0xLpQoi7yXG5GdjJYY7ZI84T5pUUGy3j',
   JWT_REFRESH_SECRET: '4044plbw7MAxaHGi1KJAsOrKttSRaTqP18QNxH2IzoE',
-  RAZORPAY_KEY_SECRET: 'vertex_test_secret',
-  RAZORPAY_WEBHOOK_SECRET: 'vertex_webhook_secret',
+  RAZORPAY_KEY_SECRET: 'xydv_test_secret',
+  RAZORPAY_WEBHOOK_SECRET: 'xydv_webhook_secret',
 };
 
 if (process.env.NODE_ENV === 'production') {
-  const usingDefaultJwt = !process.env.JWT_SECRET || process.env.JWT_SECRET === DEFAULT_PLACEHOLDERS.JWT_SECRET;
-  const usingDefaultRefresh = !process.env.JWT_REFRESH_SECRET || process.env.JWT_REFRESH_SECRET === DEFAULT_PLACEHOLDERS.JWT_REFRESH_SECRET;
-  const usingDefaultRazorpay = !process.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET === DEFAULT_PLACEHOLDERS.RAZORPAY_KEY_SECRET;
+  const usingDefaultJwt =
+    !process.env.JWT_SECRET || process.env.JWT_SECRET === DEFAULT_PLACEHOLDERS.JWT_SECRET;
+  const usingDefaultRefresh =
+    !process.env.JWT_REFRESH_SECRET ||
+    process.env.JWT_REFRESH_SECRET === DEFAULT_PLACEHOLDERS.JWT_REFRESH_SECRET;
+  const usingDefaultRazorpay =
+    !process.env.RAZORPAY_KEY_SECRET ||
+    process.env.RAZORPAY_KEY_SECRET === DEFAULT_PLACEHOLDERS.RAZORPAY_KEY_SECRET ||
+    process.env.RAZORPAY_KEY_SECRET === 'vertex_test_secret';
 
   if (usingDefaultJwt || usingDefaultRefresh || usingDefaultRazorpay) {
-    throw new Error('Fatal: Default placeholder secrets detected in production. You must configure secure values.');
+    throw new Error(
+      'Fatal: Default placeholder secrets detected in production. You must configure secure values.',
+    );
   }
 }
 

@@ -43,7 +43,12 @@ const fileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
   // Explicitly disallow malicious or executable file types
   const disallowed = /\.(html|htm|svg|exe|js|mjs|cjs|bat|cmd|sh|php)$/i;
   if (disallowed.test(ext) || disallowed.test(file.originalname)) {
-    return cb(new AppError('Malicious or executable file types (.html, .svg, .exe, .js) are strictly prohibited', 400));
+    return cb(
+      new AppError(
+        'Malicious or executable file types (.html, .svg, .exe, .js) are strictly prohibited',
+        400,
+      ),
+    );
   }
 
   const allowedExt = /^\.(jpe?g|png|webp|gif|avif)$/i;
@@ -78,15 +83,24 @@ export function validateImageMagicBytes(filePath: string): boolean {
     // JPEG: FF D8 FF
     if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) return true;
     // PNG: 89 50 4E 47
-    if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) return true;
+    if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47)
+      return true;
     // GIF: 47 49 46 38 ('GIF8')
-    if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x38) return true;
+    if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x38)
+      return true;
     // WEBP: RIFF (bytes 0-3) and WEBP (bytes 8-11)
     if (
       bytesRead >= 12 &&
-      buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
-      buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
-    ) return true;
+      buffer[0] === 0x52 &&
+      buffer[1] === 0x49 &&
+      buffer[2] === 0x46 &&
+      buffer[3] === 0x46 &&
+      buffer[8] === 0x57 &&
+      buffer[9] === 0x45 &&
+      buffer[10] === 0x42 &&
+      buffer[11] === 0x50
+    )
+      return true;
     // AVIF: ftyp (bytes 4-7)
     if (bytesRead >= 8 && buffer.toString('ascii', 4, 8) === 'ftyp') return true;
 
@@ -143,7 +157,7 @@ export async function getFileUrl(file: Express.Multer.File, baseUrl?: string): P
   if (isCloudinaryConfigured) {
     try {
       const result = await cloudinary.uploader.upload(file.path, {
-        folder: 'vertex_products',
+        folder: 'xydv_products',
       });
       // Remove local copy after upload to cloudinary
       try {
