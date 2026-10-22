@@ -15,12 +15,20 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,json,css,md}\"",
     "type-check": "turbo type-check",
     "seed:admin": "npm run seed:admin --workspace=@vertex/api",
-    "test": "node tests/runner.mjs && node --test tests/m3-empirical-design-system-challenge.test.mjs tests/collection-showcase.test.mjs tests/loading-screens.test.mjs tests/boundary-stress.test.mjs tests/brand-assets-tab-icons.test.mjs tests/navbar-scroll-transparency.test.mjs tests/new-routes-verification.test.mjs tests/admin-panel-verification.test.mjs tests/backend-audit-remediation.test.mjs"
+    "test": "node tests/runner.mjs && node --test tests/batch1-security-dependencies-secrets.test.mjs tests/m3-empirical-design-system-challenge.test.mjs tests/collection-showcase.test.mjs tests/loading-screens.test.mjs tests/boundary-stress.test.mjs tests/brand-assets-tab-icons.test.mjs tests/navbar-scroll-transparency.test.mjs tests/new-routes-verification.test.mjs tests/admin-panel-verification.test.mjs tests/backend-audit-remediation.test.mjs"
   },
   "devDependencies": {
     "turbo": "^2.5.4",
     "typescript": "^5.7.3",
     "prettier": "^3.4.2"
+  },
+  "overrides": {
+    "postcss": "^8.5.31",
+    "sharp": "^0.35.5",
+    "braces": "^3.0.3",
+    "micromatch": {
+      "braces": "^3.0.3"
+    }
   },
   "packageManager": "npm@11.13.0",
   "engines": {

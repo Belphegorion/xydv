@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@vertex/types": "*",
-    "next": "15.3.4",
+    "next": "15.5.28",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "motion": "^12.23.6",
@@ -36,6 +36,6 @@
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.12",
     "eslint": "^9.30.0",
-    "eslint-config-next": "15.3.4"
+    "eslint-config-next": "15.5.28"
   }
 }
