@@ -1,34 +1,48 @@
 import { NextResponse } from 'next/server';
-import { getFilteredProducts, CatalogFilterParams } from '@/lib/catalog';
+
+const API_BASE_URL =
+  process.env.INTERNAL_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  'http://localhost:5000/api';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const targetUrl = `${API_BASE_URL}/products?${searchParams.toString()}`;
 
-  const category = searchParams.get('category') || undefined;
-  const discipline = searchParams.get('discipline') || undefined;
-  const gender = searchParams.get('gender') || undefined;
-  const search = searchParams.get('search') || undefined;
-  const sort = (searchParams.get('sort') as CatalogFilterParams['sort']) || 'featured';
-  const inStockOnly = searchParams.get('inStock') === 'true';
+  try {
+    const res = await fetch(targetUrl, {
+      headers: {
+        Accept: 'application/json',
+      },
+      next: { revalidate: 0 },
+    });
 
-  const minPriceParam = searchParams.get('minPrice');
-  const maxPriceParam = searchParams.get('maxPrice');
-  const minPrice = minPriceParam ? parseFloat(minPriceParam) : undefined;
-  const maxPrice = maxPriceParam ? parseFloat(maxPriceParam) : undefined;
+    if (res.ok) {
+      const data = await res.json();
+      const products = data.data || data.products || [];
+      return NextResponse.json({
+        success: true,
+        total: data.total ?? products.length,
+        products,
+        data: products,
+        page: data.page ?? 1,
+        totalPages: data.totalPages ?? 1,
+      });
+    }
 
-  const products = getFilteredProducts({
-    category,
-    discipline,
-    gender,
-    search,
-    sort,
-    inStockOnly,
-    minPrice,
-    maxPrice,
-  });
-
-  return NextResponse.json({
-    total: products.length,
-    products,
-  });
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch products from backend' },
+      { status: res.status },
+    );
+  } catch {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Backend API unavailable',
+        total: 0,
+        products: [],
+      },
+      { status: 502 },
+    );
+  }
 }
