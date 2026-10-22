@@ -5,10 +5,26 @@ interface FetchOptions extends RequestInit {
   token?: string;
 }
 
+let inMemoryAccessToken: string | null = null;
+
+export function setAccessToken(token: string | null): void {
+  inMemoryAccessToken = token;
+}
+
+export function getAccessToken(): string | null {
+  return inMemoryAccessToken;
+}
+
 function getStoredToken(): string | null {
+  if (inMemoryAccessToken) return inMemoryAccessToken;
   if (typeof window === 'undefined') return null;
   try {
-    return localStorage.getItem('vertex_admin_token') || localStorage.getItem('vertex_auth_token');
+    return (
+      localStorage.getItem('xydv_admin_token') ||
+      localStorage.getItem('xydv_auth_token') ||
+      localStorage.getItem('vertex_admin_token') ||
+      localStorage.getItem('vertex_auth_token')
+    );
   } catch {
     return null;
   }
@@ -54,16 +70,26 @@ async function apiFetch<T>(endpoint: string, options: FetchOptions = {}): Promis
     credentials: 'include',
     signal: init?.signal ?? AbortSignal.timeout(10000),
     headers: resolvedHeaders,
-    body: isFormData ? body : (typeof body === 'object' && body !== null ? JSON.stringify(body) : (body as BodyInit)),
+    body: isFormData
+      ? body
+      : typeof body === 'object' && body !== null
+        ? JSON.stringify(body)
+        : (body as BodyInit),
     ...init,
   });
 
   if (!res.ok) {
     if (res.status === 401 && typeof window !== 'undefined') {
       try {
+        setAccessToken(null);
+        localStorage.removeItem('xydv_admin_token');
+        localStorage.removeItem('xydv_admin_user');
         localStorage.removeItem('vertex_admin_token');
         localStorage.removeItem('vertex_admin_user');
-        if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
+        if (
+          window.location.pathname.startsWith('/admin') &&
+          window.location.pathname !== '/admin/login'
+        ) {
           window.location.href = '/admin/login';
         }
       } catch {}

@@ -11,8 +11,16 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    initialize();
-    setMounted(true);
+    let active = true;
+    (async () => {
+      await initialize();
+      if (active) {
+        setMounted(true);
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, [initialize]);
 
   useEffect(() => {
@@ -32,7 +40,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-full items-center justify-center bg-[#0a0a0a] text-[#f5f5f5]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#e8ff00] border-t-transparent" />
-          <span className="font-mono text-xs uppercase tracking-widest text-[#a0a0a0]">
+          <span className="font-mono text-xs tracking-widest text-[#a0a0a0] uppercase">
             Initializing XYDV Control...
           </span>
         </div>
@@ -46,7 +54,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-full items-center justify-center bg-[#0a0a0a] text-[#f5f5f5]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#e8ff00] border-t-transparent" />
-          <span className="font-mono text-xs uppercase tracking-widest text-[#a0a0a0]">
+          <span className="font-mono text-xs tracking-widest text-[#a0a0a0] uppercase">
             Redirecting to Admin Portal...
           </span>
         </div>

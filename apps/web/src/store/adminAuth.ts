@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import { api } from '../lib/api';
+import { api, setAccessToken, getAccessToken } from '../lib/api';
 
 export interface AdminUser {
   _id: string;
@@ -19,7 +19,7 @@ interface AdminAuthState {
   error: string | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  initialize: () => void;
+  initialize: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -30,27 +30,52 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
   isLoading: false,
   error: null,
 
-  initialize: () => {
+  initialize: async () => {
     if (typeof window === 'undefined') return;
+
+    // Clean up any legacy plain tokens from localStorage for security compliance
     try {
-      const storedToken = localStorage.getItem('vertex_admin_token');
-      const storedUser = localStorage.getItem('vertex_admin_user');
-      if (storedToken && storedUser) {
-        const user = JSON.parse(storedUser);
-        if (user.role === 'admin') {
-          set({
-            token: storedToken,
-            user,
-            isAuthenticated: true,
-            error: null,
-          });
-          return;
-        }
+      localStorage.removeItem('vertex_admin_token');
+      localStorage.removeItem('vertex_admin_user');
+      localStorage.removeItem('xydv_admin_token');
+      localStorage.removeItem('xydv_admin_user');
+    } catch {}
+
+    // Check if token already present in memory
+    const currentMemoryToken = getAccessToken();
+    if (currentMemoryToken) {
+      set({ token: currentMemoryToken, isAuthenticated: true });
+      return;
+    }
+
+    set({ isLoading: true });
+    try {
+      const res = await api.post<{
+        token: string;
+        data?: AdminUser;
+        user?: AdminUser;
+      }>('/auth/refresh', {});
+
+      const user = res.data ?? res.user;
+      const token = res.token;
+
+      if (token && user && user.role === 'admin' && !user.isBlocked) {
+        setAccessToken(token);
+        set({
+          token,
+          user,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        });
+        return;
       }
     } catch {
-      // Ignored: corrupt local storage
+      // Session expired, unavailable, or invalid
     }
-    set({ token: null, user: null, isAuthenticated: false });
+
+    setAccessToken(null);
+    set({ token: null, user: null, isAuthenticated: false, isLoading: false });
   },
 
   login: async (email: string, password: string) => {
@@ -83,9 +108,15 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
         return { success: false, error: err };
       }
 
+      // Store in memory (HIGH-08) and remove any plain localStorage tokens
+      setAccessToken(token);
       if (typeof window !== 'undefined') {
-        localStorage.setItem('vertex_admin_token', token);
-        localStorage.setItem('vertex_admin_user', JSON.stringify(user));
+        try {
+          localStorage.removeItem('vertex_admin_token');
+          localStorage.removeItem('vertex_admin_user');
+          localStorage.removeItem('xydv_admin_token');
+          localStorage.removeItem('xydv_admin_user');
+        } catch {}
       }
 
       set({
@@ -105,12 +136,17 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
   },
 
   logout: () => {
+    setAccessToken(null);
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem('vertex_admin_token');
         localStorage.removeItem('vertex_admin_user');
+        localStorage.removeItem('xydv_admin_token');
+        localStorage.removeItem('xydv_admin_user');
       } catch {}
     }
+    // Call server to clear httpOnly refresh cookie
+    api.post('/auth/logout', {}).catch(() => {});
     set({ token: null, user: null, isAuthenticated: false, error: null });
   },
 
