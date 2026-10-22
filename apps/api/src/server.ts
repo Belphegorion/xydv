@@ -79,12 +79,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting (bypass webhooks so payment delivery IPs are not throttled)
 app.use('/api', (req, res, next) => {
-  if (req.path.startsWith('/webhooks')) return next();
+  if (req.path.startsWith('/webhooks') || req.path === '/health') return next();
   return apiLimiter(req, res, next);
 });
 
 // Health check with database connection readiness verification
-app.get('/health', (_req, res) => {
+const healthCheckHandler: express.RequestHandler = (_req, res) => {
   const isConnected = mongoose.connection.readyState === 1;
   if (!isConnected) {
     res.status(503).json({
@@ -99,7 +99,10 @@ app.get('/health', (_req, res) => {
     db: 'connected',
     timestamp: new Date().toISOString(),
   });
-});
+};
+
+app.get('/health', healthCheckHandler);
+app.get('/api/health', healthCheckHandler);
 
 // API Routes
 app.use('/api', apiRouter);

@@ -411,21 +411,26 @@ function AdminOrdersContent() {
                           <button
                             type="button"
                             onClick={() => handleOpenDetail(o)}
-                            className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
-                            title="Inspect Details"
-                            aria-label={`Inspect order #${shortId}`}
+                            className="btn-tactile inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                            title="Inspect order"
+                            aria-label="Inspect order"
+                            data-testid="inspect-order-btn"
+                            data-order-id={o._id}
                           >
                             <Eye size={16} />
+                            <span className="sr-only">Inspect order #{shortId}</span>
                           </button>
 
                           <button
                             type="button"
                             onClick={() => setInvoiceOrder(o)}
-                            className="btn-tactile inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] dark:hover:text-[#e8ff00]"
+                            className="btn-tactile inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-none p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] dark:hover:text-[#e8ff00]"
                             title="Print Invoice"
                             aria-label={`Print invoice for order #${shortId}`}
+                            data-testid="print-invoice-btn"
                           >
                             <Printer size={16} />
+                            <span className="sr-only">Print invoice</span>
                           </button>
                         </div>
                       </td>

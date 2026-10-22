@@ -516,18 +516,23 @@ export function CartDrawer() {
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               aria-label={`Decrease quantity for ${item.name}`}
-                              className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97] sm:min-h-[48px] sm:min-w-[48px]"
+                              data-testid="cart-qty-decrease"
+                              className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97] sm:min-h-[48px] sm:min-w-[48px]"
                             >
                               <Minus size={12} weight="bold" />
                             </button>
-                            <span className="w-8 text-center font-mono text-xs font-bold text-[var(--text-primary)]">
+                            <span
+                              className="w-8 text-center font-mono text-xs font-bold text-[var(--text-primary)]"
+                              data-testid="cart-item-quantity"
+                            >
                               {item.quantity}
                             </span>
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
                               disabled={item.quantity >= (item.maxStock ?? 99)}
                               aria-label={`Increase quantity for ${item.name}`}
-                              className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-30 sm:min-h-[48px] sm:min-w-[48px]"
+                              data-testid="cart-qty-increase"
+                              className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-30 sm:min-h-[48px] sm:min-w-[48px]"
                             >
                               <Plus size={12} weight="bold" />
                             </button>
@@ -536,7 +541,8 @@ export function CartDrawer() {
                           <button
                             onClick={() => removeItem(item.id)}
                             aria-label={`Remove ${item.name} from bag`}
-                            className="touch-target btn-tactile flex min-h-[48px] min-w-[48px] items-center justify-center p-2.5 text-[var(--text-muted)] transition-colors hover:text-[#ff3b3b] active:scale-[0.97]"
+                            data-testid="cart-item-remove"
+                            className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center p-2.5 text-[var(--text-muted)] transition-colors hover:text-[#ff3b3b] active:scale-[0.97] sm:min-h-[48px] sm:min-w-[48px]"
                           >
                             <Trash size={16} />
                           </button>

@@ -1,11 +1,15 @@
 import rateLimit from 'express-rate-limit';
 
-const isTest = process.env.NODE_ENV === 'test' || !process.env.NODE_ENV;
+const isTest = (): boolean =>
+  process.env.NODE_ENV === 'test' ||
+  process.env.NODE_ENV === 'development' ||
+  process.env.DISABLE_RATE_LIMIT === 'true' ||
+  !process.env.NODE_ENV;
 
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 200,
-  skip: () => isTest,
+  skip: () => isTest(),
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: 'Too many requests. Please try again later.' },
@@ -14,7 +18,7 @@ export const apiLimiter = rateLimit({
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
-  skip: () => isTest,
+  skip: () => isTest(),
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -27,7 +31,7 @@ export const authLimiter = rateLimit({
 export const orderLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 15,
-  skip: () => isTest,
+  skip: () => isTest(),
   standardHeaders: true,
   legacyHeaders: false,
   message: {

@@ -3,6 +3,7 @@ import mongoose, { type Document, type Model } from 'mongoose';
 export interface IReservationItem {
   productId: mongoose.Types.ObjectId;
   sku: string;
+  variantId?: string;
   quantity: number;
 }
 
@@ -19,7 +20,8 @@ export interface IReservation extends Document {
 const reservationItemSchema = new mongoose.Schema<IReservationItem>(
   {
     productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-    sku: { type: String, required: true },
+    sku: { type: String, default: '' },
+    variantId: { type: String },
     quantity: { type: Number, required: true, min: 1 },
   },
   { _id: false },

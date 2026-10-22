@@ -57,14 +57,34 @@ export class InventoryService {
     }> = [];
 
     for (const item of items) {
-      const variantFilter: Record<string, unknown> = { stock: { $gte: item.quantity } };
-      if (item.variantId && mongoose.isValidObjectId(item.variantId)) {
-        variantFilter._id = new mongoose.Types.ObjectId(item.variantId);
-      } else if (item.variantId) {
-        variantFilter.id = item.variantId;
+      let resolvedSku = item.sku;
+      if (!resolvedSku && item.variantId) {
+        const prodDoc = await Product.findById(item.productId).select('variants');
+        const matchedVar = prodDoc?.variants?.find(
+          (v) =>
+            (v._id && String(v._id) === String(item.variantId)) ||
+            (v.id && String(v.id) === String(item.variantId)),
+        );
+        if (matchedVar?.sku) {
+          resolvedSku = matchedVar.sku;
+        }
       }
-      if (item.sku) {
-        variantFilter.sku = item.sku;
+
+      const variantFilter: Record<string, unknown> = { stock: { $gte: item.quantity } };
+      const idOrConditions: Array<Record<string, unknown>> = [];
+      if (item.variantId) {
+        if (mongoose.isValidObjectId(item.variantId)) {
+          idOrConditions.push({ _id: new mongoose.Types.ObjectId(item.variantId) });
+        }
+        idOrConditions.push({ id: String(item.variantId) });
+      }
+      if (resolvedSku) {
+        idOrConditions.push({ sku: resolvedSku });
+      }
+      if (idOrConditions.length === 1) {
+        Object.assign(variantFilter, idOrConditions[0]);
+      } else if (idOrConditions.length > 1) {
+        variantFilter.$or = idOrConditions;
       }
 
       const query: mongoose.FilterQuery<IProduct> = {
@@ -86,12 +106,20 @@ export class InventoryService {
         // Rollback already reserved items
         for (const rolled of reservedItems) {
           const rollbackFilter: Record<string, unknown> = {};
-          if (rolled.variantId && mongoose.isValidObjectId(rolled.variantId)) {
-            rollbackFilter._id = new mongoose.Types.ObjectId(rolled.variantId);
-          } else if (rolled.variantId) {
-            rollbackFilter.id = rolled.variantId;
-          } else {
-            rollbackFilter.sku = rolled.sku;
+          const rollbackOrConditions: Array<Record<string, unknown>> = [];
+          if (rolled.variantId) {
+            if (mongoose.isValidObjectId(rolled.variantId)) {
+              rollbackOrConditions.push({ _id: new mongoose.Types.ObjectId(rolled.variantId) });
+            }
+            rollbackOrConditions.push({ id: String(rolled.variantId) });
+          }
+          if (rolled.sku) {
+            rollbackOrConditions.push({ sku: rolled.sku });
+          }
+          if (rollbackOrConditions.length === 1) {
+            Object.assign(rollbackFilter, rollbackOrConditions[0]);
+          } else if (rollbackOrConditions.length > 1) {
+            rollbackFilter.$or = rollbackOrConditions;
           }
 
           await Product.updateOne(
@@ -106,14 +134,14 @@ export class InventoryService {
           await this.syncProductInStock(rolled.productId);
         }
         throw new AppError(
-          `INSUFFICIENT_STOCK: Insufficient stock for item (${item.sku || item.variantId})`,
+          `INSUFFICIENT_STOCK: Insufficient stock for item (${item.sku || resolvedSku || item.variantId})`,
           400,
         );
       }
 
       reservedItems.push({
         productId: item.productId,
-        sku: item.sku || '',
+        sku: resolvedSku || item.sku || '',
         variantId: item.variantId ? String(item.variantId) : undefined,
         quantity: item.quantity,
       });
@@ -121,15 +149,48 @@ export class InventoryService {
     }
 
     const expiresAt = new Date(Date.now() + COMMERCE_CONSTANTS.RESERVATION_TTL_MS);
-    const reservation = await Reservation.create({
-      orderId,
-      razorpayOrderId,
-      items: reservedItems as IReservationItem[],
-      status: 'active',
-      expiresAt,
-    });
+    try {
+      const reservation = await Reservation.create({
+        orderId,
+        razorpayOrderId,
+        items: reservedItems as IReservationItem[],
+        status: 'active',
+        expiresAt,
+      });
+      return reservation;
+    } catch (createErr) {
+      // Rollback already reserved items if reservation document creation fails
+      for (const rolled of reservedItems) {
+        const rollbackFilter: Record<string, unknown> = {};
+        const rollbackOrConditions: Array<Record<string, unknown>> = [];
+        if (rolled.variantId) {
+          if (mongoose.isValidObjectId(rolled.variantId)) {
+            rollbackOrConditions.push({ _id: new mongoose.Types.ObjectId(rolled.variantId) });
+          }
+          rollbackOrConditions.push({ id: String(rolled.variantId) });
+        }
+        if (rolled.sku) {
+          rollbackOrConditions.push({ sku: rolled.sku });
+        }
+        if (rollbackOrConditions.length === 1) {
+          Object.assign(rollbackFilter, rollbackOrConditions[0]);
+        } else if (rollbackOrConditions.length > 1) {
+          rollbackFilter.$or = rollbackOrConditions;
+        }
 
-    return reservation;
+        await Product.updateOne(
+          { _id: rolled.productId, variants: { $elemMatch: rollbackFilter } },
+          {
+            $inc: {
+              'variants.$.stock': rolled.quantity,
+              'variants.$.reservedStock': -rolled.quantity,
+            },
+          },
+        );
+        await this.syncProductInStock(rolled.productId);
+      }
+      throw createErr;
+    }
   }
 
   /**
@@ -154,10 +215,11 @@ export class InventoryService {
     if (isObjectId) {
       variantMatch.$or = [
         { _id: new mongoose.Types.ObjectId(variantIdOrSku) },
+        { id: String(variantIdOrSku) },
         { sku: String(variantIdOrSku) },
       ];
     } else {
-      variantMatch.sku = String(variantIdOrSku);
+      variantMatch.$or = [{ id: String(variantIdOrSku) }, { sku: String(variantIdOrSku) }];
     }
 
     const query: mongoose.FilterQuery<IProduct> = {
@@ -196,10 +258,16 @@ export class InventoryService {
     }
 
     for (const item of reservation.items) {
-      await Product.updateOne(
-        { _id: item.productId, 'variants.sku': item.sku },
-        { $inc: { 'variants.$.reservedStock': -item.quantity } },
-      );
+      const filter: Record<string, unknown> = { _id: item.productId };
+      if (item.sku) {
+        filter['variants.sku'] = item.sku;
+      } else if (item.variantId && mongoose.isValidObjectId(item.variantId)) {
+        filter['variants._id'] = new mongoose.Types.ObjectId(item.variantId);
+      } else if (item.variantId) {
+        filter['variants.id'] = item.variantId;
+      }
+
+      await Product.updateOne(filter, { $inc: { 'variants.$.reservedStock': -item.quantity } });
     }
 
     return true;
@@ -220,15 +288,21 @@ export class InventoryService {
     }
 
     for (const item of reservation.items) {
-      await Product.updateOne(
-        { _id: item.productId, 'variants.sku': item.sku },
-        {
-          $inc: {
-            'variants.$.stock': item.quantity,
-            'variants.$.reservedStock': -item.quantity,
-          },
+      const filter: Record<string, unknown> = { _id: item.productId };
+      if (item.sku) {
+        filter['variants.sku'] = item.sku;
+      } else if (item.variantId && mongoose.isValidObjectId(item.variantId)) {
+        filter['variants._id'] = new mongoose.Types.ObjectId(item.variantId);
+      } else if (item.variantId) {
+        filter['variants.id'] = item.variantId;
+      }
+
+      await Product.updateOne(filter, {
+        $inc: {
+          'variants.$.stock': item.quantity,
+          'variants.$.reservedStock': -item.quantity,
         },
-      );
+      });
       await this.syncProductInStock(item.productId);
     }
 
@@ -259,15 +333,21 @@ export class InventoryService {
 
       // Return stock
       for (const item of reservation.items) {
-        await Product.updateOne(
-          { _id: item.productId, 'variants.sku': item.sku },
-          {
-            $inc: {
-              'variants.$.stock': item.quantity,
-              'variants.$.reservedStock': -item.quantity,
-            },
+        const filter: Record<string, unknown> = { _id: item.productId };
+        if (item.sku) {
+          filter['variants.sku'] = item.sku;
+        } else if (item.variantId && mongoose.isValidObjectId(item.variantId)) {
+          filter['variants._id'] = new mongoose.Types.ObjectId(item.variantId);
+        } else if (item.variantId) {
+          filter['variants.id'] = item.variantId;
+        }
+
+        await Product.updateOne(filter, {
+          $inc: {
+            'variants.$.stock': item.quantity,
+            'variants.$.reservedStock': -item.quantity,
           },
-        );
+        });
         await this.syncProductInStock(item.productId);
       }
 

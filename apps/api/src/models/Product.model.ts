@@ -78,6 +78,10 @@ const imageSchema = new mongoose.Schema<IProductImage>(
 );
 
 const variantSchema = new mongoose.Schema<IProductVariant>({
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: () => new mongoose.Types.ObjectId(),
+  },
   id: { type: String },
   sku: { type: String, required: true },
   color: { type: String, required: true },
@@ -151,6 +155,14 @@ const productSchema = new mongoose.Schema<IProduct>(
 // Auto-sync virtuals / pre-validate hook
 productSchema.pre('validate', function (next) {
   if (this.variants && this.variants.length > 0) {
+    this.variants.forEach((v) => {
+      if (!v._id) {
+        v._id = new mongoose.Types.ObjectId();
+      }
+      if (!v.id) {
+        v.id = String(v._id);
+      }
+    });
     const skus = this.variants.map((v) => v.sku?.trim().toUpperCase()).filter(Boolean);
     if (new Set(skus).size !== skus.length) {
       return next(new Error('Each variant must have a unique SKU code within the product'));
@@ -168,6 +180,17 @@ productSchema.pre('validate', function (next) {
     this.featured = true;
   } else if (this.featured && !this.isFeatured) {
     this.isFeatured = true;
+  }
+  // Sync imageUrl from primary or first image if not explicitly set
+  if (this.images && this.images.length > 0 && !this.imageUrl) {
+    const primaryImg =
+      this.images.find(
+        (img) => typeof img === 'object' && img !== null && 'isPrimary' in img && img.isPrimary,
+      ) || this.images[0];
+    const url = typeof primaryImg === 'string' ? primaryImg : primaryImg?.url;
+    if (url) {
+      this.imageUrl = url;
+    }
   }
   next();
 });

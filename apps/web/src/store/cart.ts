@@ -87,6 +87,12 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: 'xydv-cart',
+      partialize: (state) => ({ items: state.items }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.isOpen = false;
+        }
+      },
       storage: createJSONStorage(() => ({
         getItem: (name: string): string | null => {
           if (typeof window === 'undefined') return null;

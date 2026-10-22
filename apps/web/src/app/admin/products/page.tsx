@@ -51,9 +51,10 @@ function AdminProductsContent() {
   const [price, setPrice] = useState<number>(148);
   const [compareAt, setCompareAt] = useState<number | undefined>(undefined);
   const [tagsInput, setTagsInput] = useState('');
-  const [images, setImages] = useState<Array<{ url: string; alt?: string; isPrimary?: boolean }>>(
-    [],
-  );
+  const [images, setImages] = useState<
+    Array<{ url: string; alt?: string; isPrimary?: boolean; isSecondary?: boolean }>
+  >([]);
+  const [imageUrlInput, setImageUrlInput] = useState('');
   const [variants, setVariants] = useState<ProductVariant[]>([
     {
       sku: 'XYDV-001-BLK-M',
@@ -221,12 +222,20 @@ function AdminProductsContent() {
 
       const res = await api.post<{ data: { urls: string[] } }>('/admin/upload', formData);
       if (res.data?.urls) {
+        setIsDirty(true);
         const newImages = res.data.urls.map((url, idx) => ({
           url,
           alt: `${name || 'Product'} image`,
           isPrimary: images.length === 0 && idx === 0,
+          isSecondary: (images.length === 0 && idx === 1) || (images.length === 1 && idx === 0),
         }));
-        setImages((prev) => [...prev, ...newImages]);
+        setImages((prev) => {
+          const combined = [...prev, ...newImages];
+          if (combined.length > 0 && !combined.some((img) => img.isPrimary)) {
+            combined[0] = { ...combined[0], isPrimary: true };
+          }
+          return combined;
+        });
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Image upload failed';
@@ -235,6 +244,51 @@ function AdminProductsContent() {
       setIsUploading(false);
       e.target.value = '';
     }
+  };
+
+  const handleRemoveImage = (targetIdx: number) => {
+    setIsDirty(true);
+    setImages((prev) => {
+      const updated = prev.filter((_, i) => i !== targetIdx);
+      if (updated.length > 0 && !updated.some((img) => img.isPrimary)) {
+        updated[0] = { ...updated[0], isPrimary: true, isSecondary: false };
+      }
+      return updated;
+    });
+  };
+
+  const handleSetPrimaryImage = (targetIdx: number) => {
+    setIsDirty(true);
+    setImages((prev) =>
+      prev.map((img, idx) => ({
+        ...img,
+        isPrimary: idx === targetIdx,
+        isSecondary: idx === (targetIdx === 0 ? 1 : 0),
+      })),
+    );
+  };
+
+  const handleAddImageUrl = () => {
+    const url = imageUrlInput.trim();
+    if (!url) return;
+    setIsDirty(true);
+    setImages((prev) => {
+      const isFirst = prev.length === 0;
+      const combined = [
+        ...prev,
+        {
+          url,
+          alt: `${name || 'Product'} image`,
+          isPrimary: isFirst,
+          isSecondary: prev.length === 1,
+        },
+      ];
+      if (!combined.some((img) => img.isPrimary)) {
+        combined[0] = { ...combined[0], isPrimary: true };
+      }
+      return combined;
+    });
+    setImageUrlInput('');
   };
 
   // Open modal for Create
@@ -249,6 +303,7 @@ function AdminProductsContent() {
     setCompareAt(undefined);
     setTagsInput('tactical, waterproof');
     setImages([]);
+    setImageUrlInput('');
     setVariants([
       {
         sku: `XYDV-${Date.now().toString().slice(-4)}-BLK-M`,
@@ -282,13 +337,21 @@ function AdminProductsContent() {
           : undefined;
     setCompareAt(validCompareAt);
     setTagsInput((p.tags || []).join(', '));
-    setImages(
-      (p.images || []).map((img) =>
-        typeof img === 'string'
-          ? { url: img, isPrimary: false }
-          : { url: img.url, alt: img.alt, isPrimary: img.isPrimary },
-      ),
+    setImageUrlInput('');
+    const rawImages = (p.images || []).map((img, idx) =>
+      typeof img === 'string'
+        ? { url: img, isPrimary: idx === 0, isSecondary: idx === 1 }
+        : {
+            url: img.url,
+            alt: img.alt,
+            isPrimary: img.isPrimary ?? idx === 0,
+            isSecondary: img.isSecondary ?? idx === 1,
+          },
     );
+    if (rawImages.length > 0 && !rawImages.some((img) => img.isPrimary)) {
+      rawImages[0].isPrimary = true;
+    }
+    setImages(rawImages);
     setVariants(
       p.variants && p.variants.length > 0
         ? p.variants
@@ -325,6 +388,25 @@ function AdminProductsContent() {
         .map((t) => t.trim().toLowerCase())
         .filter(Boolean);
 
+      const hasAnyPrimary = images.some((i) => i.isPrimary);
+      const normalizedImages = images.map((img, idx) => {
+        const isPrimary = hasAnyPrimary ? Boolean(img.isPrimary) : idx === 0;
+        return {
+          url: img.url.trim(),
+          alt: img.alt?.trim() || `${name.trim()} image ${idx + 1}`,
+          isPrimary,
+          isSecondary: isPrimary ? false : Boolean(img.isSecondary),
+        };
+      });
+
+      if (normalizedImages.length > 0 && !normalizedImages.some((i) => i.isPrimary)) {
+        normalizedImages[0].isPrimary = true;
+        normalizedImages[0].isSecondary = false;
+      }
+
+      const primaryImgUrl =
+        normalizedImages.find((i) => i.isPrimary)?.url || normalizedImages[0]?.url;
+
       const payload = {
         name: name.trim(),
         brand: brand.trim(),
@@ -333,7 +415,8 @@ function AdminProductsContent() {
         price: Number(price),
         compareAt: compareAt && Number(compareAt) > Number(price) ? Number(compareAt) : undefined,
         tags,
-        images,
+        images: normalizedImages,
+        imageUrl: primaryImgUrl,
         variants,
         isPublished,
         lowStockThreshold: Number(lowStockThreshold) || 5,
@@ -936,22 +1019,71 @@ function AdminProductsContent() {
                   </label>
                 </div>
 
+                {/* Add Image by URL */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={imageUrlInput}
+                    onChange={(e) => setImageUrlInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddImageUrl();
+                      }
+                    }}
+                    placeholder="Add image URL (/products/lookbook-1.jpg or https://...)"
+                    className="flex-1 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddImageUrl}
+                    className="btn-tactile inline-flex min-h-[34px] items-center gap-1 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase transition-colors hover:border-[var(--text-primary)] active:scale-[0.97]"
+                  >
+                    <Plus size={14} />
+                    <span>Add</span>
+                  </button>
+                </div>
+
                 {images.length > 0 ? (
-                  <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                     {images.map((img, idx) => (
                       <div
                         key={img.url || idx}
-                        className="group relative h-20 w-full overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-elevated)]"
+                        className={`group relative h-24 w-full overflow-hidden rounded-none border bg-[var(--bg-elevated)] ${
+                          img.isPrimary
+                            ? 'border-[#e8ff00] ring-1 ring-[#e8ff00]'
+                            : 'border-[var(--border)]'
+                        }`}
                       >
-                        <img src={img.url} alt="Upload" className="h-full w-full object-cover" />
+                        <img
+                          src={img.url}
+                          alt={img.alt || 'Upload'}
+                          className="h-full w-full object-cover"
+                        />
+
+                        {/* Primary Badge or Set Primary Action */}
+                        {img.isPrimary ? (
+                          <span className="absolute bottom-1 left-1 rounded-none border border-[#e8ff00]/60 bg-black/90 px-1 py-0.5 font-mono text-[9px] font-bold tracking-wider text-[#e8ff00] uppercase">
+                            Primary
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleSetPrimaryImage(idx)}
+                            className="btn-tactile absolute bottom-1 left-1 rounded-none bg-black/85 px-1.5 py-0.5 font-mono text-[9px] text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100 hover:text-[#e8ff00] active:scale-[0.97]"
+                            aria-label={`Set image ${idx + 1} as primary`}
+                            title="Set as primary"
+                          >
+                            Set Primary
+                          </button>
+                        )}
+
                         <button
                           type="button"
-                          onClick={() => {
-                            setIsDirty(true);
-                            setImages((prev) => prev.filter((_, i) => i !== idx));
-                          }}
+                          onClick={() => handleRemoveImage(idx)}
                           className="btn-tactile absolute top-1 right-1 rounded-none bg-black/80 p-1 text-[#ff3b3b] opacity-0 transition-opacity group-hover:opacity-100 active:scale-[0.97]"
-                          aria-label="Remove image"
+                          aria-label={`Remove image ${idx + 1}`}
+                          title="Remove image"
                         >
                           <X size={12} />
                         </button>
@@ -960,7 +1092,7 @@ function AdminProductsContent() {
                   </div>
                 ) : (
                   <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--bg-elevated)] p-4 text-center font-mono text-xs text-[var(--text-muted)]">
-                    No images uploaded yet. Click &quot;Upload Images&quot; to select files.
+                    No images uploaded yet. Click &quot;Upload Images&quot; or paste an image URL.
                   </div>
                 )}
               </div>
