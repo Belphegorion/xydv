@@ -32,15 +32,62 @@ import { formatPrice } from '@/lib/utils';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 import { api } from '@/lib/api';
 
-function mapApiProductToCatalog(apiProd: any, existingStatic?: CatalogProduct): CatalogProduct {
+interface ApiProductVariant {
+  _id?: string;
+  id?: string;
+  sku?: string;
+  color?: string;
+  colorName?: string;
+  colorHex?: string;
+  size?: string;
+  imageUrl?: string;
+  secondaryImageUrl?: string;
+  images?: string[];
+  stock?: number;
+}
+
+interface ApiProductInput {
+  _id?: string;
+  id?: string;
+  name: string;
+  slug: string;
+  category?: string;
+  discipline?: string;
+  gender?: string;
+  price?: number;
+  compareAt?: number;
+  specsSummary?: string;
+  description?: string;
+  features?: string[];
+  variants?: ApiProductVariant[];
+  averageRating?: number;
+  reviewCount?: number;
+}
+
+function parseCategory(val: unknown): CatalogProduct['category'] {
+  if (val === 'bottoms' || val === 'outerwear' || val === 'accessories') return val;
+  return 'tops';
+}
+
+function parseDiscipline(val: unknown): CatalogProduct['discipline'] {
+  if (val === 'run' || val === 'rec') return val;
+  return 'train';
+}
+
+function parseGender(val: unknown): CatalogProduct['gender'] {
+  if (val === 'men' || val === 'women') return val;
+  return 'unisex';
+}
+
+function mapApiProductToCatalog(apiProd: ApiProductInput, existingStatic?: CatalogProduct): CatalogProduct {
   if (existingStatic) {
     return {
       ...existingStatic,
       price: typeof apiProd.price === 'number' ? apiProd.price : existingStatic.price,
       compareAtPrice: typeof apiProd.compareAt === 'number' ? apiProd.compareAt : existingStatic.compareAtPrice,
-      category: apiProd.category || existingStatic.category,
+      category: parseCategory(apiProd.category || existingStatic.category),
       variants: Array.isArray(apiProd.variants) && apiProd.variants.length > 0
-        ? apiProd.variants.map((v: any, idx: number) => {
+        ? apiProd.variants.map((v: ApiProductVariant, idx: number) => {
             const staticVar = existingStatic.variants[idx] || existingStatic.variants[0];
             return {
               id: v._id || v.id || staticVar.id,
@@ -66,9 +113,9 @@ function mapApiProductToCatalog(apiProd: any, existingStatic?: CatalogProduct): 
     id: apiProd._id || apiProd.id || `prod_${apiProd.slug}`,
     name: apiProd.name,
     slug: apiProd.slug,
-    category: (apiProd.category || 'tops') as any,
-    discipline: (apiProd.discipline || 'train') as any,
-    gender: (apiProd.gender || 'unisex') as any,
+    category: parseCategory(apiProd.category),
+    discipline: parseDiscipline(apiProd.discipline),
+    gender: parseGender(apiProd.gender),
     price: typeof apiProd.price === 'number' ? apiProd.price : 50,
     compareAtPrice: apiProd.compareAt,
     specsSummary: apiProd.specsSummary || 'Engineered Activewear / High Performance',
@@ -84,7 +131,7 @@ function mapApiProductToCatalog(apiProd: any, existingStatic?: CatalogProduct): 
     careInstructions: ['Machine wash cold', 'Tumble dry low', 'Do not bleach'],
     biomechanics: 'Engineered for unrestrained range of motion under high thermal output.',
     variants: Array.isArray(apiProd.variants) && apiProd.variants.length > 0
-      ? apiProd.variants.map((v: any, idx: number) => ({
+      ? apiProd.variants.map((v: ApiProductVariant, idx: number) => ({
           id: v._id || v.id || `var_${apiProd.slug}_${idx}`,
           sku: v.sku || `SKU-${idx}`,
           colorName: v.colorName || v.color || 'Void Obsidian',
@@ -121,29 +168,30 @@ interface PageProps {
 export default function ProductDetailPage({ params }: PageProps) {
   const { slug } = use(params);
   const staticProduct = getProductBySlug(slug);
-  const [product, setProduct] = useState<CatalogProduct | null>(staticProduct || null);
-  const [isLoading, setIsLoading] = useState(!staticProduct);
+  const [product, setProduct] = useState<CatalogProduct | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
+    setIsLoading(true);
+    setIsNotFound(false);
+
     api
-      .get<{ data?: any }>(`/products/${slug}`)
+      .get<{ data?: ApiProductInput; product?: ApiProductInput }>(`/products/${slug}`)
       .then((res) => {
         if (!isMounted) return;
-        const apiProd = res?.data;
+        const apiProd = res?.data || res?.product;
         if (apiProd) {
-          setProduct((prev) => mapApiProductToCatalog(apiProd, prev || staticProduct));
+          setProduct(mapApiProductToCatalog(apiProd, staticProduct));
           setIsNotFound(false);
-        } else if (!staticProduct) {
+        } else {
           setIsNotFound(true);
         }
       })
       .catch(() => {
         if (!isMounted) return;
-        if (!staticProduct) {
-          setIsNotFound(true);
-        }
+        setIsNotFound(true);
       })
       .finally(() => {
         if (isMounted) {
@@ -158,9 +206,7 @@ export default function ProductDetailPage({ params }: PageProps) {
 
   const [activeVariantIdx, setActiveVariantIdx] = useState(0);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
-  const [selectedSize, setSelectedSize] = useState<string>(
-    (staticProduct?.category || product?.category) === 'accessories' ? 'OS' : 'M'
-  );
+  const [selectedSize, setSelectedSize] = useState<string>('M');
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<string | null>('materials');
@@ -186,6 +232,32 @@ export default function ProductDetailPage({ params }: PageProps) {
     [product],
   );
 
+  const sizes = useMemo(() => {
+    if (!product) return [];
+    if (product.category === 'accessories') return ['OS'];
+    if (Array.isArray(product.variants) && product.variants.length > 0) {
+      const derived = Array.from(
+        new Set(
+          product.variants
+            .map((v) => v.size)
+            .filter((s): s is string => Boolean(s)),
+        ),
+      );
+      if (derived.length > 0) return derived;
+    }
+    return ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  }, [product]);
+
+  useEffect(() => {
+    if (product) {
+      if (product.category === 'accessories') {
+        setSelectedSize('OS');
+      } else if (sizes.length > 0 && !sizes.includes(selectedSize)) {
+        setSelectedSize(sizes[0]);
+      }
+    }
+  }, [product, sizes, selectedSize]);
+
   if (isNotFound) {
     notFound();
   }
@@ -210,12 +282,18 @@ export default function ProductDetailPage({ params }: PageProps) {
     ? activeVariant.gallery
     : [activeVariant.primaryImage, activeVariant.secondaryImage || activeVariant.primaryImage];
 
-  const sizes = product.category === 'accessories' ? ['OS'] : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-
-  // Handle Size Selection
+  // Handle Size Selection dynamically derived from variant stock
   const isSizeDisabled = (size: string) => {
-    if (product.category === 'accessories') return false;
-    if (activeVariant.sku.startsWith('VPT-VLT') && size === 'XL') return true;
+    if (!product || product.category === 'accessories') return false;
+    const matchingVariant = product.variants.find(
+      (v) =>
+        v.size === size &&
+        (v.colorName === activeVariant.colorName || v.colorHex === activeVariant.colorHex),
+    ) ?? product.variants.find((v) => v.size === size);
+
+    if (matchingVariant) {
+      return typeof matchingVariant.stock === 'number' && matchingVariant.stock <= 0;
+    }
     return false;
   };
 

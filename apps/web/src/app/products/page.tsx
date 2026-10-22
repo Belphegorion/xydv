@@ -28,15 +28,62 @@ import { formatPrice, getAvailableSizes } from '@/lib/utils';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 import { api } from '@/lib/api';
 
-function mapApiProductToCatalog(apiProd: any, existingStatic?: CatalogProduct): CatalogProduct {
+interface ApiProductVariant {
+  _id?: string;
+  id?: string;
+  sku?: string;
+  color?: string;
+  colorName?: string;
+  colorHex?: string;
+  size?: string;
+  imageUrl?: string;
+  secondaryImageUrl?: string;
+  images?: string[];
+  stock?: number;
+}
+
+interface ApiProductInput {
+  _id?: string;
+  id?: string;
+  name: string;
+  slug: string;
+  category?: string;
+  discipline?: string;
+  gender?: string;
+  price?: number;
+  compareAt?: number;
+  specsSummary?: string;
+  description?: string;
+  features?: string[];
+  variants?: ApiProductVariant[];
+  averageRating?: number;
+  reviewCount?: number;
+}
+
+function parseCategory(val: unknown): CatalogProduct['category'] {
+  if (val === 'bottoms' || val === 'outerwear' || val === 'accessories') return val;
+  return 'tops';
+}
+
+function parseDiscipline(val: unknown): CatalogProduct['discipline'] {
+  if (val === 'run' || val === 'rec') return val;
+  return 'train';
+}
+
+function parseGender(val: unknown): CatalogProduct['gender'] {
+  if (val === 'men' || val === 'women') return val;
+  return 'unisex';
+}
+
+function mapApiProductToCatalog(apiProd: ApiProductInput, existingStatic?: CatalogProduct): CatalogProduct {
   if (existingStatic) {
     return {
       ...existingStatic,
       price: typeof apiProd.price === 'number' ? apiProd.price : existingStatic.price,
       compareAtPrice: typeof apiProd.compareAt === 'number' ? apiProd.compareAt : existingStatic.compareAtPrice,
-      category: apiProd.category || existingStatic.category,
+      category: parseCategory(apiProd.category || existingStatic.category),
       variants: Array.isArray(apiProd.variants) && apiProd.variants.length > 0
-        ? apiProd.variants.map((v: any, idx: number) => {
+        ? apiProd.variants.map((v: ApiProductVariant, idx: number) => {
             const staticVar = existingStatic.variants[idx] || existingStatic.variants[0];
             return {
               id: v._id || v.id || staticVar.id,
@@ -62,9 +109,9 @@ function mapApiProductToCatalog(apiProd: any, existingStatic?: CatalogProduct): 
     id: apiProd._id || apiProd.id || `prod_${apiProd.slug}`,
     name: apiProd.name,
     slug: apiProd.slug,
-    category: (apiProd.category || 'tops') as any,
-    discipline: (apiProd.discipline || 'train') as any,
-    gender: (apiProd.gender || 'unisex') as any,
+    category: parseCategory(apiProd.category),
+    discipline: parseDiscipline(apiProd.discipline),
+    gender: parseGender(apiProd.gender),
     price: typeof apiProd.price === 'number' ? apiProd.price : 50,
     compareAtPrice: apiProd.compareAt,
     specsSummary: apiProd.specsSummary || 'Engineered Activewear / High Performance',
@@ -80,7 +127,7 @@ function mapApiProductToCatalog(apiProd: any, existingStatic?: CatalogProduct): 
     careInstructions: ['Machine wash cold', 'Tumble dry low', 'Do not bleach'],
     biomechanics: 'Engineered for unrestrained range of motion under high thermal output.',
     variants: Array.isArray(apiProd.variants) && apiProd.variants.length > 0
-      ? apiProd.variants.map((v: any, idx: number) => ({
+      ? apiProd.variants.map((v: ApiProductVariant, idx: number) => ({
           id: v._id || v.id || `var_${apiProd.slug}_${idx}`,
           sku: v.sku || `SKU-${idx}`,
           colorName: v.colorName || v.color || 'Void Obsidian',
@@ -162,7 +209,7 @@ function CatalogCard({
     ? activeVariant.gallery
     : [activeVariant.primaryImage, activeVariant.secondaryImage || activeVariant.primaryImage];
 
-  const sizes = getAvailableSizes(product.category, activeVariant.sku);
+  const sizes = getAvailableSizes(product.category, activeVariant.sku, product.variants);
 
   // Reset image idx when variant changes
   useEffect(() => {
@@ -460,41 +507,39 @@ function CatalogContent() {
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
 
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
-  const [catalogProducts, setCatalogProducts] = useState<CatalogProduct[]>(CATALOG_PRODUCTS);
+  const [catalogProducts, setCatalogProducts] = useState<CatalogProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
 
-  // Dynamically load products from backend API when available
+  // Dynamically load products from backend API
   useEffect(() => {
     let isMounted = true;
+    setIsLoading(true);
     api
-      .get<{ data?: any[]; products?: any[] }>('/products?limit=100')
+      .get<{ data?: ApiProductInput[]; products?: ApiProductInput[] }>('/products?limit=100')
       .then((res) => {
         if (!isMounted) return;
         const raw = res?.data ?? res?.products;
-        if (Array.isArray(raw) && raw.length > 0) {
+        if (Array.isArray(raw)) {
           const staticMap = new Map(CATALOG_PRODUCTS.map((p) => [p.slug, p]));
-          const merged: CatalogProduct[] = [];
-          const seenSlugs = new Set<string>();
-
-          for (const item of raw) {
-            const existing = staticMap.get(item.slug);
-            merged.push(mapApiProductToCatalog(item, existing));
-            seenSlugs.add(item.slug);
-          }
-
-          for (const p of CATALOG_PRODUCTS) {
-            if (!seenSlugs.has(p.slug)) {
-              merged.push(p);
-            }
-          }
-
-          setCatalogProducts(merged);
+          const loaded: CatalogProduct[] = raw.map((item) =>
+            mapApiProductToCatalog(item, staticMap.get(item.slug)),
+          );
+          setCatalogProducts(loaded);
+        } else {
+          setCatalogProducts([]);
         }
       })
       .catch(() => {
-        // Graceful offline fallback
+        if (!isMounted) return;
+        setCatalogProducts([]);
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       });
 
     return () => {
@@ -749,7 +794,13 @@ function CatalogContent() {
         </div>
 
         {/* Product Grid */}
-        {filteredProducts.length === 0 ? (
+        {isLoading && catalogProducts.length === 0 ? (
+          <div className="py-24 text-center">
+            <p className="text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest animate-pulse">
+              [ SYNCHRONIZING REAL-TIME INVENTORY STREAM... ]
+            </p>
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="py-24 text-center border border-dashed border-[var(--border)] p-8">
             <p className="text-sm font-mono text-[var(--text-muted)] uppercase tracking-widest">
               [ NO MATCHING HARDWARE FOUND IN ARCHIVE ]
