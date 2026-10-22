@@ -124,6 +124,31 @@ describe('Batch 1: HIGH-01 - Purge Legacy Vertex and XLRV Branding', () => {
     const uploadTs = fs.readFileSync(path.join(apiDir, 'src', 'middleware', 'upload.ts'), 'utf-8');
     assert.match(uploadTs, /xydv_products/);
   });
+
+  it('Theme preference and announcement dismissal use xydv keys with legacy fallback', () => {
+    const themeToggle = fs.readFileSync(
+      path.join(webDir, 'src', 'components', 'ui', 'ThemeToggle.tsx'),
+      'utf-8',
+    );
+    assert.match(themeToggle, /localStorage\.getItem\('xydv-theme'\)/);
+    assert.match(themeToggle, /localStorage\.getItem\('vertex-theme'\)/);
+    assert.match(themeToggle, /localStorage\.setItem\('xydv-theme'/);
+    assert.match(themeToggle, /localStorage\.removeItem\('vertex-theme'\)/);
+
+    const layout = fs.readFileSync(path.join(webDir, 'src', 'app', 'layout.tsx'), 'utf-8');
+    assert.match(layout, /localStorage\.getItem\('xydv-theme'\)/);
+
+    const announcement = fs.readFileSync(
+      path.join(webDir, 'src', 'components', 'layout', 'AnnouncementBar.tsx'),
+      'utf-8',
+    );
+    assert.match(announcement, /localStorage\.getItem\('xydv-announcement-dismissed'\)/);
+    assert.match(announcement, /localStorage\.setItem\('xydv-announcement-dismissed'/);
+
+    const openapi = fs.readFileSync(path.join(apiDir, 'openapi.yaml'), 'utf-8');
+    assert.match(openapi, /api\.xydv\.com/);
+    assert.doesNotMatch(openapi, /vertex-fashion/);
+  });
 });
 
 describe('Batch 1: HIGH-08 - Admin Auth Token In-Memory & Secure Cookie Migration', () => {
@@ -134,17 +159,27 @@ describe('Batch 1: HIGH-08 - Admin Auth Token In-Memory & Secure Cookie Migratio
     assert.match(adminAuth, /setAccessToken\(token\)/);
   });
 
-  it('Admin store implements silent session renewal via /auth/refresh', () => {
+  it('Admin store implements silent session renewal via /auth/refresh and token observers', () => {
     const adminAuth = fs.readFileSync(path.join(webDir, 'src', 'store', 'adminAuth.ts'), 'utf-8');
     assert.match(adminAuth, /api\.post[\s\S]*'\/auth\/refresh'/);
+    assert.match(adminAuth, /onAccessTokenChange/);
     assert.match(adminAuth, /setAccessToken\(token\)/);
   });
 
-  it('api.ts manages access token in memory with getAccessToken/setAccessToken', () => {
+  it('api.ts manages access token in memory with getAccessToken/setAccessToken and observer', () => {
     const apiTs = fs.readFileSync(path.join(webDir, 'src', 'lib', 'api.ts'), 'utf-8');
     assert.match(apiTs, /export function setAccessToken/);
     assert.match(apiTs, /export function getAccessToken/);
+    assert.match(apiTs, /export function onAccessTokenChange/);
     assert.match(apiTs, /inMemoryAccessToken/);
+  });
+
+  it('api.ts transparently intercepts 401 and attempts single-flight token refresh', () => {
+    const apiTs = fs.readFileSync(path.join(webDir, 'src', 'lib', 'api.ts'), 'utf-8');
+    assert.match(apiTs, /requestTokenRefresh/);
+    assert.match(apiTs, /refreshPromise/);
+    assert.match(apiTs, /_isRetry/);
+    assert.match(apiTs, /isAuthEndpoint/);
   });
 
   it('AdminGuard awaits initialize before rendering protected view', () => {
