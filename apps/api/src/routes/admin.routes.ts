@@ -1,4 +1,4 @@
-import { Router, type Request, type Response, type NextFunction } from 'express';
+import { Router } from 'express';
 import { adminController } from '../controllers/admin.controller';
 import { requireAdmin } from '../middleware/auth';
 import { upload, validateUploadMagicBytes } from '../middleware/upload';
