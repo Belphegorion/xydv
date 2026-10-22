@@ -468,6 +468,35 @@ function BestsellerMedia({
   );
 }
 
+export function computeDynamicRating(product: {
+  averageRating?: number;
+  reviewCount?: number;
+  ratings?: number[];
+  reviews?: Array<{ rating: number }>;
+  rating?: string | number;
+}): string | null {
+  if (Array.isArray(product.reviews) && product.reviews.length > 0) {
+    const sum = product.reviews.reduce(
+      (acc, r) => acc + (typeof r.rating === 'number' ? r.rating : 5),
+      0,
+    );
+    const avg = sum / product.reviews.length;
+    return `${avg.toFixed(1)} / 5.0 (${product.reviews.length} reviews)`;
+  }
+  if (Array.isArray(product.ratings) && product.ratings.length > 0) {
+    const sum = product.ratings.reduce((acc, r) => acc + (typeof r === 'number' ? r : 5), 0);
+    const avg = sum / product.ratings.length;
+    return `${avg.toFixed(1)} / 5.0 (${product.ratings.length} reviews)`;
+  }
+  if (typeof product.averageRating === 'number' && product.averageRating > 0) {
+    return `${product.averageRating.toFixed(1)} / 5.0 (${product.reviewCount ?? 0} reviews)`;
+  }
+  if (typeof product.rating === 'number' && product.rating > 0) {
+    return `${product.rating.toFixed(1)} / 5.0 (${product.reviewCount ?? 0} reviews)`;
+  }
+  return null;
+}
+
 export function BestsellerGrid() {
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
@@ -485,10 +514,7 @@ export function BestsellerGrid() {
           const staticMap = new Map(BESTSELLERS.map((p) => [p.slug, p]));
           const mapped = raw.slice(0, 3).map((item) => {
             const st = staticMap.get(item.slug);
-            const dynamicRating =
-              typeof item.averageRating === 'number' && item.averageRating > 0
-                ? `${item.averageRating.toFixed(1)} / 5.0 (${item.reviewCount ?? 0} reviews)`
-                : null;
+            const dynamicRating = computeDynamicRating(item);
             if (st) {
               return {
                 ...st,
