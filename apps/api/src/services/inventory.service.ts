@@ -29,7 +29,9 @@ export class InventoryService {
         }
       }
     } catch (err) {
-      console.warn(`[InventoryService] Failed to sync inStock for product ${productId}:`, err);
+      logger.warn(`[InventoryService] Failed to sync inStock for product ${productId}:`, {
+        error: err,
+      });
     }
   }
 

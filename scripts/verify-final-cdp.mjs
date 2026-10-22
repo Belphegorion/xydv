@@ -10,17 +10,19 @@ const TMP_DIR = path.join(os.tmpdir(), 'cdp_verify_final_' + Date.now());
 
 function getJson(url) {
   return new Promise((resolve, reject) => {
-    http.get(url, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          resolve(JSON.parse(data));
-        } catch (e) {
-          reject(e);
-        }
-      });
-    }).on('error', reject);
+    http
+      .get(url, (res) => {
+        let data = '';
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      })
+      .on('error', reject);
   });
 }
 
@@ -33,11 +35,11 @@ async function runVerification() {
     '--user-data-dir=' + TMP_DIR,
     '--no-sandbox',
     '--disable-gpu',
-    'about:blank'
+    'about:blank',
   ]);
 
   for (let i = 0; i < 30; i++) {
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, 200));
     try {
       await getJson('http://127.0.0.1:' + PORT + '/json/version');
       break;
@@ -45,7 +47,7 @@ async function runVerification() {
   }
 
   const tabs = await getJson('http://127.0.0.1:' + PORT + '/json/list');
-  const pageTab = tabs.find(t => t.type === 'page') || tabs[0];
+  const pageTab = tabs.find((t) => t.type === 'page') || tabs[0];
   const ws = new WebSocket(pageTab.webSocketDebuggerUrl);
 
   let nextId = 1;
@@ -61,7 +63,7 @@ async function runVerification() {
       else cb.resolve(msg.result);
     }
     if (msg.method === 'Runtime.consoleAPICalled' && msg.params.type === 'error') {
-      consoleErrors.push(msg.params.args.map(a => a.value || JSON.stringify(a)).join(' '));
+      consoleErrors.push(msg.params.args.map((a) => a.value || JSON.stringify(a)).join(' '));
     }
   };
 
@@ -73,7 +75,7 @@ async function runVerification() {
     });
   }
 
-  await new Promise(r => ws.onopen = r);
+  await new Promise((r) => (ws.onopen = r));
   await send('Page.enable');
   await send('Runtime.enable');
 
@@ -81,22 +83,24 @@ async function runVerification() {
     { name: 'iphone14', width: 390, height: 844, dpr: 3 },
     { name: 'iphonese', width: 375, height: 667, dpr: 2 },
     { name: 'pixel7', width: 412, height: 915, dpr: 2.625 },
-    { name: 'landscape', width: 740, height: 360, dpr: 2 }
+    { name: 'landscape', width: 740, height: 360, dpr: 2 },
   ];
 
   fs.mkdirSync('screenshots/verified', { recursive: true });
 
   for (const dev of devices) {
-    console.log(`\n=== Testing Device: ${dev.name} (${dev.width}x${dev.height}, DPR ${dev.dpr}) ===`);
+    console.log(
+      `\n=== Testing Device: ${dev.name} (${dev.width}x${dev.height}, DPR ${dev.dpr}) ===`,
+    );
     await send('Emulation.setDeviceMetricsOverride', {
       width: dev.width,
       height: dev.height,
       deviceScaleFactor: dev.dpr,
-      mobile: true
+      mobile: true,
     });
 
     await send('Page.navigate', { url: 'http://localhost:3000' });
-    await new Promise(r => setTimeout(r, 3500));
+    await new Promise((r) => setTimeout(r, 3500));
 
     const heroMetrics = await send('Runtime.evaluate', {
       expression: `(() => {
@@ -112,7 +116,7 @@ async function runVerification() {
           canvasClientHeight: canvas ? canvas.clientHeight : 0
         };
       })()`,
-      returnByValue: true
+      returnByValue: true,
     });
     console.log('Metrics:', heroMetrics.result.value);
 
@@ -120,17 +124,17 @@ async function runVerification() {
 
     const stages = [
       { name: 'stage1-00pct', progress: 0.0 },
-      { name: 'stage2-50pct', progress: 0.50 },
+      { name: 'stage2-50pct', progress: 0.5 },
       { name: 'stage3-85pct', progress: 0.85 },
-      { name: 'climax-95pct', progress: 0.95 }
+      { name: 'climax-95pct', progress: 0.95 },
     ];
 
     for (const st of stages) {
       const scrollY = Math.round(st.progress * dist);
       await send('Runtime.evaluate', {
-        expression: `window.scrollTo({ top: ${scrollY}, behavior: 'instant' })`
+        expression: `window.scrollTo({ top: ${scrollY}, behavior: 'instant' })`,
       });
-      await new Promise(r => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 600));
 
       const info = await send('Runtime.evaluate', {
         expression: `(() => {
@@ -143,7 +147,7 @@ async function runVerification() {
             telemetry: telemetry ? telemetry.textContent.trim() : null
           };
         })()`,
-        returnByValue: true
+        returnByValue: true,
       });
 
       const ss = await send('Page.captureScreenshot', { format: 'png' });

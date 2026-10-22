@@ -5,6 +5,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { v2 as cloudinary } from 'cloudinary';
 import { AppError } from './errorHandler';
+import { logger } from '../config/logger';
 
 // Setup Cloudinary if credentials are present
 const isCloudinaryConfigured = Boolean(
@@ -166,7 +167,7 @@ export async function getFileUrl(file: Express.Multer.File, baseUrl?: string): P
       } catch {}
       return result.secure_url;
     } catch (err) {
-      console.warn('Cloudinary upload failed, falling back to local storage:', err);
+      logger.warn('Cloudinary upload failed, falling back to local storage:', { error: err });
     }
   }
 

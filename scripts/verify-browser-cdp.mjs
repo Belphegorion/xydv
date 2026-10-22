@@ -11,17 +11,19 @@ const TMP_DIR = path.join(os.tmpdir(), 'chrome_cdp_verify_' + Date.now());
 
 function getJson(url) {
   return new Promise((resolve, reject) => {
-    http.get(url, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          resolve(JSON.parse(data));
-        } catch (e) {
-          reject(new Error(`Failed to parse JSON from ${url}: ${data}`));
-        }
-      });
-    }).on('error', reject);
+    http
+      .get(url, (res) => {
+        let data = '';
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(new Error(`Failed to parse JSON from ${url}: ${data}`));
+          }
+        });
+      })
+      .on('error', reject);
   });
 }
 
@@ -29,20 +31,24 @@ async function run() {
   console.log('=== Precision Multi-Stage CDP Verification ===');
   fs.mkdirSync(TMP_DIR, { recursive: true });
 
-  const chromeProc = spawn(CHROME_PATH, [
-    '--headless=new',
-    '--remote-debugging-port=' + PORT,
-    '--remote-allow-origins=*',
-    '--user-data-dir=' + TMP_DIR,
-    '--window-size=1280,800',
-    '--no-sandbox',
-    '--disable-gpu',
-    'about:blank'
-  ], { detached: false });
+  const chromeProc = spawn(
+    CHROME_PATH,
+    [
+      '--headless=new',
+      '--remote-debugging-port=' + PORT,
+      '--remote-allow-origins=*',
+      '--user-data-dir=' + TMP_DIR,
+      '--window-size=1280,800',
+      '--no-sandbox',
+      '--disable-gpu',
+      'about:blank',
+    ],
+    { detached: false },
+  );
 
   let connected = false;
   for (let i = 0; i < 20; i++) {
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, 200));
     try {
       await getJson(`http://127.0.0.1:${PORT}/json/version`);
       connected = true;
@@ -56,7 +62,7 @@ async function run() {
   }
 
   const tabs = await getJson(`http://127.0.0.1:${PORT}/json/list`);
-  const pageTab = tabs.find(t => t.type === 'page') || tabs[0];
+  const pageTab = tabs.find((t) => t.type === 'page') || tabs[0];
   const ws = new WebSocket(pageTab.webSocketDebuggerUrl);
 
   let nextId = 1;
@@ -77,7 +83,7 @@ async function run() {
       consoleErrors.push(msg.params.message.text);
     }
     if (msg.method === 'Runtime.consoleAPICalled' && msg.params.type === 'error') {
-      consoleErrors.push(msg.params.args.map(a => a.value || JSON.stringify(a)).join(' '));
+      consoleErrors.push(msg.params.args.map((a) => a.value || JSON.stringify(a)).join(' '));
     }
     if (msg.method === 'Runtime.exceptionThrown') {
       consoleErrors.push(msg.params.exceptionDetails.text);
@@ -95,14 +101,14 @@ async function run() {
     });
   }
 
-  await new Promise(r => ws.onopen = r);
+  await new Promise((r) => (ws.onopen = r));
   await send('Page.enable');
   await send('Runtime.enable');
   await send('Network.enable');
   await send('Console.enable');
 
   await send('Page.navigate', { url: TARGET_URL });
-  await new Promise(r => setTimeout(r, 3500));
+  await new Promise((r) => setTimeout(r, 3500));
 
   const dirScreenshots = path.resolve('screenshots');
   fs.mkdirSync(dirScreenshots, { recursive: true });
@@ -110,14 +116,14 @@ async function run() {
   const testPoints = [
     { name: 'stage1-frame001', scroll: 0 },
     { name: 'stage2-frame070', scroll: 800 },
-    { name: 'stage3-climax-frame140', scroll: 1550 }
+    { name: 'stage3-climax-frame140', scroll: 1550 },
   ];
 
   for (const pt of testPoints) {
     await send('Runtime.evaluate', {
-      expression: `window.scrollTo({ top: ${pt.scroll}, behavior: 'instant' })`
+      expression: `window.scrollTo({ top: ${pt.scroll}, behavior: 'instant' })`,
     });
-    await new Promise(r => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 600));
 
     const evalData = await send('Runtime.evaluate', {
       expression: `(() => {
@@ -132,7 +138,7 @@ async function run() {
           scrollY: window.scrollY
         };
       })()`,
-      returnByValue: true
+      returnByValue: true,
     });
 
     console.log(`Point [${pt.name}]:`, evalData.result.value);

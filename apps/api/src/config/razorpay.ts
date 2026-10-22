@@ -1,5 +1,6 @@
 import Razorpay from 'razorpay';
 import env from './env';
+import { logger } from './logger';
 
 export const RAZORPAY_KEY_ID = env.RAZORPAY_KEY_ID;
 export const RAZORPAY_KEY_SECRET = env.RAZORPAY_KEY_SECRET;
@@ -12,7 +13,7 @@ if (
     RAZORPAY_KEY_SECRET === 'xydv_test_secret' ||
     RAZORPAY_KEY_SECRET === 'vertex_test_secret')
 ) {
-  console.warn(
+  logger.warn(
     '⚠️  [SECURITY WARNING] RAZORPAY credentials are using default test placeholders in production mode!',
   );
 }

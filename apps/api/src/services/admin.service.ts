@@ -19,6 +19,7 @@ import { AppError } from '../middleware/errorHandler';
 import { inventoryService } from './inventory.service';
 import { invalidateStoreSettingsCache } from './order.service';
 import { UPLOADS_DIR } from '../middleware/upload';
+import { logger } from '../config/logger';
 
 export interface AdminProductInput extends Partial<Omit<IProduct, 'variants' | 'images'>> {
   variants?: Array<Partial<IProductVariant>>;
@@ -72,7 +73,7 @@ async function logAdminAction(data: {
       ip: data.ip,
     });
   } catch (err) {
-    console.error('[AuditLog] Failed to record audit log:', err);
+    logger.error('[AuditLog] Failed to record audit log:', { error: err });
   }
 }
 
@@ -336,7 +337,7 @@ export class AdminService {
           try {
             fs.unlinkSync(localPath);
           } catch (e) {
-            console.warn('[AdminService] Could not unlink local image:', localPath, e);
+            logger.warn('[AdminService] Could not unlink local image:', { localPath, error: e });
           }
         }
       }
@@ -792,7 +793,9 @@ export class AdminService {
         await Order.findByIdAndUpdate(id, {
           $set: { paymentStatus: currentRefunded > 0 ? 'partially_refunded' : 'captured' },
         });
-        console.error('[AdminService] Razorpay refund API failure:', errObj?.message || err);
+        logger.error('[AdminService] Razorpay refund API failure:', {
+          error: errObj?.message || err,
+        });
         throw new AppError(
           `Failed to process refund with Razorpay: ${errObj?.message || 'Payment gateway refund failed'}`,
           errObj?.statusCode || 502,

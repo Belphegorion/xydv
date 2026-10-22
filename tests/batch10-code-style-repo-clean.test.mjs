@@ -60,13 +60,44 @@ describe('Batch 10: MED-11 - Structured Logging Migration in API', () => {
     assert.doesNotMatch(content, /console\.error\(/);
   });
 
-  it('inventory.service.ts uses structured logger for reconciliation cleaner', () => {
+  it('inventory.service.ts uses structured logger for reconciliation and sync errors', () => {
     const invPath = path.join(apiDir, 'src', 'services', 'inventory.service.ts');
     const content = fs.readFileSync(invPath, 'utf-8');
 
     assert.match(content, /logger\.info\(/);
     assert.match(content, /logger\.error\(/);
+    assert.match(content, /logger\.warn\(/);
     assert.doesNotMatch(content, /console\.log\(/);
+    assert.doesNotMatch(content, /console\.warn\(/);
+  });
+
+  it('admin.service.ts uses structured logger for audit logs, image unlinking, and refunds', () => {
+    const adminPath = path.join(apiDir, 'src', 'services', 'admin.service.ts');
+    const content = fs.readFileSync(adminPath, 'utf-8');
+
+    assert.match(content, /import\s+.*logger.*from\s+['"]\.\.\/config\/logger['"]/);
+    assert.match(content, /logger\.error\(/);
+    assert.match(content, /logger\.warn\(/);
+    assert.doesNotMatch(content, /console\.error\(/);
+    assert.doesNotMatch(content, /console\.warn\(/);
+  });
+
+  it('upload.ts uses structured logger for Cloudinary fallback', () => {
+    const uploadPath = path.join(apiDir, 'src', 'middleware', 'upload.ts');
+    const content = fs.readFileSync(uploadPath, 'utf-8');
+
+    assert.match(content, /import\s+.*logger.*from\s+['"]\.\.\/config\/logger['"]/);
+    assert.match(content, /logger\.warn\(/);
+    assert.doesNotMatch(content, /console\.warn\(/);
+  });
+
+  it('razorpay.ts uses structured logger for production test credential warnings', () => {
+    const rzpPath = path.join(apiDir, 'src', 'config', 'razorpay.ts');
+    const content = fs.readFileSync(rzpPath, 'utf-8');
+
+    assert.match(content, /import\s+.*logger.*from\s+['"]\.\/logger['"]/);
+    assert.match(content, /logger\.warn\(/);
+    assert.doesNotMatch(content, /console\.warn\(/);
   });
 
   it('server.ts uses structured logger for operational events', () => {
@@ -78,7 +109,7 @@ describe('Batch 10: MED-11 - Structured Logging Migration in API', () => {
   });
 });
 
-describe('Batch 10: LOW-01 to LOW-06 - Environment Documentation & Secret Sanitization', () => {
+describe('Batch 10: LOW-01 to LOW-06 - Environment Documentation & Model Sanitization', () => {
   it('apps/web/.env.local.example documents INTERNAL_API_URL and client env vars', () => {
     const envExamplePath = path.join(webDir, '.env.local.example');
     assert.ok(fs.existsSync(envExamplePath), '.env.local.example must exist in apps/web');
@@ -108,5 +139,16 @@ describe('Batch 10: LOW-01 to LOW-06 - Environment Documentation & Secret Saniti
 
     assert.match(content, /Password:\s*\*\*\*\*\*\*\*\*/);
     assert.doesNotMatch(content, /Password:\s*\$\{password\}/);
+  });
+
+  it('Product.model.ts does not define redundant virtual for id', () => {
+    const modelPath = path.join(apiDir, 'src', 'models', 'Product.model.ts');
+    const content = fs.readFileSync(modelPath, 'utf-8');
+
+    assert.doesNotMatch(
+      content,
+      /productSchema\.virtual\(['"]id['"]\)/,
+      'Product.model.ts must not define redundant id virtual',
+    );
   });
 });

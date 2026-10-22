@@ -148,11 +148,6 @@ const productSchema = new mongoose.Schema<IProduct>(
   },
 );
 
-// Virtual for id
-productSchema.virtual('id').get(function () {
-  return this._id.toHexString();
-});
-
 // Auto-sync virtuals / pre-validate hook
 productSchema.pre('validate', function (next) {
   if (this.variants && this.variants.length > 0) {
