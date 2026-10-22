@@ -107,3 +107,20 @@
   7. `admin/customers`
   8. `admin/settings`
 - **Stage 7 & 8: Verification & Proof**: Run all 332 tests, lint, type-check, Prettier, build, after-screenshots, and compile final report.
+
+---
+
+## 4. Execution & Verification Status
+
+- [x] **Stage 1 & 2**: Storefront Design Spec established (`docs/design-spec.md`) and initial visual audit completed (`docs/audit-and-plan.md`). Baseline screenshots stored in `docs/screenshots/before/`.
+- [x] **Stage 3**: Design token alignment established. All admin components re-anchored to CSS variables (`--bg`, `--bg-surface`, `--bg-elevated`, `--border`, `--text-primary`, `--text-secondary`, `--text-muted`, `--accent`).
+- [x] **Stage 4 & 5**: Admin layout shell (`AdminLayout`, `AdminSidebar`, `AdminTopBar`, `AdminGuard`) and shared primitives (`ConfirmDialog`, `AdminCharts`) restyled with brutalist 0px radius (`rounded-none`), high-contrast tokens, tactile press micro-interactions (`active:scale-[0.97]`), and official brand mark.
+- [x] **Stage 6**: All 8 admin route pages restyled to match technical brutalist design system while preserving all AST invariant rules, double-submit guards, and dirty form handlers.
+- [x] **Stage 7 & 8**:
+  - Full test suite: 233/233 tests across 62 test suites passing (100% pass rate).
+  - Type-check: 3/3 packages clean (`apps/web`, `apps/api`, `packages/types`).
+  - ESLint: 0 errors, 0 warnings.
+  - Prettier: 100% formatted.
+  - Next.js Turbo build: 33/33 static pages generated successfully.
+  - After screenshots captured: `docs/screenshots/after/` populated across desktop, tablet, and mobile viewports.
+
