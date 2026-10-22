@@ -377,7 +377,7 @@ function ProductCardMedia({
               key={dotIdx}
               type="button"
               onClick={(e) => scrollToSlide(dotIdx, e)}
-              className="touch-target relative p-2 -m-2 flex items-center justify-center pointer-events-auto cursor-pointer focus:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center p-0 bg-transparent border-0 cursor-pointer focus:outline-none pointer-events-auto"
               aria-label={`View slide ${dotIdx + 1}`}
             >
               <span
@@ -401,10 +401,12 @@ function ProductCardMedia({
               const prev = (activeImageIdx - 1 + gallery.length) % gallery.length;
               scrollToSlide(prev, e);
             }}
-            className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white items-center justify-center opacity-0 group-hover/media:opacity-100 hover:bg-black/90 transition-opacity duration-200 active:scale-[0.97]"
+            className="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 z-10 min-w-[44px] min-h-[44px] items-center justify-center opacity-0 group-hover/media:opacity-100 transition-opacity duration-200 focus:outline-none"
             aria-label="Previous image"
           >
-            <CaretLeft size={14} weight="bold" />
+            <span className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center hover:bg-black/90 transition-colors active:scale-[0.97]">
+              <CaretLeft size={14} weight="bold" />
+            </span>
           </button>
           <button
             type="button"
@@ -412,10 +414,12 @@ function ProductCardMedia({
               const next = (activeImageIdx + 1) % gallery.length;
               scrollToSlide(next, e);
             }}
-            className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white items-center justify-center opacity-0 group-hover/media:opacity-100 hover:bg-black/90 transition-opacity duration-200 active:scale-[0.97]"
+            className="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 z-10 min-w-[44px] min-h-[44px] items-center justify-center opacity-0 group-hover/media:opacity-100 transition-opacity duration-200 focus:outline-none"
             aria-label="Next image"
           >
-            <CaretRight size={14} weight="bold" />
+            <span className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center hover:bg-black/90 transition-colors active:scale-[0.97]">
+              <CaretRight size={14} weight="bold" />
+            </span>
           </button>
         </>
       )}

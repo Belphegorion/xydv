@@ -28,7 +28,7 @@ export function Badge({
 
   const variantStyles = {
     volt: 'bg-zinc-950 border-zinc-800 text-zinc-100 dark:bg-white/10 dark:border-white/30 dark:text-zinc-100',
-    subtle: 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)]',
+    subtle: 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] dark:text-zinc-200',
     outline: 'bg-transparent border-[var(--text-primary)]/25 text-[var(--text-primary)] dark:border-white/20 dark:text-white',
     success: 'bg-[#15803d]/10 border-[#15803d]/30 text-[#15803d] dark:bg-[#22c55e]/10 dark:border-[#22c55e]/30 dark:text-[#22c55e]',
     danger: 'bg-[#b91c1c]/10 border-[#b91c1c]/30 text-[#b91c1c] dark:bg-[#ff3b3b]/10 dark:border-[#ff3b3b]/30 dark:text-[#ff3b3b]',

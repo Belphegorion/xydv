@@ -284,6 +284,7 @@ export function HeroSection() {
         };
 
         const img = new Image();
+        img.fetchPriority = index === 0 ? 'high' : 'auto';
 
         // 1. Wire listeners BEFORE setting src to eliminate synchronous cache race conditions
         img.onload = () => {

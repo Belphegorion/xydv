@@ -190,10 +190,12 @@ function CatalogCard({
   product,
   onSelectSize,
   isAdded,
+  priority = false,
 }: {
   product: CatalogProduct;
   onSelectSize: (product: CatalogProduct, variant: ProductVariant, size: string) => void;
   isAdded: boolean;
+  priority?: boolean;
 }) {
   const [activeVariantIdx, setActiveVariantIdx] = useState(0);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
@@ -306,7 +308,7 @@ function CatalogCard({
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover object-center group-hover:scale-105 transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
-                  priority={iIdx === 0 && product.isFeatured}
+                  priority={iIdx === 0 && (priority || product.isFeatured)}
                 />
               </Link>
             </div>
@@ -343,10 +345,12 @@ function CatalogCard({
                 const prev = (activeImageIdx - 1 + gallery.length) % gallery.length;
                 scrollToSlide(prev, e);
               }}
-              className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white items-center justify-center opacity-0 group-hover/media:opacity-100 hover:bg-black/90 transition-opacity duration-200 active:scale-[0.97]"
+              className="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 z-20 min-w-[44px] min-h-[44px] items-center justify-center opacity-0 group-hover/media:opacity-100 transition-opacity duration-200 focus:outline-none"
               aria-label="Previous image"
             >
-              <CaretLeft size={14} weight="bold" />
+              <span className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center hover:bg-black/90 transition-colors active:scale-[0.97]">
+                <CaretLeft size={14} weight="bold" />
+              </span>
             </button>
             <button
               type="button"
@@ -354,10 +358,12 @@ function CatalogCard({
                 const next = (activeImageIdx + 1) % gallery.length;
                 scrollToSlide(next, e);
               }}
-              className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white items-center justify-center opacity-0 group-hover/media:opacity-100 hover:bg-black/90 transition-opacity duration-200 active:scale-[0.97]"
+              className="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 z-20 min-w-[44px] min-h-[44px] items-center justify-center opacity-0 group-hover/media:opacity-100 transition-opacity duration-200 focus:outline-none"
               aria-label="Next image"
             >
-              <CaretRight size={14} weight="bold" />
+              <span className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center hover:bg-black/90 transition-colors active:scale-[0.97]">
+                <CaretRight size={14} weight="bold" />
+              </span>
             </button>
           </>
         )}
@@ -449,9 +455,9 @@ function CatalogCard({
 
           {/* Title */}
           <Link href={`/products/${product.slug}`} className="hover:text-[var(--text-secondary)] dark:hover:text-zinc-300 transition-colors">
-            <h2 className="text-[var(--text-primary)] text-xs sm:text-sm font-bold uppercase tracking-tight font-heading line-clamp-1">
+            <h3 className="text-[var(--text-primary)] text-xs sm:text-sm font-bold uppercase tracking-tight font-heading line-clamp-1">
               {product.name}
-            </h2>
+            </h3>
           </Link>
 
           {/* Micro Specs */}
@@ -794,6 +800,7 @@ function CatalogContent() {
         </div>
 
         {/* Product Grid */}
+        <h2 className="sr-only">Catalog Inventory</h2>
         {isLoading && catalogProducts.length === 0 ? (
           <div className="py-24 text-center">
             <p className="text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest animate-pulse">
@@ -818,12 +825,13 @@ function CatalogContent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {filteredProducts.map((p) => (
+            {filteredProducts.map((p, pIdx) => (
               <CatalogCard
                 key={p.id}
                 product={p}
                 onSelectSize={handleSelectSize}
                 isAdded={Boolean(addedIds[p.id])}
+                priority={pIdx < 4}
               />
             ))}
           </div>
