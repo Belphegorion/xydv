@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Lock, EnvelopeSimple, Warning, ArrowLeft } from '@phosphor-icons/react';
+import { BrandLogo } from '../../../components/ui/BrandLogo';
 import { useAdminAuthStore } from '../../../store/adminAuth';
 
 export default function AdminLoginPage() {
@@ -37,29 +38,30 @@ export default function AdminLoginPage() {
       <div className="mb-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 font-mono text-xs tracking-wider text-[#71717a] uppercase transition-colors hover:text-[#f5f5f5]"
+          className="inline-flex items-center gap-2 font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase transition-colors hover:text-[var(--text-primary)]"
         >
           <ArrowLeft size={14} />
           <span>Return to Storefront</span>
         </Link>
       </div>
 
-      <div className="rounded-none border border-[#1f1f1f] bg-[#111111] p-8 shadow-2xl">
+      <div className="rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-8 text-[var(--text-primary)] shadow-2xl">
         <div className="mb-8">
-          <div className="mb-2 flex items-center gap-2">
-            <span className="font-mono text-xl font-bold tracking-widest text-[#e8ff00]">XYDV</span>
-            <span className="h-4 w-[1px] bg-[#333333]" />
-            <span className="font-mono text-xs tracking-widest text-[#a0a0a0] uppercase">
+          <div className="mb-2.5 flex items-center gap-2.5">
+            <BrandLogo size={32} showWordmark={false} />
+            <span className="font-mono text-xl font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00]">XYDV</span>
+            <span className="h-4 w-[1px] bg-[var(--border)]" />
+            <span className="font-mono text-xs tracking-widest text-[var(--text-muted)] uppercase">
               ADMIN ACCESS
             </span>
           </div>
-          <p className="font-sans text-xs text-[#71717a]">
+          <p className="font-sans text-xs leading-relaxed text-[var(--text-secondary)]">
             Enter authorized administrator credentials to manage catalog, orders, and telemetry.
           </p>
         </div>
 
         {displayedError && (
-          <div className="mb-6 flex items-start gap-3 rounded border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-3 text-xs text-[#ff3b3b]">
+          <div className="mb-6 flex items-start gap-3 rounded-none border border-[#ff3b3b]/30 bg-[#ff3b3b]/10 p-3 text-xs text-[#ff3b3b]">
             <Warning size={18} className="mt-0.5 flex-shrink-0" />
             <p className="font-mono">{displayedError}</p>
           </div>
@@ -69,12 +71,12 @@ export default function AdminLoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="mb-2 block font-mono text-xs tracking-wider text-[#a0a0a0] uppercase"
+              className="mb-2 block font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase"
             >
               Email Address
             </label>
             <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#71717a]">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--text-muted)]">
                 <EnvelopeSimple size={16} />
               </div>
               <input
@@ -85,7 +87,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@xydv.com"
-                className="w-full rounded-none border border-[#1f1f1f] bg-[#0a0a0a] py-3 pr-4 pl-10 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] transition-colors focus:border-[#e8ff00] focus:ring-1 focus:ring-[#e8ff00] focus:outline-none"
+                className="h-11 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] py-3 pr-4 pl-10 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] dark:focus:border-[#e8ff00] focus:ring-1 focus:ring-[var(--text-primary)] dark:focus:ring-[#e8ff00] focus:outline-none"
               />
             </div>
           </div>
@@ -93,12 +95,12 @@ export default function AdminLoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="mb-2 block font-mono text-xs tracking-wider text-[#a0a0a0] uppercase"
+              className="mb-2 block font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase"
             >
               Master Password
             </label>
             <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#71717a]">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--text-muted)]">
                 <Lock size={16} />
               </div>
               <input
@@ -109,7 +111,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full rounded-none border border-[#1f1f1f] bg-[#0a0a0a] py-3 pr-4 pl-10 font-mono text-xs text-[#f5f5f5] placeholder-[#52525b] transition-colors focus:border-[#e8ff00] focus:ring-1 focus:ring-[#e8ff00] focus:outline-none"
+                className="h-11 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] py-3 pr-4 pl-10 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] dark:focus:border-[#e8ff00] focus:ring-1 focus:ring-[var(--text-primary)] dark:focus:ring-[#e8ff00] focus:outline-none"
               />
             </div>
           </div>
@@ -117,7 +119,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex w-full items-center justify-center gap-2 rounded-none border border-[#e8ff00] bg-[#e8ff00] py-3.5 font-mono text-xs font-bold tracking-widest text-[#0a0a0a] uppercase transition-colors duration-120 hover:bg-[#e8ff00]/90 active:scale-[0.97] disabled:opacity-50"
+            className="btn-tactile flex w-full items-center justify-center gap-2 rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a] py-3.5 font-mono text-xs font-bold tracking-widest uppercase transition-colors duration-120 hover:opacity-90 active:scale-[0.97] disabled:opacity-50"
           >
             {isLoading && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -126,8 +128,8 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <div className="mt-8 border-t border-[#1f1f1f] pt-6 text-center">
-          <p className="font-mono text-[10px] tracking-wider text-[#52525b] uppercase">
+        <div className="mt-8 border-t border-[var(--border)] pt-6 text-center">
+          <p className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase">
             Protected endpoint • Roles strictly verified via HMAC & JWT tokens
           </p>
         </div>
