@@ -39,7 +39,7 @@ const addressSchema = new mongoose.Schema<IAddress>({
   city: { type: String, required: true },
   state: { type: String, required: true },
   postalCode: { type: String, required: true },
-  country: { type: String, required: true, default: 'US' },
+  country: { type: String, required: true, default: 'IN' },
   phone: { type: String, required: true },
   isDefault: { type: Boolean, default: false },
 });
