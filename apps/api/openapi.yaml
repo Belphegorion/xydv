@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:5000
     description: Local development server
-  - url: https://api.vertex-fashion.com
+  - url: https://api.xydv.com
     description: Production gateway
 
 paths:
@@ -138,7 +138,8 @@ paths:
           schema: { type: number }
         - name: sort
           in: query
-          schema: { type: string, enum: [newest, price-asc, price-desc, popular, bestseller, rating] }
+          schema:
+            { type: string, enum: [newest, price-asc, price-desc, popular, bestseller, rating] }
         - name: inStock
           in: query
           schema: { type: boolean }

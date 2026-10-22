@@ -19,7 +19,9 @@ export function AnnouncementBar() {
   useEffect(() => {
     // Check localStorage dismissal
     try {
-      const dismissed = localStorage.getItem('vertex-announcement-dismissed');
+      const dismissed =
+        localStorage.getItem('xydv-announcement-dismissed') ||
+        localStorage.getItem('vertex-announcement-dismissed');
       if (dismissed === 'true') {
         setVisible(false);
       }
@@ -39,7 +41,8 @@ export function AnnouncementBar() {
   const handleDismiss = () => {
     setVisible(false);
     try {
-      localStorage.setItem('vertex-announcement-dismissed', 'true');
+      localStorage.setItem('xydv-announcement-dismissed', 'true');
+      localStorage.removeItem('vertex-announcement-dismissed');
     } catch {
       // Ignore
     }
@@ -51,22 +54,22 @@ export function AnnouncementBar() {
     <div
       role="region"
       aria-label="Important store announcement"
-      className="bg-[#0a0a0a] text-[#f5f5f5] text-[9px] sm:text-[11px] font-mono font-bold tracking-[0.12em] sm:tracking-[0.2em] py-1.5 px-2 sm:px-4 relative z-50 flex items-center justify-between overflow-hidden border-b border-black/30 dark:border-white/10 select-none transition-colors"
+      className="relative z-50 flex items-center justify-between overflow-hidden border-b border-black/30 bg-[#0a0a0a] px-2 py-1.5 font-mono text-[9px] font-bold tracking-[0.12em] text-[#f5f5f5] transition-colors select-none sm:px-4 sm:text-[11px] sm:tracking-[0.2em] dark:border-white/10"
     >
       {/* Mobile balance spacer (balances right 48px dismiss button) */}
-      <div className="w-12 sm:hidden shrink-0 pointer-events-none" aria-hidden="true" />
+      <div className="pointer-events-none w-12 shrink-0 sm:hidden" aria-hidden="true" />
 
       {/* Prev button (desktop only) */}
       <button
         onClick={() => setIndex((prev) => (prev - 1 + MESSAGES.length) % MESSAGES.length)}
         aria-label="Previous announcement"
-        className="text-zinc-400 hover:text-white hidden sm:flex touch-target min-w-[48px] min-h-[48px] items-center justify-center transition-colors relative z-10 btn-tactile active:scale-[0.97]"
+        className="touch-target btn-tactile relative z-10 hidden min-h-[48px] min-w-[48px] items-center justify-center text-zinc-400 transition-colors hover:text-white active:scale-[0.97] sm:flex"
       >
         <CaretLeft size={13} weight="bold" />
       </button>
 
       {/* Cycling Message with AnimatePresence */}
-      <div className="flex-1 text-center truncate px-2 relative h-5 overflow-hidden flex items-center justify-center">
+      <div className="relative flex h-5 flex-1 items-center justify-center truncate overflow-hidden px-2 text-center">
         <AnimatePresence mode="wait">
           <motion.span
             key={index}
@@ -74,7 +77,7 @@ export function AnnouncementBar() {
             animate={{ y: 0, opacity: 1 }}
             exit={shouldReduceMotion ? { opacity: 0 } : { y: -10, opacity: 0 }}
             transition={{ duration: 0.22, ease: EMIL_EASE }}
-            className="absolute inset-x-0 truncate text-center block text-[9px] sm:text-[11px] leading-tight"
+            className="absolute inset-x-0 block truncate text-center text-[9px] leading-tight sm:text-[11px]"
           >
             {MESSAGES[index]}
           </motion.span>
@@ -82,18 +85,18 @@ export function AnnouncementBar() {
       </div>
 
       {/* Next and Close button */}
-      <div className="flex items-center gap-0.5 relative z-10">
+      <div className="relative z-10 flex items-center gap-0.5">
         <button
           onClick={() => setIndex((prev) => (prev + 1) % MESSAGES.length)}
           aria-label="Next announcement"
-          className="text-zinc-400 hover:text-white hidden sm:flex touch-target min-w-[48px] min-h-[48px] items-center justify-center transition-colors btn-tactile active:scale-[0.97]"
+          className="touch-target btn-tactile hidden min-h-[48px] min-w-[48px] items-center justify-center text-zinc-400 transition-colors hover:text-white active:scale-[0.97] sm:flex"
         >
           <CaretRight size={13} weight="bold" />
         </button>
         <button
           onClick={handleDismiss}
           aria-label="Dismiss announcement bar"
-          className="text-zinc-400 hover:text-white touch-target min-w-[48px] min-h-[48px] p-1.5 flex items-center justify-center transition-colors btn-tactile active:scale-[0.97]"
+          className="touch-target btn-tactile flex min-h-[48px] min-w-[48px] items-center justify-center p-1.5 text-zinc-400 transition-colors hover:text-white active:scale-[0.97]"
         >
           <X size={13} weight="bold" />
         </button>

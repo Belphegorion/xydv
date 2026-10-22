@@ -24,16 +24,21 @@ export const metadata: Metadata = {
   },
   description:
     'Premium performance fashion engineered for the relentless. Shop tops, bottoms, outerwear and accessories.',
-  keywords: ['XYDV', 'performance fashion', 'sportswear', 'activewear', 'premium apparel', 'technical division'],
+  keywords: [
+    'XYDV',
+    'performance fashion',
+    'sportswear',
+    'activewear',
+    'premium apparel',
+    'technical division',
+  ],
   icons: {
     icon: [
       { url: '/brand/xydv-logo.png', media: '(prefers-color-scheme: light)' },
       { url: '/brand/xydv-logo-outline.png', media: '(prefers-color-scheme: dark)' },
       { url: '/favicon.ico', sizes: 'any' },
     ],
-    apple: [
-      { url: '/brand/xydv-logo.png', sizes: '180x180', type: 'image/png' },
-    ],
+    apple: [{ url: '/brand/xydv-logo.png', sizes: '180x180', type: 'image/png' }],
   },
   openGraph: {
     type: 'website',
@@ -68,7 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `
               (function() {
                 try {
-                  var stored = localStorage.getItem('vertex-theme');
+                  var stored = localStorage.getItem('xydv-theme') || localStorage.getItem('vertex-theme');
                   if (stored === 'dark') {
                     document.documentElement.classList.add('dark');
                     document.documentElement.classList.remove('light');
@@ -89,7 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <InitialLoadingScreen />
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2.5 focus:bg-[var(--bg)] focus:text-[var(--text-primary)] focus:border focus:border-[var(--accent)] font-mono text-xs uppercase font-bold shadow-2xl"
+            className="sr-only font-mono text-xs font-bold uppercase shadow-2xl focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:border focus:border-[var(--accent)] focus:bg-[var(--bg)] focus:px-4 focus:py-2.5 focus:text-[var(--text-primary)]"
           >
             Skip to main content
           </a>

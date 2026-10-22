@@ -13,7 +13,8 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   useEffect(() => {
     setMounted(true);
     try {
-      const storedTheme = localStorage.getItem('vertex-theme');
+      const storedTheme =
+        localStorage.getItem('xydv-theme') || localStorage.getItem('vertex-theme');
       if (storedTheme === 'dark') {
         setTheme('dark');
         document.documentElement.classList.add('dark');
@@ -33,7 +34,8 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
     setTheme(nextTheme);
 
     try {
-      localStorage.setItem('vertex-theme', nextTheme);
+      localStorage.setItem('xydv-theme', nextTheme);
+      localStorage.removeItem('vertex-theme');
     } catch {
       // Ignore storage errors
     }
@@ -50,7 +52,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   if (!mounted) {
     return (
       <div
-        className={`touch-target w-9 h-9 border border-[var(--border)] bg-[var(--bg-surface)] ${className}`}
+        className={`touch-target h-9 w-9 border border-[var(--border)] bg-[var(--bg-surface)] ${className}`}
         aria-hidden="true"
       />
     );
@@ -65,7 +67,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
       role="switch"
       aria-checked={isDark}
       aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-      className={`touch-target btn-tactile relative w-9 h-9 flex items-center justify-center border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:border-[var(--accent)] dark:hover:text-[var(--accent)] transition-colors ${className}`}
+      className={`touch-target btn-tactile relative flex h-9 w-9 items-center justify-center border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] transition-colors hover:border-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:border-[var(--accent)] dark:hover:text-[var(--accent)] ${className}`}
     >
       <AnimatePresence mode="wait" initial={false}>
         {isDark ? (
