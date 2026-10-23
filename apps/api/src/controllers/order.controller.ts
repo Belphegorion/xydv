@@ -1,6 +1,6 @@
 import type { Response, NextFunction } from 'express';
 import { orderService, type ShippingAddressInput } from '../services/order.service';
-import type { AuthRequest } from '../middleware/auth';
+import { type AuthRequest, getAuthenticatedUser } from '../middleware/auth';
 
 function getParam(param: string | string[] | undefined): string {
   if (!param) return '';
@@ -55,7 +55,8 @@ export class OrderController {
 
   async createDirectOrder(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const order = await orderService.createDirectOrder(String(req.user!._id), req.body);
+      const authUser = getAuthenticatedUser(req);
+      const order = await orderService.createDirectOrder(String(authUser._id), req.body);
       res.status(201).json({
         success: true,
         data: order,
@@ -67,7 +68,8 @@ export class OrderController {
 
   async getUserOrders(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const orders = await orderService.getUserOrders(String(req.user!._id));
+      const authUser = getAuthenticatedUser(req);
+      const orders = await orderService.getUserOrders(String(authUser._id));
       res.json({
         success: true,
         data: orders,
@@ -79,9 +81,10 @@ export class OrderController {
 
   async getOrderById(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const isAdmin = req.user?.role === 'admin';
+      const authUser = getAuthenticatedUser(req);
+      const isAdmin = authUser.role === 'admin';
       const id = getParam(req.params.id);
-      const order = await orderService.getOrderById(id, String(req.user!._id), isAdmin);
+      const order = await orderService.getOrderById(id, String(authUser._id), isAdmin);
       res.json({
         success: true,
         data: order,

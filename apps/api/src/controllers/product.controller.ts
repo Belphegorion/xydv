@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { productService } from '../services/product.service';
-import type { AuthRequest } from '../middleware/auth';
+import { type AuthRequest, getAuthenticatedUser } from '../middleware/auth';
 
 export class ProductController {
   async getCategories(_req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -57,11 +57,12 @@ export class ProductController {
 
   async createReview(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
+      const authUser = getAuthenticatedUser(req);
       const rawSlug = req.params.slug;
       const slug = Array.isArray(rawSlug) ? rawSlug[0] : rawSlug;
       const review = await productService.createReview(
         slug,
-        String(req.user!._id),
+        String(authUser._id),
         req.body.userName,
         req.body,
       );

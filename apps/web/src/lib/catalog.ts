@@ -1036,18 +1036,19 @@ export function getFilteredProducts(filters: CatalogFilterParams): CatalogProduc
   let results = [...CATALOG_PRODUCTS];
 
   if (filters.category && filters.category !== 'all') {
-    results = results.filter((p) => p.category.toLowerCase() === filters.category!.toLowerCase());
+    const targetCategory = filters.category.toLowerCase();
+    results = results.filter((p) => p.category.toLowerCase() === targetCategory);
   }
 
   if (filters.discipline && filters.discipline !== 'all') {
-    results = results.filter(
-      (p) => p.discipline.toLowerCase() === filters.discipline!.toLowerCase(),
-    );
+    const targetDiscipline = filters.discipline.toLowerCase();
+    results = results.filter((p) => p.discipline.toLowerCase() === targetDiscipline);
   }
 
   if (filters.gender && filters.gender !== 'all') {
+    const targetGender = filters.gender.toLowerCase();
     results = results.filter(
-      (p) => p.gender.toLowerCase() === filters.gender!.toLowerCase() || p.gender === 'unisex',
+      (p) => p.gender.toLowerCase() === targetGender || p.gender === 'unisex',
     );
   }
 
@@ -1064,11 +1065,13 @@ export function getFilteredProducts(filters: CatalogFilterParams): CatalogProduc
   }
 
   if (typeof filters.minPrice === 'number') {
-    results = results.filter((p) => p.price >= filters.minPrice!);
+    const min = filters.minPrice;
+    results = results.filter((p) => p.price >= min);
   }
 
   if (typeof filters.maxPrice === 'number') {
-    results = results.filter((p) => p.price <= filters.maxPrice!);
+    const max = filters.maxPrice;
+    results = results.filter((p) => p.price <= max);
   }
 
   if (filters.inStockOnly) {

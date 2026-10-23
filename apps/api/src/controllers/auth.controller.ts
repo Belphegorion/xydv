@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { authService } from '../services/auth.service';
-import type { AuthRequest } from '../middleware/auth';
+import { type AuthRequest, getAuthenticatedUser } from '../middleware/auth';
 
 const REFRESH_COOKIE_NAME = 'xydv_refresh_token';
 const LEGACY_REFRESH_COOKIE_NAME = 'vertex_refresh_token';
@@ -77,7 +77,8 @@ export class AuthController {
 
   async me(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const user = await authService.getCurrentUser(req.user!._id);
+      const authUser = getAuthenticatedUser(req);
+      const user = await authService.getCurrentUser(authUser._id);
       res.json({ data: user });
     } catch (err) {
       next(err);

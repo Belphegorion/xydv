@@ -1,6 +1,6 @@
 import type { Response, NextFunction } from 'express';
 import { userService } from '../services/user.service';
-import type { AuthRequest } from '../middleware/auth';
+import { type AuthRequest, getAuthenticatedUser } from '../middleware/auth';
 
 function getParam(param: string | string[] | undefined): string {
   if (!param) return '';
@@ -10,7 +10,8 @@ function getParam(param: string | string[] | undefined): string {
 export class UserController {
   async getProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const user = await userService.getProfile(String(req.user!._id));
+      const authUser = getAuthenticatedUser(req);
+      const user = await userService.getProfile(String(authUser._id));
       res.json({ data: user });
     } catch (err) {
       next(err);
@@ -19,7 +20,8 @@ export class UserController {
 
   async updateProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const user = await userService.updateProfile(String(req.user!._id), req.body);
+      const authUser = getAuthenticatedUser(req);
+      const user = await userService.updateProfile(String(authUser._id), req.body);
       res.json({ data: user });
     } catch (err) {
       next(err);
@@ -28,7 +30,8 @@ export class UserController {
 
   async addAddress(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const addresses = await userService.addAddress(String(req.user!._id), req.body);
+      const authUser = getAuthenticatedUser(req);
+      const addresses = await userService.addAddress(String(authUser._id), req.body);
       res.status(201).json({
         success: true,
         data: addresses,
@@ -40,8 +43,9 @@ export class UserController {
 
   async deleteAddress(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
+      const authUser = getAuthenticatedUser(req);
       const id = getParam(req.params.id);
-      const addresses = await userService.deleteAddress(String(req.user!._id), id);
+      const addresses = await userService.deleteAddress(String(authUser._id), id);
       res.json({
         success: true,
         message: 'Address removed successfully',

@@ -18,6 +18,18 @@ export interface AuthRequest extends Request {
   user?: { _id: string; email: string; role: string; isBlocked?: boolean };
 }
 
+export function getAuthenticatedUser(req: Request): {
+  _id: string;
+  email: string;
+  role: string;
+  isBlocked?: boolean;
+} {
+  if (!req.user || !req.user._id) {
+    throw new AppError('Authentication required', 401);
+  }
+  return req.user;
+}
+
 function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET || env.JWT_SECRET;
   if (!secret || secret === 'secret') {
