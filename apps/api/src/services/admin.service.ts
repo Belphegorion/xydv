@@ -14,6 +14,7 @@ import { Category } from '../models/Category.model';
 import { PageView } from '../models/PageView.model';
 import { AuditLog } from '../models/AuditLog.model';
 import { Setting, type ISetting } from '../models/Setting.model';
+import { RefreshToken } from '../models/RefreshToken.model';
 import { razorpay } from '../config/razorpay';
 import { AppError } from '../middleware/errorHandler';
 import { inventoryService } from './inventory.service';
@@ -1245,6 +1246,10 @@ export class AdminService {
 
     targetUser.isBlocked = isBlocked;
     await targetUser.save();
+
+    if (isBlocked) {
+      await RefreshToken.updateMany({ userId: targetUser._id }, { isRevoked: true });
+    }
 
     await logAdminAction({
       adminId: currentAdminId,
