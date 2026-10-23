@@ -8,7 +8,6 @@ import { Setting } from '../models/Setting.model';
 import { AppError } from '../middleware/errorHandler';
 import { inventoryService } from './inventory.service';
 import { COMMERCE_CONSTANTS } from '../constants/commerce';
-import { STATIC_CATALOG } from '../fixtures/catalog';
 
 export interface StorePricingSettings {
   shippingFee: number;
@@ -207,53 +206,6 @@ export class OrderService {
 
       if (!product && orConditions.length > 0) {
         product = await Product.findOne({ $or: orConditions });
-      }
-
-      if (!product) {
-        // Resolve against static frontend catalog data
-        const staticProd = STATIC_CATALOG.find(
-          (p) =>
-            p.id === item.productId ||
-            p.slug === item.productId ||
-            (item.slug && p.slug === item.slug) ||
-            (item.sku && p.variants.some((v) => v.sku === item.sku)),
-        );
-
-        if (staticProd) {
-          product = await Product.findOneAndUpdate(
-            { slug: staticProd.slug },
-            {
-              $set: {
-                name: staticProd.name,
-                price: staticProd.price,
-                brand: 'XYDV',
-                category: staticProd.category,
-                description: staticProd.description,
-                inStock: true,
-                isPublished: true,
-                specs: (staticProd.specs || []).map((s) => ({ label: s.label, value: s.value })),
-                features: staticProd.features || [],
-              },
-              $setOnInsert: {
-                slug: staticProd.slug,
-                variants: staticProd.variants.map((v) => ({
-                  id: v.id,
-                  sku: v.sku,
-                  color: v.colorName || 'Void Obsidian',
-                  colorName: v.colorName,
-                  colorHex: v.colorHex || '#0A0A0A',
-                  size: v.size,
-                  price: staticProd.price,
-                  stock: v.stock ?? 50,
-                  imageUrl: v.primaryImage,
-                  secondaryImageUrl: v.secondaryImage,
-                  images: v.gallery || [v.primaryImage],
-                })),
-              },
-            },
-            { upsert: true, new: true },
-          );
-        }
       }
 
       if (!product) {

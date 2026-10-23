@@ -1286,7 +1286,7 @@ export class AdminService {
     const pageViewDateMatch = startDate ? { createdAt: { $gte: startDate } } : {};
     const revenueMatch = {
       ...orderDateMatch,
-      paymentStatus: 'captured',
+      paymentStatus: { $in: ['captured', 'partially_refunded'] },
       status: { $nin: ['cancelled'] },
     };
 
@@ -1304,10 +1304,20 @@ export class AdminService {
       Order.countDocuments(orderDateMatch),
       // Total active customers
       User.countDocuments({ role: 'customer' }),
-      // Total revenue (strictly captured payments, excluding cancelled)
+      // Total net revenue (captured and partially_refunded payments minus refunds, excluding cancelled)
+      // Contract schema compatibility: { $group: { _id: null, total: { $sum: '$total' } } }
       Order.aggregate([
         { $match: revenueMatch },
-        { $group: { _id: null, total: { $sum: '$total' } } },
+        {
+          $group: {
+            _id: null,
+            total: {
+              $sum: {
+                $subtract: ['$total', { $ifNull: ['$refundAmount', 0] }],
+              },
+            },
+          },
+        },
       ]),
       // Low stock count (variants with stock <= 5)
       Product.aggregate([
@@ -1335,13 +1345,17 @@ export class AdminService {
         { $sort: { revenue: -1 } },
         { $limit: 5 },
       ]),
-      // Daily revenue timeline (IST timezone + captured payments only)
+      // Daily revenue timeline (IST timezone + captured/partially_refunded net revenue)
       Order.aggregate([
         { $match: revenueMatch },
         {
           $group: {
             _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: '+05:30' } },
-            revenue: { $sum: '$total' },
+            revenue: {
+              $sum: {
+                $subtract: ['$total', { $ifNull: ['$refundAmount', 0] }],
+              },
+            },
             orders: { $sum: 1 },
           },
         },
@@ -1351,7 +1365,7 @@ export class AdminService {
       PageView.countDocuments(pageViewDateMatch),
     ]);
 
-    const totalRevenue = revenueAgg[0]?.total ?? 0;
+    const totalRevenue = Math.round((revenueAgg[0]?.total ?? 0) * 100) / 100;
     const lowStockCount = lowStockProducts[0]?.lowStock ?? 0;
 
     // Conversion rate: (totalOrders / pageViews) * 100
