@@ -29,7 +29,6 @@ const ticketSchema = new mongoose.Schema<ITicket>(
   { timestamps: true },
 );
 
-ticketSchema.index({ ticketId: 1 }, { unique: true });
 ticketSchema.index({ email: 1 });
 ticketSchema.index({ createdAt: -1 });
 

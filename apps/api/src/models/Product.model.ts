@@ -55,6 +55,8 @@ export interface IProduct extends Document {
   averageRating: number;
   reviewCount: number;
   lowStockThreshold?: number;
+  discipline?: string;
+  gender?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -144,6 +146,8 @@ const productSchema = new mongoose.Schema<IProduct>(
     averageRating: { type: Number, default: 0, min: 0, max: 5 },
     reviewCount: { type: Number, default: 0, min: 0 },
     lowStockThreshold: { type: Number, default: 5, min: 0 },
+    discipline: { type: String, trim: true, lowercase: true },
+    gender: { type: String, trim: true, lowercase: true },
   },
   {
     timestamps: true,

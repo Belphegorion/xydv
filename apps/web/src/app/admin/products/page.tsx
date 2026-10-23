@@ -55,6 +55,12 @@ function AdminProductsContent() {
     Array<{ url: string; alt?: string; isPrimary?: boolean; isSecondary?: boolean }>
   >([]);
   const [imageUrlInput, setImageUrlInput] = useState('');
+  const [specs, setSpecs] = useState<Array<{ label: string; value: string }>>([
+    { label: 'Fabric', value: '4-Way Stretch Cordura Ripstop' },
+  ]);
+  const [featuresInput, setFeaturesInput] = useState<string>('');
+  const [discipline, setDiscipline] = useState<string>('all');
+  const [gender, setGender] = useState<string>('unisex');
   const [variants, setVariants] = useState<ProductVariant[]>([
     {
       sku: 'XYDV-001-BLK-M',
@@ -316,6 +322,14 @@ function AdminProductsContent() {
     ]);
     setIsPublished(true);
     setLowStockThreshold(5);
+    setSpecs([
+      { label: 'Fabric', value: '4-Way Stretch Cordura Ripstop' },
+      { label: 'Weight', value: '180 GSM' },
+      { label: 'Treatment', value: 'DWR Water Repellent' },
+    ]);
+    setFeaturesInput('SweatShield+ moisture management\nReinforced ergonomic seams\nLaser-cut ventilation zones');
+    setDiscipline('all');
+    setGender('unisex');
     setIsDirty(false);
     setIsModalOpen(true);
   };
@@ -338,6 +352,17 @@ function AdminProductsContent() {
     setCompareAt(validCompareAt);
     setTagsInput((p.tags || []).join(', '));
     setImageUrlInput('');
+    setSpecs(
+      Array.isArray(p.specs) && p.specs.length > 0
+        ? p.specs.map((s) => ({ label: s.label || '', value: s.value || '' }))
+        : [
+            { label: 'Fabric', value: '4-Way Stretch Cordura' },
+            { label: 'Care', value: 'Machine wash cold' },
+          ],
+    );
+    setFeaturesInput(Array.isArray(p.features) ? p.features.join('\n') : '');
+    setDiscipline(p.discipline || 'all');
+    setGender(p.gender || 'unisex');
     const rawImages = (p.images || []).map((img, idx) =>
       typeof img === 'string'
         ? { url: img, isPrimary: idx === 0, isSecondary: idx === 1 }
@@ -407,6 +432,14 @@ function AdminProductsContent() {
       const primaryImgUrl =
         normalizedImages.find((i) => i.isPrimary)?.url || normalizedImages[0]?.url;
 
+      const cleanSpecs = specs
+        .filter((s) => s.label.trim() && s.value.trim())
+        .map((s) => ({ label: s.label.trim(), value: s.value.trim() }));
+      const cleanFeatures = featuresInput
+        .split('\n')
+        .map((f) => f.trim())
+        .filter(Boolean);
+
       const payload = {
         name: name.trim(),
         brand: brand.trim(),
@@ -420,6 +453,10 @@ function AdminProductsContent() {
         variants,
         isPublished,
         lowStockThreshold: Number(lowStockThreshold) || 5,
+        specs: cleanSpecs,
+        features: cleanFeatures,
+        discipline: discipline.trim().toLowerCase(),
+        gender: gender.trim().toLowerCase(),
       };
 
       if (isEditing && currentProductId) {
@@ -885,6 +922,43 @@ function AdminProductsContent() {
                   </select>
                 </div>
 
+                <div>
+                  <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+                    Discipline
+                  </label>
+                  <select
+                    value={discipline}
+                    onChange={(e) => {
+                      setIsDirty(true);
+                      setDiscipline(e.target.value);
+                    }}
+                    className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                  >
+                    <option value="all">ALL DISCIPLINES</option>
+                    <option value="run">RUN (DIV.01)</option>
+                    <option value="train">TRAIN (DIV.02)</option>
+                    <option value="rec">REC (DIV.03)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+                    Gender
+                  </label>
+                  <select
+                    value={gender}
+                    onChange={(e) => {
+                      setIsDirty(true);
+                      setGender(e.target.value);
+                    }}
+                    className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                  >
+                    <option value="unisex">UNISEX</option>
+                    <option value="men">MEN</option>
+                    <option value="women">WOMEN</option>
+                  </select>
+                </div>
+
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
@@ -997,6 +1071,88 @@ function AdminProductsContent() {
                   placeholder="tactical, waterproof, gore-tex, training"
                   className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                 />
+              </div>
+
+              {/* Technical Features (Bullet Items) */}
+              <div>
+                <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+                  Technical Features (One bullet item per line)
+                </label>
+                <textarea
+                  rows={3}
+                  value={featuresInput}
+                  onChange={(e) => {
+                    setIsDirty(true);
+                    setFeaturesInput(e.target.value);
+                  }}
+                  placeholder="e.g. SweatShield+ anti-odor fabric&#10;4-way mechanical stretch&#10;Laser-cut breathable vents"
+                  className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                />
+              </div>
+
+              {/* Technical Specifications Key-Value Table */}
+              <div className="space-y-3 border-t border-[var(--border)] pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="block font-mono text-xs tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
+                    Technical Specifications ({specs.length})
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsDirty(true);
+                      setSpecs((prev) => [...prev, { label: '', value: '' }]);
+                    }}
+                    className="btn-tactile inline-flex items-center gap-1 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1 font-mono text-xs text-[var(--text-primary)] uppercase hover:border-[var(--text-primary)] active:scale-[0.97]"
+                  >
+                    <Plus size={12} />
+                    <span>Add Spec</span>
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {specs.map((spec, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={spec.label}
+                        onChange={(e) => {
+                          setIsDirty(true);
+                          const val = e.target.value;
+                          setSpecs((prev) =>
+                            prev.map((s, i) => (i === idx ? { ...s, label: val } : s)),
+                          );
+                        }}
+                        placeholder="Label (e.g. Fabric, Weight, Membrane)"
+                        className="w-1/3 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                      />
+                      <input
+                        type="text"
+                        value={spec.value}
+                        onChange={(e) => {
+                          setIsDirty(true);
+                          const val = e.target.value;
+                          setSpecs((prev) =>
+                            prev.map((s, i) => (i === idx ? { ...s, value: val } : s)),
+                          );
+                        }}
+                        placeholder="Value (e.g. 4-Way Stretch Cordura, 180 GSM, DWR)"
+                        className="flex-1 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsDirty(true);
+                          setSpecs((prev) => prev.filter((_, i) => i !== idx));
+                        }}
+                        className="btn-tactile p-2 text-[#b91c1c] hover:opacity-75 active:scale-[0.97] dark:text-[#ff3b3b]"
+                        aria-label="Remove spec"
+                        title="Remove spec"
+                      >
+                        <Trash size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Multiple Images Upload & Gallery */}

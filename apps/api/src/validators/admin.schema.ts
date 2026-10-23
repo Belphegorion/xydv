@@ -60,6 +60,9 @@ export const adminCreateProductSchema = z.object({
       isFeatured: z.boolean().optional(),
       bestseller: z.boolean().optional(),
       lowStockThreshold: z.number().int().min(0).optional(),
+      features: z.array(z.string()).optional(),
+      discipline: z.string().optional(),
+      gender: z.string().optional(),
     })
     .refine((data) => !data.compareAt || data.compareAt === null || data.compareAt > data.price, {
       message: 'Compare price must be greater than sale price',
@@ -132,6 +135,9 @@ export const adminUpdateProductSchema = z.object({
       isFeatured: z.boolean().optional(),
       bestseller: z.boolean().optional(),
       lowStockThreshold: z.number().int().min(0).optional(),
+      features: z.array(z.string()).optional(),
+      discipline: z.string().optional(),
+      gender: z.string().optional(),
     })
     .refine(
       (data) =>

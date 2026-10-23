@@ -74,6 +74,8 @@ export interface Product {
   averageRating?: number;
   reviewCount?: number;
   lowStockThreshold?: number;
+  discipline?: string;
+  gender?: string;
   createdAt?: string;
   updatedAt?: string;
 }
