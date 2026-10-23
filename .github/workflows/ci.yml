@@ -1,0 +1,52 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, master, develop, "audit/**"]
+  pull_request:
+    branches: [main, master, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Code Quality & Test Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Code Style (Prettier)
+        run: npx prettier --check "apps/**/*.{ts,tsx}"
+
+      - name: TypeScript Strict Type-Check
+        run: npm run type-check
+
+      - name: ESLint Code Quality
+        run: npm run lint
+
+      - name: Build Types & API Packages
+        run: |
+          npm run build --workspace=@vertex/types
+          npm run build --workspace=@vertex/api
+
+      - name: Run Hermetic Test Suite
+        run: npm test
+
+      - name: Run E2E Integration Runner
+        run: node tests/runner.mjs
+
+      - name: Production Build Compilation
+        run: npm run build

@@ -327,7 +327,9 @@ function AdminProductsContent() {
       { label: 'Weight', value: '180 GSM' },
       { label: 'Treatment', value: 'DWR Water Repellent' },
     ]);
-    setFeaturesInput('SweatShield+ moisture management\nReinforced ergonomic seams\nLaser-cut ventilation zones');
+    setFeaturesInput(
+      'SweatShield+ moisture management\nReinforced ergonomic seams\nLaser-cut ventilation zones',
+    );
     setDiscipline('all');
     setGender('unisex');
     setIsDirty(false);

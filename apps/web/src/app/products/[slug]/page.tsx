@@ -607,7 +607,9 @@ export default function ProductDetailPage({ params }: PageProps) {
                       <Star size={14} weight="fill" />
                     </div>
                     <span className="font-bold text-[var(--text-primary)]">
-                      {typeof product.rating === 'number' ? product.rating.toFixed(1) : product.rating}
+                      {typeof product.rating === 'number'
+                        ? product.rating.toFixed(1)
+                        : product.rating}
                     </span>
                     <span className="text-[var(--text-muted)]">({product.reviewCount})</span>
                   </div>

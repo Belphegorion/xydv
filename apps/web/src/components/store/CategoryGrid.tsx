@@ -111,7 +111,8 @@ export function CategoryGrid() {
               slug: extra.slug || extra.id,
               ratio: idx % 2 === 0 ? '16:9' : '1:1',
               count: extra.count || 0,
-              description: extra.description || `Engineered ${extra.name || extra.id} performance apparel`,
+              description:
+                extra.description || `Engineered ${extra.name || extra.id} performance apparel`,
               image: extra.imageUrl || `/lookbook/image-${(idx % 10) + 1}-1.jpg`,
               gridSpan: 'lg:col-span-4 lg:row-span-1',
             }));
