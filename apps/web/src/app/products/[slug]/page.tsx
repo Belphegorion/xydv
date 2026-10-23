@@ -165,8 +165,8 @@ function mapApiProductToCatalog(
               stock: 50,
             },
           ],
-    rating: typeof apiProd.averageRating === 'number' ? apiProd.averageRating : 4.8,
-    reviewCount: typeof apiProd.reviewCount === 'number' ? apiProd.reviewCount : 42,
+    rating: typeof apiProd.averageRating === 'number' ? apiProd.averageRating : 0,
+    reviewCount: typeof apiProd.reviewCount === 'number' ? apiProd.reviewCount : 0,
     reviews: [],
   };
 }
@@ -601,13 +601,19 @@ export default function ProductDetailPage({ params }: PageProps) {
                   )}
                 </div>
 
-                <div className="flex items-center gap-1.5 font-mono text-xs text-[var(--text-secondary)]">
-                  <div className="flex items-center text-amber-500">
-                    <Star size={14} weight="fill" />
+                {product.reviewCount > 0 ? (
+                  <div className="flex items-center gap-1.5 font-mono text-xs text-[var(--text-secondary)]">
+                    <div className="flex items-center text-amber-500">
+                      <Star size={14} weight="fill" />
+                    </div>
+                    <span className="font-bold text-[var(--text-primary)]">
+                      {typeof product.rating === 'number' ? product.rating.toFixed(1) : product.rating}
+                    </span>
+                    <span className="text-[var(--text-muted)]">({product.reviewCount})</span>
                   </div>
-                  <span className="font-bold text-[var(--text-primary)]">{product.rating}</span>
-                  <span className="text-[var(--text-muted)]">({product.reviewCount})</span>
-                </div>
+                ) : (
+                  <span className="font-mono text-xs text-[var(--text-muted)]">No reviews yet</span>
+                )}
               </div>
 
               <p className="mt-4 font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm">

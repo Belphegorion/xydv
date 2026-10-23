@@ -155,8 +155,8 @@ function mapApiProductToCatalog(
               stock: 50,
             },
           ],
-    rating: typeof apiProd.averageRating === 'number' ? apiProd.averageRating : 4.8,
-    reviewCount: typeof apiProd.reviewCount === 'number' ? apiProd.reviewCount : 42,
+    rating: typeof apiProd.averageRating === 'number' ? apiProd.averageRating : 0,
+    reviewCount: typeof apiProd.reviewCount === 'number' ? apiProd.reviewCount : 0,
     reviews: [],
   };
 }

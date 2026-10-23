@@ -70,22 +70,58 @@ export function CategoryGrid() {
   useEffect(() => {
     let isMounted = true;
     api
-      .get<{ data?: Array<{ id: string; count?: number }> }>('/products/categories')
+      .get<{
+        data?: Array<{
+          id: string;
+          slug?: string;
+          name?: string;
+          description?: string;
+          count?: number;
+          imageUrl?: string;
+        }>;
+      }>('/products/categories')
       .then((res) => {
         if (!isMounted) return;
         const data = res?.data;
         if (Array.isArray(data) && data.length > 0) {
-          const countMap = new Map(data.map((c) => [c.id, c.count || 0]));
           const totalCount = data.reduce((sum, c) => sum + (c.count || 0), 0);
-          setCategories((prev) =>
-            prev.map((cat) => ({
+          const baseMap = new Map(BENTO_CATEGORIES.map((cat) => [cat.slug, cat]));
+
+          // Map base categories with live counts, descriptions, and images
+          const updatedBase = BENTO_CATEGORIES.filter((b) => b.slug !== 'all').map((cat) => {
+            const serverCat = data.find((d) => d.id === cat.slug || d.slug === cat.slug);
+            return {
               ...cat,
-              count:
-                cat.slug === 'all'
-                  ? totalCount || cat.count
-                  : (countMap.get(cat.slug) ?? cat.count),
-            })),
-          );
+              count: serverCat?.count ?? cat.count,
+              name: serverCat?.name ? serverCat.name.toUpperCase() : cat.name,
+              description: serverCat?.description || cat.description,
+              image: serverCat?.imageUrl || cat.image,
+            };
+          });
+
+          // Append any dynamic categories created via Admin that are not in the static set
+          const extraCategories = data
+            .filter((d) => {
+              const slug = d.slug || d.id;
+              return slug && slug !== 'all' && !baseMap.has(slug);
+            })
+            .map((extra, idx) => ({
+              id: `cat-${extra.slug || extra.id}`,
+              name: (extra.name || extra.slug || extra.id).toUpperCase(),
+              slug: extra.slug || extra.id,
+              ratio: idx % 2 === 0 ? '16:9' : '1:1',
+              count: extra.count || 0,
+              description: extra.description || `Engineered ${extra.name || extra.id} performance apparel`,
+              image: extra.imageUrl || `/lookbook/image-${(idx % 10) + 1}-1.jpg`,
+              gridSpan: 'lg:col-span-4 lg:row-span-1',
+            }));
+
+          const allArchive = BENTO_CATEGORIES.find((b) => b.slug === 'all')!;
+          setCategories([
+            ...updatedBase,
+            ...extraCategories,
+            { ...allArchive, count: totalCount || allArchive.count },
+          ]);
         }
       })
       .catch(() => {});

@@ -57,7 +57,7 @@ export const SHOWCASE_COLLECTIONS: ShowcaseDisciplineItem[] = [
       desktop: '/lookbook/image-31-1.jpg',
       tablet: '/lookbook/image-31-1.jpg',
       mobile: '/lookbook/image-31-1.jpg',
-      fallback: 'https://asrv.com/cdn/shop/files/ASRV-WOMENS-133.jpg?v=1750881906&width=1500',
+      fallback: '/lookbook/ASRV-WOMENS-133.jpg',
       alt: 'XYDV Train Collection featuring athlete in training gear',
     },
   },

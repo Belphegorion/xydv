@@ -551,7 +551,7 @@ export function BestsellerGrid() {
               slug: item.slug,
               category: typeof item.category === 'string' ? item.category : 'tops',
               price: item.price ?? 50,
-              rating: dynamicRating || '4.9 / 5.0 (200+ reviews)',
+              rating: dynamicRating || 'No reviews yet',
               variants:
                 Array.isArray(item.variants) && item.variants.length > 0
                   ? item.variants.map((v: ProductVariant, idx: number) => ({
