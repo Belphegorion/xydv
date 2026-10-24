@@ -754,10 +754,17 @@ export class AdminService {
       throw new AppError('This order has already been fully refunded', 400);
     }
 
-    const refundAmountToIssue =
+    let refundAmountToIssue =
       amount !== undefined && amount !== null ? Number(amount) : remainingRefundable;
     if (isNaN(refundAmountToIssue) || refundAmountToIssue <= 0) {
       throw new AppError('Refund amount must be a positive number', 400);
+    }
+    // BE-006: Support both decimal rupee amounts (e.g. 122.71) and minor unit paise (e.g. 12271)
+    if (
+      refundAmountToIssue > remainingRefundable &&
+      Math.round(refundAmountToIssue) / 100 <= remainingRefundable + 0.01
+    ) {
+      refundAmountToIssue = Math.round(refundAmountToIssue) / 100;
     }
     if (refundAmountToIssue > remainingRefundable) {
       throw new AppError(

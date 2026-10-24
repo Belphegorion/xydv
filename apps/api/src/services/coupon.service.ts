@@ -136,7 +136,10 @@ export class CouponService {
     for (const item of items) {
       const dbProduct = productMap.get(item.productId);
       const itemPrice = item.price;
-      const itemTotalPaise = Math.round(itemPrice * item.quantity * 100);
+      const unitPaise = dbProduct?.effectivePricePaise ??
+        dbProduct?.sellingPricePaise ??
+        (itemPrice > 10000 ? Math.round(itemPrice) : Math.round(itemPrice * 100));
+      const itemTotalPaise = unitPaise * item.quantity;
       totalSubtotalPaise += itemTotalPaise;
 
       let isEligible = true;
@@ -151,8 +154,8 @@ export class CouponService {
         const regularSellingPaise =
           variant?.sellingPricePaise ??
           dbProduct.sellingPricePaise ??
-          Math.round((variant?.price ?? dbProduct.price ?? itemPrice) * 100);
-        const currentPricePaise = Math.round(itemPrice * 100);
+          Math.round((variant?.price ?? dbProduct.price ?? (unitPaise / 100)) * 100);
+        const currentPricePaise = unitPaise;
         if (
           (compareAt && compareAt > itemPrice) ||
           currentPricePaise < regularSellingPaise ||

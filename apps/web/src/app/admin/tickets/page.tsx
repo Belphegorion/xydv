@@ -204,7 +204,7 @@ export default function AdminTicketsPage() {
               }}
               className={`border px-3 py-1 font-mono text-xs tracking-wider uppercase transition-colors ${
                 statusFilter === st
-                  ? 'border-[var(--accent)] bg-[var(--accent)] font-bold text-black'
+                  ? 'border-[var(--accent)] bg-[var(--accent)] font-bold text-[var(--accent-foreground)]'
                   : 'border-[var(--border)] bg-transparent text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
               }`}
             >

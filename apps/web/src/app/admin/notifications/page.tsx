@@ -254,7 +254,7 @@ export default function AdminNotificationsPage() {
       <div className="flex flex-col gap-4 border-b border-[var(--border)] pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold tracking-widest text-[#e8ff00] uppercase">
+            <span className="font-mono text-xs font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00] uppercase">
               STOREFRONT MARKETING
             </span>
             <span className="text-xs text-[var(--text-muted)]">•</span>
@@ -413,7 +413,7 @@ export default function AdminNotificationsPage() {
                             {notif.message}
                           </p>
                           {notif.couponCode && (
-                            <span className="mt-0.5 inline-block font-mono text-[10px] font-bold text-[#e8ff00]">
+                            <span className="mt-0.5 inline-block font-mono text-[10px] font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
                               CODE: {notif.couponCode}
                             </span>
                           )}
@@ -460,7 +460,7 @@ export default function AdminNotificationsPage() {
                           <CursorClick size={12} className="text-[var(--text-muted)]" />
                           {notif.metrics?.clicks ?? 0}
                         </span>
-                        <span title="CTR" className="font-bold text-[#e8ff00]">
+                        <span title="CTR" className="font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
                           {ctr}%
                         </span>
                       </div>
@@ -529,7 +529,7 @@ export default function AdminNotificationsPage() {
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
               <div>
-                <span className="font-mono text-[10px] font-bold tracking-widest text-[#e8ff00] uppercase">
+                <span className="font-mono text-[10px] font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00] uppercase">
                   STOREFRONT CAMPAIGN AUTHORING
                 </span>
                 <h2 id="notification-modal-title" className="text-lg font-bold text-[var(--text-primary)]">
@@ -640,7 +640,7 @@ export default function AdminNotificationsPage() {
                       <span>
                         {formData.triggerType === 'delay' ? 'Delay Seconds' : 'Scroll Depth %'}
                       </span>
-                      <span className="text-[#e8ff00] font-bold">
+                      <span className="text-[var(--text-primary)] dark:text-[#e8ff00] font-bold">
                         {formData.triggerValue}
                         {formData.triggerType === 'delay' ? 's' : '%'}
                       </span>
@@ -869,7 +869,7 @@ export default function AdminNotificationsPage() {
               </form>
 
               {/* Right Column: Live Interactive WYSIWYG Preview */}
-              <div className="col-span-1 lg:col-span-5 flex flex-col bg-[#050505] p-6 text-white">
+              <div className="col-span-1 lg:col-span-5 flex flex-col dark bg-[#050505] p-6 text-white">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <span className="font-mono text-[10px] font-bold tracking-widest text-[#e8ff00] uppercase">
                     LIVE STOREFRONT PREVIEW
@@ -901,7 +901,7 @@ export default function AdminNotificationsPage() {
                 {/* Preview Canvas */}
                 <div className="flex flex-1 items-center justify-center py-6">
                   <div
-                    className={`transition-all duration-300 relative border border-white/15 bg-[#0a0a0a] shadow-2xl ${
+                    className={`transition-all duration-300 relative dark border border-white/15 bg-[#0a0a0a] shadow-2xl ${
                       previewDevice === 'mobile' ? 'w-[320px]' : 'w-full max-w-md'
                     }`}
                   >

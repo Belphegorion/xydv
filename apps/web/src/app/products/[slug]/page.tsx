@@ -578,7 +578,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                   {`${product.discipline.toUpperCase()} // DIV.0${product.discipline === 'run' ? '1' : product.discipline === 'train' ? '2' : '3'}`}
                 </Badge>
                 {product.discountBadgeLabel ? (
-                  <span className="bg-[var(--accent)] px-2 py-0.5 font-mono text-[10px] font-bold text-black uppercase">
+                  <span className="bg-[var(--accent)] px-2 py-0.5 font-mono text-[10px] font-bold text-[var(--accent-foreground)] uppercase">
                     {product.discountBadgeLabel}
                   </span>
                 ) : product.compareAtPrice && product.compareAtPrice > product.price ? (
@@ -1171,7 +1171,7 @@ export default function ProductDetailPage({ params }: PageProps) {
               <button
                 type="submit"
                 disabled={reviewSubmitting}
-                className="min-h-[48px] bg-[var(--accent)] px-6 py-3 font-mono text-xs font-bold tracking-wider text-black uppercase transition-transform focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none active:scale-[0.97] disabled:opacity-50 dark:text-black"
+                className="min-h-[48px] bg-[var(--accent)] px-6 py-3 font-mono text-xs font-bold tracking-wider text-[var(--accent-foreground)] uppercase transition-transform focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none active:scale-[0.97] disabled:opacity-50"
               >
                 {reviewSubmitting ? 'DISPATCHING REPORT...' : 'TRANSMIT REVIEW TO ARCHIVE'}
               </button>

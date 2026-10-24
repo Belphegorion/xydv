@@ -335,7 +335,7 @@ function CatalogCard({
             {product.category}
           </Badge>
           {product.compareAtPrice && product.compareAtPrice > product.price && (
-            <span className="bg-[var(--accent)] px-1.5 py-0.5 font-mono text-[9px] font-bold text-black uppercase">
+            <span className="bg-[var(--accent)] px-1.5 py-0.5 font-mono text-[9px] font-bold text-[var(--accent-foreground)] uppercase">
               SAVE{' '}
               {Math.round(
                 ((product.compareAtPrice - product.price) / product.compareAtPrice) * 100,

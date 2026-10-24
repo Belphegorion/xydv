@@ -357,7 +357,7 @@ export default function AdminCouponsPage() {
       <div className="flex flex-col gap-4 border-b border-[var(--border)] pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold tracking-widest text-[#e8ff00] uppercase">
+            <span className="font-mono text-xs font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00] uppercase">
               PROMOTIONS & DISCOUNTS
             </span>
             <span className="text-xs text-[var(--text-muted)]">•</span>
@@ -388,7 +388,7 @@ export default function AdminCouponsPage() {
         <div className="border border-[var(--border)] bg-[var(--bg-surface)] p-4">
           <div className="flex items-center justify-between text-[var(--text-muted)]">
             <span className="font-mono text-[11px] tracking-wider uppercase">Active Campaigns</span>
-            <Ticket size={18} className="text-[#e8ff00]" />
+            <Ticket size={18} className="text-[var(--text-primary)] dark:text-[#e8ff00]" />
           </div>
           <p className="mt-2 text-2xl font-bold text-[var(--text-primary)]">
             {stats.totalActive}
@@ -530,15 +530,15 @@ export default function AdminCouponsPage() {
 
                     <td className="px-4 py-3">
                       {is50Percent ? (
-                        <span className="rounded-none border border-[#e8ff00] bg-[#e8ff00]/10 px-2 py-0.5 text-[10px] font-bold text-[#e8ff00] uppercase">
+                        <span className="rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)]/10 px-2 py-0.5 text-[10px] font-bold text-[var(--text-primary)] uppercase dark:border-[#e8ff00] dark:bg-[#e8ff00]/10 dark:text-[#e8ff00]">
                           50% OFF (HIGH RISK)
                         </span>
                       ) : coupon.discountType === 'percentage' ? (
-                        <span className="rounded-none border border-cyan-500/40 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-bold text-cyan-400 uppercase">
+                        <span className="rounded-none border border-cyan-500/40 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 uppercase">
                           {coupon.discountValue}% OFF
                         </span>
                       ) : (
-                        <span className="rounded-none border border-zinc-500/40 bg-zinc-500/10 px-2 py-0.5 text-[10px] font-bold text-zinc-300 uppercase">
+                        <span className="rounded-none border border-zinc-500/40 bg-zinc-500/10 px-2 py-0.5 text-[10px] font-bold text-zinc-700 dark:text-zinc-300 uppercase">
                           ₹{(coupon.discountValue / 100).toFixed(0)} OFF
                         </span>
                       )}
@@ -558,7 +558,7 @@ export default function AdminCouponsPage() {
                               percent >= 90
                                 ? 'bg-[#ff3b3b]'
                                 : is50Percent
-                                  ? 'bg-[#e8ff00]'
+                                  ? 'bg-[var(--text-primary)] dark:bg-[#e8ff00]'
                                   : 'bg-emerald-400'
                             }`}
                             style={{ width: `${percent}%` }}
@@ -569,7 +569,7 @@ export default function AdminCouponsPage() {
 
                     <td className="px-4 py-3 text-[var(--text-secondary)]">
                       {coupon.maxDiscountAmount ? (
-                        <span className="font-bold text-[#e8ff00]">
+                        <span className="font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
                           ₹{(coupon.maxDiscountAmount / 100).toLocaleString()}
                         </span>
                       ) : (
@@ -661,7 +661,7 @@ export default function AdminCouponsPage() {
           <div className="relative flex max-h-[92vh] w-full max-w-2xl flex-col border border-[var(--border)] bg-[var(--bg)] shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
               <div>
-                <span className="font-mono text-[10px] font-bold tracking-widest text-[#e8ff00] uppercase">
+                <span className="font-mono text-[10px] font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00] uppercase">
                   DISCOUNT CAMPAIGN RULES
                 </span>
                 <h2 id="coupon-modal-title" className="text-lg font-bold text-[var(--text-primary)]">
@@ -703,7 +703,7 @@ export default function AdminCouponsPage() {
                       onClick={handleGenerateCode}
                       className="btn-tactile flex items-center gap-1.5 border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs uppercase text-[var(--text-primary)] hover:border-[#e8ff00]"
                     >
-                      <Sparkle size={14} className="text-[#e8ff00]" />
+                      <Sparkle size={14} className="text-[var(--text-primary)] dark:text-[#e8ff00]" />
                       <span>GENERATE CODE</span>
                     </button>
                   )}
@@ -721,8 +721,8 @@ export default function AdminCouponsPage() {
                     onClick={() => handleSelectTier('10')}
                     className={`border py-2 text-center font-mono text-xs font-bold uppercase transition-colors ${
                       formData.presetTier === '10' && formData.discountType === 'percentage'
-                        ? 'border-[#e8ff00] bg-[#e8ff00]/10 text-[#e8ff00]'
-                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                        ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00]/15 dark:text-[#e8ff00]'
+                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     10% OFF
@@ -733,8 +733,8 @@ export default function AdminCouponsPage() {
                     onClick={() => handleSelectTier('20')}
                     className={`border py-2 text-center font-mono text-xs font-bold uppercase transition-colors ${
                       formData.presetTier === '20' && formData.discountType === 'percentage'
-                        ? 'border-[#e8ff00] bg-[#e8ff00]/10 text-[#e8ff00]'
-                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                        ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00]/15 dark:text-[#e8ff00]'
+                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     20% OFF
@@ -745,8 +745,8 @@ export default function AdminCouponsPage() {
                     onClick={() => handleSelectTier('50')}
                     className={`border py-2 text-center font-mono text-xs font-bold uppercase transition-colors ${
                       formData.presetTier === '50' && formData.discountType === 'percentage'
-                        ? 'border-[#e8ff00] bg-[#e8ff00] text-black'
-                        : 'border-[#e8ff00]/40 bg-[#e8ff00]/10 text-[#e8ff00] hover:bg-[#e8ff00]/20'
+                        ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-black'
+                        : 'border-dashed border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] dark:border-[#e8ff00]/40 dark:bg-[#e8ff00]/10 dark:text-[#e8ff00]'
                     }`}
                   >
                     50% (HIGH RISK)
@@ -757,8 +757,8 @@ export default function AdminCouponsPage() {
                     onClick={() => handleSelectTier('custom')}
                     className={`border py-2 text-center font-mono text-xs font-bold uppercase transition-colors ${
                       formData.presetTier === 'custom' && formData.discountType === 'percentage'
-                        ? 'border-[#e8ff00] bg-[#e8ff00]/10 text-[#e8ff00]'
-                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                        ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00]/15 dark:text-[#e8ff00]'
+                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     CUSTOM %
@@ -769,8 +769,8 @@ export default function AdminCouponsPage() {
                     onClick={() => handleSelectTier('custom', true)}
                     className={`border py-2 text-center font-mono text-xs font-bold uppercase transition-colors ${
                       formData.discountType === 'fixed'
-                        ? 'border-[#e8ff00] bg-[#e8ff00]/10 text-[#e8ff00]'
-                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                        ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00]/15 dark:text-[#e8ff00]'
+                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     FIXED ₹
@@ -817,7 +817,7 @@ export default function AdminCouponsPage() {
                   <label htmlFor={maxDiscountCapInputId} className="block font-mono text-[11px] font-bold tracking-wider text-[var(--text-secondary)] uppercase">
                     Maximum Discount Cap (₹){' '}
                     {formData.discountValue === 50 && (
-                      <span className="text-[#e8ff00]">* MANDATORY FOR 50%</span>
+                      <span className="text-[var(--danger)] dark:text-[#e8ff00] font-bold">* MANDATORY FOR 50%</span>
                     )}
                   </label>
                   <input
@@ -993,7 +993,7 @@ export default function AdminCouponsPage() {
           <div className="relative flex max-h-[85vh] w-full max-w-3xl flex-col border border-[var(--border)] bg-[var(--bg)] shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
               <div>
-                <span className="font-mono text-[10px] font-bold tracking-widest text-[#e8ff00] uppercase">
+                <span className="font-mono text-[10px] font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00] uppercase">
                   REDEMPTION AUDIT TRAIL
                 </span>
                 <h3 className="text-base font-bold text-[var(--text-primary)]">
@@ -1038,7 +1038,7 @@ export default function AdminCouponsPage() {
                         <td className="py-2.5">
                           {r.userId?.email || r.guestEmail || 'Guest Shopper'}
                         </td>
-                        <td className="py-2.5 font-bold text-[#e8ff00]">
+                        <td className="py-2.5 font-bold text-[var(--text-primary)] dark:text-[#e8ff00]">
                           ₹{(r.discountAmount / 100).toFixed(2)}
                         </td>
                         <td className="py-2.5">

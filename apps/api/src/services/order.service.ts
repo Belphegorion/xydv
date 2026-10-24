@@ -151,11 +151,18 @@ export class OrderService {
       couponDiscountRupees = couponDiscountOrCode;
     }
 
-    const shipping = subtotal >= settings.freeShippingThreshold ? 0 : settings.shippingFee;
-    const taxableValue = Math.max(0, Math.round((subtotal - couponDiscountRupees) * 100) / 100);
-    const tax = Math.round(taxableValue * settings.taxRate * 100) / 100;
-    const total = Math.round((taxableValue + shipping + tax) * 100) / 100;
-    const amountInPaise = Math.round(total * 100);
+    const subtotalPaise = Math.round(subtotal * 100);
+    const couponDiscountPaise = Math.round(couponDiscountRupees * 100);
+    const taxablePaise = Math.max(0, subtotalPaise - couponDiscountPaise);
+    const taxPaise = Math.round(taxablePaise * settings.taxRate);
+    const shippingPaise = (subtotal >= settings.freeShippingThreshold ? 0 : settings.shippingFee) * 100;
+    const totalPaise = taxablePaise + shippingPaise + taxPaise;
+
+    const shipping = shippingPaise / 100;
+    const taxableValue = taxablePaise / 100;
+    const tax = taxPaise / 100;
+    const total = totalPaise / 100;
+    const amountInPaise = totalPaise;
 
     return {
       subtotal,

@@ -448,7 +448,7 @@ export default function SizingPage() {
                     <td className="flex items-center gap-2 px-4 py-3.5 font-bold text-[var(--text-primary)]">
                       <span>{row.size}</span>
                       {row.size === recommendation.size && (
-                        <span className="bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold text-black uppercase">
+                        <span className="bg-[var(--accent)] px-1.5 py-0.5 text-[9px] font-bold text-[var(--accent-foreground)] uppercase">
                           MATCH
                         </span>
                       )}

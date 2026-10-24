@@ -295,7 +295,7 @@ export function CustomerAuthModal() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="mt-2 flex min-h-[48px] w-full items-center justify-center gap-2 bg-[var(--accent)] px-4 py-3 font-mono text-xs font-bold tracking-wider text-black uppercase transition-transform active:scale-[0.98] disabled:opacity-50 dark:text-black"
+                    className="mt-2 flex min-h-[48px] w-full items-center justify-center gap-2 bg-[var(--accent)] px-4 py-3 font-mono text-xs font-bold tracking-wider text-[var(--accent-foreground)] uppercase transition-transform active:scale-[0.98] disabled:opacity-50"
                   >
                     {isLoading ? (
                       <>
