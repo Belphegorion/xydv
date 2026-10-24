@@ -758,11 +758,33 @@ function AdminProductsContent() {
                       </td>
 
                       <td className="px-4 py-3 font-mono">
-                        <span className="font-bold text-[var(--text-primary)]">₹{p.price}</span>
-                        {p.compareAt && (
-                          <span className="ml-1.5 text-[10px] text-[var(--text-muted)] line-through">
-                            ₹{p.compareAt}
-                          </span>
+                        {p.effectivePricePaise &&
+                        p.effectivePricePaise <
+                          (p.sellingPricePaise ?? Math.round(p.price * 100)) ? (
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-emerald-400">
+                                ₹{(p.effectivePricePaise / 100).toFixed(0)}
+                              </span>
+                              <span className="text-[10px] text-[var(--text-muted)] line-through">
+                                ₹{p.price}
+                              </span>
+                            </div>
+                            {p.discountBadgeLabel && (
+                              <span className="mt-0.5 inline-block rounded bg-[var(--accent)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--accent)] border border-[var(--accent)]/30">
+                                {p.discountBadgeLabel}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <div>
+                            <span className="font-bold text-[var(--text-primary)]">₹{p.price}</span>
+                            {p.compareAt && (
+                              <span className="ml-1.5 text-[10px] text-[var(--text-muted)] line-through">
+                                ₹{p.compareAt}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </td>
 

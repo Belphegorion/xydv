@@ -18,6 +18,7 @@ import {
   ChatText,
   Bell,
   Ticket,
+  Percent,
 } from '@phosphor-icons/react';
 import { BrandLogo } from '../ui/BrandLogo';
 import { useAdminAuthStore } from '../../store/adminAuth';
@@ -50,6 +51,7 @@ export function AdminSidebar({
     },
     { label: 'Customers', href: '/admin/customers', icon: Users },
     { label: 'Notifications', href: '/admin/notifications', icon: Bell },
+    { label: 'Discounts', href: '/admin/discounts', icon: Percent },
     { label: 'Coupons', href: '/admin/coupons', icon: Ticket },
     { label: 'Support Tickets', href: '/admin/tickets', icon: ChatText },
     { label: 'Settings', href: '/admin/settings', icon: Gear },

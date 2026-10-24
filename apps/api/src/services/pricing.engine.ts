@@ -1,5 +1,4 @@
-import type { ResolvedPrice, DiscountScope } from '@vertex/types';
-import type { IDiscount } from '../models/Discount.model';
+import type { ResolvedPrice, DiscountScope, DiscountType, DiscountStatus } from '@vertex/types';
 
 export interface PricingEngineProductInput {
   _id: string | { toString(): string };
