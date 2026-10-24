@@ -58,19 +58,13 @@ export async function POST(request: Request) {
       { status: res.status },
     );
   } catch {
-    // If backend is unreachable in isolated local test environment, return formatted ticket
-    const ticketId = `XYDV-TK-${Date.now().toString(36).toUpperCase()}`;
-    return NextResponse.json({
-      success: true,
-      ticketId,
-      message: 'Support dispatch received. An athlete service engineer will review within 2 hours.',
-      data: {
-        name: trimmedName,
-        email: trimmedEmail,
-        topic: topic ? String(topic).trim() : 'General Inquiry',
-        orderId: orderId ? String(orderId).trim() : null,
-        receivedAt: new Date().toISOString(),
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          'Support service is temporarily unavailable. Please try again later or email support@xydv.com.',
       },
-    });
+      { status: 502 },
+    );
   }
 }

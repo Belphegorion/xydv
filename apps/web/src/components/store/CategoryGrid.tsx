@@ -117,7 +117,8 @@ export function CategoryGrid() {
               gridSpan: 'lg:col-span-4 lg:row-span-1',
             }));
 
-          const allArchive = BENTO_CATEGORIES.find((b) => b.slug === 'all')!;
+          const allArchive = BENTO_CATEGORIES.find((b) => b.slug === 'all');
+          if (!allArchive) return;
           setCategories([
             ...updatedBase,
             ...extraCategories,

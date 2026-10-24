@@ -69,16 +69,14 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      categories: DEFAULT_CATEGORIES,
-      data: DEFAULT_CATEGORIES,
-    });
+    return NextResponse.json(
+      { success: false, error: 'Backend API unavailable' },
+      { status: 502 },
+    );
   } catch {
-    return NextResponse.json({
-      success: true,
-      categories: DEFAULT_CATEGORIES,
-      data: DEFAULT_CATEGORIES,
-    });
+    return NextResponse.json(
+      { success: false, error: 'Backend API unavailable' },
+      { status: 502 },
+    );
   }
 }

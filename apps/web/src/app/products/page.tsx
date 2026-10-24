@@ -54,6 +54,8 @@ interface ApiProductInput {
   variants?: ApiProductVariant[];
   averageRating?: number;
   reviewCount?: number;
+  isFeatured?: boolean;
+  bestseller?: boolean;
 }
 
 function parseCategory(val: unknown): CatalogProduct['category'] {
@@ -78,25 +80,45 @@ function mapApiProductToCatalog(
   if (existingStatic) {
     return {
       ...existingStatic,
+      id: apiProd._id || apiProd.id || existingStatic.id,
+      name: apiProd.name || existingStatic.name,
+      slug: apiProd.slug || existingStatic.slug,
+      description: apiProd.description || existingStatic.description,
+      category: parseCategory(apiProd.category || existingStatic.category),
+      discipline: parseDiscipline(apiProd.discipline || existingStatic.discipline),
+      gender: parseGender(apiProd.gender || existingStatic.gender),
       price: typeof apiProd.price === 'number' ? apiProd.price : existingStatic.price,
       compareAtPrice:
         typeof apiProd.compareAt === 'number' ? apiProd.compareAt : existingStatic.compareAtPrice,
-      category: parseCategory(apiProd.category || existingStatic.category),
+      specsSummary: apiProd.specsSummary || existingStatic.specsSummary,
+      headline: apiProd.name || existingStatic.headline,
+      features:
+        Array.isArray(apiProd.features) && apiProd.features.length > 0
+          ? apiProd.features
+          : existingStatic.features,
+      isFeatured:
+        typeof apiProd.isFeatured === 'boolean' ? apiProd.isFeatured : existingStatic.isFeatured,
+      isBestseller:
+        typeof apiProd.bestseller === 'boolean'
+          ? apiProd.bestseller
+          : existingStatic.isBestseller,
       variants:
         Array.isArray(apiProd.variants) && apiProd.variants.length > 0
           ? apiProd.variants.map((v: ApiProductVariant, idx: number) => {
-              const staticVar = existingStatic.variants[idx] || existingStatic.variants[0];
+              const staticVar = existingStatic.variants[idx] ?? existingStatic.variants[0];
               return {
-                id: v._id || v.id || staticVar.id,
-                sku: v.sku || staticVar.sku,
-                colorName: v.colorName || v.color || staticVar.colorName,
-                colorHex: v.colorHex || staticVar.colorHex,
-                size: v.size || staticVar.size,
-                primaryImage: v.imageUrl || staticVar.primaryImage,
-                secondaryImage: v.secondaryImageUrl || staticVar.secondaryImage,
+                id: v._id || v.id || staticVar?.id || `var_${idx}`,
+                sku: v.sku || staticVar?.sku || '',
+                colorName: v.colorName || v.color || staticVar?.colorName || '',
+                colorHex: v.colorHex || staticVar?.colorHex || '#000000',
+                size: v.size || staticVar?.size || '',
+                primaryImage: v.imageUrl || staticVar?.primaryImage || '/lookbook/image-2-1.jpg',
+                secondaryImage: v.secondaryImageUrl ?? staticVar?.secondaryImage,
                 gallery:
-                  Array.isArray(v.images) && v.images.length > 0 ? v.images : staticVar.gallery,
-                stock: typeof v.stock === 'number' ? v.stock : staticVar.stock,
+                  Array.isArray(v.images) && v.images.length > 0
+                    ? v.images
+                    : staticVar?.gallery ?? [],
+                stock: typeof v.stock === 'number' ? v.stock : staticVar?.stock ?? 0,
               };
             })
           : existingStatic.variants,
@@ -158,6 +180,8 @@ function mapApiProductToCatalog(
     rating: typeof apiProd.averageRating === 'number' ? apiProd.averageRating : 0,
     reviewCount: typeof apiProd.reviewCount === 'number' ? apiProd.reviewCount : 0,
     reviews: [],
+    isFeatured: apiProd.isFeatured,
+    isBestseller: apiProd.bestseller,
   };
 }
 
