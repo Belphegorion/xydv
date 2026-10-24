@@ -27,7 +27,7 @@ const productRouter = prodRoutesModule.default?.default || prodRoutesModule.defa
 const errorHandler = errHandlerModule.errorHandler || errHandlerModule.default?.errorHandler;
 const Product = productModelModule.Product || productModelModule.default?.Product;
 
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vertex';
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/xydv';
 
 describe('Milestone 2 Empirical Challenge: Product Catalog API & Route Resilience', () => {
   let app;

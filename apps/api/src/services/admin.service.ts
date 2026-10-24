@@ -185,11 +185,17 @@ export class AdminService {
     }
     const inStock = variants.length > 0 ? variants.some((v) => (v.stock || 0) > 0) : true;
 
+    // CN-002: Normalize images array so strings become { url: string, alt: '' }
+    const normalizedImages = Array.isArray(rest.images)
+      ? rest.images.map((img) => (typeof img === 'string' ? { url: img, alt: '' } : img))
+      : rest.images;
+
     const product = await Product.create({
       name,
       slug,
       inStock,
       ...rest,
+      images: normalizedImages,
     });
 
     await logAdminAction({
@@ -268,6 +274,11 @@ export class AdminService {
           }
         }
       }
+    // CN-002: Normalize images array so strings become { url: string, alt: '' }
+    if (data.images && Array.isArray(data.images)) {
+      data.images = data.images.map((img) =>
+        typeof img === 'string' ? { url: img, alt: '' } : img,
+      );
     }
 
     const product = await Product.findByIdAndUpdate(id, data, {

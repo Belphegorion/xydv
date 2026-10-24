@@ -214,7 +214,7 @@ function AdminOrdersContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-full min-w-0">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -329,9 +329,9 @@ function AdminOrdersContent() {
       </div>
 
       {/* Orders Table */}
-      <div className="overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-surface)]">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left font-sans text-xs">
+      <div className="w-full max-w-full overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-surface)]">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full min-w-[650px] text-left font-sans text-xs">
             <thead className="border-b border-[var(--border)] bg-[var(--bg-elevated)] font-mono tracking-wider text-[var(--text-muted)] uppercase">
               <tr>
                 <th className="px-4 py-3">Order Ref</th>

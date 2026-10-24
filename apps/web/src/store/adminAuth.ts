@@ -23,6 +23,8 @@ interface AdminAuthState {
   clearError: () => void;
 }
 
+let initializePromise: Promise<void> | null = null;
+
 export const useAdminAuthStore = create<AdminAuthState>((set) => ({
   token: null,
   user: null,
@@ -32,66 +34,73 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
 
   initialize: async () => {
     if (typeof window === 'undefined') return;
+    if (initializePromise) return initializePromise;
 
-    // Clean up any legacy plain tokens from localStorage for security compliance
-    try {
-      localStorage.removeItem('vertex_admin_token');
-      localStorage.removeItem('vertex_admin_user');
-      localStorage.removeItem('xydv_admin_token');
-      localStorage.removeItem('xydv_admin_user');
-    } catch {}
-
-    // Validate the in-memory token belongs to an admin before trusting it.
-    // A storefront customer login sets the same singleton; we must not let it
-    // grant admin access.
-    const currentMemoryToken = getAccessToken();
-    if (currentMemoryToken) {
+    initializePromise = (async () => {
+      // Clean up any legacy plain tokens from localStorage for security compliance
       try {
-        const parts = currentMemoryToken.split('.');
-        if (parts.length === 3 && parts[1]) {
-          const payload = JSON.parse(
-            atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')),
-          ) as { role?: string; isBlocked?: boolean };
-          if (payload.role === 'admin' && !payload.isBlocked) {
-            set({ token: currentMemoryToken, isAuthenticated: true });
-            return;
+        localStorage.removeItem('vertex_admin_token');
+        localStorage.removeItem('vertex_admin_user');
+        localStorage.removeItem('xydv_admin_token');
+        localStorage.removeItem('xydv_admin_user');
+      } catch {}
+
+      // Validate the in-memory token belongs to an admin before trusting it.
+      // A storefront customer login sets the same singleton; we must not let it
+      // grant admin access.
+      const currentMemoryToken = getAccessToken();
+      if (currentMemoryToken) {
+        try {
+          const parts = currentMemoryToken.split('.');
+          if (parts.length === 3 && parts[1]) {
+            const payload = JSON.parse(
+              atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')),
+            ) as { role?: string; isBlocked?: boolean };
+            if (payload.role === 'admin' && !payload.isBlocked) {
+              set({ token: currentMemoryToken, isAuthenticated: true });
+              return;
+            }
           }
+        } catch {
+          // Malformed token — fall through to server refresh
+        }
+        // Token present but not an admin token — clear it and re-authenticate
+        setAccessToken(null);
+      }
+
+      set({ isLoading: true });
+      try {
+        const res = await api.post<{
+          token: string;
+          data?: AdminUser;
+          user?: AdminUser;
+        }>('/auth/refresh', {});
+
+        const user = res.data ?? res.user;
+        const token = res.token;
+
+        if (token && user && user.role === 'admin' && !user.isBlocked) {
+          setAccessToken(token);
+          set({
+            token,
+            user,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+          return;
         }
       } catch {
-        // Malformed token — fall through to server refresh
+        // Session expired, unavailable, or invalid
       }
-      // Token present but not an admin token — clear it and re-authenticate
+
       setAccessToken(null);
-    }
+      set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+    })().finally(() => {
+      initializePromise = null;
+    });
 
-    set({ isLoading: true });
-    try {
-      const res = await api.post<{
-        token: string;
-        data?: AdminUser;
-        user?: AdminUser;
-      }>('/auth/refresh', {});
-
-      const user = res.data ?? res.user;
-      const token = res.token;
-
-      if (token && user && user.role === 'admin' && !user.isBlocked) {
-        setAccessToken(token);
-        set({
-          token,
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-        });
-        return;
-      }
-    } catch {
-      // Session expired, unavailable, or invalid
-    }
-
-    setAccessToken(null);
-    set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+    return initializePromise;
   },
 
   login: async (email: string, password: string) => {

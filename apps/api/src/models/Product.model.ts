@@ -241,6 +241,7 @@ productSchema.pre('validate', function (next) {
 });
 
 // Indexes for common queries
+productSchema.index({ isPublished: 1, createdAt: -1 });
 productSchema.index({ category: 1, isPublished: 1 });
 productSchema.index({ isFeatured: 1, isPublished: 1 });
 productSchema.index({ featured: 1, isPublished: 1 });
