@@ -22,6 +22,7 @@ import { inventoryService } from './inventory.service';
 import { invalidateStoreSettingsCache } from './order.service';
 import { UPLOADS_DIR } from '../middleware/upload';
 import { logger } from '../config/logger';
+import { couponService } from './coupon.service';
 
 export interface AdminProductInput extends Partial<Omit<IProduct, 'variants' | 'images'>> {
   variants?: Array<Partial<IProductVariant>>;
@@ -688,6 +689,9 @@ export class AdminService {
           );
           await inventoryService.syncProductInStock(item.productId, session);
         }
+        if (order.razorpayOrderId) {
+          await couponService.releaseRedemption(order.razorpayOrderId).catch(() => {});
+        }
       }
 
       await order.save(session ? { session } : {});
@@ -849,6 +853,9 @@ export class AdminService {
         order.paymentStatus = 'refunded';
         order.status = 'cancelled';
         order.refundAmount = order.total;
+        if (order.razorpayOrderId) {
+          await couponService.releaseRedemption(order.razorpayOrderId).catch(() => {});
+        }
       } else {
         order.paymentStatus = 'partially_refunded';
         order.refundAmount = Math.round((currentRefunded + refundAmountToIssue) * 100) / 100;

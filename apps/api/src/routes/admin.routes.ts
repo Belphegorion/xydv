@@ -18,6 +18,13 @@ import {
   idParamSchema,
 } from '../validators/admin.schema';
 import { updateOrderStatusSchema } from '../validators/order.schema';
+import { notificationController } from '../controllers/notification.controller';
+import { couponController } from '../controllers/coupon.controller';
+import {
+  createNotificationSchema,
+  updateNotificationSchema,
+} from '../validators/notification.schema';
+import { createCouponSchema, updateCouponSchema } from '../validators/coupon.schema';
 
 const router = Router();
 
@@ -192,5 +199,62 @@ router.patch('/tickets/:id/status', async (req, res, next) => {
     next(err);
   }
 });
+
+// --- NOTIFICATIONS ---
+router.get('/notifications', notificationController.getAdminNotifications.bind(notificationController));
+router.post(
+  '/notifications',
+  validateRequest(createNotificationSchema),
+  notificationController.createNotification.bind(notificationController),
+);
+router.get(
+  '/notifications/:id',
+  validateRequest(idParamSchema),
+  notificationController.getNotificationById.bind(notificationController),
+);
+router.patch(
+  '/notifications/:id',
+  validateRequest(updateNotificationSchema),
+  notificationController.updateNotification.bind(notificationController),
+);
+router.delete(
+  '/notifications/:id',
+  validateRequest(idParamSchema),
+  notificationController.deleteNotification.bind(notificationController),
+);
+router.patch(
+  '/notifications/:id/toggle',
+  validateRequest(idParamSchema),
+  notificationController.toggleActive.bind(notificationController),
+);
+
+// --- COUPONS ---
+router.get('/coupons', couponController.getAdminCoupons.bind(couponController));
+router.get('/coupons/generate-code', couponController.generateCode.bind(couponController));
+router.post(
+  '/coupons',
+  validateRequest(createCouponSchema),
+  couponController.createCoupon.bind(couponController),
+);
+router.get(
+  '/coupons/:id',
+  validateRequest(idParamSchema),
+  couponController.getCouponById.bind(couponController),
+);
+router.patch(
+  '/coupons/:id',
+  validateRequest(updateCouponSchema),
+  couponController.updateCoupon.bind(couponController),
+);
+router.delete(
+  '/coupons/:id',
+  validateRequest(idParamSchema),
+  couponController.deleteCoupon.bind(couponController),
+);
+router.get(
+  '/coupons/:id/redemptions',
+  validateRequest(idParamSchema),
+  couponController.getRedemptions.bind(couponController),
+);
 
 export default router;

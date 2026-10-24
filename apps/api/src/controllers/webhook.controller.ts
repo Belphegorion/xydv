@@ -4,6 +4,7 @@ import { Order } from '../models/Order.model';
 import { ProcessedWebhookEvent } from '../models/Idempotency.model';
 import { RAZORPAY_WEBHOOK_SECRET } from '../config/razorpay';
 import { inventoryService } from '../services/inventory.service';
+import { couponService } from '../services/coupon.service';
 import { logger } from '../config/logger';
 import type { RazorpayWebhookEvent } from '@vertex/types';
 
@@ -232,8 +233,9 @@ export class WebhookController {
               existingOrder.status = 'cancelled';
               await existingOrder.save();
 
-              // Release reservation back to stock
+              // Release reservation back to stock and release reserved coupon
               await inventoryService.releaseReservation(payment.order_id);
+              await couponService.releaseRedemption(payment.order_id).catch(() => {});
             }
           }
           break;

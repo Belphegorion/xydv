@@ -5,6 +5,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/store/CartDrawer';
 import { CustomerAuthModal } from '@/components/store/CustomerAuthModal';
+import { NotificationManager } from '@/components/store/NotificationManager';
 import { RouteTelemetry } from '@/components/telemetry/RouteTelemetry';
 import { SmoothCursor } from '@/components/ui/SmoothCursor';
 import { InitialLoadingScreen } from '@/components/ui/InitialLoadingScreen';
@@ -106,6 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <CartDrawer />
           <CustomerAuthModal />
+          <NotificationManager />
           <RouteTelemetry />
         </Providers>
       </body>

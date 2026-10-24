@@ -7,6 +7,8 @@ import adminRoutes from './admin.routes';
 import webhookRoutes from './webhooks.routes';
 import settingsRoutes from './settings.routes';
 import supportRoutes from './support.routes';
+import notificationsRoutes from './notifications.routes';
+import couponsRoutes from './coupons.routes';
 import { productController } from '../controllers/product.controller';
 import { adminController } from '../controllers/admin.controller';
 import { trackViewSchema } from '../validators/admin.schema';
@@ -22,6 +24,8 @@ apiRouter.use('/admin', adminRoutes);
 apiRouter.use('/webhooks', webhookRoutes);
 apiRouter.use('/settings', settingsRoutes);
 apiRouter.use('/support', supportRoutes);
+apiRouter.use('/notifications', notificationsRoutes);
+apiRouter.use('/coupons', couponsRoutes);
 
 // Direct public taxonomy and telemetry routes
 apiRouter.get('/categories', productController.getCategories.bind(productController));

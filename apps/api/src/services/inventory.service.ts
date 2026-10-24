@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { Product, type IProduct } from '../models/Product.model';
 import { Reservation, type IReservationItem } from '../models/Reservation.model';
 import { Order } from '../models/Order.model';
+import { couponService } from './coupon.service';
 import { AppError } from '../middleware/errorHandler';
 import { COMMERCE_CONSTANTS } from '../constants/commerce';
 import { logger } from '../config/logger';
@@ -351,12 +352,13 @@ export class InventoryService {
         await this.syncProductInStock(item.productId);
       }
 
-      // Cancel associated pending order
+      // Cancel associated pending order and release held coupon
       if (reservation.razorpayOrderId) {
         await Order.updateOne(
           { razorpayOrderId: reservation.razorpayOrderId, status: 'pending' },
           { status: 'cancelled', paymentStatus: 'failed' },
         );
+        await couponService.releaseRedemption(reservation.razorpayOrderId).catch(() => {});
       }
 
       cleaned++;

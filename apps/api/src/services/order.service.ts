@@ -8,6 +8,9 @@ import { Setting } from '../models/Setting.model';
 import { AppError } from '../middleware/errorHandler';
 import { inventoryService } from './inventory.service';
 import { COMMERCE_CONSTANTS } from '../constants/commerce';
+import { couponService } from './coupon.service';
+import type { IOrderCouponSnapshot } from '../models/Order.model';
+import type { ICouponValidationResult } from '@vertex/types';
 
 export interface StorePricingSettings {
   shippingFee: number;
@@ -18,11 +21,20 @@ export interface StorePricingSettings {
 
 export interface OrderTotals {
   subtotal: number;
+  discount?: number;
+  taxableValue?: number;
   shipping: number;
   tax: number;
   total: number;
   amountInPaise: number;
   currency: string;
+  coupon?: {
+    code: string;
+    discountType: string;
+    discountValue: number;
+    discountAmount: number;
+    maxDiscountCap?: number;
+  };
 }
 
 let cachedSettings: StorePricingSettings | null = null;
@@ -104,23 +116,55 @@ export class OrderService {
   async calculateOrderTotals(
     subtotal: number,
     settingsOverride?: Partial<StorePricingSettings>,
+    couponDiscountOrCode: number | string = 0,
+    cartItems?: Array<{ productId: string; sku?: string; variantId?: string; quantity: number; price: number }>,
+    userId?: string,
+    guestEmail?: string,
   ): Promise<OrderTotals> {
     const settings = settingsOverride
       ? { ...(await getLiveStoreSettings()), ...settingsOverride }
       : await getLiveStoreSettings();
 
+    let couponDiscountRupees = 0;
+    let couponSummary: OrderTotals['coupon'] = undefined;
+
+    if (typeof couponDiscountOrCode === 'string' && couponDiscountOrCode.trim()) {
+      if (cartItems && cartItems.length > 0) {
+        const valResult = await couponService.validateCoupon({
+          code: couponDiscountOrCode.trim(),
+          items: cartItems,
+          userId,
+          guestEmail,
+        });
+        couponDiscountRupees = valResult.discountAmountRupees;
+        couponSummary = {
+          code: valResult.code,
+          discountType: valResult.discountType,
+          discountValue: valResult.discountValue,
+          discountAmount: valResult.discountAmount,
+          maxDiscountCap: valResult.maxDiscountCap,
+        };
+      }
+    } else if (typeof couponDiscountOrCode === 'number' && couponDiscountOrCode > 0) {
+      couponDiscountRupees = couponDiscountOrCode;
+    }
+
     const shipping = subtotal >= settings.freeShippingThreshold ? 0 : settings.shippingFee;
-    const tax = Math.round(subtotal * settings.taxRate * 100) / 100;
-    const total = Math.round((subtotal + shipping + tax) * 100) / 100;
+    const taxableValue = Math.max(0, Math.round((subtotal - couponDiscountRupees) * 100) / 100);
+    const tax = Math.round(taxableValue * settings.taxRate * 100) / 100;
+    const total = Math.round((taxableValue + shipping + tax) * 100) / 100;
     const amountInPaise = Math.round(total * 100);
 
     return {
       subtotal,
+      discount: couponDiscountRupees,
+      taxableValue,
       shipping,
       tax,
       total,
       amountInPaise,
       currency: settings.currency,
+      coupon: couponSummary,
     };
   }
 
@@ -131,6 +175,7 @@ export class OrderService {
     items: CreateOrderItemInput[],
     shippingAddress?: ShippingAddressInput,
     userId?: string,
+    couponCode?: string,
   ) {
     if (userId && mongoose.isValidObjectId(userId)) {
       const user = await User.findById(userId);
@@ -165,6 +210,8 @@ export class OrderService {
       price: number;
       quantity: number;
       image: string;
+      discountAllocation?: number;
+      taxableAmount?: number;
     }> = [];
     const reservationItems: Array<{
       productId: mongoose.Types.ObjectId;
@@ -268,8 +315,46 @@ export class OrderService {
       });
     }
 
+    let couponSnapshot: IOrderCouponSnapshot | undefined = undefined;
+    let couponDiscountRupees = 0;
+    let couponValidationResult: ICouponValidationResult | undefined = undefined;
+
+    if (couponCode && typeof couponCode === 'string' && couponCode.trim()) {
+      couponValidationResult = await couponService.validateCoupon({
+        code: couponCode.trim(),
+        items: validatedItems.map((vi) => ({
+          productId: vi.productId.toString(),
+          sku: vi.sku,
+          quantity: vi.quantity,
+          price: vi.price,
+        })),
+        userId,
+        guestEmail: guestEmail ? String(guestEmail) : undefined,
+      });
+
+      couponDiscountRupees = couponValidationResult.discountAmountRupees;
+      couponSnapshot = {
+        code: couponValidationResult.code,
+        discountType: couponValidationResult.discountType,
+        discountValue: couponValidationResult.discountValue,
+        discountAmount: couponValidationResult.discountAmount,
+        maxDiscountCap: couponValidationResult.maxDiscountCap,
+      };
+
+      for (const vi of validatedItems) {
+        const alloc = couponValidationResult.lineItemAllocations.find(
+          (a: { productId: string; sku?: string }) =>
+            a.productId === vi.productId.toString() && (!a.sku || a.sku === vi.sku),
+        );
+        if (alloc) {
+          vi.discountAllocation = alloc.discountAllocation;
+          vi.taxableAmount = alloc.taxableAmount;
+        }
+      }
+    }
+
     const { shipping, tax, total, amountInPaise, currency } =
-      await this.calculateOrderTotals(subtotal);
+      await this.calculateOrderTotals(subtotal, undefined, couponDiscountRupees);
 
     // Create Razorpay Order
     let razorpayOrder: { id: string; amount: number; currency: string };
@@ -329,6 +414,7 @@ export class OrderService {
       userId:
         userId && mongoose.isValidObjectId(userId) ? new mongoose.Types.ObjectId(userId) : null,
       items: validatedItems,
+      coupon: couponSnapshot,
       subtotal,
       shipping,
       tax,
@@ -361,6 +447,24 @@ export class OrderService {
       throw resErr;
     }
 
+    // Atomically reserve coupon redemption if coupon applied
+    if (couponSnapshot && couponValidationResult) {
+      try {
+        await couponService.reserveCoupon({
+          couponCode: couponSnapshot.code,
+          razorpayOrderId: razorpayOrder.id,
+          orderId: order._id as mongoose.Types.ObjectId,
+          discountAmount: couponSnapshot.discountAmount,
+          userId,
+          guestEmail: guestEmail ? String(guestEmail) : undefined,
+        });
+      } catch (couponErr) {
+        await inventoryService.releaseReservation(razorpayOrder.id).catch(() => {});
+        await Order.deleteOne({ _id: order._id }).catch(() => {});
+        throw couponErr;
+      }
+    }
+
     return {
       orderId: order._id,
       razorpayOrderId: razorpayOrder.id,
@@ -368,6 +472,8 @@ export class OrderService {
       currency: razorpayOrder.currency,
       keyId: RAZORPAY_KEY_ID,
       subtotal,
+      discount: couponDiscountRupees,
+      couponCode: couponSnapshot?.code,
       shipping,
       tax,
       total,
@@ -449,6 +555,7 @@ export class OrderService {
 
     // Settle dual-tier reservation (decrements reservedStock)
     await inventoryService.captureReservation(razorpayOrderId);
+    await couponService.commitRedemption(razorpayOrderId).catch(() => {});
 
     return {
       orderId: updatedOrder._id,
@@ -468,9 +575,10 @@ export class OrderService {
       razorpayOrderId?: string;
       razorpayPaymentId?: string;
       razorpaySignature?: string;
+      couponCode?: string;
     },
   ) {
-    const { items, shippingAddress, razorpayOrderId, razorpayPaymentId, razorpaySignature } = data;
+    const { items, shippingAddress, razorpayOrderId, razorpayPaymentId, razorpaySignature, couponCode } = data;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       throw new AppError('Order must contain at least one item', 400);
@@ -487,6 +595,8 @@ export class OrderService {
       price: number;
       quantity: number;
       image: string;
+      discountAllocation?: number;
+      taxableAmount?: number;
     }
     const validatedItems: VerifiedOrderItem[] = [];
 
@@ -542,11 +652,48 @@ export class OrderService {
       });
     }
 
+    let couponSnapshot: IOrderCouponSnapshot | undefined = undefined;
+    let couponDiscountRupees = 0;
+
+    if (couponCode && typeof couponCode === 'string' && couponCode.trim()) {
+      const couponValidationResult = await couponService.validateCoupon({
+        code: couponCode.trim(),
+        items: validatedItems.map((vi) => ({
+          productId: vi.productId.toString(),
+          sku: vi.sku,
+          quantity: vi.quantity,
+          price: vi.price,
+        })),
+        userId,
+        guestEmail: shippingAddress?.email,
+      });
+
+      couponDiscountRupees = couponValidationResult.discountAmountRupees;
+      couponSnapshot = {
+        code: couponValidationResult.code,
+        discountType: couponValidationResult.discountType,
+        discountValue: couponValidationResult.discountValue,
+        discountAmount: couponValidationResult.discountAmount,
+        maxDiscountCap: couponValidationResult.maxDiscountCap,
+      };
+
+      for (const vi of validatedItems) {
+        const alloc = couponValidationResult.lineItemAllocations.find(
+          (a: { productId: string; sku?: string }) =>
+            a.productId === vi.productId.toString() && (!a.sku || a.sku === vi.sku),
+        );
+        if (alloc) {
+          vi.discountAllocation = alloc.discountAllocation;
+          vi.taxableAmount = alloc.taxableAmount;
+        }
+      }
+    }
+
     const {
       shipping: calculatedShipping,
       tax: calculatedTax,
       total: calculatedTotal,
-    } = await this.calculateOrderTotals(calculatedSubtotal);
+    } = await this.calculateOrderTotals(calculatedSubtotal, undefined, couponDiscountRupees);
 
     let paymentStatus: 'pending' | 'captured' = 'pending';
 
@@ -645,6 +792,7 @@ export class OrderService {
       order = await Order.create({
         userId: new mongoose.Types.ObjectId(userId),
         items: validatedItems,
+        coupon: couponSnapshot,
         shippingAddress,
         razorpayOrderId,
         razorpayPaymentId,

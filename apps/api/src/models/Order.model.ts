@@ -12,6 +12,16 @@ export interface IOrderItem {
   price: number;
   quantity: number;
   image: string;
+  discountAllocation?: number; // In paise
+  taxableAmount?: number; // In paise
+}
+
+export interface IOrderCouponSnapshot {
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  discountAmount: number; // In paise
+  maxDiscountCap?: number; // In paise
 }
 
 export interface IOrder extends Document {
@@ -23,6 +33,7 @@ export interface IOrder extends Document {
   total: number;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
+  coupon?: IOrderCouponSnapshot;
   shippingAddress: {
     fullName: string;
     line1: string;
@@ -61,8 +72,17 @@ const orderSchema = new mongoose.Schema<IOrder>(
         price: { type: Number, required: true, min: 0 },
         quantity: { type: Number, required: true, min: 1 },
         image: { type: String, required: false, default: '/products/image-4-1.jpg' },
+        discountAllocation: { type: Number, default: 0, min: 0 },
+        taxableAmount: { type: Number },
       },
     ],
+    coupon: {
+      code: { type: String, uppercase: true, trim: true },
+      discountType: { type: String, enum: ['percentage', 'fixed'] },
+      discountValue: { type: Number },
+      discountAmount: { type: Number, default: 0, min: 0 },
+      maxDiscountCap: { type: Number },
+    },
     subtotal: { type: Number, required: true, min: 0 },
     shipping: { type: Number, required: true, default: 0, min: 0 },
     tax: { type: Number, required: true, default: 0, min: 0 },

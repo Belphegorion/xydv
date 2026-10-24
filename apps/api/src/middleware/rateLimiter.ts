@@ -40,3 +40,16 @@ export const orderLimiter = rateLimit({
     message: 'Too many orders created from this IP, please try again later.',
   },
 });
+
+export const couponLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  skip: () => isTest(),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: 'Too many coupon attempts. Please try again later.',
+  },
+});
+

@@ -17,6 +17,16 @@ export interface OrderItem {
   price: number;
   quantity: number;
   image: string;
+  discountAllocation?: number;
+  taxableAmount?: number;
+}
+
+export interface OrderCouponSnapshot {
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  discountAmount: number;
+  maxDiscountCap?: number;
 }
 
 export interface ShippingAddress {
@@ -49,6 +59,7 @@ export interface Order {
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   shippingAddress: ShippingAddress;
+  coupon?: OrderCouponSnapshot;
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   razorpaySignature?: string;

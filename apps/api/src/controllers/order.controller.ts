@@ -10,7 +10,7 @@ function getParam(param: string | string[] | undefined): string {
 export class OrderController {
   async createRazorpayOrder(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { items, shippingAddress, customerEmail, email } = req.body;
+      const { items, shippingAddress, customerEmail, email, couponCode } = req.body;
       const guestEmail = shippingAddress?.email || customerEmail || email;
       const resolvedShipping: ShippingAddressInput | undefined = shippingAddress
         ? {
@@ -24,6 +24,7 @@ export class OrderController {
         items,
         resolvedShipping,
         req.user?._id ? String(req.user._id) : undefined,
+        couponCode,
       );
       res.json({
         success: true,

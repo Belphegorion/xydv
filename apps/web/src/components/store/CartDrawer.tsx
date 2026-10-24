@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
@@ -16,12 +16,14 @@ import {
   ArrowRight,
   CheckCircle,
   MapPin,
+  Tag,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { EMIL_EASE } from '@/lib/motion';
 import { api } from '@/lib/api';
 import { useCustomerAuthStore } from '@/store/customerAuth';
+import type { ICouponValidationResult } from '@vertex/types';
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, clearCart } = useCartStore();
@@ -104,8 +106,134 @@ export function CartDrawer() {
     };
   }, []);
 
-  // Compute live metrics using active store settings
-  const metrics = calculateCartMetrics(items, storeSettings);
+  // Coupon State
+  const [promoCodeInput, setPromoCodeInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<ICouponValidationResult | null>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [showPromoAccordion, setShowPromoAccordion] = useState(false);
+  const lastValidatedKeyRef = useRef<string>('');
+
+  const couponValidationKey = appliedCoupon
+    ? `${appliedCoupon.code}:${items.map((i) => `${i.productId}-${i.sku}-${i.quantity}-${i.price}`).join('|')}:${shippingAddress.email || customerUser?.email || ''}`
+    : '';
+
+  // Apply coupon handler
+  const handleApplyCoupon = useCallback(async () => {
+    if (!promoCodeInput.trim() || items.length === 0) return;
+    setIsValidatingCoupon(true);
+    setCouponError(null);
+
+    try {
+      const res = await api.post<{
+        success: boolean;
+        data: ICouponValidationResult;
+      }>('/coupons/validate', {
+        code: promoCodeInput.trim().toUpperCase(),
+        items: items.map((i) => ({
+          productId: i.productId,
+          sku: i.sku,
+          quantity: i.quantity,
+          price: i.price,
+        })),
+        guestEmail: (shippingAddress.email || customerUser?.email || '').trim() || undefined,
+      });
+
+      if (res?.data && res.data.valid) {
+        lastValidatedKeyRef.current = `${res.data.code}:${items.map((i) => `${i.productId}-${i.sku}-${i.quantity}-${i.price}`).join('|')}:${shippingAddress.email || customerUser?.email || ''}`;
+        setAppliedCoupon(res.data);
+        setPromoCodeInput('');
+      } else {
+        setCouponError('Invalid coupon code.');
+      }
+    } catch (err: unknown) {
+      setCouponError(err instanceof Error ? err.message : 'Failed to apply coupon.');
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  }, [promoCodeInput, items, shippingAddress.email, customerUser?.email]);
+
+  const handleRemoveCoupon = useCallback(() => {
+    lastValidatedKeyRef.current = '';
+    setAppliedCoupon(null);
+    setCouponError(null);
+  }, []);
+
+  // Silently revalidate applied coupon when items change
+  useEffect(() => {
+    if (!appliedCoupon) {
+      lastValidatedKeyRef.current = '';
+      return;
+    }
+
+    if (items.length === 0) {
+      setAppliedCoupon(null);
+      lastValidatedKeyRef.current = '';
+      return;
+    }
+
+    if (lastValidatedKeyRef.current === couponValidationKey) {
+      return;
+    }
+
+    let isMounted = true;
+    api
+      .post<{ success: boolean; data: ICouponValidationResult }>('/coupons/validate', {
+        code: appliedCoupon.code,
+        items: items.map((i) => ({
+          productId: i.productId,
+          sku: i.sku,
+          quantity: i.quantity,
+          price: i.price,
+        })),
+        guestEmail: (shippingAddress.email || customerUser?.email || '').trim() || undefined,
+      })
+      .then((res) => {
+        if (!isMounted) return;
+        if (res?.data && res.data.valid) {
+          lastValidatedKeyRef.current = couponValidationKey;
+          setAppliedCoupon(res.data);
+        } else {
+          setAppliedCoupon(null);
+          lastValidatedKeyRef.current = '';
+          setCouponError('Coupon was removed due to cart changes.');
+        }
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setAppliedCoupon(null);
+        lastValidatedKeyRef.current = '';
+        setCouponError('Coupon conditions no longer met.');
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [items, appliedCoupon, couponValidationKey, customerUser?.email, shippingAddress.email]);
+
+  // Compute live metrics with applied coupon discount and GST on net taxable subtotal
+  const metrics = useMemo(() => {
+    const rawMetrics = calculateCartMetrics(items, storeSettings);
+    const couponDiscountRupees = appliedCoupon ? appliedCoupon.discountAmountRupees : 0;
+    const netTaxableSubtotal = Math.max(
+      0,
+      Math.round((rawMetrics.subtotal - couponDiscountRupees) * 100) / 100,
+    );
+    const effectiveTax = Math.round(netTaxableSubtotal * storeSettings.taxRate * 100) / 100;
+    const effectiveShipping = rawMetrics.shipping;
+    const effectiveTotal = Math.round(
+      (netTaxableSubtotal + effectiveTax + effectiveShipping) * 100,
+    ) / 100;
+    const effectiveAmountPaise = Math.round(effectiveTotal * 100);
+
+    return {
+      ...rawMetrics,
+      discount: couponDiscountRupees,
+      tax: effectiveTax,
+      total: effectiveTotal,
+      amountPaise: effectiveAmountPaise,
+    };
+  }, [items, storeSettings, appliedCoupon]);
 
   // Keyboard accessibility: Close on Escape key & Modal Focus Trap
   useEffect(() => {
@@ -223,6 +351,7 @@ export function CartDrawer() {
             email: (shippingAddress.email || customerUser?.email || '').trim(),
           },
           email: (shippingAddress.email || customerUser?.email || '').trim(),
+          couponCode: appliedCoupon?.code || undefined,
         });
 
         const orderData = orderRes?.data;
@@ -295,6 +424,7 @@ export function CartDrawer() {
               orderId: backendOrderId,
             });
             setPaymentSuccess(response.razorpay_payment_id);
+            setAppliedCoupon(null);
             clearCart();
             setTimeout(() => {
               setPaymentSuccess(null);
@@ -350,7 +480,7 @@ export function CartDrawer() {
       setPaymentError(errMsg);
       setIsProcessing(false);
     }
-  }, [items, metrics, storeSettings, clearCart, closeCart, shippingAddress, customerUser]);
+  }, [items, metrics, storeSettings, clearCart, closeCart, shippingAddress, customerUser, appliedCoupon?.code]);
 
   const pathname = usePathname();
   if (pathname?.startsWith('/admin')) {
@@ -764,6 +894,101 @@ export function CartDrawer() {
                   )}
                 </div>
 
+                {/* Promo Code Section */}
+                <div className="border border-[var(--border)] bg-[var(--bg)] p-3">
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-7 w-7 items-center justify-center border border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent)] dark:border-[#E8FF00]/40 dark:bg-[#E8FF00]/10 dark:text-[#E8FF00]">
+                          <Tag size={14} weight="bold" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] dark:text-[#E8FF00]">
+                              {appliedCoupon.code}
+                            </span>
+                            <Badge variant="success" size="sm">
+                              {appliedCoupon.discountType === 'percentage'
+                                ? `${appliedCoupon.discountValue}% OFF`
+                                : `₹${appliedCoupon.discountAmountRupees} OFF`}
+                            </Badge>
+                          </div>
+                          <p className="font-sans text-[10px] text-[var(--text-secondary)]">
+                            Saved ₹{appliedCoupon.discountAmountRupees.toLocaleString('en-IN')}
+                            {appliedCoupon.maxDiscountCap && (
+                              <span className="text-[var(--text-muted)]">
+                                {' '}(capped at ₹{(appliedCoupon.maxDiscountCap / 100).toLocaleString('en-IN')})
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="min-h-[44px] min-w-[44px] px-2.5 inline-flex items-center justify-center font-mono text-[10px] font-semibold tracking-wider text-[var(--text-muted)] uppercase hover:text-[#b91c1c] active:scale-[0.97]"
+                        aria-label="Remove coupon"
+                      >
+                        REMOVE
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setShowPromoAccordion((v) => !v)}
+                        className="flex w-full items-center justify-between font-mono text-xs font-semibold tracking-wider text-[var(--text-secondary)] uppercase hover:text-[var(--text-primary)]"
+                        aria-expanded={showPromoAccordion}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <Tag size={14} />
+                          <span>HAVE A PROMO CODE?</span>
+                        </span>
+                        <span className="font-mono text-xs">{showPromoAccordion ? '—' : '+'}</span>
+                      </button>
+
+                      {showPromoAccordion && (
+                        <div className="mt-3 space-y-2">
+                          <div className="flex gap-2">
+                            <input
+                              id="cart-coupon-input"
+                              name="couponCode"
+                              type="text"
+                              aria-label="Promotional coupon code"
+                              placeholder="ENTER CODE"
+                              value={promoCodeInput}
+                              onChange={(e) => {
+                                setPromoCodeInput(e.target.value.toUpperCase());
+                                setCouponError(null);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleApplyCoupon();
+                                }
+                              }}
+                              className="min-h-[44px] flex-1 border border-[var(--border)] bg-[var(--bg-surface)] px-3 font-mono text-xs text-[var(--text-primary)] uppercase placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleApplyCoupon}
+                              disabled={isValidatingCoupon || !promoCodeInput.trim()}
+                              className="btn-tactile min-h-[44px] border border-[var(--text-primary)] bg-[var(--text-primary)] px-4 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-colors hover:opacity-90 disabled:opacity-40 active:scale-[0.97] dark:border-[#E8FF00] dark:bg-[#E8FF00] dark:text-[#0A0A0A]"
+                            >
+                              {isValidatingCoupon ? 'APPLYING...' : 'APPLY'}
+                            </button>
+                          </div>
+                          {couponError && (
+                            <p className="font-sans text-[11px] text-[#b91c1c] dark:text-[#ff6b6b]">
+                              {couponError}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-1.5 font-mono text-xs">
                   <div className="flex justify-between text-[var(--text-secondary)]">
                     <span>SUBTOTAL</span>
@@ -771,6 +996,15 @@ export function CartDrawer() {
                       {formatPrice(metrics.subtotal)}
                     </span>
                   </div>
+                  {metrics.discount > 0 && (
+                    <div className="flex justify-between text-[#15803d] dark:text-[#E8FF00]">
+                      <span className="flex items-center gap-1">
+                        <Tag size={12} weight="bold" />
+                        <span>PROMO DISCOUNT ({appliedCoupon?.code})</span>
+                      </span>
+                      <span className="font-bold">-{formatPrice(metrics.discount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-[var(--text-secondary)]">
                     <span>ESTIMATED TAX ({Math.round(storeSettings.taxRate * 100)}%)</span>
                     <span>{formatPrice(metrics.tax)}</span>

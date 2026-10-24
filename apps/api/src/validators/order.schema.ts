@@ -36,6 +36,7 @@ export const createOrderSchema = z.object({
     shippingAddress: shippingAddressSchema,
     customerEmail: z.string().optional(),
     email: z.string().optional(),
+    couponCode: z.string().optional(),
   }),
 });
 
