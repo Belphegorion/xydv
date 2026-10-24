@@ -8,6 +8,7 @@ import { useCartStore } from '@/store/cart';
 import { formatPrice, getAvailableSizes, type SizeOption } from '@/lib/utils';
 import { ArrowRight, ShoppingBag, Check, CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/Badge';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { EMIL_EASE } from '@/lib/motion';
 import { api } from '@/lib/api';
 import type { Product, ProductVariant } from '@vertex/types';
@@ -235,8 +236,18 @@ const FEATURED_PRODUCTS = [
   },
 ];
 
+export type FeaturedItem = (typeof FEATURED_PRODUCTS)[0] & {
+  compareAt?: number;
+  effectivePrice?: number;
+  effectivePricePaise?: number;
+  mrpPaise?: number;
+  sellingPricePaise?: number;
+  discountPercentRounded?: number;
+  discountBadgeLabel?: string;
+};
+
 interface ProductCardMediaProps {
-  product: (typeof FEATURED_PRODUCTS)[0];
+  product: FeaturedItem;
   activeVariant: (typeof FEATURED_PRODUCTS)[0]['variants'][0];
   isAdded: boolean;
   onSelectSize: (size: string) => void;
@@ -509,7 +520,7 @@ export function FeaturedCollection() {
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
   const shouldReduceMotion = useReducedMotion();
-  const [products, setProducts] = useState(FEATURED_PRODUCTS);
+  const [products, setProducts] = useState<FeaturedItem[]>(FEATURED_PRODUCTS);
 
   useEffect(() => {
     let isMounted = true;
@@ -520,12 +531,23 @@ export function FeaturedCollection() {
         const raw = res?.data ?? res?.products;
         if (Array.isArray(raw) && raw.length > 0) {
           const staticMap = new Map(FEATURED_PRODUCTS.map((p) => [p.slug, p]));
-          const mapped = raw.slice(0, 6).map((item) => {
+          const mapped: FeaturedItem[] = raw.slice(0, 6).map((item) => {
             const st = staticMap.get(item.slug);
+            const effectivePrice =
+              typeof item.effectivePricePaise === 'number'
+                ? item.effectivePricePaise / 100
+                : item.price;
             if (st) {
               return {
                 ...st,
                 price: typeof item.price === 'number' ? item.price : st.price,
+                effectivePrice: typeof effectivePrice === 'number' ? effectivePrice : st.price,
+                effectivePricePaise: item.effectivePricePaise,
+                mrpPaise: item.mrpPaise,
+                sellingPricePaise: item.sellingPricePaise,
+                discountPercentRounded: item.discountPercentRounded,
+                discountBadgeLabel: item.discountBadgeLabel,
+                compareAt: item.compareAt,
                 variants:
                   Array.isArray(item.variants) && item.variants.length > 0
                     ? item.variants.map((v: ProductVariant, idx: number) => {
@@ -558,6 +580,14 @@ export function FeaturedCollection() {
               slug: item.slug,
               category: typeof item.category === 'string' ? item.category : 'tops',
               price: item.price ?? 50,
+              effectivePrice:
+                typeof effectivePrice === 'number' ? effectivePrice : (item.price ?? 50),
+              effectivePricePaise: item.effectivePricePaise,
+              mrpPaise: item.mrpPaise,
+              sellingPricePaise: item.sellingPricePaise,
+              discountPercentRounded: item.discountPercentRounded,
+              discountBadgeLabel: item.discountBadgeLabel,
+              compareAt: item.compareAt,
               specs:
                 item.specsSummary ||
                 (item.specs
@@ -615,10 +645,12 @@ export function FeaturedCollection() {
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
 
   const handleSelectSize = (
-    product: (typeof FEATURED_PRODUCTS)[0],
+    product: FeaturedItem,
     variant: (typeof FEATURED_PRODUCTS)[0]['variants'][0],
     size: string,
   ) => {
+    const finalPrice =
+      product.effectivePrice !== undefined ? product.effectivePrice : product.price;
     addItem({
       id: `${product.id}_${variant.sku}_${size}`,
       productId: product.id,
@@ -627,7 +659,10 @@ export function FeaturedCollection() {
       color: variant.colorName,
       colorHex: variant.colorHex,
       size: size,
-      price: product.price,
+      price: finalPrice,
+      regularPrice: product.price,
+      compareAt: product.compareAt,
+      discountBadgeLabel: product.discountBadgeLabel,
       image: variant.primaryImage,
       sku: variant.sku,
     });
@@ -639,7 +674,7 @@ export function FeaturedCollection() {
     }, 400);
   };
 
-  const handleQuickAdd = (product: (typeof FEATURED_PRODUCTS)[0]) => {
+  const handleQuickAdd = (product: FeaturedItem) => {
     const variantIndex = activeVariants[product.id] || 0;
     const variant = product.variants[variantIndex];
     handleSelectSize(product, variant, variant.size);
@@ -753,9 +788,16 @@ export function FeaturedCollection() {
 
                 {/* Price & Actions */}
                 <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
-                  <span className="font-mono text-xs font-bold text-[var(--text-primary)] sm:text-sm">
-                    {formatPrice(product.price)}
-                  </span>
+                  <PriceDisplay
+                    price={
+                      product.effectivePrice !== undefined ? product.effectivePrice : product.price
+                    }
+                    regularPrice={product.price}
+                    mrp={product.compareAt}
+                    discountPercent={product.discountPercentRounded}
+                    badgeLabel={product.discountBadgeLabel}
+                    size="sm"
+                  />
                   <div className="flex items-center gap-1.5">
                     {/* Compact mobile quick add button */}
                     <button

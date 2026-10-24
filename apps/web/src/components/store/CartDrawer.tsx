@@ -20,6 +20,7 @@ import {
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { EMIL_EASE } from '@/lib/motion';
 import { api } from '@/lib/api';
 import { useCustomerAuthStore } from '@/store/customerAuth';
@@ -643,9 +644,15 @@ export function CartDrawer() {
                           <p className="mt-0.5 font-mono text-[11px] tracking-wide text-[var(--text-secondary)] uppercase">
                             {item.color} / {item.size}
                           </p>
-                          <p className="mt-1 font-mono text-xs font-bold text-[var(--text-primary)] dark:text-[var(--accent)]">
-                            {formatPrice(item.price)}
-                          </p>
+                          <div className="mt-1">
+                            <PriceDisplay
+                              price={item.price}
+                              regularPrice={item.regularPrice}
+                              mrp={item.compareAt}
+                              badgeLabel={item.discountBadgeLabel}
+                              size="sm"
+                            />
+                          </div>
                         </div>
 
                         {/* Quantity Stepper & Remove Action */}

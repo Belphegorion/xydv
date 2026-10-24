@@ -8,6 +8,7 @@ import { useCartStore } from '@/store/cart';
 import { formatPrice, getAvailableSizes, type SizeOption } from '@/lib/utils';
 import { ShoppingBag, ArrowRight, Check, CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/Badge';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { EMIL_EASE } from '@/lib/motion';
 import { api } from '@/lib/api';
 import type { Product, ProductVariant } from '@vertex/types';
@@ -210,8 +211,18 @@ const BESTSELLERS = [
   },
 ];
 
+export type BestsellerItem = (typeof BESTSELLERS)[0] & {
+  compareAt?: number;
+  effectivePrice?: number;
+  effectivePricePaise?: number;
+  mrpPaise?: number;
+  sellingPricePaise?: number;
+  discountPercentRounded?: number;
+  discountBadgeLabel?: string;
+};
+
 interface BestsellerMediaProps {
-  product: (typeof BESTSELLERS)[0];
+  product: BestsellerItem;
   activeVariant: (typeof BESTSELLERS)[0]['variants'][0];
   isAdded: boolean;
   onSelectSize: (size: string) => void;
@@ -501,7 +512,7 @@ export function BestsellerGrid() {
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
   const shouldReduceMotion = useReducedMotion();
-  const [products, setProducts] = useState(BESTSELLERS);
+  const [products, setProducts] = useState<BestsellerItem[]>(BESTSELLERS);
 
   useEffect(() => {
     let isMounted = true;
@@ -512,13 +523,24 @@ export function BestsellerGrid() {
         const raw = res?.data ?? res?.products;
         if (Array.isArray(raw) && raw.length > 0) {
           const staticMap = new Map(BESTSELLERS.map((p) => [p.slug, p]));
-          const mapped = raw.slice(0, 3).map((item) => {
+          const mapped: BestsellerItem[] = raw.slice(0, 3).map((item) => {
             const st = staticMap.get(item.slug);
             const dynamicRating = computeDynamicRating(item);
+            const effectivePrice =
+              typeof item.effectivePricePaise === 'number'
+                ? item.effectivePricePaise / 100
+                : item.price;
             if (st) {
               return {
                 ...st,
                 price: typeof item.price === 'number' ? item.price : st.price,
+                effectivePrice: typeof effectivePrice === 'number' ? effectivePrice : st.price,
+                effectivePricePaise: item.effectivePricePaise,
+                mrpPaise: item.mrpPaise,
+                sellingPricePaise: item.sellingPricePaise,
+                discountPercentRounded: item.discountPercentRounded,
+                discountBadgeLabel: item.discountBadgeLabel,
+                compareAt: item.compareAt,
                 rating: dynamicRating || st.rating,
                 variants:
                   Array.isArray(item.variants) && item.variants.length > 0
@@ -551,6 +573,14 @@ export function BestsellerGrid() {
               slug: item.slug,
               category: typeof item.category === 'string' ? item.category : 'tops',
               price: item.price ?? 50,
+              effectivePrice:
+                typeof effectivePrice === 'number' ? effectivePrice : (item.price ?? 50),
+              effectivePricePaise: item.effectivePricePaise,
+              mrpPaise: item.mrpPaise,
+              sellingPricePaise: item.sellingPricePaise,
+              discountPercentRounded: item.discountPercentRounded,
+              discountBadgeLabel: item.discountBadgeLabel,
+              compareAt: item.compareAt,
               rating: dynamicRating || 'No reviews yet',
               variants:
                 Array.isArray(item.variants) && item.variants.length > 0
@@ -598,10 +628,12 @@ export function BestsellerGrid() {
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
 
   const handleSelectSize = (
-    product: (typeof BESTSELLERS)[0],
+    product: BestsellerItem,
     variant: (typeof BESTSELLERS)[0]['variants'][0],
     size: string,
   ) => {
+    const finalPrice =
+      product.effectivePrice !== undefined ? product.effectivePrice : product.price;
     addItem({
       id: `${product.id}_${variant.sku}_${size}`,
       productId: product.id,
@@ -610,7 +642,10 @@ export function BestsellerGrid() {
       color: variant.colorName,
       colorHex: variant.colorHex,
       size: size,
-      price: product.price,
+      price: finalPrice,
+      regularPrice: product.price,
+      compareAt: product.compareAt,
+      discountBadgeLabel: product.discountBadgeLabel,
       image: variant.image,
       sku: variant.sku,
     });
@@ -622,7 +657,7 @@ export function BestsellerGrid() {
     }, 400);
   };
 
-  const handleQuickAdd = (product: (typeof BESTSELLERS)[0]) => {
+  const handleQuickAdd = (product: BestsellerItem) => {
     const variantIdx = activeVariants[product.id] || 0;
     const variant = product.variants[variantIdx];
     handleSelectSize(product, variant, variant.size);
@@ -736,9 +771,16 @@ export function BestsellerGrid() {
 
                 {/* Price & Stock Hairline Divider */}
                 <div className="mt-4 flex items-center justify-between border-t border-[var(--border)] pt-2.5 sm:mt-5 sm:pt-3">
-                  <span className="font-mono text-xs font-bold text-[var(--text-primary)] sm:text-base">
-                    {formatPrice(product.price)}
-                  </span>
+                  <PriceDisplay
+                    price={
+                      product.effectivePrice !== undefined ? product.effectivePrice : product.price
+                    }
+                    regularPrice={product.price}
+                    mrp={product.compareAt}
+                    discountPercent={product.discountPercentRounded}
+                    badgeLabel={product.discountBadgeLabel}
+                    size="md"
+                  />
                   <div className="flex items-center gap-1.5">
                     {/* Compact mobile quick add button */}
                     <button

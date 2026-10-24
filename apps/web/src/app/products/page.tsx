@@ -20,6 +20,7 @@ import { CATALOG_PRODUCTS, CatalogProduct, ProductVariant } from '@/lib/catalog'
 import { useCartStore } from '@/store/cart';
 import { useWishlistStore } from '@/store/wishlist';
 import { Badge } from '@/components/ui/Badge';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { formatPrice, getAvailableSizes } from '@/lib/utils';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 import { api } from '@/lib/api';
@@ -48,6 +49,12 @@ interface ApiProductInput {
   gender?: string;
   price?: number;
   compareAt?: number;
+  mrpPaise?: number;
+  sellingPricePaise?: number;
+  effectivePricePaise?: number;
+  discountAmountPaise?: number;
+  discountPercentRounded?: number;
+  discountBadgeLabel?: string;
   specsSummary?: string;
   description?: string;
   features?: string[];
@@ -102,6 +109,12 @@ function mapApiProductToCatalog(
         typeof apiProd.bestseller === 'boolean'
           ? apiProd.bestseller
           : existingStatic.isBestseller,
+      mrpPaise: apiProd.mrpPaise,
+      sellingPricePaise: apiProd.sellingPricePaise,
+      effectivePricePaise: apiProd.effectivePricePaise,
+      discountAmountPaise: apiProd.discountAmountPaise,
+      discountPercentRounded: apiProd.discountPercentRounded,
+      discountBadgeLabel: apiProd.discountBadgeLabel,
       variants:
         Array.isArray(apiProd.variants) && apiProd.variants.length > 0
           ? apiProd.variants.map((v: ApiProductVariant, idx: number) => {
@@ -139,6 +152,12 @@ function mapApiProductToCatalog(
     gender: parseGender(apiProd.gender),
     price: typeof apiProd.price === 'number' ? apiProd.price : 50,
     compareAtPrice: apiProd.compareAt,
+    mrpPaise: apiProd.mrpPaise,
+    sellingPricePaise: apiProd.sellingPricePaise,
+    effectivePricePaise: apiProd.effectivePricePaise,
+    discountAmountPaise: apiProd.discountAmountPaise,
+    discountPercentRounded: apiProd.discountPercentRounded,
+    discountBadgeLabel: apiProd.discountBadgeLabel,
     specsSummary: apiProd.specsSummary || 'Engineered Activewear / High Performance',
     headline: apiProd.name,
     description: apiProd.description || 'XYDV Technical Apparel.',
@@ -519,16 +538,18 @@ function CatalogCard({
 
         {/* Price & Mobile Add Button */}
         <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2.5">
-          <div className="flex items-baseline gap-2">
-            <span className="font-mono text-xs font-bold text-[var(--text-primary)] sm:text-sm">
-              {formatPrice(product.price)}
-            </span>
-            {product.compareAtPrice && product.compareAtPrice > product.price && (
-              <span className="font-mono text-[10px] text-[var(--text-muted)] line-through sm:text-xs">
-                {formatPrice(product.compareAtPrice)}
-              </span>
-            )}
-          </div>
+          <PriceDisplay
+            price={
+              product.effectivePricePaise !== undefined
+                ? product.effectivePricePaise / 100
+                : product.price
+            }
+            regularPrice={product.price}
+            mrp={product.compareAtPrice}
+            discountPercent={product.discountPercentRounded}
+            badgeLabel={product.discountBadgeLabel}
+            size="sm"
+          />
 
           <div className="sm:hidden">
             <button
@@ -613,6 +634,10 @@ function CatalogContent() {
   }, [urlCategory, urlDiscipline, urlGender, urlSearch]);
 
   const handleSelectSize = (product: CatalogProduct, variant: ProductVariant, size: string) => {
+    const finalPrice =
+      product.effectivePricePaise !== undefined
+        ? product.effectivePricePaise / 100
+        : product.price;
     addItem({
       id: `${product.id}_${variant.sku}_${size}`,
       productId: product.id,
@@ -621,7 +646,10 @@ function CatalogContent() {
       color: variant.colorName,
       colorHex: variant.colorHex,
       size: size,
-      price: product.price,
+      price: finalPrice,
+      regularPrice: product.price,
+      compareAt: product.compareAtPrice,
+      discountBadgeLabel: product.discountBadgeLabel,
       image: variant.primaryImage,
       sku: variant.sku,
     });
@@ -668,9 +696,17 @@ function CatalogContent() {
     }
 
     if (sort === 'price-asc') {
-      list.sort((a, b) => a.price - b.price);
+      list.sort((a, b) => {
+        const pA = a.effectivePricePaise !== undefined ? a.effectivePricePaise / 100 : a.price;
+        const pB = b.effectivePricePaise !== undefined ? b.effectivePricePaise / 100 : b.price;
+        return pA - pB;
+      });
     } else if (sort === 'price-desc') {
-      list.sort((a, b) => b.price - a.price);
+      list.sort((a, b) => {
+        const pA = a.effectivePricePaise !== undefined ? a.effectivePricePaise / 100 : a.price;
+        const pB = b.effectivePricePaise !== undefined ? b.effectivePricePaise / 100 : b.price;
+        return pB - pA;
+      });
     } else if (sort === 'bestseller') {
       list.sort(
         (a, b) =>

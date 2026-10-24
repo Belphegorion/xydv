@@ -53,6 +53,12 @@ export interface CatalogProduct {
   reviews: ProductReview[];
   isFeatured?: boolean;
   isBestseller?: boolean;
+  mrpPaise?: number;
+  sellingPricePaise?: number;
+  effectivePricePaise?: number;
+  discountAmountPaise?: number;
+  discountPercentRounded?: number;
+  discountBadgeLabel?: string;
 }
 
 export const CATALOG_PRODUCTS: CatalogProduct[] = [

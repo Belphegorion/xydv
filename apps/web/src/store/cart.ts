@@ -10,7 +10,9 @@ export interface CartItem {
   colorHex: string;
   size: string;
   price: number;
+  regularPrice?: number;
   compareAt?: number;
+  discountBadgeLabel?: string;
   image: string;
   quantity: number;
   sku: string;

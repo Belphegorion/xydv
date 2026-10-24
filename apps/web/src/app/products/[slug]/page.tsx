@@ -28,6 +28,7 @@ import {
 import { useCartStore } from '@/store/cart';
 import { useWishlistStore } from '@/store/wishlist';
 import { Badge } from '@/components/ui/Badge';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { formatPrice } from '@/lib/utils';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 import { api } from '@/lib/api';
@@ -58,6 +59,12 @@ interface ApiProductInput {
   gender?: string;
   price?: number;
   compareAt?: number;
+  mrpPaise?: number;
+  sellingPricePaise?: number;
+  effectivePricePaise?: number;
+  discountAmountPaise?: number;
+  discountPercentRounded?: number;
+  discountBadgeLabel?: string;
   specsSummary?: string;
   description?: string;
   features?: string[];
@@ -112,6 +119,12 @@ function mapApiProductToCatalog(
         typeof apiProd.bestseller === 'boolean'
           ? apiProd.bestseller
           : existingStatic.isBestseller,
+      mrpPaise: apiProd.mrpPaise,
+      sellingPricePaise: apiProd.sellingPricePaise,
+      effectivePricePaise: apiProd.effectivePricePaise,
+      discountAmountPaise: apiProd.discountAmountPaise,
+      discountPercentRounded: apiProd.discountPercentRounded,
+      discountBadgeLabel: apiProd.discountBadgeLabel,
       variants:
         Array.isArray(apiProd.variants) && apiProd.variants.length > 0
           ? apiProd.variants.map((v: ApiProductVariant, idx: number) => {
@@ -149,6 +162,12 @@ function mapApiProductToCatalog(
     gender: parseGender(apiProd.gender),
     price: typeof apiProd.price === 'number' ? apiProd.price : 50,
     compareAtPrice: apiProd.compareAt,
+    mrpPaise: apiProd.mrpPaise,
+    sellingPricePaise: apiProd.sellingPricePaise,
+    effectivePricePaise: apiProd.effectivePricePaise,
+    discountAmountPaise: apiProd.discountAmountPaise,
+    discountPercentRounded: apiProd.discountPercentRounded,
+    discountBadgeLabel: apiProd.discountBadgeLabel,
     specsSummary: apiProd.specsSummary || 'Engineered Activewear / High Performance',
     headline: apiProd.name,
     description: apiProd.description || 'XYDV Technical Apparel.',
@@ -438,6 +457,11 @@ export default function ProductDetailPage({ params }: PageProps) {
   const handleAddToCart = () => {
     setIsAdding(true);
 
+    const finalPrice =
+      product.effectivePricePaise !== undefined
+        ? product.effectivePricePaise / 100
+        : product.price;
+
     addItem(
       {
         id: `${product.id}_${activeVariant.sku}_${selectedSize}`,
@@ -447,7 +471,10 @@ export default function ProductDetailPage({ params }: PageProps) {
         color: activeVariant.colorName,
         colorHex: activeVariant.colorHex,
         size: selectedSize,
-        price: product.price,
+        price: finalPrice,
+        regularPrice: product.price,
+        compareAt: product.compareAtPrice,
+        discountBadgeLabel: product.discountBadgeLabel,
         image: activeVariant.primaryImage,
         sku: activeVariant.sku,
         maxStock: activeVariant.stock,
@@ -550,7 +577,11 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <Badge variant="volt" size="sm">
                   {`${product.discipline.toUpperCase()} // DIV.0${product.discipline === 'run' ? '1' : product.discipline === 'train' ? '2' : '3'}`}
                 </Badge>
-                {product.compareAtPrice && product.compareAtPrice > product.price && (
+                {product.discountBadgeLabel ? (
+                  <span className="bg-[var(--accent)] px-2 py-0.5 font-mono text-[10px] font-bold text-black uppercase">
+                    {product.discountBadgeLabel}
+                  </span>
+                ) : product.compareAtPrice && product.compareAtPrice > product.price ? (
                   <span className="bg-[var(--text-primary)] px-2 py-0.5 font-mono text-[10px] font-bold text-[var(--bg)] uppercase">
                     SAVE{' '}
                     {Math.round(
@@ -558,7 +589,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     )}
                     %
                   </span>
-                )}
+                ) : null}
               </div>
 
               {/* Fullscreen Zoom Affordance */}
@@ -613,16 +644,24 @@ export default function ProductDetailPage({ params }: PageProps) {
               </h1>
 
               {/* Price & Rating Row */}
-              <div className="mt-3 flex items-center justify-between">
-                <div className="flex items-baseline gap-3">
-                  <span className="font-mono text-xl font-bold text-[var(--text-primary)] sm:text-2xl">
-                    {formatPrice(product.price)}
-                  </span>
-                  {product.compareAtPrice && product.compareAtPrice > product.price && (
-                    <span className="font-mono text-sm text-[var(--text-muted)] line-through">
-                      {formatPrice(product.compareAtPrice)}
-                    </span>
-                  )}
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <PriceDisplay
+                    price={
+                      product.effectivePricePaise !== undefined
+                        ? product.effectivePricePaise / 100
+                        : product.price
+                    }
+                    regularPrice={product.price}
+                    mrp={product.compareAtPrice}
+                    discountPercent={product.discountPercentRounded}
+                    badgeLabel={product.discountBadgeLabel}
+                    size="lg"
+                    showSavings={true}
+                  />
+                  <p className="mt-1 font-mono text-[10px] text-[var(--text-muted)]">
+                    MRP inclusive of all taxes
+                  </p>
                 </div>
 
                 {product.reviewCount > 0 ? (
