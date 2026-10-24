@@ -57,7 +57,7 @@ describe('M2 Adversarial Challenge: Razorpay Security Hardening Empirical Verifi
     // Connect to MongoDB if available
     try {
       if (mongoose.connection.readyState === 0) {
-        await mongoose.connect('mongodb://localhost:27017/vertex', {
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/xydv', {
           serverSelectionTimeoutMS: 3000,
         });
       }

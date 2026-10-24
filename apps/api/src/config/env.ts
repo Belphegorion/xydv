@@ -1,7 +1,13 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 
 dotenv.config();
+
+// Ephemeral random secrets for local dev only — rotate on every restart.
+// In production these MUST be set via environment variables.
+const _devJwtSecret = crypto.randomBytes(32).toString('hex');
+const _devRefreshSecret = crypto.randomBytes(32).toString('hex');
 
 const envSchema = z.object({
   PORT: z
@@ -10,8 +16,8 @@ const envSchema = z.object({
     .transform((val) => parseInt(val, 10)),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   MONGODB_URI: z.string().default('mongodb://localhost:27017/xydv'),
-  JWT_SECRET: z.string().default('fnO7dehu28m0xLpQoi7yXG5GdjJYY7ZI84T5pUUGy3j'),
-  JWT_REFRESH_SECRET: z.string().default('4044plbw7MAxaHGi1KJAsOrKttSRaTqP18QNxH2IzoE'),
+  JWT_SECRET: z.string().default(_devJwtSecret),
+  JWT_REFRESH_SECRET: z.string().default(_devRefreshSecret),
   JWT_EXPIRE: z.string().default('15m'),
   JWT_REFRESH_EXPIRE: z.string().default('30d'),
   RAZORPAY_KEY_ID: z.string().default('rzp_test_xydv_key'),
@@ -39,11 +45,15 @@ const DEFAULT_PLACEHOLDERS = {
   RAZORPAY_WEBHOOK_SECRET: 'xydv_webhook_secret',
 };
 
+// Production hard-fail: Default placeholder or missing secrets detected in production
 if (process.env.NODE_ENV === 'production') {
   const usingDefaultJwt =
-    !process.env.JWT_SECRET || process.env.JWT_SECRET === DEFAULT_PLACEHOLDERS.JWT_SECRET;
+    !process.env.JWT_SECRET ||
+    process.env.JWT_SECRET.length < 32 ||
+    process.env.JWT_SECRET === DEFAULT_PLACEHOLDERS.JWT_SECRET;
   const usingDefaultRefresh =
     !process.env.JWT_REFRESH_SECRET ||
+    process.env.JWT_REFRESH_SECRET.length < 32 ||
     process.env.JWT_REFRESH_SECRET === DEFAULT_PLACEHOLDERS.JWT_REFRESH_SECRET;
   const usingDefaultRazorpay =
     !process.env.RAZORPAY_KEY_SECRET ||

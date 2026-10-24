@@ -25,7 +25,7 @@ import { authService, signRefreshToken } from '../apps/api/dist/services/auth.se
 import { userService } from '../apps/api/dist/services/user.service.js';
 import { RAZORPAY_KEY_SECRET } from '../apps/api/dist/config/razorpay.js';
 
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vertex';
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/xydv';
 
 describe('Backend Hardening Empirical Verification Suite', () => {
   let sampleProduct;

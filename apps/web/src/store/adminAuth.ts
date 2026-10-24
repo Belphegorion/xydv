@@ -41,11 +41,27 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
       localStorage.removeItem('xydv_admin_user');
     } catch {}
 
-    // Check if token already present in memory
+    // Validate the in-memory token belongs to an admin before trusting it.
+    // A storefront customer login sets the same singleton; we must not let it
+    // grant admin access.
     const currentMemoryToken = getAccessToken();
     if (currentMemoryToken) {
-      set({ token: currentMemoryToken, isAuthenticated: true });
-      return;
+      try {
+        const parts = currentMemoryToken.split('.');
+        if (parts.length === 3 && parts[1]) {
+          const payload = JSON.parse(
+            atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')),
+          ) as { role?: string; isBlocked?: boolean };
+          if (payload.role === 'admin' && !payload.isBlocked) {
+            set({ token: currentMemoryToken, isAuthenticated: true });
+            return;
+          }
+        }
+      } catch {
+        // Malformed token — fall through to server refresh
+      }
+      // Token present but not an admin token — clear it and re-authenticate
+      setAccessToken(null);
     }
 
     set({ isLoading: true });
@@ -158,8 +174,25 @@ if (typeof window !== 'undefined') {
   onAccessTokenChange((token) => {
     if (!token) {
       useAdminAuthStore.setState({ token: null, user: null, isAuthenticated: false });
-    } else {
-      useAdminAuthStore.setState((state) => ({ ...state, token, isAuthenticated: true }));
+      return;
     }
+    // Only mark admin store authenticated when the token carries admin role.
+    // Storefront customer tokens share the same singleton — reject them here.
+    try {
+      const parts = token.split('.');
+      if (parts.length === 3 && parts[1]) {
+        const payload = JSON.parse(
+          atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')),
+        ) as { role?: string; isBlocked?: boolean };
+        if (payload.role === 'admin' && !payload.isBlocked) {
+          useAdminAuthStore.setState((state) => ({ ...state, token, isAuthenticated: true }));
+          return;
+        }
+      }
+    } catch {
+      // Malformed token
+    }
+    // Non-admin token — clear admin auth state
+    useAdminAuthStore.setState({ token: null, user: null, isAuthenticated: false });
   });
 }
