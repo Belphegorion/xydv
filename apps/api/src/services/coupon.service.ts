@@ -148,7 +148,16 @@ export class CouponService {
             (item.variantId && (v.id === item.variantId || v._id?.toString() === item.variantId)),
         );
         const compareAt = variant?.compareAt ?? dbProduct.compareAt ?? dbProduct.originalPrice;
-        if (compareAt && compareAt > itemPrice) {
+        const regularSellingPaise =
+          variant?.sellingPricePaise ??
+          dbProduct.sellingPricePaise ??
+          Math.round((variant?.price ?? dbProduct.price ?? itemPrice) * 100);
+        const currentPricePaise = Math.round(itemPrice * 100);
+        if (
+          (compareAt && compareAt > itemPrice) ||
+          currentPricePaise < regularSellingPaise ||
+          Boolean(dbProduct.activeDiscountId)
+        ) {
           isEligible = false;
         }
       }

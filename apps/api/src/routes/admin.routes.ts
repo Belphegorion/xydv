@@ -20,11 +20,18 @@ import {
 import { updateOrderStatusSchema } from '../validators/order.schema';
 import { notificationController } from '../controllers/notification.controller';
 import { couponController } from '../controllers/coupon.controller';
+import { discountController } from '../controllers/discount.controller';
 import {
   createNotificationSchema,
   updateNotificationSchema,
 } from '../validators/notification.schema';
 import { createCouponSchema, updateCouponSchema } from '../validators/coupon.schema';
+import {
+  createDiscountSchema,
+  updateDiscountSchema,
+  discountPreviewSchema,
+  discountQuerySchema,
+} from '../validators/discount.schema';
 
 const router = Router();
 
@@ -255,6 +262,51 @@ router.get(
   '/coupons/:id/redemptions',
   validateRequest(idParamSchema),
   couponController.getRedemptions.bind(couponController),
+);
+
+// --- DISCOUNTS (Tiered Promotional Engine) ---
+router.get(
+  '/discounts',
+  validateRequest(discountQuerySchema),
+  discountController.getDiscounts.bind(discountController),
+);
+router.get(
+  '/discounts/analytics',
+  discountController.getAnalytics.bind(discountController),
+);
+router.post(
+  '/discounts/preview',
+  validateRequest(discountPreviewSchema),
+  discountController.previewDiscount.bind(discountController),
+);
+router.post(
+  '/discounts/recompute',
+  discountController.recomputeAll.bind(discountController),
+);
+router.post(
+  '/discounts',
+  validateRequest(createDiscountSchema),
+  discountController.createDiscount.bind(discountController),
+);
+router.get(
+  '/discounts/:id',
+  validateRequest(idParamSchema),
+  discountController.getDiscountById.bind(discountController),
+);
+router.patch(
+  '/discounts/:id',
+  validateRequest(updateDiscountSchema),
+  discountController.updateDiscount.bind(discountController),
+);
+router.post(
+  '/discounts/:id/pause',
+  validateRequest(idParamSchema),
+  discountController.togglePause.bind(discountController),
+);
+router.post(
+  '/discounts/:id/end',
+  validateRequest(idParamSchema),
+  discountController.endDiscount.bind(discountController),
 );
 
 export default router;

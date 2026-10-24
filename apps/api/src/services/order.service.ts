@@ -9,6 +9,8 @@ import { AppError } from '../middleware/errorHandler';
 import { inventoryService } from './inventory.service';
 import { COMMERCE_CONSTANTS } from '../constants/commerce';
 import { couponService } from './coupon.service';
+import { discountService } from './discount.service';
+import { resolvePrice } from './pricing.engine';
 import type { IOrderCouponSnapshot } from '../models/Order.model';
 import type { ICouponValidationResult } from '@vertex/types';
 
@@ -200,6 +202,8 @@ export class OrderService {
       throw new AppError('Order must contain at least one item', 400);
     }
 
+    const activeDiscounts = await discountService.getActiveDiscounts(new Date());
+
     let subtotal = 0;
     const validatedItems: Array<{
       productId: mongoose.Types.ObjectId;
@@ -208,6 +212,12 @@ export class OrderService {
       color: string;
       size: string;
       price: number;
+      mrpPaise?: number;
+      regularPricePaise?: number;
+      effectivePricePaise?: number;
+      discountId?: mongoose.Types.ObjectId;
+      discountName?: string;
+      discountAmountPaise?: number;
       quantity: number;
       image: string;
       discountAllocation?: number;
@@ -280,8 +290,9 @@ export class OrderService {
         );
       }
 
-      const itemPrice =
-        variant.price !== undefined && variant.price !== null ? variant.price : product.price;
+      // Authoritative promotional discount resolution via PricingEngine
+      const resolved = resolvePrice(product, variant, activeDiscounts, new Date());
+      const itemPrice = resolved.effectivePricePaise / 100;
       subtotal += itemPrice * item.quantity;
 
       const primaryProductImg =
@@ -301,6 +312,15 @@ export class OrderService {
         color: variant.color ?? 'Standard',
         size: variant.size,
         price: itemPrice,
+        mrpPaise: resolved.mrpPaise,
+        regularPricePaise: resolved.sellingPricePaise,
+        effectivePricePaise: resolved.effectivePricePaise,
+        discountId:
+          resolved.activeDiscountId && mongoose.isValidObjectId(resolved.activeDiscountId)
+            ? new mongoose.Types.ObjectId(resolved.activeDiscountId)
+            : undefined,
+        discountName: resolved.activeDiscountName || undefined,
+        discountAmountPaise: resolved.discountAmountPaise,
         quantity: item.quantity,
         image:
           variant.imageUrl || variant.images?.[0] || primaryProductImg || '/products/image-4-1.jpg',
@@ -584,6 +604,8 @@ export class OrderService {
       throw new AppError('Order must contain at least one item', 400);
     }
 
+    const activeDiscounts = await discountService.getActiveDiscounts(new Date());
+
     let calculatedSubtotal = 0;
     interface VerifiedOrderItem {
       productId: mongoose.Types.ObjectId;
@@ -593,6 +615,12 @@ export class OrderService {
       color: string;
       size: string;
       price: number;
+      mrpPaise?: number;
+      regularPricePaise?: number;
+      effectivePricePaise?: number;
+      discountId?: mongoose.Types.ObjectId;
+      discountName?: string;
+      discountAmountPaise?: number;
       quantity: number;
       image: string;
       discountAllocation?: number;
@@ -636,7 +664,9 @@ export class OrderService {
         );
       }
 
-      const itemPrice = variant.price;
+      // Authoritative promotional discount resolution via PricingEngine
+      const resolved = resolvePrice(product, variant, activeDiscounts, new Date());
+      const itemPrice = resolved.effectivePricePaise / 100;
       calculatedSubtotal += itemPrice * item.quantity;
 
       validatedItems.push({
@@ -647,6 +677,15 @@ export class OrderService {
         color: variant.color ?? 'Standard',
         size: variant.size,
         price: itemPrice,
+        mrpPaise: resolved.mrpPaise,
+        regularPricePaise: resolved.sellingPricePaise,
+        effectivePricePaise: resolved.effectivePricePaise,
+        discountId:
+          resolved.activeDiscountId && mongoose.isValidObjectId(resolved.activeDiscountId)
+            ? new mongoose.Types.ObjectId(resolved.activeDiscountId)
+            : undefined,
+        discountName: resolved.activeDiscountName || undefined,
+        discountAmountPaise: resolved.discountAmountPaise,
         quantity: item.quantity,
         image: variant.imageUrl ?? variant.images?.[0] ?? '',
       });

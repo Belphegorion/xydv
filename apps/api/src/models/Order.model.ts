@@ -10,6 +10,12 @@ export interface IOrderItem {
   color: string;
   size: string;
   price: number;
+  mrpPaise?: number;
+  regularPricePaise?: number;
+  effectivePricePaise?: number;
+  discountId?: mongoose.Types.ObjectId;
+  discountName?: string;
+  discountAmountPaise?: number;
   quantity: number;
   image: string;
   discountAllocation?: number; // In paise
@@ -70,6 +76,12 @@ const orderSchema = new mongoose.Schema<IOrder>(
         color: { type: String, required: true },
         size: { type: String, required: true },
         price: { type: Number, required: true, min: 0 },
+        mrpPaise: { type: Number, min: 0 },
+        regularPricePaise: { type: Number, min: 0 },
+        effectivePricePaise: { type: Number, min: 0 },
+        discountId: { type: mongoose.Schema.Types.ObjectId, ref: 'Discount' },
+        discountName: { type: String },
+        discountAmountPaise: { type: Number, default: 0, min: 0 },
         quantity: { type: Number, required: true, min: 1 },
         image: { type: String, required: false, default: '/products/image-4-1.jpg' },
         discountAllocation: { type: Number, default: 0, min: 0 },

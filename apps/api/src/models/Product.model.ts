@@ -22,6 +22,9 @@ export interface IProductVariant {
   size: string;
   price: number;
   compareAt?: number;
+  mrpPaise?: number;
+  sellingPricePaise?: number;
+  effectivePricePaise?: number;
   stock: number;
   reservedStock?: number;
   images?: string[];
@@ -38,6 +41,16 @@ export interface IProduct extends Document {
   price: number;
   originalPrice?: number;
   compareAt?: number;
+  mrpPaise?: number;
+  sellingPricePaise?: number;
+  effectivePricePaise?: number;
+  activeDiscountId?: mongoose.Types.ObjectId | null;
+  activeDiscountName?: string;
+  discountAmountPaise?: number;
+  discountPercentRounded?: number;
+  discountBadgeLabel?: string;
+  isDiscountExcluded?: boolean;
+  effectivePriceUpdatedAt?: Date;
   category: string;
   tags: string[];
   specs: IProductSpec[];
@@ -92,6 +105,9 @@ const variantSchema = new mongoose.Schema<IProductVariant>({
   size: { type: String, required: true },
   price: { type: Number, required: true, min: 0 },
   compareAt: { type: Number, min: 0 },
+  mrpPaise: { type: Number, min: 0 },
+  sellingPricePaise: { type: Number, min: 0 },
+  effectivePricePaise: { type: Number, min: 0 },
   stock: { type: Number, required: true, default: 0, min: 0 },
   reservedStock: { type: Number, default: 0, min: 0 },
   images: [{ type: String }],
@@ -115,6 +131,16 @@ const productSchema = new mongoose.Schema<IProduct>(
     price: { type: Number, required: true, min: 0 },
     originalPrice: { type: Number, min: 0 },
     compareAt: { type: Number, min: 0 },
+    mrpPaise: { type: Number, min: 0 },
+    sellingPricePaise: { type: Number, min: 0 },
+    effectivePricePaise: { type: Number, min: 0 },
+    activeDiscountId: { type: mongoose.Schema.Types.ObjectId, ref: 'Discount', default: null },
+    activeDiscountName: { type: String },
+    discountAmountPaise: { type: Number, default: 0, min: 0 },
+    discountPercentRounded: { type: Number, default: 0, min: 0 },
+    discountBadgeLabel: { type: String },
+    isDiscountExcluded: { type: Boolean, default: false },
+    effectivePriceUpdatedAt: { type: Date },
     category: {
       type: String,
       required: true,
@@ -179,6 +205,21 @@ productSchema.pre('validate', function (next) {
       this.inStock = this.variants.some((v) => v.stock > 0);
     }
   }
+  // Auto-sync paise price fields
+  if (this.price !== undefined && this.price !== null) {
+    if (this.sellingPricePaise === undefined || this.sellingPricePaise === null) {
+      this.sellingPricePaise = Math.round(this.price * 100);
+    }
+    if (this.mrpPaise === undefined || this.mrpPaise === null) {
+      this.mrpPaise =
+        this.compareAt && this.compareAt > 0
+          ? Math.round(this.compareAt * 100)
+          : this.sellingPricePaise;
+    }
+    if (this.effectivePricePaise === undefined || this.effectivePricePaise === null) {
+      this.effectivePricePaise = this.sellingPricePaise;
+    }
+  }
   // Sync isFeatured and featured
   if (this.isFeatured && !this.featured) {
     this.featured = true;
@@ -206,6 +247,9 @@ productSchema.index({ featured: 1, isPublished: 1 });
 productSchema.index({ bestseller: 1, isPublished: 1 });
 productSchema.index({ inStock: 1, isPublished: 1 });
 productSchema.index({ price: 1, isPublished: 1 });
+productSchema.index({ effectivePricePaise: 1, isPublished: 1 });
+productSchema.index({ isDiscountExcluded: 1, isPublished: 1 });
+productSchema.index({ activeDiscountId: 1 });
 productSchema.index({ tags: 1 });
 productSchema.index({ 'variants.sku': 1 });
 productSchema.index({ 'variants.stock': 1 });

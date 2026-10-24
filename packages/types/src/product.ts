@@ -31,6 +31,10 @@ export interface ProductVariant {
   size: string;
   price: number;
   compareAt?: number;
+  mrpPaise?: number;
+  sellingPricePaise?: number;
+  effectivePricePaise?: number;
+  discountAmountPaise?: number;
   stock: number;
   reservedStock?: number;
   images?: string[];
@@ -58,6 +62,16 @@ export interface Product {
   compareAt?: number;
   category: Category;
   tags: string[];
+  mrpPaise?: number;
+  sellingPricePaise?: number;
+  effectivePricePaise?: number;
+  activeDiscountId?: string | null;
+  activeDiscountName?: string;
+  discountAmountPaise?: number;
+  discountPercentRounded?: number;
+  discountBadgeLabel?: string;
+  isDiscountExcluded?: boolean;
+  effectivePriceUpdatedAt?: string;
   specs?: ProductSpec[];
   specsSummary?: string;
   variants: ProductVariant[];
