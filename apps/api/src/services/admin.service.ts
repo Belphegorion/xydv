@@ -274,6 +274,8 @@ export class AdminService {
           }
         }
       }
+    }
+
     // CN-002: Normalize images array so strings become { url: string, alt: '' }
     if (data.images && Array.isArray(data.images)) {
       data.images = data.images.map((img) =>

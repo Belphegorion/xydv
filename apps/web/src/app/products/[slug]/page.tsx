@@ -18,6 +18,7 @@ import {
   ArrowsClockwise,
   MagnifyingGlassPlus,
   X,
+  EyeSlash,
 } from '@phosphor-icons/react';
 import {
   getProductBySlug,
@@ -374,6 +375,7 @@ export default function ProductDetailPage({ params }: PageProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<string | null>('materials');
   const [isZoomOpen, setIsZoomOpen] = useState(false);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -563,14 +565,34 @@ export default function ProductDetailPage({ params }: PageProps) {
           <div className="flex flex-col gap-4 lg:col-span-7">
             {/* Primary Main Viewport */}
             <div className="group relative aspect-[3/4] w-full overflow-hidden border border-[var(--border)] bg-black/5 dark:bg-black">
-              <Image
-                src={gallery[activeImageIdx]}
-                alt={`${product.name} in ${activeVariant.colorName}`}
-                fill
-                sizes="(max-width: 1024px) 100vw, 58vw"
-                priority
-                className="object-cover object-center transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
-              />
+              {failedImages[gallery[activeImageIdx]] ? (
+                <div className="flex h-full w-full flex-col items-center justify-center bg-[var(--bg-elevated)] p-6 text-center">
+                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-muted)]">
+                    <EyeSlash size={22} weight="bold" />
+                  </div>
+                  <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-secondary)] uppercase">
+                    Preview Unavailable
+                  </span>
+                  <span className="mt-1 font-mono text-[10px] text-[var(--text-muted)] uppercase">
+                    Syncing Asset
+                  </span>
+                </div>
+              ) : (
+                <Image
+                  src={gallery[activeImageIdx]}
+                  alt={`${product.name} in ${activeVariant.colorName}`}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  priority
+                  onError={() => {
+                    const currentImg = gallery[activeImageIdx];
+                    if (currentImg) {
+                      setFailedImages((prev) => ({ ...prev, [currentImg]: true }));
+                    }
+                  }}
+                  className="object-cover object-center transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
+                />
+              )}
 
               {/* Taxonomy Badges */}
               <div className="pointer-events-none absolute top-4 left-4 z-10 flex flex-col gap-1.5">
@@ -617,13 +639,20 @@ export default function ProductDetailPage({ params }: PageProps) {
                         : 'border-[var(--border)] opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <Image
-                      src={img}
-                      alt={`${product.name} angle ${tIdx + 1}`}
-                      fill
-                      sizes="16vw"
-                      className="object-cover"
-                    />
+                    {failedImages[img] ? (
+                      <div className="flex h-full w-full items-center justify-center bg-[var(--bg-elevated)] text-[var(--text-muted)]">
+                        <EyeSlash size={14} />
+                      </div>
+                    ) : (
+                      <Image
+                        src={img}
+                        alt={`${product.name} angle ${tIdx + 1}`}
+                        fill
+                        sizes="16vw"
+                        onError={() => setFailedImages((prev) => ({ ...prev, [img]: true }))}
+                        className="object-cover"
+                      />
+                    )}
                   </button>
                 ))}
               </div>

@@ -22,6 +22,10 @@ export function AdminTopBar({ onOpenMobile }: AdminTopBarProps) {
     if (path.startsWith('/admin/orders')) return 'Order Fulfillment';
     if (path.startsWith('/admin/inventory')) return 'Inventory Control';
     if (path.startsWith('/admin/customers')) return 'Customer Management';
+    if (path.startsWith('/admin/discounts')) return 'Discounts & Promotional Pricing';
+    if (path.startsWith('/admin/coupons')) return 'Coupons & Vouchers';
+    if (path.startsWith('/admin/notifications')) return 'Announcement Popups';
+    if (path.startsWith('/admin/tickets')) return 'Customer Support Tickets';
     if (path.startsWith('/admin/settings')) return 'Store Settings';
     return 'Admin Console';
   };

@@ -805,14 +805,14 @@ function CatalogContent() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="SEARCH HARDWARE BY NAME, TECH, OR GSM..."
-              className="h-10 w-full border border-[var(--border)] bg-[var(--bg-elevated)] pr-9 pl-10 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:ring-1 focus:ring-[var(--text-primary)] focus:outline-none"
+              className="min-h-[44px] h-11 w-full border border-[var(--border)] bg-[var(--bg-elevated)] pr-9 pl-10 font-mono text-base sm:text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:ring-1 focus:ring-[var(--text-primary)] focus:outline-none"
             />
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch('')}
                 aria-label="Clear search"
-                className="absolute top-1/2 right-2.5 -translate-y-1/2 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                className="absolute top-1/2 right-2.5 -translate-y-1/2 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 <X size={14} weight="bold" />
               </button>
@@ -836,7 +836,7 @@ function CatalogContent() {
                 name="discipline"
                 value={discipline}
                 onChange={(e) => setDiscipline(e.target.value)}
-                className="h-8 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-2 font-mono text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none"
+                className="min-h-[44px] h-10 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
                 aria-label="Filter by discipline"
               >
                 {DISCIPLINES.map((d) => (
@@ -860,7 +860,7 @@ function CatalogContent() {
                 name="gender"
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="h-8 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-2 font-mono text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none"
+                className="min-h-[44px] h-10 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
                 aria-label="Filter by gender division"
               >
                 {GENDERS.map((g) => (
@@ -872,7 +872,7 @@ function CatalogContent() {
             </div>
 
             {/* In-Stock Toggle */}
-            <label htmlFor="filter-in-stock" className="ml-2 flex cursor-pointer items-center gap-2 select-none">
+            <label htmlFor="filter-in-stock" className="ml-2 flex min-h-[44px] cursor-pointer items-center gap-2 select-none py-1.5">
               <input
                 id="filter-in-stock"
                 name="inStockOnly"
@@ -896,7 +896,7 @@ function CatalogContent() {
                 name="sort"
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="h-8 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-2 font-mono text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none"
+                className="min-h-[44px] h-10 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
                 aria-label="Sort products"
               >
                 {SORT_OPTIONS.map((opt) => (
@@ -912,7 +912,7 @@ function CatalogContent() {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="touch-target flex h-8 items-center gap-1 border border-rose-500/30 px-2.5 font-mono text-[10px] font-bold tracking-wider text-rose-600 uppercase transition-colors hover:bg-rose-500/10 dark:text-rose-400"
+                className="touch-target flex min-h-[44px] h-10 items-center gap-1 border border-rose-500/30 px-3 font-mono text-xs font-bold tracking-wider text-rose-600 uppercase transition-colors hover:bg-rose-500/10 sm:min-h-0 sm:h-8 dark:text-rose-400"
               >
                 <X size={12} weight="bold" />
                 <span>RESET</span>
