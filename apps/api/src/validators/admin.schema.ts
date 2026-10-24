@@ -61,6 +61,8 @@ export const adminCreateProductSchema = z.object({
       bestseller: z.boolean().optional(),
       lowStockThreshold: z.number().int().min(0).optional(),
       features: z.array(z.string()).optional(),
+      materials: z.array(z.string()).optional(),
+      sizeChart: z.any().optional(),
       discipline: z.string().optional(),
       gender: z.string().optional(),
     })
@@ -136,6 +138,8 @@ export const adminUpdateProductSchema = z.object({
       bestseller: z.boolean().optional(),
       lowStockThreshold: z.number().int().min(0).optional(),
       features: z.array(z.string()).optional(),
+      materials: z.array(z.string()).optional(),
+      sizeChart: z.any().optional(),
       discipline: z.string().optional(),
       gender: z.string().optional(),
     })

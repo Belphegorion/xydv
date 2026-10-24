@@ -76,6 +76,10 @@ function AdminProductsContent() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isPublished, setIsPublished] = useState<boolean>(true);
+  const [isFeatured, setIsFeatured] = useState<boolean>(false);
+  const [isBestseller, setIsBestseller] = useState<boolean>(false);
+  const [materialsInput, setMaterialsInput] = useState<string>('');
+  const [sizeChart, setSizeChart] = useState<string>('');
   const [lowStockThreshold, setLowStockThreshold] = useState<number>(5);
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [showUnsavedConfirm, setShowUnsavedConfirm] = useState<boolean>(false);
@@ -321,6 +325,10 @@ function AdminProductsContent() {
       },
     ]);
     setIsPublished(true);
+    setIsFeatured(false);
+    setIsBestseller(false);
+    setMaterialsInput('');
+    setSizeChart('');
     setLowStockThreshold(5);
     setSpecs([
       { label: 'Fabric', value: '4-Way Stretch Cordura Ripstop' },
@@ -394,6 +402,10 @@ function AdminProductsContent() {
           ],
     );
     setIsPublished(p.isPublished !== false);
+    setIsFeatured(Boolean(p.isFeatured || p.featured));
+    setIsBestseller(Boolean(p.bestseller));
+    setMaterialsInput(Array.isArray(p.materials) ? p.materials.join(', ') : '');
+    setSizeChart(p.sizeChart ? JSON.stringify(p.sizeChart, null, 2) : '');
     setLowStockThreshold(p.lowStockThreshold || 5);
     setIsDirty(false);
     setIsModalOpen(true);
@@ -442,6 +454,20 @@ function AdminProductsContent() {
         .map((f) => f.trim())
         .filter(Boolean);
 
+      const cleanMaterials = materialsInput
+        .split(',')
+        .map((m) => m.trim())
+        .filter(Boolean);
+
+      let parsedSizeChart: Record<string, Record<string, string>> | undefined = undefined;
+      if (sizeChart.trim()) {
+        try {
+          parsedSizeChart = JSON.parse(sizeChart.trim());
+        } catch {
+          // Keep as undefined if invalid JSON
+        }
+      }
+
       const payload = {
         name: name.trim(),
         brand: brand.trim(),
@@ -454,9 +480,13 @@ function AdminProductsContent() {
         imageUrl: primaryImgUrl,
         variants,
         isPublished,
+        isFeatured,
+        bestseller: isBestseller,
         lowStockThreshold: Number(lowStockThreshold) || 5,
         specs: cleanSpecs,
         features: cleanFeatures,
+        materials: cleanMaterials.length > 0 ? cleanMaterials : undefined,
+        sizeChart: parsedSizeChart,
         discipline: discipline.trim().toLowerCase(),
         gender: gender.trim().toLowerCase(),
       };
@@ -1021,8 +1051,8 @@ function AdminProductsContent() {
                     />
                   </div>
 
-                  <div className="flex flex-col justify-center pt-2">
-                    <label className="mt-3 flex cursor-pointer items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-4 pt-2">
+                    <label className="flex cursor-pointer items-center gap-2">
                       <input
                         type="checkbox"
                         checked={isPublished}
@@ -1033,7 +1063,37 @@ function AdminProductsContent() {
                         className="h-4 w-4 cursor-pointer rounded-none border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] accent-[var(--text-primary)] focus:ring-0 dark:text-[#e8ff00] dark:accent-[#e8ff00]"
                       />
                       <span className="font-mono text-xs text-[var(--text-primary)] uppercase">
-                        Published (Storefront Visible)
+                        Published
+                      </span>
+                    </label>
+
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={isFeatured}
+                        onChange={(e) => {
+                          setIsDirty(true);
+                          setIsFeatured(e.target.checked);
+                        }}
+                        className="h-4 w-4 cursor-pointer rounded-none border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] accent-[var(--text-primary)] focus:ring-0 dark:text-[#e8ff00] dark:accent-[#e8ff00]"
+                      />
+                      <span className="font-mono text-xs text-[var(--text-primary)] uppercase">
+                        Featured
+                      </span>
+                    </label>
+
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={isBestseller}
+                        onChange={(e) => {
+                          setIsDirty(true);
+                          setIsBestseller(e.target.checked);
+                        }}
+                        className="h-4 w-4 cursor-pointer rounded-none border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] accent-[var(--text-primary)] focus:ring-0 dark:text-[#e8ff00] dark:accent-[#e8ff00]"
+                      />
+                      <span className="font-mono text-xs text-[var(--text-primary)] uppercase">
+                        Bestseller
                       </span>
                     </label>
                   </div>
@@ -1088,6 +1148,40 @@ function AdminProductsContent() {
                     setFeaturesInput(e.target.value);
                   }}
                   placeholder="e.g. SweatShield+ anti-odor fabric&#10;4-way mechanical stretch&#10;Laser-cut breathable vents"
+                  className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                />
+              </div>
+
+              {/* Materials */}
+              <div>
+                <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+                  Materials & Textile Composition (Comma separated)
+                </label>
+                <input
+                  type="text"
+                  value={materialsInput}
+                  onChange={(e) => {
+                    setIsDirty(true);
+                    setMaterialsInput(e.target.value);
+                  }}
+                  placeholder="e.g. 88% Cordura Nylon, 12% Spandex, DWR coating"
+                  className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                />
+              </div>
+
+              {/* Size Chart Matrix */}
+              <div>
+                <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+                  Size Chart Matrix (Optional JSON format)
+                </label>
+                <textarea
+                  rows={2}
+                  value={sizeChart}
+                  onChange={(e) => {
+                    setIsDirty(true);
+                    setSizeChart(e.target.value);
+                  }}
+                  placeholder='e.g. {"chest": {"S": "36-38", "M": "40-42"}, "waist": {"S": "30", "M": "32"}}'
                   className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                 />
               </div>

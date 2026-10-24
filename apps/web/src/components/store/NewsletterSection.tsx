@@ -11,17 +11,32 @@ export function NewsletterSection() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || isLoading) return;
 
     setIsLoading(true);
-    setTimeout(() => {
+    setError(null);
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setSubmitted(true);
+      } else {
+        setError(data.error || 'Unable to register subscription. Please try again.');
+      }
+    } catch {
+      setError('Unable to register subscription. Please try again.');
+    } finally {
       setIsLoading(false);
-      setSubmitted(true);
-    }, 400);
+    }
   };
 
   return (
@@ -96,6 +111,10 @@ export function NewsletterSection() {
             </form>
           )}
         </AnimatePresence>
+
+        {error && (
+          <p className="mt-3 font-mono text-xs text-red-500">{error}</p>
+        )}
 
         {/* Policy Micro-Text */}
         <p className="mt-6 font-mono text-[10px] tracking-widest text-[var(--text-muted)] uppercase">

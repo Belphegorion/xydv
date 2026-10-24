@@ -57,6 +57,7 @@ export function CartDrawer() {
     }
   }, [customerUser]);
 
+  const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
   const [storeSettings, setStoreSettings] = useState<{
     freeShippingThreshold: number;
     standardShippingFee: number;
@@ -90,10 +91,13 @@ export function CartDrawer() {
             taxRate: Number(data.taxRate ?? 0.18),
             currency: data.currency ?? 'INR',
           });
+          setIsSettingsLoaded(true);
         }
       })
       .catch(() => {
-        // Safe fallbacks already configured
+        if (isMounted) {
+          setIsSettingsLoaded(true);
+        }
       });
     return () => {
       isMounted = false;
@@ -253,7 +257,7 @@ export function CartDrawer() {
       const options = {
         key: rzpKey,
         amount: orderAmount ?? metrics.amountPaise,
-        currency: storeSettings.currency || 'INR',
+        currency: storeSettings?.currency || 'INR',
         name: 'XYDV TECHNICAL DIVISION',
         description: `Order Checkout — ${items.length} items`,
         image: '/brand/xydv-logo.png',
@@ -424,20 +428,24 @@ export function CartDrawer() {
             <div className="border-b border-[var(--border)] bg-[var(--bg-surface)] px-6 py-3.5">
               <div className="mb-2 flex items-center justify-between font-mono text-xs">
                 <span className="tracking-wider text-[var(--text-secondary)] uppercase">
-                  {metrics.isFreeShipping
-                    ? 'FREE SHIPPING UNLOCKED'
-                    : `ADD ${formatPrice(metrics.freeShippingDelta)} FOR FREE SHIPPING`}
+                  {!isSettingsLoaded ? (
+                    'CALCULATING SHIPPING...'
+                  ) : metrics.isFreeShipping ? (
+                    'FREE SHIPPING UNLOCKED'
+                  ) : (
+                    `ADD ${formatPrice(metrics.freeShippingDelta)} FOR FREE SHIPPING`
+                  )}
                 </span>
                 <span className="font-bold text-[var(--text-primary)] dark:text-[var(--accent)]">
-                  {metrics.freeShippingProgress}%
+                  {isSettingsLoaded ? `${metrics.freeShippingProgress}%` : '...'}
                 </span>
               </div>
               <div className="h-1 w-full overflow-hidden bg-[var(--border)]">
                 <div
                   className="h-full bg-[var(--accent)] transition-[width] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
-                  style={{ width: `${metrics.freeShippingProgress}%` }}
+                  style={{ width: `${isSettingsLoaded ? metrics.freeShippingProgress : 0}%` }}
                   role="progressbar"
-                  aria-valuenow={metrics.freeShippingProgress}
+                  aria-valuenow={isSettingsLoaded ? metrics.freeShippingProgress : 0}
                   aria-valuemin={0}
                   aria-valuemax={100}
                 />

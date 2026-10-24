@@ -35,3 +35,18 @@ apiRouter.post(
   validateRequest(trackViewSchema),
   adminController.trackPageView.bind(adminController),
 );
+
+apiRouter.post('/newsletter', (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    res.status(400).json({ success: false, error: 'A valid email address is required.' });
+    return;
+  }
+  res.json({
+    success: true,
+    message: 'Priority allocation secured. Welcome to the XYDV athlete dispatch list.',
+    data: { email, subscribedAt: new Date().toISOString() },
+  });
+});
+

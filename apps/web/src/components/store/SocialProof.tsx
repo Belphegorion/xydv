@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Star } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/Badge';
@@ -36,6 +37,27 @@ const TESTIMONIALS = [
 
 export function SocialProof() {
   const shouldReduceMotion = useReducedMotion();
+  const [stats, setStats] = useState<{ rating: number; reviewCount: number }>({
+    rating: 4.92,
+    reviewCount: 1840,
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/products/stats')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (!isMounted || !json?.data) return;
+        const { rating, reviewCount } = json.data;
+        if (typeof rating === 'number' && typeof reviewCount === 'number') {
+          setStats({ rating, reviewCount });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <section
@@ -65,9 +87,11 @@ export function SocialProof() {
               <Star key={i} size={14} weight="fill" />
             ))}
           </div>
-          <span className="font-mono text-xs font-bold text-[var(--text-primary)]">4.92 / 5.0</span>
+          <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
+            {stats.rating.toFixed(2)} / 5.0
+          </span>
           <span className="font-mono text-[11px] text-[var(--text-muted)]">
-            (1,840+ VERIFIED ATHLETES)
+            ({stats.reviewCount.toLocaleString()}+ VERIFIED ATHLETES)
           </span>
         </div>
       </div>
