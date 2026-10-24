@@ -284,6 +284,8 @@ export default function AdminTicketsPage() {
                       </button>
 
                       <select
+                        id={`ticket-status-${t._id}`}
+                        name={`ticketStatus_${t._id}`}
                         value={t.status}
                         disabled={isUpdatingStatus}
                         onChange={(e) =>
@@ -423,10 +425,12 @@ export default function AdminTicketsPage() {
             {/* Modal Footer */}
             <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] pt-4">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs text-[var(--text-secondary)] uppercase">
+                <label htmlFor="modal-ticket-status" className="font-mono text-xs text-[var(--text-secondary)] uppercase">
                   Change Status:
-                </span>
+                </label>
                 <select
+                  id="modal-ticket-status"
+                  name="modalTicketStatus"
                   value={selectedTicket.status}
                   disabled={isUpdatingStatus}
                   onChange={(e) =>

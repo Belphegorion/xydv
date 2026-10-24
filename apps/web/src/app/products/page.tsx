@@ -763,6 +763,8 @@ function CatalogContent() {
               className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[var(--text-muted)]"
             />
             <input
+              id="catalog-search"
+              name="search"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -787,10 +789,15 @@ function CatalogContent() {
           <div className="flex flex-wrap items-center gap-2">
             {/* Discipline Dropdown / Pills */}
             <div className="flex items-center gap-1.5">
-              <span className="hidden font-mono text-[10px] text-[var(--text-muted)] uppercase sm:inline">
+              <label
+                htmlFor="filter-discipline"
+                className="hidden font-mono text-[10px] text-[var(--text-muted)] uppercase sm:inline"
+              >
                 DISCIPLINE:
-              </span>
+              </label>
               <select
+                id="filter-discipline"
+                name="discipline"
                 value={discipline}
                 onChange={(e) => setDiscipline(e.target.value)}
                 className="h-8 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-2 font-mono text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none"
@@ -806,10 +813,15 @@ function CatalogContent() {
 
             {/* Gender Division */}
             <div className="ml-2 flex items-center gap-1.5">
-              <span className="hidden font-mono text-[10px] text-[var(--text-muted)] uppercase sm:inline">
+              <label
+                htmlFor="filter-gender"
+                className="hidden font-mono text-[10px] text-[var(--text-muted)] uppercase sm:inline"
+              >
                 DIVISION:
-              </span>
+              </label>
               <select
+                id="filter-gender"
+                name="gender"
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
                 className="h-8 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-2 font-mono text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none"
@@ -824,8 +836,10 @@ function CatalogContent() {
             </div>
 
             {/* In-Stock Toggle */}
-            <label className="ml-2 flex cursor-pointer items-center gap-2 select-none">
+            <label htmlFor="filter-in-stock" className="ml-2 flex cursor-pointer items-center gap-2 select-none">
               <input
+                id="filter-in-stock"
+                name="inStockOnly"
                 type="checkbox"
                 checked={inStockOnly}
                 onChange={(e) => setInStockOnly(e.target.checked)}
@@ -842,6 +856,8 @@ function CatalogContent() {
             <div className="flex items-center gap-1.5">
               <ArrowsDownUp size={14} className="text-[var(--text-muted)]" />
               <select
+                id="sort-products"
+                name="sort"
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
                 className="h-8 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-2 font-mono text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none"
