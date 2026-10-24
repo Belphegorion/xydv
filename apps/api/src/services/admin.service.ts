@@ -16,6 +16,7 @@ import { AuditLog } from '../models/AuditLog.model';
 import { Setting, type ISetting } from '../models/Setting.model';
 import { RefreshToken } from '../models/RefreshToken.model';
 import { razorpay } from '../config/razorpay';
+import { env } from '../config/env';
 import { AppError } from '../middleware/errorHandler';
 import { inventoryService } from './inventory.service';
 import { invalidateStoreSettingsCache } from './order.service';
@@ -778,29 +779,46 @@ export class AdminService {
 
     // Issue refund via Razorpay if payment ID exists
     if (order.razorpayPaymentId) {
-      try {
-        const refund = await razorpay.payments.refund(order.razorpayPaymentId, {
-          amount: Math.round(refundAmountToIssue * 100), // convert to paise
-          notes: { reason: reason || 'Admin requested refund', orderId: String(order._id) },
-        });
-        if (refund && refund.id) {
-          refundId = refund.id;
+      const isMockPayment =
+        process.env.NODE_ENV !== 'production' &&
+        (order.razorpayPaymentId.startsWith('pay_mock_') ||
+          order.razorpayPaymentId.startsWith('pay_proof_') ||
+          order.razorpayPaymentId.startsWith('order_mock_') ||
+          env.RAZORPAY_KEY_ID === 'rzp_test_xydv_key' ||
+          env.RAZORPAY_KEY_ID === 'rzp_test_vertex_key');
+
+      if (!isMockPayment) {
+        try {
+          const refund = await razorpay.payments.refund(order.razorpayPaymentId, {
+            amount: Math.round(refundAmountToIssue * 100), // convert to paise
+            notes: { reason: reason || 'Admin requested refund', orderId: String(order._id) },
+          });
+          if (refund && refund.id) {
+            refundId = refund.id;
+          }
+        } catch (err) {
+          const errObj =
+            typeof err === 'object' && err !== null
+              ? (err as { message?: string; statusCode?: number })
+              : undefined;
+          await Order.findByIdAndUpdate(id, {
+            $set: { paymentStatus: currentRefunded > 0 ? 'partially_refunded' : 'captured' },
+          });
+          logger.error('[AdminService] Razorpay refund API failure:', {
+            error: errObj?.message || err,
+          });
+          throw new AppError(
+            `Failed to process refund with Razorpay: ${errObj?.message || 'Payment gateway refund failed'}`,
+            errObj?.statusCode || 502,
+          );
         }
-      } catch (err) {
-        const errObj =
-          typeof err === 'object' && err !== null
-            ? (err as { message?: string; statusCode?: number })
-            : undefined;
-        await Order.findByIdAndUpdate(id, {
-          $set: { paymentStatus: currentRefunded > 0 ? 'partially_refunded' : 'captured' },
+      } else {
+        refundId = `ref_mock_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+        logger.info('[AdminService] Dev-mode mock refund bypass (skipping Razorpay gateway)', {
+          orderId: id,
+          amount: refundAmountToIssue,
+          refundId,
         });
-        logger.error('[AdminService] Razorpay refund API failure:', {
-          error: errObj?.message || err,
-        });
-        throw new AppError(
-          `Failed to process refund with Razorpay: ${errObj?.message || 'Payment gateway refund failed'}`,
-          errObj?.statusCode || 502,
-        );
       }
     }
 
@@ -848,11 +866,14 @@ export class AdminService {
       if (session) {
         await session.abortTransaction();
       }
-      if (!order.razorpayPaymentId) {
-        await Order.findByIdAndUpdate(id, {
-          $set: { paymentStatus: currentRefunded > 0 ? 'partially_refunded' : 'captured' },
+      await Order.findByIdAndUpdate(id, {
+        $set: { paymentStatus: currentRefunded > 0 ? 'partially_refunded' : 'captured' },
+      }).catch((rollbackErr) => {
+        logger.error('[AdminService] Critical: failed to rollback refunding state after DB error', {
+          orderId: id,
+          rollbackErr,
         });
-      }
+      });
       throw err;
     } finally {
       if (session) {

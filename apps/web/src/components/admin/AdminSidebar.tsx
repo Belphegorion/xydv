@@ -15,6 +15,7 @@ import {
   ArrowSquareOut,
   X,
   Gear,
+  ChatText,
 } from '@phosphor-icons/react';
 import { BrandLogo } from '../ui/BrandLogo';
 import { useAdminAuthStore } from '../../store/adminAuth';
@@ -46,6 +47,7 @@ export function AdminSidebar({
       badge: lowStockCount > 0 ? String(lowStockCount) : undefined,
     },
     { label: 'Customers', href: '/admin/customers', icon: Users },
+    { label: 'Support Tickets', href: '/admin/tickets', icon: ChatText },
     { label: 'Settings', href: '/admin/settings', icon: Gear },
   ];
 

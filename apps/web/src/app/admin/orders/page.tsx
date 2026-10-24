@@ -50,6 +50,7 @@ function AdminOrdersContent() {
   // Refund dialog state
   const [refundOrderTarget, setRefundOrderTarget] = useState<Order | null>(null);
   const [refundReason, setRefundReason] = useState('Customer return requested');
+  const [refundAmount, setRefundAmount] = useState('');
   const [isRefunding, setIsRefunding] = useState(false);
 
   // Printable invoice modal state
@@ -135,15 +136,23 @@ function AdminOrdersContent() {
     if (isRefunding) return;
     if (!refundOrderTarget) return;
 
+    const parsedAmount = refundAmount.trim() ? Number(refundAmount.trim()) : undefined;
+    if (parsedAmount !== undefined && (isNaN(parsedAmount) || parsedAmount <= 0)) {
+      setFeedback({ type: 'error', message: 'Refund amount must be a positive number.' });
+      return;
+    }
+
     setIsRefunding(true);
     try {
       await api.post(`/admin/orders/${refundOrderTarget._id}/refund`, {
         reason: refundReason.trim(),
+        ...(parsedAmount !== undefined ? { amount: parsedAmount } : {}),
       });
       setFeedback({
         type: 'success',
         message: `Order #${refundOrderTarget._id.slice(-6)} refunded successfully and inventory restored.`,
       });
+      setRefundAmount('');
       setRefundOrderTarget(null);
       if (selectedOrder?._id === refundOrderTarget._id) {
         setSelectedOrder(null);
@@ -923,14 +932,54 @@ function AdminOrdersContent() {
       <ConfirmDialog
         isOpen={Boolean(refundOrderTarget)}
         title="Execute Payment Refund"
-        description={`Are you sure you want to refund ₹${refundOrderTarget?.total.toFixed(2)} for Order #${refundOrderTarget?._id.slice(-6).toUpperCase()}? This will issue a payment refund through Razorpay and automatically restore product stock.`}
+        description={`Execute refund for Order #${refundOrderTarget?._id.slice(-6).toUpperCase()}? This will issue a payment refund through Razorpay and automatically restore product stock on full refund.`}
         confirmText="Confirm Refund"
         cancelText="Cancel"
         isDestructive={true}
         isLoading={isRefunding}
         onConfirm={handleExecuteRefund}
-        onCancel={() => setRefundOrderTarget(null)}
-      />
+        onCancel={() => {
+          setRefundOrderTarget(null);
+          setRefundAmount('');
+        }}
+      >
+        <div className="space-y-4">
+          <div>
+            <label
+              htmlFor="refund-amount-input"
+              className="mb-1.5 block font-mono text-xs font-semibold tracking-widest text-[var(--text-secondary)] uppercase"
+            >
+              REFUND AMOUNT (₹) — LEAVE BLANK FOR FULL REFUND
+            </label>
+            <input
+              id="refund-amount-input"
+              type="number"
+              min="0.01"
+              step="0.01"
+              placeholder={`Max: ₹${((refundOrderTarget?.total ?? 0) - (refundOrderTarget?.refundAmount ?? 0)).toFixed(2)}`}
+              value={refundAmount}
+              onChange={(e) => setRefundAmount(e.target.value)}
+              className="w-full border border-[var(--border)] bg-[var(--bg)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] outline-none focus-visible:border-[var(--text-primary)] focus-visible:ring-1 focus-visible:ring-[var(--text-primary)] dark:focus-visible:border-[var(--accent)] dark:focus-visible:ring-[var(--accent)]"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="refund-reason-input"
+              className="mb-1.5 block font-mono text-xs font-semibold tracking-widest text-[var(--text-secondary)] uppercase"
+            >
+              REFUND REASON
+            </label>
+            <input
+              id="refund-reason-input"
+              type="text"
+              value={refundReason}
+              onChange={(e) => setRefundReason(e.target.value)}
+              placeholder="e.g. Customer return requested"
+              className="w-full border border-[var(--border)] bg-[var(--bg)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] outline-none focus-visible:border-[var(--text-primary)] focus-visible:ring-1 focus-visible:ring-[var(--text-primary)] dark:focus-visible:border-[var(--accent)] dark:focus-visible:ring-[var(--accent)]"
+            />
+          </div>
+        </div>
+      </ConfirmDialog>
     </div>
   );
 }

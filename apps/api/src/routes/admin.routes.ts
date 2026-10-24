@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { adminController } from '../controllers/admin.controller';
 import { requireAdmin } from '../middleware/auth';
+import { Ticket } from '../models/Ticket.model';
 import { upload, validateUploadMagicBytes } from '../middleware/upload';
 import { validateRequest } from '../middleware/validateRequest';
 import {
@@ -134,5 +135,62 @@ router.patch(
   validateRequest(updateSettingsSchema),
   adminController.updateSettings.bind(adminController),
 );
+
+// --- SUPPORT TICKETS ---
+router.get('/tickets', async (req, res, next) => {
+  try {
+    const page = Math.max(1, parseInt(String(req.query.page ?? '1'), 10));
+    const limit = Math.min(50, Math.max(1, parseInt(String(req.query.limit ?? '20'), 10)));
+    const status = typeof req.query.status === 'string' ? req.query.status : undefined;
+
+    const filter: Record<string, unknown> = {};
+    if (status && ['open', 'in_progress', 'resolved', 'closed'].includes(status)) {
+      filter.status = status;
+    }
+
+    const [tickets, total] = await Promise.all([
+      Ticket.find(filter)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      Ticket.countDocuments(filter),
+    ]);
+
+    res.json({
+      success: true,
+      data: tickets,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.patch('/tickets/:id/status', async (req, res, next) => {
+  try {
+    const allowedStatuses = ['open', 'in_progress', 'resolved', 'closed'];
+    const { status } = req.body ?? {};
+    if (!status || !allowedStatuses.includes(String(status))) {
+      res.status(400).json({
+        success: false,
+        error: `Status must be one of: ${allowedStatuses.join(', ')}`,
+      });
+      return;
+    }
+    const ticket = await Ticket.findByIdAndUpdate(
+      req.params.id,
+      { $set: { status: String(status) } },
+      { new: true },
+    ).lean();
+    if (!ticket) {
+      res.status(404).json({ success: false, error: 'Ticket not found' });
+      return;
+    }
+    res.json({ success: true, data: ticket });
+  } catch (err) {
+    next(err);
+  }
+});
 
 export default router;

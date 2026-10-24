@@ -13,6 +13,7 @@ interface ConfirmDialogProps {
   isLoading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
+  children?: React.ReactNode;
 }
 
 export function ConfirmDialog({
@@ -25,6 +26,7 @@ export function ConfirmDialog({
   isLoading = false,
   onConfirm,
   onCancel,
+  children,
 }: ConfirmDialogProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -88,6 +90,8 @@ export function ConfirmDialog({
         <p className="mb-6 font-sans text-xs leading-relaxed text-[var(--text-secondary)]">
           {description}
         </p>
+
+        {children && <div className="mb-6">{children}</div>}
 
         <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] pt-4">
           <button
