@@ -9,9 +9,10 @@ import { useAdminAuthStore } from '../../store/adminAuth';
 
 interface AdminTopBarProps {
   onOpenMobile?: () => void;
+  mobileOpen?: boolean;
 }
 
-export function AdminTopBar({ onOpenMobile }: AdminTopBarProps) {
+export function AdminTopBar({ onOpenMobile, mobileOpen = false }: AdminTopBarProps) {
   const pathname = usePathname();
   const { user } = useAdminAuthStore();
 
@@ -37,8 +38,10 @@ export function AdminTopBar({ onOpenMobile }: AdminTopBarProps) {
           <button
             type="button"
             onClick={onOpenMobile}
-            className="touch-target btn-tactile p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] lg:hidden"
+            className="touch-target btn-tactile p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] lg:!hidden"
             aria-label="Open navigation menu"
+            aria-expanded={mobileOpen}
+            aria-controls="admin-mobile-drawer"
           >
             <List size={22} />
           </button>

@@ -266,13 +266,32 @@
     transform: scale(0.97);
   }
 
-  /* Accessible touch target helper */
-  .touch-target {
+  /* Accessible touch target helper (resilient to responsive utility classes) */
+  :where(.touch-target) {
     min-width: var(--touch-target-min);
     min-height: var(--touch-target-min);
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+  .touch-target.hidden,
+  .touch-target[hidden] {
+    display: none !important;
+  }
+  @media (min-width: 40rem) {
+    .touch-target.sm\:hidden {
+      display: none !important;
+    }
+  }
+  @media (min-width: 48rem) {
+    .touch-target.md\:hidden {
+      display: none !important;
+    }
+  }
+  @media (min-width: 64rem) {
+    .touch-target.lg\:hidden {
+      display: none !important;
+    }
   }
 
   /* Kinetic marquee animation */

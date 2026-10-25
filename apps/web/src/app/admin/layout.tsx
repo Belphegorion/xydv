@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             lowStockCount={lowStockCount}
           />
           <div className="flex flex-1 flex-col overflow-hidden">
-            <AdminTopBar onOpenMobile={() => setMobileOpen(true)} />
+            <AdminTopBar onOpenMobile={() => setMobileOpen(true)} mobileOpen={mobileOpen} />
             <main className="flex-1 overflow-y-auto bg-[var(--bg)] p-4 sm:p-6 lg:p-8">
               <div className="mx-auto max-w-7xl">{children}</div>
             </main>

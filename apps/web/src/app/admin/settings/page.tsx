@@ -181,7 +181,10 @@ export default function AdminSettingsPage() {
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
-              <label className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+              <label
+                htmlFor="setting-free-shipping-threshold"
+                className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase"
+              >
                 Free Shipping Threshold (₹)
               </label>
               <div className="relative">
@@ -189,6 +192,8 @@ export default function AdminSettingsPage() {
                   ₹
                 </span>
                 <input
+                  id="setting-free-shipping-threshold"
+                  name="freeShippingThreshold"
                   type="number"
                   min="0"
                   step="1"
@@ -208,7 +213,10 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+              <label
+                htmlFor="setting-standard-shipping-fee"
+                className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase"
+              >
                 Standard Shipping Fee (₹)
               </label>
               <div className="relative">
@@ -216,6 +224,8 @@ export default function AdminSettingsPage() {
                   ₹
                 </span>
                 <input
+                  id="setting-standard-shipping-fee"
+                  name="standardShippingFee"
                   type="number"
                   min="0"
                   step="1"
@@ -246,10 +256,15 @@ export default function AdminSettingsPage() {
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             <div>
-              <label className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+              <label
+                htmlFor="setting-tax-rate"
+                className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase"
+              >
                 Tax Rate (GST / Fraction)
               </label>
               <input
+                id="setting-tax-rate"
+                name="taxRate"
                 type="number"
                 min="0"
                 max="1"
@@ -268,12 +283,17 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+              <label
+                htmlFor="setting-currency-code"
+                className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase"
+              >
                 Currency Code
               </label>
               <div className="relative">
                 <CurrencyInr size={14} className="absolute top-3 left-3 text-[var(--text-muted)]" />
                 <input
+                  id="setting-currency-code"
+                  name="currencyCode"
                   type="text"
                   required
                   value={settings.currency}
@@ -287,10 +307,15 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+              <label
+                htmlFor="setting-currency-symbol"
+                className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase"
+              >
                 Currency Symbol
               </label>
               <input
+                id="setting-currency-symbol"
+                name="currencySymbol"
                 type="text"
                 required
                 value={settings.currencySymbol}
@@ -314,10 +339,15 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="max-w-md">
-            <label className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+            <label
+              htmlFor="setting-low-stock-threshold"
+              className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase"
+            >
               Default Low Stock Alert Limit (Units)
             </label>
             <input
+              id="setting-low-stock-threshold"
+              name="lowStockThreshold"
               type="number"
               min="0"
               step="1"
@@ -347,10 +377,15 @@ export default function AdminSettingsPage() {
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
-              <label className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+              <label
+                htmlFor="setting-store-name"
+                className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase"
+              >
                 Store Brand Name
               </label>
               <input
+                id="setting-store-name"
+                name="storeName"
                 type="text"
                 required
                 value={settings.storeName}
@@ -363,10 +398,15 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+              <label
+                htmlFor="setting-support-email"
+                className="mb-2 block font-mono text-xs text-[var(--text-secondary)] uppercase"
+              >
                 Customer Support Email
               </label>
               <input
+                id="setting-support-email"
+                name="supportEmail"
                 type="email"
                 required
                 value={settings.supportEmail}

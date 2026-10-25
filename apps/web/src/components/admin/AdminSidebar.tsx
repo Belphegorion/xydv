@@ -60,8 +60,8 @@ export function AdminSidebar({
   const sidebarContent = (
     <div className="flex h-full flex-col justify-between border-r border-[var(--border)] bg-[var(--bg)] text-[var(--text-primary)]">
       {/* Brand Header */}
-      <div>
-        <div className="flex h-16 items-center justify-between border-b border-[var(--border)] px-5">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="flex h-16 flex-shrink-0 items-center justify-between border-b border-[var(--border)] px-5">
           <Link
             href="/admin"
             className="group flex items-center gap-2.5"
@@ -81,7 +81,7 @@ export function AdminSidebar({
             <button
               type="button"
               onClick={onCloseMobile}
-              className="touch-target btn-tactile p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] lg:hidden"
+              className="touch-target btn-tactile p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] lg:!hidden"
               aria-label="Close navigation"
             >
               <X size={20} />
@@ -90,7 +90,7 @@ export function AdminSidebar({
         </div>
 
         {/* Navigation Items */}
-        <nav className="space-y-1 p-3" aria-label="Admin Navigation">
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3" aria-label="Admin Navigation">
           {navItems.map((item) => {
             const isActive = item.exact
               ? pathname === item.href
@@ -134,7 +134,7 @@ export function AdminSidebar({
       </div>
 
       {/* Footer / User / Storefront */}
-      <div className="space-y-3 border-t border-[var(--border)] p-4">
+      <div className="flex-shrink-0 space-y-3 border-t border-[var(--border)] p-4">
         <Link
           href="/"
           target="_blank"
@@ -182,7 +182,13 @@ export function AdminSidebar({
 
       {/* Mobile Slide-over Drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
+        <div
+          id="admin-mobile-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Admin Navigation Drawer"
+          className="fixed inset-0 z-50 flex lg:!hidden"
+        >
           <div
             className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
             onClick={onCloseMobile}
