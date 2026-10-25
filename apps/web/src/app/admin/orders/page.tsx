@@ -480,12 +480,19 @@ function AdminOrdersContent() {
       {/* Order Detail & Fulfillment Modal */}
       {selectedOrder && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm dark:bg-black/80"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-3xl rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-[var(--text-primary)] shadow-2xl">
-            <div className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm dark:bg-black/80"
+            onClick={() => setSelectedOrder(null)}
+            aria-hidden="true"
+          />
+
+          <div className="relative flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-3xl flex-col rounded-none border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-2xl overflow-hidden">
+            {/* Pinned Header */}
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg-surface)] px-6 py-4">
               <div>
                 <div className="flex items-center gap-3">
                   <h3 className="font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
@@ -519,7 +526,8 @@ function AdminOrdersContent() {
               </div>
             </div>
 
-            <div className="space-y-6">
+            {/* Scrollable Body */}
+            <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-6">
               {/* Customer & Shipping Summary */}
               <div className="grid grid-cols-1 gap-4 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-4 font-mono text-xs sm:grid-cols-2">
                 <div>
@@ -767,12 +775,18 @@ function AdminOrdersContent() {
       {/* Printable Invoice Modal */}
       {invoiceOrder && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/75 p-4 backdrop-blur-sm dark:bg-black/85"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden bg-black/75 backdrop-blur-sm dark:bg-black/85"
           role="dialog"
           aria-modal="true"
         >
-          <div className="my-8 w-full max-w-2xl rounded-none border border-[var(--border)] bg-white p-8 text-[#0a0a0a] shadow-2xl print:m-0 print:border-none print:p-0">
-            <div className="mb-6 flex items-center justify-between border-b border-[#e4e4e7] pb-4 print:hidden">
+          <div
+            className="fixed inset-0 bg-black/60 print:hidden"
+            onClick={() => setInvoiceOrder(null)}
+            aria-hidden="true"
+          />
+
+          <div className="relative flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-2xl flex-col rounded-none border border-[var(--border)] bg-white text-[#0a0a0a] shadow-2xl overflow-hidden print:m-0 print:border-none print:p-0 print:max-h-none">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-[#e4e4e7] px-6 py-4 print:hidden">
               <span className="font-mono text-xs font-bold tracking-wider text-[#0a0a0a] uppercase">
                 Print Preview: Invoice #{invoiceOrder._id.slice(-6).toUpperCase()}
               </span>
@@ -797,7 +811,7 @@ function AdminOrdersContent() {
             </div>
 
             {/* Document Body */}
-            <div id="printable-invoice" ref={invoiceRef} className="space-y-6 font-sans text-xs">
+            <div id="printable-invoice" ref={invoiceRef} className="flex-1 min-h-0 overflow-y-auto p-6 sm:p-8 space-y-6 font-sans text-xs print:overflow-visible print:p-0">
               <style>{`
                 @media print {
                   body * {

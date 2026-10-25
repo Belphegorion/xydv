@@ -257,7 +257,7 @@ export default function AdminCategoriesPage() {
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-[var(--text-primary)] shadow-2xl">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-[var(--text-primary)] shadow-2xl">
             <div className="mb-4 flex items-center justify-between border-b border-[var(--border)] pb-3">
               <h3 className="font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
                 {isEditing ? `Edit Category: ${name}` : 'New Category'}
