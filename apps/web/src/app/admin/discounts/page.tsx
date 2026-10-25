@@ -119,6 +119,14 @@ export default function AdminDiscountsPage() {
   const [isProcessingAction, setIsProcessingAction] = useState(false);
 
   const searchInputId = useId();
+  const nameInputId = useId();
+  const badgeInputId = useId();
+  const valueInputId = useId();
+  const floorInputId = useId();
+  const capInputId = useId();
+  const startDateInputId = useId();
+  const endDateInputId = useId();
+  const stackingCheckboxId = useId();
 
   // 1. Fetch Discounts and Available Products
   const fetchData = useCallback(async () => {
@@ -391,14 +399,14 @@ export default function AdminDiscountsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+            <h1 className="font-mono text-xl font-bold tracking-wider text-[var(--text-primary)] uppercase">
               Discounts & Promotional Pricing
             </h1>
-            <span className="rounded bg-[var(--surface-hover)] px-2 py-0.5 text-xs font-mono text-[var(--text-secondary)] border border-[var(--border)]">
+            <span className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-2 py-0.5 font-mono text-xs uppercase text-[var(--text-secondary)]">
               Amazon & Flipkart Pattern
             </span>
           </div>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          <p className="mt-1 font-mono text-xs text-[var(--text-muted)]">
             Configure catalog, category, and product discounts with statutory MRP protection, price floors, and live impact previews.
           </p>
         </div>
@@ -408,17 +416,17 @@ export default function AdminDiscountsPage() {
             type="button"
             onClick={handleRecompute}
             disabled={isRecomputing}
-            className="flex items-center gap-2 rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:bg-[var(--surface-hover)] disabled:opacity-50"
+            className="btn-tactile flex items-center gap-2 rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs uppercase text-[var(--text-primary)] transition hover:border-[var(--text-primary)] active:scale-[0.97] disabled:opacity-50"
             title="Force immediate recalculation of all product effective prices"
           >
-            <ArrowsClockwise className={`h-4 w-4 ${isRecomputing ? 'animate-spin text-[var(--accent)]' : ''}`} />
+            <ArrowsClockwise className={`h-4 w-4 ${isRecomputing ? 'animate-spin text-[var(--text-primary)] dark:text-[#e8ff00]' : ''}`} />
             <span>Recompute Prices</span>
           </button>
 
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="flex items-center gap-2 rounded bg-[var(--accent)] px-4 py-2 text-xs font-bold text-[var(--accent-foreground)] transition hover:opacity-90 shadow-sm"
+            className="btn-tactile flex items-center gap-2 rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[var(--bg)] transition hover:opacity-90 active:scale-[0.97] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]"
           >
             <Plus className="h-4 w-4" weight="bold" />
             <span>Create Discount</span>
@@ -430,24 +438,24 @@ export default function AdminDiscountsPage() {
       {feedback && (
         <div
           role="status"
-          className={`flex items-center justify-between rounded border p-4 ${
+          className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
             feedback.type === 'success'
-              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
-              : 'border-rose-500/30 bg-rose-500/10 text-rose-400'
+              ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
+              : 'border-[#ff3b3b]/40 bg-[#ff3b3b]/10 text-[#ff3b3b]'
           }`}
         >
           <div className="flex items-center gap-3">
             {feedback.type === 'success' ? (
-              <CheckCircle className="h-5 w-5 shrink-0" />
+              <CheckCircle className="h-4 w-4 shrink-0" weight="fill" />
             ) : (
-              <Warning className="h-5 w-5 shrink-0" />
+              <Warning className="h-4 w-4 shrink-0" weight="fill" />
             )}
-            <p className="text-sm font-medium">{feedback.message}</p>
+            <p className="font-mono text-xs">{feedback.message}</p>
           </div>
           <button
             type="button"
             onClick={() => setFeedback(null)}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             aria-label="Dismiss message"
           >
             <X className="h-4 w-4" />
@@ -457,61 +465,61 @@ export default function AdminDiscountsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="border border-[var(--border)] bg-[var(--bg-surface)] p-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase text-[var(--text-muted)]">Active Promos</span>
-            <div className="rounded-full bg-emerald-500/10 p-1.5 text-emerald-400">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-[var(--text-muted)]">Active Promos</span>
+            <div className="bg-emerald-500/10 p-1.5 text-emerald-400">
               <Play className="h-4 w-4" weight="fill" />
             </div>
           </div>
           <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--text-primary)]">
             {stats.active}
           </p>
-          <span className="text-[11px] text-[var(--text-secondary)]">Live on storefront</span>
+          <span className="font-mono text-[10px] text-[var(--text-muted)]">Live on storefront</span>
         </div>
 
-        <div className="rounded border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="border border-[var(--border)] bg-[var(--bg-surface)] p-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase text-[var(--text-muted)]">Scheduled</span>
-            <div className="rounded-full bg-amber-500/10 p-1.5 text-amber-400">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-[var(--text-muted)]">Scheduled</span>
+            <div className="bg-amber-500/10 p-1.5 text-amber-400">
               <CalendarBlank className="h-4 w-4" weight="bold" />
             </div>
           </div>
           <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--text-primary)]">
             {stats.scheduled}
           </p>
-          <span className="text-[11px] text-[var(--text-secondary)]">Upcoming launch dates</span>
+          <span className="font-mono text-[10px] text-[var(--text-muted)]">Upcoming launch dates</span>
         </div>
 
-        <div className="rounded border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="border border-[var(--border)] bg-[var(--bg-surface)] p-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase text-[var(--text-muted)]">Paused</span>
-            <div className="rounded-full bg-zinc-500/10 p-1.5 text-zinc-400">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-[var(--text-muted)]">Paused</span>
+            <div className="bg-zinc-500/10 p-1.5 text-zinc-400">
               <Pause className="h-4 w-4" weight="fill" />
             </div>
           </div>
           <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--text-primary)]">
             {stats.paused}
           </p>
-          <span className="text-[11px] text-[var(--text-secondary)]">Temporarily suppressed</span>
+          <span className="font-mono text-[10px] text-[var(--text-muted)]">Temporarily suppressed</span>
         </div>
 
-        <div className="rounded border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="border border-[var(--border)] bg-[var(--bg-surface)] p-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase text-[var(--text-muted)]">Total Promos</span>
-            <div className="rounded-full bg-[var(--accent)]/10 p-1.5 text-[var(--accent)]">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-[var(--text-muted)]">Total Promos</span>
+            <div className="bg-[var(--text-primary)]/10 p-1.5 text-[var(--text-primary)] dark:text-[#e8ff00]">
               <Percent className="h-4 w-4" weight="bold" />
             </div>
           </div>
           <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--text-primary)]">
             {stats.total}
           </p>
-          <span className="text-[11px] text-[var(--text-secondary)]">All-time promotional rules</span>
+          <span className="font-mono text-[10px] text-[var(--text-muted)]">All-time promotional rules</span>
         </div>
       </div>
 
       {/* Controls: Status Tabs, Scope Filter, Search */}
-      <div className="flex flex-col gap-3 rounded border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border border-[var(--border)] bg-[var(--bg-surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Status Tabs */}
         <div className="flex flex-wrap items-center gap-1">
           {(['all', 'active', 'scheduled', 'paused', 'ended'] as const).map((tab) => (
@@ -519,10 +527,10 @@ export default function AdminDiscountsPage() {
               key={tab}
               type="button"
               onClick={() => setStatusFilter(tab)}
-              className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition ${
+              className={`rounded-none px-3 py-1.5 font-mono text-xs uppercase tracking-wider transition ${
                 statusFilter === tab
-                  ? 'bg-[var(--accent)] text-[var(--accent-foreground)]'
-                  : 'text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]'
+                  ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] font-bold text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]'
               }`}
             >
               {tab}
@@ -574,10 +582,10 @@ export default function AdminDiscountsPage() {
       </div>
 
       {/* Discounts Table */}
-      <div className="overflow-hidden rounded border border-[var(--border)] bg-[var(--surface)]">
+      <div className="overflow-hidden rounded-none border border-[var(--border)] bg-[var(--bg-surface)]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="border-b border-[var(--border)] bg-[var(--surface-hover)] text-[var(--text-secondary)] uppercase font-mono tracking-wider">
+          <table className="w-full text-left font-mono text-xs">
+            <thead className="border-b border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase tracking-wider">
               <tr>
                 <th className="px-4 py-3">Discount & Badge</th>
                 <th className="px-4 py-3">Scope & Target</th>
@@ -592,7 +600,7 @@ export default function AdminDiscountsPage() {
               {isLoading ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-12 text-center text-sm text-[var(--text-muted)]">
-                    <ArrowsClockwise className="mx-auto mb-2 h-6 w-6 animate-spin text-[var(--accent)]" />
+                    <ArrowsClockwise className="mx-auto mb-2 h-6 w-6 animate-spin text-[var(--text-primary)] dark:text-[#e8ff00]" />
                     Loading promotional discounts...
                   </td>
                 </tr>
@@ -624,12 +632,12 @@ export default function AdminDiscountsPage() {
                     (!discount.endDate || new Date(discount.endDate) >= new Date());
 
                   return (
-                    <tr key={discount._id} className="hover:bg-[var(--surface-hover)] transition-colors">
+                    <tr key={discount._id} className="hover:bg-[var(--bg-elevated)] transition-colors">
                       {/* Name & Badge */}
                       <td className="px-4 py-3.5">
                         <div className="font-semibold text-[var(--text-primary)]">{discount.name}</div>
                         {discount.badgeLabel ? (
-                          <span className="mt-1 inline-block rounded bg-[var(--accent)]/15 px-2 py-0.5 text-[10px] font-mono font-bold text-[var(--accent)] border border-[var(--accent)]/30">
+                          <span className="mt-1 inline-block rounded-none bg-[var(--text-primary)]/10 px-2 py-0.5 text-[10px] font-mono font-bold text-[var(--text-primary)] border border-[var(--text-primary)]/20 dark:bg-[#e8ff00]/15 dark:text-[#e8ff00] dark:border-[#e8ff00]/30">
                             {discount.badgeLabel}
                           </span>
                         ) : (
@@ -715,7 +723,7 @@ export default function AdminDiscountsPage() {
                                   action: discount.status === 'paused' ? 'resume' : 'pause',
                                 })
                               }
-                              className="rounded p-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition"
+                              className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] transition"
                               title={discount.status === 'paused' ? 'Resume Promotion' : 'Pause Promotion'}
                               aria-label={discount.status === 'paused' ? 'Resume Promotion' : 'Pause Promotion'}
                             >
@@ -737,7 +745,7 @@ export default function AdminDiscountsPage() {
                                   action: 'end',
                                 })
                               }
-                              className="rounded p-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-rose-400 transition"
+                              className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[#ff3b3b] active:scale-[0.97] transition"
                               title="End Promotion Permanently"
                               aria-label="End Promotion Permanently"
                             >
@@ -748,7 +756,7 @@ export default function AdminDiscountsPage() {
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(discount)}
-                            className="rounded p-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition"
+                            className="btn-tactile rounded-none p-1.5 text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] active:scale-[0.97] transition"
                             title="Edit Discount"
                             aria-label="Edit Discount"
                           >
@@ -767,22 +775,36 @@ export default function AdminDiscountsPage() {
 
       {/* Create / Edit Drawer Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm overflow-y-auto">
-          <div className="my-8 w-full max-w-3xl rounded border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="discount-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden"
+        >
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            onClick={() => setIsModalOpen(false)}
+            aria-hidden="true"
+          />
+
+          <div className="relative flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-3xl flex-col rounded-none border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-2xl overflow-hidden">
+            {/* Pinned Header */}
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg-surface)] px-6 py-4">
               <div>
-                <h2 className="text-lg font-bold text-[var(--text-primary)]">
+                <span className="font-mono text-[10px] font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00] uppercase">
+                  PROMOTIONAL PRICING RULES
+                </span>
+                <h2 id="discount-modal-title" className="text-lg font-bold text-[var(--text-primary)]">
                   {isEditing ? 'Edit Promotional Discount' : 'Create Promotional Discount'}
                 </h2>
-                <p className="text-xs text-[var(--text-secondary)]">
+                <p className="font-mono text-xs text-[var(--text-secondary)]">
                   Promotional discounts apply authoritatively on the server in integer paise.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="rounded p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                className="btn-tactile p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                 aria-label="Close dialog"
               >
                 <X className="h-5 w-5" />
@@ -790,383 +812,396 @@ export default function AdminDiscountsPage() {
             </div>
 
             {/* Modal Form */}
-            <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-              {/* Promotion Name & Description */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Promotion Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Monsoon Tactical Drop 20%"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-                  />
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              {/* Scrollable Body */}
+              <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-5">
+                {/* Promotion Name & Description */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor={nameInputId} className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Promotion Name *
+                    </label>
+                    <input
+                      id={nameInputId}
+                      type="text"
+                      required
+                      placeholder="e.g. Monsoon Tactical Drop 20%"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="mt-1 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor={badgeInputId} className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Badge Label
+                    </label>
+                    <input
+                      id={badgeInputId}
+                      type="text"
+                      placeholder="e.g. 20% OFF or LIMITED DROP"
+                      value={formData.badgeLabel}
+                      onChange={(e) => setFormData({ ...formData, badgeLabel: e.target.value })}
+                      className="mt-1 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                    />
+                    <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                      Appears directly on product cards and PDP.
+                    </span>
+                  </div>
                 </div>
 
+                {/* Scope Selection */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Badge Label
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 20% OFF or LIMITED DROP"
-                    value={formData.badgeLabel}
-                    onChange={(e) => setFormData({ ...formData, badgeLabel: e.target.value })}
-                    className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-                  />
-                  <span className="text-[10px] text-[var(--text-muted)]">
-                    Appears directly on product cards and PDP.
+                  <span className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                    Discount Scope *
                   </span>
-                </div>
-              </div>
-
-              {/* Scope Selection */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                  Discount Scope *
-                </label>
-                <div className="mt-2 grid grid-cols-3 gap-3">
-                  {[
-                    { id: 'product', label: 'Single Product', desc: 'Applies to specific products' },
-                    { id: 'category', label: 'Category', desc: 'Applies to an entire category' },
-                    { id: 'catalog', label: 'Catalog-Wide', desc: 'Applies to all products' },
-                  ].map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() =>
-                        setFormData({
-                          ...formData,
-                          scope: s.id as DiscountScope,
-                        })
-                      }
-                      className={`flex flex-col items-start rounded border p-3 text-left transition ${
-                        formData.scope === s.id
-                          ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--text-primary)]'
-                          : 'border-[var(--border)] bg-[var(--bg)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]'
-                      }`}
-                    >
-                      <span className="text-xs font-bold text-[var(--text-primary)]">{s.label}</span>
-                      <span className="mt-1 text-[10px] text-[var(--text-muted)]">{s.desc}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Target Categories (If Scope === Category) */}
-              {formData.scope === 'category' && (
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Select Target Categories *
-                  </label>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {['tops', 'bottoms', 'outerwear', 'accessories'].map((cat) => {
-                      const isSelected = formData.targetCategories.includes(cat);
-                      return (
-                        <button
-                          key={cat}
-                          type="button"
-                          onClick={() => {
-                            const next = isSelected
-                              ? formData.targetCategories.filter((c) => c !== cat)
-                              : [...formData.targetCategories, cat];
-                            setFormData({ ...formData, targetCategories: next });
-                          }}
-                          className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wider border transition ${
-                            isSelected
-                              ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]'
-                              : 'border-[var(--border)] bg-[var(--bg)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]'
-                          }`}
-                        >
-                          {cat}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Target Products (If Scope === Product) */}
-              {formData.scope === 'product' && (
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Select Target Products *
-                  </label>
-                  <div className="mt-2 max-h-48 overflow-y-auto rounded border border-[var(--border)] bg-[var(--bg)] p-2 space-y-1">
-                    {availableProducts.map((p) => {
-                      const isSelected = formData.targetProductIds.includes(p._id);
-                      return (
-                        <label
-                          key={p._id}
-                          className="flex items-center justify-between rounded p-2 hover:bg-[var(--surface-hover)] cursor-pointer text-xs"
-                        >
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => {
-                                const next = isSelected
-                                  ? formData.targetProductIds.filter((id) => id !== p._id)
-                                  : [...formData.targetProductIds, p._id];
-                                setFormData({ ...formData, targetProductIds: next });
-                              }}
-                              className="rounded border-[var(--border)] text-[var(--accent)]"
-                            />
-                            <span className="font-medium text-[var(--text-primary)]">{p.name}</span>
-                            <span className="text-[10px] text-[var(--text-muted)] uppercase">
-                              ({p.category})
-                            </span>
-                          </div>
-                          <span className="font-mono text-[var(--text-secondary)]">₹{p.price}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Discount Type & Value */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Discount Type *
-                  </label>
-                  <div className="mt-2 grid grid-cols-3 gap-2">
+                  <div className="mt-2 grid grid-cols-3 gap-3">
                     {[
-                      { id: 'percentage', label: 'Percent %' },
-                      { id: 'fixed_amount', label: 'Flat ₹ Off' },
-                      { id: 'set_price', label: 'Set Price ₹' },
-                    ].map((t) => (
+                      { id: 'product', label: 'Single Product', desc: 'Applies to specific products' },
+                      { id: 'category', label: 'Category', desc: 'Applies to an entire category' },
+                      { id: 'catalog', label: 'Catalog-Wide', desc: 'Applies to all products' },
+                    ].map((s) => (
                       <button
-                        key={t.id}
+                        key={s.id}
                         type="button"
                         onClick={() =>
                           setFormData({
                             ...formData,
-                            type: t.id as DiscountType,
+                            scope: s.id as DiscountScope,
                           })
                         }
-                        className={`rounded border py-2 text-center text-xs font-semibold transition ${
-                          formData.type === t.id
-                            ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]'
-                            : 'border-[var(--border)] bg-[var(--bg)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]'
+                        className={`flex flex-col items-start rounded-none border p-3 text-left transition ${
+                          formData.scope === s.id
+                            ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00]/15 dark:text-[#e8ff00]'
+                            : 'border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
                         }`}
                       >
-                        {t.label}
+                        <span className="font-mono text-xs font-bold">{s.label}</span>
+                        <span className={`mt-1 font-mono text-[10px] ${formData.scope === s.id ? 'opacity-80' : 'text-[var(--text-muted)]'}`}>
+                          {s.desc}
+                        </span>
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    {formData.type === 'percentage'
-                      ? 'Discount Percentage (Max 70%) *'
-                      : formData.type === 'fixed_amount'
-                        ? 'Flat Discount Amount (₹) *'
-                        : 'Fixed Target Price (₹) *'}
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="1"
-                    max={formData.type === 'percentage' ? 70 : undefined}
-                    value={formData.valueRupeesOrPercent}
-                    onChange={(e) =>
-                      setFormData({ ...formData, valueRupeesOrPercent: e.target.value })
-                    }
-                    className="mt-2 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-xs font-mono text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-                  />
-                  {formData.type === 'percentage' && (
-                    <span className="text-[10px] text-[var(--text-muted)]">
-                      Statutory margin safeguard: capped at 70%.
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Margin Protection: Floor & Per-Item Cap */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Price Floor (₹) *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={formData.priceFloorRupees}
-                    onChange={(e) =>
-                      setFormData({ ...formData, priceFloorRupees: e.target.value })
-                    }
-                    className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-xs font-mono text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-                  />
-                  <span className="text-[10px] text-[var(--text-muted)]">
-                    Store default ₹299. No item can sell below this price.
-                  </span>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Per-Item Discount Cap (₹)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="Optional (e.g. ₹2000)"
-                    value={formData.maxDiscountCapRupees}
-                    onChange={(e) =>
-                      setFormData({ ...formData, maxDiscountCapRupees: e.target.value })
-                    }
-                    className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-xs font-mono text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-                  />
-                  <span className="text-[10px] text-[var(--text-muted)]">
-                    Caps maximum deduction per item on high-ticket goods.
-                  </span>
-                </div>
-              </div>
-
-              {/* Date Schedule */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Start Date & Time *
-                  </label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                    className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    End Date & Time {formData.scope === 'catalog' ? '*' : '(Optional)'}
-                  </label>
-                  <input
-                    type="datetime-local"
-                    required={formData.scope === 'catalog'}
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                    className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none"
-                  />
-                  {formData.scope === 'catalog' && (
-                    <span className="text-[10px] text-amber-400">
-                      Catalog-wide discounts require an end date to prevent permanent sales.
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Coupon Stacking Policy */}
-              <div className="rounded border border-[var(--border)] bg-[var(--bg)] p-3">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.allowCouponStacking}
-                    onChange={(e) =>
-                      setFormData({ ...formData, allowCouponStacking: e.target.checked })
-                    }
-                    className="rounded border-[var(--border)] text-[var(--accent)]"
-                  />
+                {/* Target Categories (If Scope === Category) */}
+                {formData.scope === 'category' && (
                   <div>
-                    <span className="text-xs font-semibold text-[var(--text-primary)]">
-                      Allow Coupon Stacking with this Promotion
+                    <span className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Select Target Categories *
                     </span>
-                    <p className="text-[11px] text-[var(--text-muted)]">
-                      When disabled (recommended), checkout coupons cannot be combined with this discount.
-                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {['tops', 'bottoms', 'outerwear', 'accessories'].map((cat) => {
+                        const isSelected = formData.targetCategories.includes(cat);
+                        return (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => {
+                              const next = isSelected
+                                ? formData.targetCategories.filter((c) => c !== cat)
+                                : [...formData.targetCategories, cat];
+                              setFormData({ ...formData, targetCategories: next });
+                            }}
+                            className={`rounded-none px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider border transition ${
+                              isSelected
+                                ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-black'
+                                : 'border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
+                            }`}
+                          >
+                            {cat}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </label>
-              </div>
+                )}
 
-              {/* Live 5-Product Price Impact Preview */}
-              <div className="rounded border border-[var(--border)] bg-[var(--bg)] p-4">
-                <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
-                  <div className="flex items-center gap-2">
-                    <Eye className="h-4 w-4 text-[var(--accent)]" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                      Live Storefront Price Impact Preview (5 Sample Products)
+                {/* Target Products (If Scope === Product) */}
+                {formData.scope === 'product' && (
+                  <div>
+                    <span className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Select Target Products *
                     </span>
+                    <div className="mt-2 max-h-48 overflow-y-auto rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2 space-y-1">
+                      {availableProducts.map((p) => {
+                        const isSelected = formData.targetProductIds.includes(p._id);
+                        return (
+                          <label
+                            key={p._id}
+                            className="flex items-center justify-between rounded-none p-2 hover:bg-[var(--bg-surface)] cursor-pointer text-xs"
+                          >
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => {
+                                  const next = isSelected
+                                    ? formData.targetProductIds.filter((id) => id !== p._id)
+                                    : [...formData.targetProductIds, p._id];
+                                  setFormData({ ...formData, targetProductIds: next });
+                                }}
+                                className="h-4 w-4 accent-[#e8ff00]"
+                              />
+                              <span className="font-mono font-medium text-[var(--text-primary)]">{p.name}</span>
+                              <span className="font-mono text-[10px] text-[var(--text-muted)] uppercase">
+                                ({p.category})
+                              </span>
+                            </div>
+                            <span className="font-mono text-[var(--text-secondary)]">₹{p.price}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
                   </div>
-                  {isLoadingPreview && (
-                    <span className="text-[10px] text-[var(--text-muted)] animate-pulse">
-                      Updating preview...
+                )}
+
+                {/* Discount Type & Value */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <span className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Discount Type *
                     </span>
-                  )}
+                    <div className="mt-2 grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'percentage', label: 'Percent %' },
+                        { id: 'fixed_amount', label: 'Flat ₹ Off' },
+                        { id: 'set_price', label: 'Set Price ₹' },
+                      ].map((t) => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              type: t.id as DiscountType,
+                            })
+                          }
+                          className={`rounded-none border py-2 text-center font-mono text-xs font-bold transition ${
+                            formData.type === t.id
+                              ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] dark:border-[#e8ff00] dark:bg-[#e8ff00]/15 dark:text-[#e8ff00]'
+                              : 'border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
+                          }`}
+                        >
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor={valueInputId} className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      {formData.type === 'percentage'
+                        ? 'Discount Percentage (Max 70%) *'
+                        : formData.type === 'fixed_amount'
+                          ? 'Flat Discount Amount (₹) *'
+                          : 'Fixed Target Price (₹) *'}
+                    </label>
+                    <input
+                      id={valueInputId}
+                      type="number"
+                      required
+                      min="1"
+                      max={formData.type === 'percentage' ? 70 : undefined}
+                      value={formData.valueRupeesOrPercent}
+                      onChange={(e) =>
+                        setFormData({ ...formData, valueRupeesOrPercent: e.target.value })
+                      }
+                      className="mt-2 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                    />
+                    {formData.type === 'percentage' && (
+                      <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                        Statutory margin safeguard: capped at 70%.
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="mt-3 overflow-x-auto">
-                  <table className="w-full text-left text-[11px]">
-                    <thead className="text-[var(--text-muted)] uppercase font-mono">
-                      <tr>
-                        <th className="py-1">Product</th>
-                        <th className="py-1">MRP</th>
-                        <th className="py-1">Regular</th>
-                        <th className="py-1">Discounted</th>
-                        <th className="py-1">Customer Saving</th>
-                        <th className="py-1">Storefront Badge</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[var(--border)] text-[var(--text-primary)]">
-                      {previewData?.sampleProducts && previewData.sampleProducts.length > 0 ? (
-                        previewData.sampleProducts.map((item) => (
-                          <tr key={item.productId} className="py-1.5">
-                            <td className="py-1.5 font-medium">{item.productName}</td>
-                            <td className="py-1.5 line-through text-[var(--text-muted)]">
-                              ₹{item.mrp}
-                            </td>
-                            <td className="py-1.5 text-[var(--text-secondary)]">
-                              ₹{item.regularPrice}
-                            </td>
-                            <td className="py-1.5 font-bold font-mono text-emerald-400">
-                              ₹{item.discountedPrice}
-                            </td>
-                            <td className="py-1.5 text-amber-400">
-                              Save ₹{item.discountAmount} ({item.discountPercent}%)
-                            </td>
-                            <td className="py-1.5">
-                              {item.badgeLabel ? (
-                                <span className="rounded bg-[var(--accent)]/15 px-1.5 py-0.5 text-[9px] font-mono font-bold text-[var(--accent)] border border-[var(--accent)]/30">
-                                  {item.badgeLabel}
-                                </span>
-                              ) : (
-                                <span className="text-[var(--text-muted)]">—</span>
-                              )}
+                {/* Margin Protection: Floor & Per-Item Cap */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor={floorInputId} className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Price Floor (₹) *
+                    </label>
+                    <input
+                      id={floorInputId}
+                      type="number"
+                      required
+                      min="0"
+                      value={formData.priceFloorRupees}
+                      onChange={(e) =>
+                        setFormData({ ...formData, priceFloorRupees: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                    />
+                    <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                      Store default ₹299. No item can sell below this price.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label htmlFor={capInputId} className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Per-Item Discount Cap (₹)
+                    </label>
+                    <input
+                      id={capInputId}
+                      type="number"
+                      min="0"
+                      placeholder="Optional (e.g. ₹2000)"
+                      value={formData.maxDiscountCapRupees}
+                      onChange={(e) =>
+                        setFormData({ ...formData, maxDiscountCapRupees: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                    />
+                    <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                      Caps maximum deduction per item on high-ticket goods.
+                    </span>
+                  </div>
+                </div>
+
+                {/* Date Schedule */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor={startDateInputId} className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      Start Date & Time *
+                    </label>
+                    <input
+                      id={startDateInputId}
+                      type="datetime-local"
+                      required
+                      value={formData.startDate}
+                      onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                      className="mt-1 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor={endDateInputId} className="block font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                      End Date & Time {formData.scope === 'catalog' ? '*' : '(Optional)'}
+                    </label>
+                    <input
+                      id={endDateInputId}
+                      type="datetime-local"
+                      required={formData.scope === 'catalog'}
+                      value={formData.endDate}
+                      onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                      className="mt-1 w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                    />
+                    {formData.scope === 'catalog' && (
+                      <span className="text-[10px] font-mono text-amber-600 dark:text-amber-400">
+                        Catalog-wide discounts require an end date to prevent permanent sales.
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Coupon Stacking Policy */}
+                <div className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
+                  <label htmlFor={stackingCheckboxId} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      id={stackingCheckboxId}
+                      type="checkbox"
+                      checked={formData.allowCouponStacking}
+                      onChange={(e) =>
+                        setFormData({ ...formData, allowCouponStacking: e.target.checked })
+                      }
+                      className="h-4 w-4 accent-[#e8ff00]"
+                    />
+                    <div>
+                      <span className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                        Allow Coupon Stacking with this Promotion
+                      </span>
+                      <p className="font-mono text-[11px] text-[var(--text-muted)]">
+                        When disabled (recommended), checkout coupons cannot be combined with this discount.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                {/* Live 5-Product Price Impact Preview */}
+                <div className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-4">
+                  <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                    <div className="flex items-center gap-2">
+                      <Eye className="h-4 w-4 text-[var(--text-primary)] dark:text-[#e8ff00]" />
+                      <span className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                        Live Storefront Price Impact Preview (5 Sample Products)
+                      </span>
+                    </div>
+                    {isLoadingPreview && (
+                      <span className="font-mono text-[10px] text-[var(--text-muted)] animate-pulse">
+                        Updating preview...
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-3 overflow-x-auto">
+                    <table className="w-full text-left font-mono text-[11px]">
+                      <thead className="border-b border-[var(--border)] text-[var(--text-muted)] uppercase">
+                        <tr>
+                          <th className="py-1">Product</th>
+                          <th className="py-1">MRP</th>
+                          <th className="py-1">Regular</th>
+                          <th className="py-1">Discounted</th>
+                          <th className="py-1">Customer Saving</th>
+                          <th className="py-1">Storefront Badge</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[var(--border)] text-[var(--text-primary)]">
+                        {previewData?.sampleProducts && previewData.sampleProducts.length > 0 ? (
+                          previewData.sampleProducts.map((item) => (
+                            <tr key={item.productId} className="py-1.5 hover:bg-[var(--bg-surface)] transition-colors">
+                              <td className="py-1.5 font-medium">{item.productName}</td>
+                              <td className="py-1.5 line-through text-[var(--text-muted)]">
+                                ₹{item.mrp}
+                              </td>
+                              <td className="py-1.5 text-[var(--text-secondary)]">
+                                ₹{item.regularPrice}
+                              </td>
+                              <td className="py-1.5 font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                                ₹{item.discountedPrice}
+                              </td>
+                              <td className="py-1.5 text-amber-600 dark:text-amber-400">
+                                Save ₹{item.discountAmount} ({item.discountPercent}%)
+                              </td>
+                              <td className="py-1.5">
+                                {item.badgeLabel ? (
+                                  <span className="rounded-none bg-[var(--text-primary)]/10 px-1.5 py-0.5 text-[9px] font-mono font-bold text-[var(--text-primary)] border border-[var(--text-primary)]/20 dark:bg-[#e8ff00]/15 dark:text-[#e8ff00] dark:border-[#e8ff00]/30">
+                                    {item.badgeLabel}
+                                  </span>
+                                ) : (
+                                  <span className="text-[var(--text-muted)]">—</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={6} className="py-4 text-center text-[var(--text-muted)]">
+                              Select products or categories above to see live price preview.
                             </td>
                           </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={6} className="py-4 text-center text-[var(--text-muted)]">
-                            Select products or categories above to see live price preview.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
 
-              {/* Form Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[var(--border)]">
+              {/* Pinned Form Footer */}
+              <div className="flex flex-shrink-0 items-center justify-end gap-3 border-t border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-4">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                  className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-2 font-mono text-xs tracking-wider text-[var(--text-secondary)] uppercase transition-colors hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="rounded bg-[var(--accent)] px-5 py-2 text-xs font-bold text-[var(--accent-foreground)] transition hover:opacity-90 disabled:opacity-50"
+                  className="btn-tactile rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] px-6 py-2 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]"
                 >
                   {isSaving ? 'Saving Promotion...' : isEditing ? 'Save Changes' : 'Create Promotion'}
                 </button>

@@ -650,7 +650,7 @@ export default function AdminCouponsPage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="coupon-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden"
         >
           <div
             className="fixed inset-0 bg-black/80 backdrop-blur-md"
@@ -658,8 +658,8 @@ export default function AdminCouponsPage() {
             aria-hidden="true"
           />
 
-          <div className="relative flex max-h-[92vh] w-full max-w-2xl flex-col border border-[var(--border)] bg-[var(--bg)] shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+          <div className="relative flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-2xl flex-col rounded-none border border-[var(--border)] bg-[var(--bg-surface)] shadow-2xl overflow-hidden">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg-surface)] px-6 py-4">
               <div>
                 <span className="font-mono text-[10px] font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00] uppercase">
                   DISCOUNT CAMPAIGN RULES
@@ -671,19 +671,20 @@ export default function AdminCouponsPage() {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                className="btn-tactile p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                 aria-label="Close modal"
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-5">
-              {/* Promo Code Input & Generator */}
-              <div>
-                <label className="block font-mono text-[11px] font-bold tracking-wider text-[var(--text-secondary)] uppercase">
-                  Coupon Code *
-                </label>
+            <form onSubmit={handleSave} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5">
+                {/* Promo Code Input & Generator */}
+                <div>
+                  <label className="block font-mono text-[11px] font-bold tracking-wider text-[var(--text-secondary)] uppercase">
+                    Coupon Code *
+                  </label>
                 <div className="mt-1 flex gap-2">
                   <input
                     type="text"
@@ -954,20 +955,21 @@ export default function AdminCouponsPage() {
                   />
                 </div>
               </div>
+            </div>
 
-              {/* Buttons */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
+            {/* Pinned Action Footer */}
+              <div className="flex flex-shrink-0 items-center justify-end gap-3 border-t border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-4">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="btn-tactile rounded-none border border-[var(--border)] px-4 py-2 font-mono text-xs uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-2 font-mono text-xs uppercase text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="btn-tactile rounded-none bg-[var(--text-primary)] px-6 py-2 font-mono text-xs font-bold uppercase text-[var(--bg)] transition-all active:scale-[0.97] dark:bg-[#e8ff00] dark:text-black"
+                  className="btn-tactile rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] px-6 py-2 font-mono text-xs font-bold uppercase text-[var(--bg)] transition-all active:scale-[0.97] dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-black"
                 >
                   {isSaving ? 'Saving...' : isEditing ? 'Update Coupon' : 'Create Coupon'}
                 </button>
@@ -982,7 +984,8 @@ export default function AdminCouponsPage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
+          aria-labelledby="redemptions-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden"
         >
           <div
             className="fixed inset-0 bg-black/80 backdrop-blur-md"
@@ -990,27 +993,27 @@ export default function AdminCouponsPage() {
             aria-hidden="true"
           />
 
-          <div className="relative flex max-h-[85vh] w-full max-w-3xl flex-col border border-[var(--border)] bg-[var(--bg)] shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+          <div className="relative flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-3xl flex-col rounded-none border border-[var(--border)] bg-[var(--bg-surface)] shadow-2xl overflow-hidden">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg-surface)] px-6 py-4">
               <div>
                 <span className="font-mono text-[10px] font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00] uppercase">
                   REDEMPTION AUDIT TRAIL
                 </span>
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                <h3 id="redemptions-modal-title" className="text-base font-bold text-[var(--text-primary)]">
                   Orders using code: {viewingRedemptionsCoupon.code}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setViewingRedemptionsCoupon(null)}
-                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                className="btn-tactile p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                 aria-label="Close redemptions view"
               >
                 <X size={20} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 min-h-0 overflow-y-auto p-6">
               {isLoadingRedemptions ? (
                 <p className="py-8 text-center font-mono text-xs text-[var(--text-muted)]">
                   LOADING REDEMPTIONS...
@@ -1059,6 +1062,16 @@ export default function AdminCouponsPage() {
                   </tbody>
                 </table>
               )}
+            </div>
+
+            <div className="flex flex-shrink-0 items-center justify-end border-t border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-3">
+              <button
+                type="button"
+                onClick={() => setViewingRedemptionsCoupon(null)}
+                className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-2 font-mono text-xs uppercase text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

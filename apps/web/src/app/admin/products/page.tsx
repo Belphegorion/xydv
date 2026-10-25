@@ -878,50 +878,64 @@ function AdminProductsContent() {
       {/* Product Create / Edit Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm dark:bg-black/80"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden"
           role="dialog"
           aria-modal="true"
+          aria-labelledby="product-modal-title"
         >
-          <div className="my-8 w-full max-w-3xl rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-[var(--text-primary)] shadow-2xl">
-            <div className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-4">
-              <h3 className="font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
-                {isEditing ? `Edit Product: ${name}` : 'Create New Product'}
-              </h3>
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            onClick={handleRequestCloseModal}
+            aria-hidden="true"
+          />
+
+          <div className="relative flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-4xl flex-col rounded-none border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-2xl overflow-hidden">
+            {/* Pinned Header */}
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--bg-surface)] px-6 py-4">
+              <div>
+                <span className="font-mono text-[10px] font-bold tracking-widest text-[var(--text-primary)] dark:text-[#e8ff00] uppercase">
+                  CATALOG MANAGEMENT
+                </span>
+                <h3 id="product-modal-title" className="font-mono text-sm font-bold tracking-wider text-[var(--text-primary)] uppercase dark:text-[#e8ff00]">
+                  {isEditing ? `Edit Product: ${name}` : 'Create New Product'}
+                </h3>
+              </div>
               <button
                 type="button"
                 onClick={handleRequestCloseModal}
-                className="btn-tactile p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+                className="btn-tactile p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97]"
                 aria-label="Close modal"
               >
                 <X size={20} />
               </button>
             </div>
 
-            {feedback && (
-              <div
-                className={`mb-6 flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
-                  feedback.type === 'success'
-                    ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
-                    : 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
-                }`}
-                role="alert"
-              >
-                <div className="flex items-center gap-2">
-                  {feedback.type === 'success' ? <CheckCircle size={16} /> : <Warning size={16} />}
-                  <span>{feedback.message}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setFeedback(null)}
-                  className="p-1 hover:opacity-70"
-                  aria-label="Dismiss feedback"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            )}
-
-            <form onSubmit={handleSaveProduct} className="space-y-6">
+            <form onSubmit={handleSaveProduct} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              {/* Scrollable Body */}
+              <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-6">
+                {feedback && (
+                  <div
+                    className={`flex items-center justify-between rounded-none border p-3 font-mono text-xs ${
+                      feedback.type === 'success'
+                        ? 'border-[#22c55e]/30 bg-[#22c55e]/10 text-[#15803d] dark:text-[#22c55e]'
+                        : 'border-[#b91c1c]/30 bg-[#b91c1c]/10 text-[#b91c1c] dark:border-[#ff3b3b]/30 dark:bg-[#ff3b3b]/10 dark:text-[#ff3b3b]'
+                    }`}
+                    role="alert"
+                  >
+                    <div className="flex items-center gap-2">
+                      {feedback.type === 'success' ? <CheckCircle size={16} /> : <Warning size={16} />}
+                      <span>{feedback.message}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFeedback(null)}
+                      className="p-1 hover:opacity-70"
+                      aria-label="Dismiss feedback"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                )}
               {/* Basic Info */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
@@ -1506,29 +1520,30 @@ function AdminProductsContent() {
                   ))}
                 </div>
               </div>
+            </div>
 
-              {/* Form Actions */}
-              <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] pt-4">
-                <button
-                  type="button"
-                  onClick={handleRequestCloseModal}
-                  className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2 font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase transition-colors hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
-                >
-                  Cancel
-                </button>
+            {/* Pinned Form Actions */}
+            <div className="flex flex-shrink-0 items-center justify-end gap-3 border-t border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-4">
+              <button
+                type="button"
+                onClick={handleRequestCloseModal}
+                className="btn-tactile rounded-none border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-2 font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase transition-colors hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] active:scale-[0.97]"
+              >
+                Cancel
+              </button>
 
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="btn-tactile rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] px-6 py-2 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]"
-                >
-                  {isSaving ? 'Saving...' : isEditing ? 'Update Listing' : 'Publish Product'}
-                </button>
-              </div>
-            </form>
-          </div>
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="btn-tactile rounded-none border border-[var(--text-primary)] bg-[var(--text-primary)] px-6 py-2 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]"
+              >
+                {isSaving ? 'Saving...' : isEditing ? 'Update Listing' : 'Publish Product'}
+              </button>
+            </div>
+          </form>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Unsaved Changes Confirmation Modal (PIPE-MED-04) */}
       <ConfirmDialog
