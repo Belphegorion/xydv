@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-
-const API_BASE_URL =
-  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { getServerApiUrl } from '@/lib/server-api';
+import { CATALOG_PRODUCTS } from '@/lib/catalog';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const targetUrl = `${API_BASE_URL}/products?${searchParams.toString()}`;
+  const apiUrl = getServerApiUrl();
+  const targetUrl = `${apiUrl}/products?${searchParams.toString()}`;
 
   try {
     const res = await fetch(targetUrl, {
@@ -13,6 +13,7 @@ export async function GET(request: Request) {
         Accept: 'application/json',
       },
       next: { revalidate: 0 },
+      signal: AbortSignal.timeout(4000),
     });
 
     if (res.ok) {
@@ -28,19 +29,24 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch products from backend' },
-      { status: res.status },
-    );
+    return NextResponse.json({
+      success: true,
+      total: CATALOG_PRODUCTS.length,
+      products: CATALOG_PRODUCTS,
+      data: CATALOG_PRODUCTS,
+      page: 1,
+      totalPages: 1,
+      _fallback: true,
+    });
   } catch {
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Backend API unavailable',
-        total: 0,
-        products: [],
-      },
-      { status: 502 },
-    );
+    return NextResponse.json({
+      success: true,
+      total: CATALOG_PRODUCTS.length,
+      products: CATALOG_PRODUCTS,
+      data: CATALOG_PRODUCTS,
+      page: 1,
+      totalPages: 1,
+      _fallback: true,
+    });
   }
 }

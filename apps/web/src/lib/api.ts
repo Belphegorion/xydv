@@ -1,11 +1,14 @@
 const API_URL = (() => {
-  if (process.env.NEXT_PUBLIC_API_URL) {
+  if (typeof window !== 'undefined') {
+    return (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/+$/, '');
+  }
+  if (process.env.INTERNAL_API_URL && process.env.INTERNAL_API_URL.startsWith('http')) {
+    return process.env.INTERNAL_API_URL.replace(/\/+$/, '');
+  }
+  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith('http')) {
     return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
   }
-  if (typeof window !== 'undefined') {
-    return '/api';
-  }
-  return (process.env.INTERNAL_API_URL || 'http://localhost:5000/api').replace(/\/+$/, '');
+  return 'http://127.0.0.1:5000/api';
 })();
 
 interface FetchOptions extends Omit<RequestInit, 'body'> {

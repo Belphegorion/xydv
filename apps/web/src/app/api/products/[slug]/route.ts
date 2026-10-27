@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-
-const API_BASE_URL =
-  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { getServerApiUrl } from '@/lib/server-api';
+import { CATALOG_PRODUCTS } from '@/lib/catalog';
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const targetUrl = `${API_BASE_URL}/products/${encodeURIComponent(slug)}`;
+  const apiUrl = getServerApiUrl();
+  const targetUrl = `${apiUrl}/products/${encodeURIComponent(slug)}`;
 
   try {
     const res = await fetch(targetUrl, {
@@ -13,6 +13,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
         Accept: 'application/json',
       },
       next: { revalidate: 0 },
+      signal: AbortSignal.timeout(4000),
     });
 
     if (res.ok) {
@@ -26,7 +27,30 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     }
 
     if (res.status === 404) {
+      const fallbackProduct = CATALOG_PRODUCTS.find(
+        (p) => p.slug === slug || p.id === slug,
+      );
+      if (fallbackProduct) {
+        return NextResponse.json({
+          success: true,
+          product: fallbackProduct,
+          data: fallbackProduct,
+          _fallback: true,
+        });
+      }
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    const fallbackProduct = CATALOG_PRODUCTS.find(
+      (p) => p.slug === slug || p.id === slug,
+    );
+    if (fallbackProduct) {
+      return NextResponse.json({
+        success: true,
+        product: fallbackProduct,
+        data: fallbackProduct,
+        _fallback: true,
+      });
     }
 
     return NextResponse.json(
@@ -34,6 +58,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
       { status: res.status },
     );
   } catch {
-    return NextResponse.json({ error: 'Backend API unavailable' }, { status: 502 });
+    const fallbackProduct = CATALOG_PRODUCTS.find(
+      (p) => p.slug === slug || p.id === slug,
+    );
+    if (fallbackProduct) {
+      return NextResponse.json({
+        success: true,
+        product: fallbackProduct,
+        data: fallbackProduct,
+        _fallback: true,
+      });
+    }
+    return NextResponse.json({ error: 'Product not found' }, { status: 404 });
   }
 }

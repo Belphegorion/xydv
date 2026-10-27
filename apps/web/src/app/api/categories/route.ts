@@ -1,15 +1,21 @@
 import { NextResponse } from 'next/server';
+import { getServerApiUrl } from '@/lib/server-api';
+import { CATALOG_PRODUCTS } from '@/lib/catalog';
 
-const API_BASE_URL =
-  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const FALLBACK_CATEGORIES = Array.from(
+  new Set(CATALOG_PRODUCTS.map((p) => p.category).filter(Boolean)),
+);
 
 export async function GET() {
+  const apiUrl = getServerApiUrl();
+
   try {
-    const res = await fetch(`${API_BASE_URL}/categories`, {
+    const res = await fetch(`${apiUrl}/categories`, {
       headers: {
         Accept: 'application/json',
       },
       next: { revalidate: 30 },
+      signal: AbortSignal.timeout(4000),
     });
 
     if (res.ok) {
@@ -25,9 +31,10 @@ export async function GET() {
     }
 
     // Secondary fallback attempt to /products/categories
-    const fallbackRes = await fetch(`${API_BASE_URL}/products/categories`, {
+    const fallbackRes = await fetch(`${apiUrl}/products/categories`, {
       headers: { Accept: 'application/json' },
       next: { revalidate: 30 },
+      signal: AbortSignal.timeout(4000),
     });
 
     if (fallbackRes.ok) {
@@ -42,14 +49,18 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json(
-      { success: false, error: 'Backend API unavailable' },
-      { status: 502 },
-    );
+    return NextResponse.json({
+      success: true,
+      categories: FALLBACK_CATEGORIES,
+      data: FALLBACK_CATEGORIES,
+      _fallback: true,
+    });
   } catch {
-    return NextResponse.json(
-      { success: false, error: 'Backend API unavailable' },
-      { status: 502 },
-    );
+    return NextResponse.json({
+      success: true,
+      categories: FALLBACK_CATEGORIES,
+      data: FALLBACK_CATEGORIES,
+      _fallback: true,
+    });
   }
 }

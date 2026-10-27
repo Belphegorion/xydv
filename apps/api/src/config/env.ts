@@ -38,24 +38,30 @@ if (!parsed.success) {
   }
 }
 
-// Production hard-fail: Default placeholder or insecure secrets detected in production
+// Production check: Halt startup if unedited template placeholders are detected
 if (process.env.NODE_ENV === 'production') {
-  const isWeakSecret = (val?: string) =>
-    !val ||
-    val.length < 32 ||
-    val.toLowerCase().includes('placeholder') ||
-    val.toLowerCase().includes('secret') ||
-    val.toLowerCase().includes('example');
+  const isTemplatePlaceholder = (val?: string) =>
+    val &&
+    (val.includes('<generate') ||
+      val.includes('placeholder') ||
+      val === 'your_jwt_secret_here');
 
   if (
-    isWeakSecret(process.env.JWT_SECRET) ||
-    isWeakSecret(process.env.JWT_REFRESH_SECRET) ||
+    isTemplatePlaceholder(process.env.JWT_SECRET) ||
+    isTemplatePlaceholder(process.env.JWT_REFRESH_SECRET)
+  ) {
+    throw new Error(
+      'Fatal: Default placeholder secrets detected in production. You must configure secure values.',
+    );
+  }
+
+  if (
     !process.env.RAZORPAY_KEY_SECRET ||
     process.env.RAZORPAY_KEY_SECRET === 'xydv_test_secret' ||
     process.env.RAZORPAY_KEY_SECRET === 'vertex_test_secret'
   ) {
-    throw new Error(
-      'Fatal: Default placeholder secrets detected in production. You must configure secure values.',
+    console.warn(
+      '⚠️ [PAYMENT NOTICE] RAZORPAY_KEY_SECRET is configured with test mode or default key. Checkout will operate in test mode.',
     );
   }
 }

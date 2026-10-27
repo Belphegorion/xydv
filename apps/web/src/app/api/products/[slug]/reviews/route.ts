@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-
-const API_BASE_URL =
-  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { getServerApiUrl } from '@/lib/server-api';
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const API_BASE_URL = getServerApiUrl();
   const targetUrl = `${API_BASE_URL}/products/${encodeURIComponent(slug)}/reviews`;
 
   try {
@@ -13,6 +12,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
         Accept: 'application/json',
       },
       next: { revalidate: 10 },
+      signal: AbortSignal.timeout(4000),
     });
 
     if (res.ok) {
@@ -25,20 +25,25 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
       });
     }
 
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch reviews from backend', reviews: [], data: [] },
-      { status: res.status },
-    );
+    return NextResponse.json({
+      success: true,
+      reviews: [],
+      data: [],
+      _fallback: true,
+    });
   } catch {
-    return NextResponse.json(
-      { success: false, error: 'Backend reviews service unavailable', reviews: [], data: [] },
-      { status: 502 },
-    );
+    return NextResponse.json({
+      success: true,
+      reviews: [],
+      data: [],
+      _fallback: true,
+    });
   }
 }
 
 export async function POST(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const API_BASE_URL = getServerApiUrl();
   const targetUrl = `${API_BASE_URL}/products/${encodeURIComponent(slug)}/reviews`;
 
   try {
@@ -57,14 +62,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
       method: 'POST',
       headers,
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(5000),
     });
 
     const data = await res.json().catch(() => ({}));
     return NextResponse.json(data, { status: res.status });
   } catch {
     return NextResponse.json(
-      { success: false, error: 'Failed to submit review to backend' },
-      { status: 502 },
+      { success: false, error: 'Review submission temporarily unavailable. Please try again shortly.' },
+      { status: 503 },
     );
   }
 }

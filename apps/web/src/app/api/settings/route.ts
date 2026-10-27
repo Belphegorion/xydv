@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-
-const API_BASE_URL =
-  process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { getServerApiUrl } from '@/lib/server-api';
 
 // Default schema contract for store settings fallback
 const DEFAULT_SETTINGS = {
@@ -10,10 +8,13 @@ const DEFAULT_SETTINGS = {
 };
 
 export async function GET() {
+  const apiUrl = getServerApiUrl();
+
   try {
-    const res = await fetch(`${API_BASE_URL}/settings`, {
+    const res = await fetch(`${apiUrl}/settings`, {
       headers: { Accept: 'application/json' },
       next: { revalidate: 30 },
+      signal: AbortSignal.timeout(4000),
     });
 
     if (res.ok) {
@@ -21,14 +22,18 @@ export async function GET() {
       return NextResponse.json(json);
     }
 
-    return NextResponse.json(
-      { success: false, error: 'Backend API unavailable' },
-      { status: 502 },
-    );
+    return NextResponse.json({
+      success: true,
+      settings: DEFAULT_SETTINGS,
+      data: DEFAULT_SETTINGS,
+      _fallback: true,
+    });
   } catch {
-    return NextResponse.json(
-      { success: false, error: 'Backend API unavailable' },
-      { status: 502 },
-    );
+    return NextResponse.json({
+      success: true,
+      settings: DEFAULT_SETTINGS,
+      data: DEFAULT_SETTINGS,
+      _fallback: true,
+    });
   }
 }

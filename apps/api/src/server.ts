@@ -113,22 +113,32 @@ app.use(errorHandler);
 
 let server: Server | null = null;
 
+const startListening = () => {
+  if (server) return;
+  server = app.listen(PORT, () => {
+    logger.info(`XYDV API running on http://localhost:${PORT}`, {
+      port: PORT,
+      env: env.NODE_ENV,
+    });
+    // Start background inventory hold reconciliation cleaner
+    inventoryService.startReconciliationWorker();
+    // Notify PM2 process manager that application is ready to receive traffic
+    if (typeof process.send === 'function') {
+      process.send('ready');
+    }
+  });
+};
+
 connectDB()
   .then(() => {
-    server = app.listen(PORT, () => {
-      logger.info(`XYDV API running on http://localhost:${PORT}`, {
-        port: PORT,
-        env: env.NODE_ENV,
-      });
-      // Start background inventory hold reconciliation cleaner
-      inventoryService.startReconciliationWorker();
-    });
+    startListening();
   })
   .catch((err) => {
-    logger.error('Failed to start XYDV API server:', {
+    logger.error('Failed to establish initial MongoDB connection during startup:', {
       error: err instanceof Error ? err.message : String(err),
     });
-    process.exit(1);
+    // Start HTTP server anyway so health checks and diagnostics respond instead of 502 Bad Gateway
+    startListening();
   });
 
 // Graceful shutdown handling

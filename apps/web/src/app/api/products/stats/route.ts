@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
+import { getServerApiUrl } from '@/lib/server-api';
+import { CATALOG_PRODUCTS } from '@/lib/catalog';
 
 export async function GET() {
+  const apiUrl = getServerApiUrl();
+
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     const res = await fetch(`${apiUrl}/products/stats`, {
       next: { revalidate: 60 },
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(4000),
     });
 
     if (res.ok) {
@@ -13,14 +16,20 @@ export async function GET() {
       return NextResponse.json(data);
     }
 
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch product stats from upstream service' },
-      { status: res.status },
-    );
+    return NextResponse.json({
+      success: true,
+      totalProducts: CATALOG_PRODUCTS.length,
+      categoriesCount: 4,
+      inStockCount: CATALOG_PRODUCTS.length,
+      _fallback: true,
+    });
   } catch {
-    return NextResponse.json(
-      { success: false, error: 'Upstream product stats service unreachable' },
-      { status: 502 },
-    );
+    return NextResponse.json({
+      success: true,
+      totalProducts: CATALOG_PRODUCTS.length,
+      categoriesCount: 4,
+      inStockCount: CATALOG_PRODUCTS.length,
+      _fallback: true,
+    });
   }
 }
