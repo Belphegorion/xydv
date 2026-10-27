@@ -44,6 +44,15 @@ test-*.js
 # ------------------------------------------------------------------------------
 apps/uploads/
 uploads/
+screenshots/
+audit-screenshots/
+"animation clips/"
+"new animation/"
+"replace 3d/"
+*.mov
+*.pptx
+*.mp4
+!apps/web/public/**
 *.tmp
 *.tmp.*
 temp/
