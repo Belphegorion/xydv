@@ -363,6 +363,9 @@ export function CartDrawer() {
           if (orderData.keyId) {
             rzpKey = orderData.keyId;
           }
+          if (!rzpKey) {
+            throw new Error('Payment gateway configuration is missing.');
+          }
         } else {
           throw new Error('Order creation did not return order details.');
         }
@@ -769,7 +772,7 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, fullName: e.target.value });
                             }}
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                         <div>
@@ -789,7 +792,7 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, phone: e.target.value });
                             }}
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                       </div>
@@ -811,7 +814,7 @@ export function CartDrawer() {
                             setAddressError(null);
                             setShippingAddress({ ...shippingAddress, line1: e.target.value });
                           }}
-                          className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                          className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                         />
                       </div>
 
@@ -830,7 +833,7 @@ export function CartDrawer() {
                           onChange={(e) =>
                             setShippingAddress({ ...shippingAddress, line2: e.target.value })
                           }
-                          className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                          className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                         />
                       </div>
 
@@ -852,7 +855,7 @@ export function CartDrawer() {
                               setAddressError(null);
                               setShippingAddress({ ...shippingAddress, city: e.target.value });
                             }}
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                         <div className="col-span-1">
@@ -870,7 +873,7 @@ export function CartDrawer() {
                             onChange={(e) =>
                               setShippingAddress({ ...shippingAddress, state: e.target.value })
                             }
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                         <div className="col-span-1">
@@ -893,7 +896,7 @@ export function CartDrawer() {
                                 postalCode: e.target.value,
                               });
                             }}
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                           />
                         </div>
                       </div>
@@ -974,7 +977,7 @@ export function CartDrawer() {
                                   handleApplyCoupon();
                                 }
                               }}
-                              className="min-h-[44px] flex-1 border border-[var(--border)] bg-[var(--bg-surface)] px-3 font-mono text-xs text-[var(--text-primary)] uppercase placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                              className="min-h-[44px] flex-1 border border-[var(--border)] bg-[var(--bg-surface)] px-3 font-mono text-base sm:text-xs text-[var(--text-primary)] uppercase placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
                             />
                             <button
                               type="button"

@@ -6,6 +6,12 @@ export const RAZORPAY_KEY_ID = env.RAZORPAY_KEY_ID;
 export const RAZORPAY_KEY_SECRET = env.RAZORPAY_KEY_SECRET;
 export const RAZORPAY_WEBHOOK_SECRET = env.RAZORPAY_WEBHOOK_SECRET;
 
+if (env.NODE_ENV !== 'production' && RAZORPAY_KEY_ID.startsWith('rzp_live_')) {
+  throw new Error(
+    'Fatal: Live Razorpay credentials (rzp_live_*) cannot be used in development or testing. Use rzp_test_* keys.',
+  );
+}
+
 if (
   env.NODE_ENV === 'production' &&
   (RAZORPAY_KEY_ID === 'rzp_test_xydv_key' ||

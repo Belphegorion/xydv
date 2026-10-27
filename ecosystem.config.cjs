@@ -8,9 +8,10 @@ module.exports = {
       name: 'xydv-api',
       cwd: './apps/api',
       script: 'dist/server.js',
-      instances: 2,
-      exec_mode: 'cluster',
-      max_memory_restart: '500M',
+      instances: 1,
+      exec_mode: 'fork',
+      node_args: '--max-old-space-size=256',
+      max_memory_restart: '300M',
       env: {
         NODE_ENV: 'development',
         PORT: 5000,
@@ -18,7 +19,6 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
         PORT: 5000,
-        MONGODB_URI: 'mongodb://localhost:27017/xydv',
       },
       watch: false,
       merge_logs: true,
@@ -33,8 +33,9 @@ module.exports = {
       script: 'node_modules/next/dist/bin/next',
       args: 'start -p 3000',
       instances: 1,
-      exec_mode: 'cluster',
-      max_memory_restart: '1G',
+      exec_mode: 'fork',
+      node_args: '--max-old-space-size=384',
+      max_memory_restart: '450M',
       env: {
         NODE_ENV: 'development',
         PORT: 3000,

@@ -171,7 +171,12 @@ export async function getFileUrl(file: Express.Multer.File, baseUrl?: string): P
     }
   }
 
-  // Fallback: local URL relative to API host
-  const host = baseUrl || process.env.API_URL || 'http://localhost:5000';
-  return `${host}/uploads/${file.filename}`;
+  // Fallback: local URL relative to API host or root-relative in production
+  const host =
+    baseUrl ||
+    process.env.API_URL ||
+    (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000');
+  return host
+    ? `${host.replace(/\/+$/, '')}/uploads/${file.filename}`
+    : `/uploads/${file.filename}`;
 }

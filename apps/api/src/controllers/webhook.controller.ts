@@ -141,6 +141,25 @@ export class WebhookController {
         case 'payment.captured': {
           const payment = event.payload.payment?.entity;
           if (payment?.order_id) {
+            const existingOrder = await Order.findOne({ razorpayOrderId: payment.order_id });
+            if (!existingOrder) {
+              logger.warn(`Order not found for captured payment: ${payment.order_id}`);
+              break;
+            }
+
+            // C-2: Assert payment.amount matches order total in paise
+            const expectedPaise = Math.round(existingOrder.total * 100);
+            if (payment.amount !== undefined && payment.amount !== expectedPaise) {
+              logger.error(
+                `Payment amount mismatch for order ${payment.order_id}: expected ${expectedPaise} paise, received ${payment.amount} paise`,
+              );
+              await Order.updateOne(
+                { _id: existingOrder._id },
+                { $set: { paymentStatus: 'failed', status: 'cancelled' } },
+              );
+              break;
+            }
+
             const updatedOrder = await Order.findOneAndUpdate(
               { razorpayOrderId: payment.order_id, paymentStatus: { $ne: 'captured' } },
               {
@@ -166,6 +185,13 @@ export class WebhookController {
 
             // Clear reservation (decrements reservedStock)
             await inventoryService.captureReservation(payment.order_id);
+
+            // H-4: Commit coupon redemption
+            await couponService.commitRedemption(payment.order_id).catch((err) => {
+              logger.warn('Failed to commit coupon redemption in payment.captured webhook:', {
+                error: err,
+              });
+            });
           }
           break;
         }
@@ -173,14 +199,22 @@ export class WebhookController {
         case 'order.paid': {
           const orderEntity = event.payload.order?.entity;
           if (orderEntity?.id) {
+            // C-3: Extract razorpayPaymentId if available from payment entity or payload
+            const paymentEntity = event.payload.payment?.entity;
+            const paymentId =
+              paymentEntity?.id || (orderEntity as { payment_id?: string }).payment_id;
+
+            const updateFields: Record<string, unknown> = {
+              paymentStatus: 'captured',
+              status: 'confirmed',
+            };
+            if (paymentId) {
+              updateFields.razorpayPaymentId = paymentId;
+            }
+
             const updatedOrder = await Order.findOneAndUpdate(
               { razorpayOrderId: orderEntity.id, paymentStatus: { $ne: 'captured' } },
-              {
-                $set: {
-                  paymentStatus: 'captured',
-                  status: 'confirmed',
-                },
-              },
+              { $set: updateFields },
               { new: true },
             );
 
@@ -196,6 +230,13 @@ export class WebhookController {
             }
 
             await inventoryService.captureReservation(orderEntity.id);
+
+            // H-4: Commit coupon redemption
+            await couponService.commitRedemption(orderEntity.id).catch((err) => {
+              logger.warn('Failed to commit coupon redemption in order.paid webhook:', {
+                error: err,
+              });
+            });
           }
           break;
         }

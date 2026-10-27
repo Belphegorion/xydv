@@ -3,14 +3,10 @@ import { NextResponse } from 'next/server';
 const API_BASE_URL =
   process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+// Default schema contract for store settings fallback
 const DEFAULT_SETTINGS = {
   freeShippingThreshold: 150,
-  standardShippingFee: 15,
-  taxRate: 0.18,
-  currency: 'INR',
   currencySymbol: '₹',
-  storeName: 'XYDV',
-  supportEmail: 'support@xydv.com',
 };
 
 export async function GET() {

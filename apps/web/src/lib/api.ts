@@ -1,4 +1,12 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
+const API_URL = (() => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    return '/api';
+  }
+  return (process.env.INTERNAL_API_URL || 'http://localhost:5000/api').replace(/\/+$/, '');
+})();
 
 interface FetchOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;

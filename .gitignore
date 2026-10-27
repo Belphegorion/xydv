@@ -18,6 +18,7 @@
 # ------------------------------------------------------------------------------
 *.md
 !README.md
+!AWS-FREE-TIER-DEPLOYMENT-GUIDE.md
 docs/
 scratch/
 

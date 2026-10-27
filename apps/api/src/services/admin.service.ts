@@ -694,16 +694,27 @@ export class AdminService {
         previousStatus !== 'cancelled' &&
         order.paymentStatus !== 'refunded'
       ) {
-        for (const item of order.items) {
-          await Product.updateOne(
-            { _id: item.productId, 'variants.sku': item.sku },
-            { $inc: { 'variants.$.stock': item.quantity } },
-            session ? { session } : {},
-          );
-          await inventoryService.syncProductInStock(item.productId, session);
-        }
+        // C-1: If an active reservation exists, release it atomically (restores stock & marks released)
+        let reservationReleased = false;
         if (order.razorpayOrderId) {
+          reservationReleased = await inventoryService.releaseReservation(order.razorpayOrderId);
           await couponService.releaseRedemption(order.razorpayOrderId).catch(() => {});
+        }
+
+        // If no active reservation was released (e.g. reservation was already captured),
+        // restore stock directly if the order had captured payment or was confirmed
+        if (
+          !reservationReleased &&
+          (order.paymentStatus === 'captured' || previousStatus !== 'pending')
+        ) {
+          for (const item of order.items) {
+            await Product.updateOne(
+              { _id: item.productId, 'variants.sku': item.sku },
+              { $inc: { 'variants.$.stock': item.quantity } },
+              session ? { session } : {},
+            );
+            await inventoryService.syncProductInStock(item.productId, session);
+          }
         }
       }
 

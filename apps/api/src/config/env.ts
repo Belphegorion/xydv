@@ -38,29 +38,22 @@ if (!parsed.success) {
   }
 }
 
-const DEFAULT_PLACEHOLDERS = {
-  JWT_SECRET: 'fnO7dehu28m0xLpQoi7yXG5GdjJYY7ZI84T5pUUGy3j',
-  JWT_REFRESH_SECRET: '4044plbw7MAxaHGi1KJAsOrKttSRaTqP18QNxH2IzoE',
-  RAZORPAY_KEY_SECRET: 'xydv_test_secret',
-  RAZORPAY_WEBHOOK_SECRET: 'xydv_webhook_secret',
-};
-
-// Production hard-fail: Default placeholder or missing secrets detected in production
+// Production hard-fail: Default placeholder or insecure secrets detected in production
 if (process.env.NODE_ENV === 'production') {
-  const usingDefaultJwt =
-    !process.env.JWT_SECRET ||
-    process.env.JWT_SECRET.length < 32 ||
-    process.env.JWT_SECRET === DEFAULT_PLACEHOLDERS.JWT_SECRET;
-  const usingDefaultRefresh =
-    !process.env.JWT_REFRESH_SECRET ||
-    process.env.JWT_REFRESH_SECRET.length < 32 ||
-    process.env.JWT_REFRESH_SECRET === DEFAULT_PLACEHOLDERS.JWT_REFRESH_SECRET;
-  const usingDefaultRazorpay =
-    !process.env.RAZORPAY_KEY_SECRET ||
-    process.env.RAZORPAY_KEY_SECRET === DEFAULT_PLACEHOLDERS.RAZORPAY_KEY_SECRET ||
-    process.env.RAZORPAY_KEY_SECRET === 'vertex_test_secret';
+  const isWeakSecret = (val?: string) =>
+    !val ||
+    val.length < 32 ||
+    val.toLowerCase().includes('placeholder') ||
+    val.toLowerCase().includes('secret') ||
+    val.toLowerCase().includes('example');
 
-  if (usingDefaultJwt || usingDefaultRefresh || usingDefaultRazorpay) {
+  if (
+    isWeakSecret(process.env.JWT_SECRET) ||
+    isWeakSecret(process.env.JWT_REFRESH_SECRET) ||
+    !process.env.RAZORPAY_KEY_SECRET ||
+    process.env.RAZORPAY_KEY_SECRET === 'xydv_test_secret' ||
+    process.env.RAZORPAY_KEY_SECRET === 'vertex_test_secret'
+  ) {
     throw new Error(
       'Fatal: Default placeholder secrets detected in production. You must configure secure values.',
     );

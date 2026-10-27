@@ -3,33 +3,6 @@ import { NextResponse } from 'next/server';
 const API_BASE_URL =
   process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const DEFAULT_CATEGORIES = [
-  {
-    id: 'tops',
-    slug: 'tops',
-    name: 'Tops & Engineered Layers',
-    description: 'Next-to-skin moisture regulation & aerodynamic compression',
-  },
-  {
-    id: 'bottoms',
-    slug: 'bottoms',
-    name: 'Pants & Training Shorts',
-    description: 'Cordura reinforced modular utility with 4-way stretch',
-  },
-  {
-    id: 'outerwear',
-    slug: 'outerwear',
-    name: 'Weatherproof Shells',
-    description: 'Gore-Tex 3-layer tactical membranes & seam-sealed parkas',
-  },
-  {
-    id: 'accessories',
-    slug: 'accessories',
-    name: 'Tactical Gear & Accessories',
-    description: 'MOLLE-compatible modular rigs, bags, and technical accessories',
-  },
-];
-
 export async function GET() {
   try {
     const res = await fetch(`${API_BASE_URL}/categories`, {

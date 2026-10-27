@@ -73,8 +73,8 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 // Razorpay webhook needs raw body buffer for HMAC-SHA256 verification — must be before express.json()
 app.use('/api/webhooks/razorpay', express.raw({ type: 'application/json' }));
 
-// Parse JSON for all other routes
-app.use(express.json({ limit: '10mb' }));
+// Parse JSON for all other routes (2mb limit protects memory while accommodating batch updates)
+app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting (bypass webhooks so payment delivery IPs are not throttled)

@@ -13,14 +13,14 @@ export async function GET() {
       return NextResponse.json(data);
     }
 
-    return NextResponse.json({
-      success: true,
-      data: { rating: 4.92, reviewCount: 1840, productCount: 12 },
-    });
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch product stats from upstream service' },
+      { status: res.status },
+    );
   } catch {
-    return NextResponse.json({
-      success: true,
-      data: { rating: 4.92, reviewCount: 1840, productCount: 12 },
-    });
+    return NextResponse.json(
+      { success: false, error: 'Upstream product stats service unreachable' },
+      { status: 502 },
+    );
   }
 }
