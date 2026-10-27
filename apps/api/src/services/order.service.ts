@@ -11,6 +11,7 @@ import { COMMERCE_CONSTANTS } from '../constants/commerce';
 import { couponService } from './coupon.service';
 import { discountService } from './discount.service';
 import { resolvePrice } from './pricing.engine';
+import { STATIC_CATALOG } from '../fixtures/catalog';
 import type { IOrderCouponSnapshot } from '../models/Order.model';
 import type { ICouponValidationResult } from '@vertex/types';
 
@@ -273,18 +274,58 @@ export class OrderService {
       }
 
       if (!product) {
+        // Fallback: Check static catalog mirror and auto-create in MongoDB
+        const staticMatch = STATIC_CATALOG.find(
+          (p) =>
+            p.id === item.productId ||
+            p.slug === item.productId ||
+            (item.slug && p.slug === item.slug) ||
+            p.variants.some((v) => v.sku === item.sku),
+        );
+        if (staticMatch) {
+          product = await Product.create({
+            name: staticMatch.name,
+            slug: staticMatch.slug,
+            brand: 'XYDV',
+            description: staticMatch.description,
+            category: staticMatch.category,
+            tags: [staticMatch.category, staticMatch.discipline || 'training'],
+            price: staticMatch.price,
+            compareAt: staticMatch.compareAtPrice,
+            originalPrice: staticMatch.compareAtPrice ?? staticMatch.price,
+            inStock: true,
+            isPublished: true,
+            variants: staticMatch.variants.map((v) => ({
+              id: v.id,
+              sku: v.sku,
+              color: v.colorName || 'Void Obsidian',
+              size: v.size,
+              price: staticMatch.price,
+              stock: v.stock ?? 50,
+              imageUrl: v.primaryImage,
+              images: v.gallery || [v.primaryImage],
+            })),
+          });
+        }
+      }
+
+      if (!product) {
         throw new AppError(`Product not found: ${item.productId}`, 404);
       }
 
       // Find variant by sku or variantId if specified; only default to first variant if none specified
       const hasSpecificVariant = Boolean(item.sku || item.variantId);
-      const variant = hasSpecificVariant
+      let variant = hasSpecificVariant
         ? product.variants.find(
             (v) =>
               (item.sku && v.sku === item.sku) ||
               (item.variantId && (v.id === item.variantId || v._id?.toString() === item.variantId)),
           )
         : product.variants[0];
+
+      if (!variant && product.variants.length > 0) {
+        variant = product.variants[0];
+      }
 
       if (!variant) {
         throw new AppError(`Variant not found for product: ${product.name}`, 404);

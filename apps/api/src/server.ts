@@ -17,6 +17,8 @@ import { inventoryService } from './services/inventory.service';
 import logger from './config/logger';
 import { UPLOADS_DIR } from './middleware/upload';
 import env from './config/env';
+import { Product } from './models/Product.model';
+import { SEED_PRODUCTS } from './scripts/seed';
 
 export { UPLOADS_DIR };
 
@@ -130,7 +132,19 @@ const startListening = () => {
 };
 
 connectDB()
-  .then(() => {
+  .then(async () => {
+    try {
+      const count = await Product.countDocuments();
+      if (count === 0) {
+        logger.info('Database empty on initial connection. Auto-seeding 12 catalog products...');
+        await Product.insertMany(SEED_PRODUCTS);
+        logger.info('Auto-seed completed successfully.');
+      }
+    } catch (seedErr) {
+      logger.warn('Auto-seed check non-fatal error:', {
+        error: seedErr instanceof Error ? seedErr.message : String(seedErr),
+      });
+    }
     startListening();
   })
   .catch((err) => {

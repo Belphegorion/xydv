@@ -9,6 +9,7 @@
     "start": "node dist/server.js",
     "lint": "eslint src",
     "type-check": "tsc --noEmit",
+    "seed": "tsx src/scripts/seed.ts",
     "seed:admin": "tsx src/scripts/seed-admin.ts"
   },
   "dependencies": {
