@@ -21,6 +21,16 @@
     'SF Pro Text', 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-heading: var(--font-secondary, 'DM Sans', sans-serif);
   --font-secondary: var(--font-secondary, 'DM Sans', sans-serif);
+
+  --text-xs: clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.72rem + 0.2vw, 0.875rem);
+  --text-base: clamp(0.875rem, 0.82rem + 0.3vw, 1rem);
+  --text-lg: clamp(1rem, 0.95rem + 0.35vw, 1.125rem);
+  --text-xl: clamp(1.125rem, 1.05rem + 0.45vw, 1.25rem);
+  --text-2xl: clamp(1.25rem, 1.15rem + 0.65vw, 1.5rem);
+  --text-3xl: clamp(1.375rem, 1.2rem + 1.1vw, 1.875rem);
+  --text-4xl: clamp(1.75rem, 1.45rem + 1.8vw, 2.5rem);
+  --text-hero: clamp(2.25rem, 1.8rem + 3.2vw, 5.5rem);
 }
 
 @layer base {
@@ -333,10 +343,12 @@
   }
 
   /* Scrollbar suppression utility for horizontal snap carousels */
-  .no-scrollbar::-webkit-scrollbar {
+  .no-scrollbar::-webkit-scrollbar,
+  .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
-  .no-scrollbar {
+  .no-scrollbar,
+  .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }

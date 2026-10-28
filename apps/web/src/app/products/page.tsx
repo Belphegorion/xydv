@@ -750,7 +750,7 @@ function CatalogContent() {
                 ARCHIVE CATALOG
               </span>
             </div>
-            <h1 className="font-heading text-3xl font-black tracking-tight text-[var(--text-primary)] uppercase sm:text-4xl md:text-5xl">
+            <h1 className="font-heading text-2xl font-black tracking-tight text-balance text-[var(--text-primary)] uppercase sm:text-3xl md:text-5xl">
               TECHNICAL DIVISION
             </h1>
             <p className="mt-2 max-w-xl font-sans text-xs text-[var(--text-secondary)] sm:text-sm">
@@ -770,7 +770,7 @@ function CatalogContent() {
         <div className="mb-6 flex flex-col items-stretch justify-between gap-4 lg:flex-row lg:items-center">
           {/* Category Tabs */}
           <div
-            className="flex scrollbar-none items-center gap-1 overflow-x-auto pb-2 sm:gap-2 lg:pb-0"
+            className="flex no-scrollbar items-center gap-1 overflow-x-auto pb-2 sm:gap-2 lg:pb-0"
             role="tablist"
           >
             {CATEGORIES.map((cat) => (
@@ -804,7 +804,7 @@ function CatalogContent() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="SEARCH HARDWARE BY NAME, TECH, OR GSM..."
+              placeholder="SEARCH HARDWARE..."
               className="min-h-[44px] h-11 w-full border border-[var(--border)] bg-[var(--bg-elevated)] pr-9 pl-10 font-mono text-base sm:text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:ring-1 focus:ring-[var(--text-primary)] focus:outline-none"
             />
             {search && (
@@ -848,7 +848,7 @@ function CatalogContent() {
             </div>
 
             {/* Gender Division */}
-            <div className="ml-2 flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5">
               <label
                 htmlFor="filter-gender"
                 className="hidden font-mono text-[10px] text-[var(--text-muted)] uppercase sm:inline"
@@ -872,7 +872,7 @@ function CatalogContent() {
             </div>
 
             {/* In-Stock Toggle */}
-            <label htmlFor="filter-in-stock" className="ml-2 flex min-h-[44px] cursor-pointer items-center gap-2 select-none py-1.5">
+            <label htmlFor="filter-in-stock" className="flex min-h-[44px] cursor-pointer items-center gap-2 select-none py-1.5">
               <input
                 id="filter-in-stock"
                 name="inStockOnly"
@@ -887,16 +887,16 @@ function CatalogContent() {
             </label>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto min-w-0">
             {/* Sort Dropdown */}
-            <div className="flex items-center gap-1.5">
-              <ArrowsDownUp size={14} className="text-[var(--text-muted)]" />
+            <div className="flex flex-1 sm:flex-initial items-center gap-1.5 min-w-0">
+              <ArrowsDownUp size={14} className="shrink-0 text-[var(--text-muted)]" />
               <select
                 id="sort-products"
                 name="sort"
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="min-h-[44px] h-10 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
+                className="min-h-[44px] h-10 w-full sm:w-auto min-w-0 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
                 aria-label="Sort products"
               >
                 {SORT_OPTIONS.map((opt) => (
@@ -912,7 +912,7 @@ function CatalogContent() {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="touch-target flex min-h-[44px] h-10 items-center gap-1 border border-rose-500/30 px-3 font-mono text-xs font-bold tracking-wider text-rose-600 uppercase transition-colors hover:bg-rose-500/10 sm:min-h-0 sm:h-8 dark:text-rose-400"
+                className="touch-target flex min-h-[44px] h-10 shrink-0 items-center gap-1 border border-rose-500/30 px-3 font-mono text-xs font-bold tracking-wider text-rose-600 uppercase transition-colors hover:bg-rose-500/10 sm:min-h-0 sm:h-8 dark:text-rose-400"
               >
                 <X size={12} weight="bold" />
                 <span>RESET</span>
