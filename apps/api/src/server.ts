@@ -30,7 +30,12 @@ if (env.NODE_ENV === 'production') {
 }
 
 // Security & utility middleware
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }),
+);
 const rawOrigins = [
   ...(env.NODE_ENV !== 'production' ? ['http://localhost:3000', 'http://127.0.0.1:3000'] : []),
   env.CLIENT_URL,
