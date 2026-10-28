@@ -133,7 +133,7 @@ export function TechFeatures() {
         <div
           role="tablist"
           aria-label="Textile Technology Inspector Tabs"
-          className="relative mb-8 grid grid-cols-2 gap-2 border border-[var(--border)] bg-[var(--bg)] p-2 lg:grid-cols-4"
+          className="relative mb-8 flex overflow-x-auto no-scrollbar snap-x gap-2 border border-[var(--border)] bg-[var(--bg)] p-2 sm:grid sm:grid-cols-2 lg:grid-cols-4"
         >
           {TECH_SPECS.map((tech, idx) => {
             const Icon = tech.icon;
@@ -146,7 +146,7 @@ export function TechFeatures() {
                 aria-selected={isSelected}
                 aria-controls={`panel-${tech.code}`}
                 onClick={() => setActiveTab(idx)}
-                className={`btn-tactile relative flex items-center justify-between border px-2 py-2.5 text-left transition-colors duration-150 active:scale-[0.97] sm:px-4 sm:py-4 ${
+                className={`btn-tactile relative flex min-w-[200px] shrink-0 snap-center items-center justify-between border px-2 py-2.5 text-left transition-colors duration-150 active:scale-[0.97] sm:min-w-0 sm:shrink sm:px-4 sm:py-4 ${
                   isSelected
                     ? 'border-[var(--accent)] text-[var(--text-primary)]'
                     : 'border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]/50 hover:text-[var(--text-primary)]'
@@ -245,7 +245,7 @@ export function TechFeatures() {
                     <span className="mb-1 block font-mono text-[10px] tracking-[0.2em] text-[var(--text-muted)] uppercase">
                       {currentSpec.metricLabel}
                     </span>
-                    <div className="font-mono text-3xl font-bold tracking-tight text-[var(--text-primary)] sm:text-5xl">
+                    <div className="font-mono text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-4xl lg:text-5xl">
                       <MetricTicker
                         value={currentSpec.numericMetric}
                         suffix={currentSpec.metricSuffix}
@@ -338,7 +338,7 @@ export function TechFeatures() {
                 }}
                 whileHover={shouldReduceMotion ? undefined : { y: -3 }}
                 transition={SPRING_TACTILE}
-                className={`flex min-w-[280px] cursor-pointer snap-center flex-col justify-between border bg-[var(--bg)] p-5 transition-[border-color,box-shadow] duration-200 focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none sm:min-w-0 sm:p-6 ${
+                className={`flex min-w-[calc(100vw-3rem)] max-w-[280px] cursor-pointer snap-center flex-col justify-between border bg-[var(--bg)] p-5 transition-[border-color,box-shadow] duration-200 focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none sm:min-w-0 sm:max-w-none sm:p-6 ${
                   isSelected
                     ? 'border-[var(--accent)] shadow-sm'
                     : 'border-[var(--border)] hover:border-[var(--text-primary)]/40'
