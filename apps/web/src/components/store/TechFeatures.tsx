@@ -119,7 +119,7 @@ export function TechFeatures() {
             </div>
             <h2
               id="tech-features-heading"
-              className="font-heading text-3xl font-bold tracking-tighter text-[var(--text-primary)] uppercase md:text-5xl"
+              className="font-heading text-2xl font-bold tracking-tighter text-balance text-[var(--text-primary)] uppercase sm:text-3xl md:text-5xl"
             >
               ENGINEERED MATERIAL SPECS
             </h2>

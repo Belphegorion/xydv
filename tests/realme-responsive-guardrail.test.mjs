@@ -232,6 +232,13 @@ describe('Suite 2: Static Source Code Architectural Guardrails', () => {
       'Metric counter must scale text-2xl sm:text-4xl lg:text-5xl',
     );
 
+    // Section Heading
+    assert.match(
+      tech,
+      /text-2xl font-bold tracking-tighter text-balance text-\[var\(--text-primary\)\] uppercase sm:text-3xl md:text-5xl/,
+      'TechFeatures heading must be text-2xl text-balance sm:text-3xl md:text-5xl',
+    );
+
     // Overview card
     assert.match(
       tech,
@@ -332,6 +339,29 @@ describe('Suite 2: Static Source Code Architectural Guardrails', () => {
       const fullPath = path.join(webSrcDir, comp);
       const content = fs.readFileSync(fullPath, 'utf-8');
       assert.ok(!content.includes('XLRV'), `${comp} must never contain banned name XLRV`);
+    }
+  });
+
+  it('2.10: All storefront section headings are responsively scaled with text-balance (text-2xl sm:text-3xl md:text-5xl)', () => {
+    const sections = [
+      'components/store/TechFeatures.tsx',
+      'components/store/CollectionShowcase.tsx',
+      'components/store/CategoryGrid.tsx',
+      'components/store/BestsellerGrid.tsx',
+      'components/store/FeaturedCollection.tsx',
+      'components/store/SocialProof.tsx',
+      'components/store/NewsletterSection.tsx',
+    ];
+
+    for (const section of sections) {
+      const fullPath = path.join(webSrcDir, section);
+      assert.ok(fs.existsSync(fullPath), `${section} must exist`);
+      const content = fs.readFileSync(fullPath, 'utf-8');
+      assert.match(
+        content,
+        /text-2xl font-bold tracking-tighter text-balance[\s\S]*?uppercase sm:text-3xl md:text-5xl/,
+        `${section} heading must be text-2xl text-balance sm:text-3xl md:text-5xl`,
+      );
     }
   });
 });

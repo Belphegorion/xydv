@@ -55,7 +55,7 @@ export function NewsletterSection() {
         {/* Heading */}
         <h2
           id="newsletter-heading"
-          className="font-heading mb-4 text-3xl font-bold tracking-tighter text-[var(--text-primary)] uppercase md:text-5xl"
+          className="font-heading mb-4 text-2xl font-bold tracking-tighter text-balance text-[var(--text-primary)] uppercase sm:text-3xl md:text-5xl"
         >
           SECURE PRIORITY ALLOCATION
         </h2>

@@ -146,7 +146,7 @@ export function CategoryGrid() {
           </span>
           <h2
             id="category-grid-heading"
-            className="font-heading mt-2 text-3xl font-bold tracking-tighter text-[var(--text-primary)] uppercase md:text-5xl"
+            className="font-heading mt-2 text-2xl font-bold tracking-tighter text-balance text-[var(--text-primary)] uppercase sm:text-3xl md:text-5xl"
           >
             DISCIPLINE BY CATEGORY
           </h2>

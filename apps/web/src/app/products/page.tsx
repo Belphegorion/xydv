@@ -896,7 +896,7 @@ function CatalogContent() {
                 name="sort"
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="min-h-[44px] h-10 w-full sm:w-auto min-w-0 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
+                className="min-h-[44px] h-10 w-full sm:w-auto min-w-0 max-w-full cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
                 aria-label="Sort products"
               >
                 {SORT_OPTIONS.map((opt) => (

@@ -1062,7 +1062,7 @@ export default function ProductDetailPage({ params }: PageProps) {
               </span>
               <h2
                 id="reviews-heading"
-                className="font-heading text-2xl font-black text-[var(--text-primary)] uppercase sm:text-3xl"
+                className="font-heading text-2xl font-black text-balance text-[var(--text-primary)] uppercase sm:text-3xl"
               >
                 VERIFIED ATHLETE REVIEWS (
                 {liveReviews.length > 0 ? liveReviews.length : product.reviewCount})
@@ -1262,7 +1262,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                 </span>
                 <h2
                   id="related-heading"
-                  className="font-heading text-2xl font-black text-[var(--text-primary)] uppercase sm:text-3xl"
+                  className="font-heading text-2xl font-black text-balance text-[var(--text-primary)] uppercase sm:text-3xl"
                 >
                   ENGINEERED COMPANIONS
                 </h2>
