@@ -79,6 +79,10 @@ export function Navbar() {
   const displayItemCount = mounted ? itemCount : 0;
   const displayWishlistCount = mounted ? wishlistCount : 0;
 
+  const splitIdx = Math.ceil(navLinks.length / 2);
+  const leftNavLinks = navLinks.slice(0, splitIdx);
+  const rightNavLinks = navLinks.slice(splitIdx);
+
   const pathname = usePathname();
   const isHome = pathname === '/' || pathname === '';
   const [heroActive, setHeroActive] = useState(isHome && !shouldReduceMotion);
@@ -259,7 +263,12 @@ export function Navbar() {
           {/* - Mobile: 3-lines hamburger menu button                      */}
           {/* - Desktop: Navigation links with kinetic hover indicator     */}
           {/* ============================================================ */}
-          <div className="flex items-center">
+          {/* ============================================================ */}
+          {/* LEFT CONTAINER:                                              */}
+          {/* - Mobile: 3-lines hamburger menu button                      */}
+          {/* - Desktop: Left navigation links with kinetic hover line     */}
+          {/* ============================================================ */}
+          <div className="flex flex-1 items-center justify-start">
             {/* Mobile Hamburger Toggle */}
             <div className="md:hidden flex items-center">
               <button
@@ -269,28 +278,28 @@ export function Navbar() {
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-navigation-drawer"
                 className={`touch-target min-w-[48px] min-h-[48px] btn-tactile flex items-center justify-center -ml-2 ${
-                  isElevated ? 'text-[var(--text-primary)]' : 'text-white'
+                  isElevated ? 'text-[var(--text-primary)]' : 'text-zinc-900 dark:text-white'
                 }`}
               >
                 {mobileOpen ? <X size={22} weight="bold" /> : <List size={22} weight="bold" />}
               </button>
             </div>
 
-            {/* Desktop Navigation Links */}
+            {/* Desktop Left Navigation Links */}
             <nav
               aria-label="Main navigation"
-              className="hidden md:flex items-center gap-3 lg:gap-6 relative"
+              className="hidden md:flex items-center gap-2.5 lg:gap-6 relative"
               onMouseLeave={() => setHoveredLink(null)}
             >
-              {navLinks.map((link) => (
+              {leftNavLinks.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
                   onMouseEnter={() => setHoveredLink(link.label)}
-                  className={`text-[11px] lg:text-xs font-mono font-semibold uppercase tracking-[0.14em] lg:tracking-[0.18em] transition-colors relative py-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${
+                  className={`text-[10px] lg:text-xs font-mono font-semibold uppercase tracking-[0.12em] lg:tracking-[0.18em] transition-colors relative py-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${
                     isElevated
                       ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                      : 'text-zinc-300 hover:text-white'
+                      : 'text-zinc-900 dark:text-zinc-300 hover:text-black dark:hover:text-white'
                   }`}
                 >
                   <span className="relative z-10">{link.label}</span>
@@ -299,7 +308,7 @@ export function Navbar() {
                       layoutId="nav-hover-line"
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                       className={`absolute bottom-0 left-0 right-0 h-[2px] ${
-                        isElevated ? 'bg-[var(--text-primary)] dark:bg-[var(--accent)]' : 'bg-white'
+                        isElevated ? 'bg-[var(--text-primary)] dark:bg-[var(--accent)]' : 'bg-zinc-900 dark:bg-white'
                       }`}
                       aria-hidden="true"
                     />
@@ -311,15 +320,15 @@ export function Navbar() {
 
           {/* ============================================================ */}
           {/* CENTER CONTAINER: Brand Emblem + "XYDV" in Montserrat Bold   */}
-          {/* Perfectly horizontally centered on both Mobile and Desktop   */}
+          {/* Positioned between left and right groups with zero collision */}
           {/* ============================================================ */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center pointer-events-auto">
+          <div className="flex shrink-0 items-center justify-center z-20 pointer-events-auto px-2 sm:px-4 lg:px-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:static md:translate-x-0 md:translate-y-0">
             <Link
               href="/"
               className={`group flex items-center gap-2 sm:gap-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] py-1.5 px-2 ${
                 isElevated
                   ? 'text-[var(--text-primary)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--accent)]'
-                  : 'text-white hover:text-zinc-200 dark:hover:text-white'
+                  : 'text-zinc-900 dark:text-white hover:text-zinc-600 dark:hover:text-zinc-200'
               }`}
               aria-label="XYDV Home"
             >
@@ -333,11 +342,40 @@ export function Navbar() {
           </div>
 
           {/* ============================================================ */}
-          {/* RIGHT CONTAINER: Action Cluster                              */}
-          {/* - Mobile: Search, Cart button with spring bounce badge       */}
-          {/* - Desktop: Search, Wishlist, ThemeToggle, Cart button        */}
+          {/* RIGHT CONTAINER: Desktop Right Navigation Links + Actions    */}
           {/* ============================================================ */}
-          <div className="flex items-center gap-1 sm:gap-2 relative z-10">
+          <div className="flex flex-1 items-center justify-end gap-1 sm:gap-2 relative z-10">
+            {/* Desktop Right Navigation Links */}
+            <div
+              className="hidden md:flex items-center gap-2.5 lg:gap-6 mr-2 lg:mr-4"
+              onMouseLeave={() => setHoveredLink(null)}
+            >
+              {rightNavLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onMouseEnter={() => setHoveredLink(link.label)}
+                  className={`text-[10px] lg:text-xs font-mono font-semibold uppercase tracking-[0.12em] lg:tracking-[0.18em] transition-colors relative py-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${
+                    isElevated
+                      ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      : 'text-zinc-900 dark:text-zinc-300 hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <span className="relative z-10">{link.label}</span>
+                  {hoveredLink === link.label && (
+                    <motion.span
+                      layoutId="nav-hover-line"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      className={`absolute bottom-0 left-0 right-0 h-[2px] ${
+                        isElevated ? 'bg-[var(--text-primary)] dark:bg-[var(--accent)]' : 'bg-zinc-900 dark:bg-white'
+                      }`}
+                      aria-hidden="true"
+                    />
+                  )}
+                </Link>
+              ))}
+            </div>
+
             {/* Quick Search - visible on all viewports */}
             <Link
               href="/products?search=true"
@@ -345,7 +383,7 @@ export function Navbar() {
               className={`touch-target min-w-[48px] min-h-[48px] btn-tactile transition-colors ${
                 isElevated
                   ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                  : 'text-zinc-300 hover:text-white'
+                  : 'text-zinc-900 dark:text-zinc-300 hover:text-black dark:hover:text-white'
               }`}
             >
               <MagnifyingGlass size={20} weight="bold" />
@@ -359,7 +397,7 @@ export function Navbar() {
                 className={`touch-target min-w-[48px] min-h-[48px] btn-tactile transition-colors ${
                   isElevated
                     ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                    : 'text-zinc-300 hover:text-white'
+                    : 'text-zinc-900 dark:text-zinc-300 hover:text-black dark:hover:text-white'
                 }`}
               >
                 <Heart size={20} weight="bold" />
@@ -375,7 +413,7 @@ export function Navbar() {
                 className={`touch-target min-w-[48px] min-h-[48px] btn-tactile transition-colors relative ${
                   isElevated
                     ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                    : 'text-zinc-300 hover:text-white'
+                    : 'text-zinc-900 dark:text-zinc-300 hover:text-black dark:hover:text-white'
                 }`}
               >
                 <User size={20} weight={isCustomerAuthenticated ? 'fill' : 'bold'} />
@@ -397,7 +435,7 @@ export function Navbar() {
               className={`touch-target min-w-[48px] min-h-[48px] btn-tactile transition-colors relative ${
                 isElevated
                   ? 'text-[var(--text-primary)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--accent)]'
-                  : 'text-white hover:text-zinc-200 dark:hover:text-white'
+                  : 'text-zinc-900 dark:text-white hover:text-zinc-600 dark:hover:text-zinc-200'
               }`}
             >
               <ShoppingBag size={20} weight="bold" />

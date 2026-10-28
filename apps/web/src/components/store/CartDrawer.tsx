@@ -601,10 +601,10 @@ export function CartDrawer() {
               </div>
             )}
 
-            {/* Cart Item Stream */}
-            <div className="flex-1 divide-y divide-[var(--border)] overflow-y-auto px-6 py-4">
+            {/* Scrollable Cart Body: Item Stream + Shipping Form + Promo */}
+            <div className="flex-1 min-h-0 divide-y divide-[var(--border)] overflow-y-auto overscroll-contain px-6 py-4">
               {items.length === 0 ? (
-                <div className="flex h-full flex-col items-center justify-center space-y-4 p-6 text-center">
+                <div className="flex h-full min-h-[280px] flex-col items-center justify-center space-y-4 p-6 text-center">
                   <p className="font-heading text-base font-bold tracking-widest text-[var(--text-primary)] uppercase">
                     YOUR ARCHIVE IS EMPTY
                   </p>
@@ -617,421 +617,452 @@ export function CartDrawer() {
                   </Button>
                 </div>
               ) : (
-                <AnimatePresence initial={false}>
-                  {items.map((item) => (
-                    <motion.div
-                      key={item.id}
-                      initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 12 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -12 }}
-                      transition={{ duration: 0.18, ease: EMIL_EASE }}
-                      className="flex items-start gap-4 py-4"
-                    >
-                      {/* Product Thumbnail */}
-                      <div className="relative h-24 w-20 flex-shrink-0 overflow-hidden border border-[var(--border)] bg-[var(--bg-surface)]">
-                        <Image
-                          src={item.image || '/products/image-4-1.jpg'}
-                          alt={item.name}
-                          fill
-                          sizes="80px"
-                          className="object-cover object-center"
-                        />
-                      </div>
-
-                      {/* Meta & Controls */}
-                      <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch">
-                        <div>
-                          <h3 className="font-heading truncate text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
-                            {item.name}
-                          </h3>
-                          <p className="mt-0.5 font-mono text-[11px] tracking-wide text-[var(--text-secondary)] uppercase">
-                            {item.color} / {item.size}
-                          </p>
-                          <div className="mt-1">
-                            <PriceDisplay
-                              price={item.price}
-                              regularPrice={item.regularPrice}
-                              mrp={item.compareAt}
-                              badgeLabel={item.discountBadgeLabel}
-                              size="sm"
+                <>
+                  {/* Cart Item Stream */}
+                  <div className="divide-y divide-[var(--border)] min-h-[140px]">
+                    <AnimatePresence initial={false}>
+                      {items.map((item) => (
+                        <motion.div
+                          key={item.id}
+                          initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 12 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -12 }}
+                          transition={{ duration: 0.18, ease: EMIL_EASE }}
+                          className="flex items-start gap-4 py-4"
+                        >
+                          {/* Product Thumbnail */}
+                          <div className="relative h-24 w-20 flex-shrink-0 overflow-hidden border border-[var(--border)] bg-[var(--bg-surface)]">
+                            <Image
+                              src={item.image || '/products/image-4-1.jpg'}
+                              alt={item.name}
+                              fill
+                              sizes="80px"
+                              className="object-cover object-center"
                             />
                           </div>
-                        </div>
 
-                        {/* Quantity Stepper & Remove Action */}
-                        <div className="mt-3 flex items-center justify-between">
-                          <div className="inline-flex items-center border border-[var(--border)] bg-[var(--bg-surface)]">
-                            <button
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              aria-label={`Decrease quantity for ${item.name}`}
-                              data-testid="cart-qty-decrease"
-                              className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97] sm:min-h-[48px] sm:min-w-[48px]"
-                            >
-                              <Minus size={12} weight="bold" />
-                            </button>
-                            <span
-                              className="w-8 text-center font-mono text-xs font-bold text-[var(--text-primary)]"
-                              data-testid="cart-item-quantity"
-                            >
-                              {item.quantity}
-                            </span>
-                            <button
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              disabled={item.quantity >= (item.maxStock ?? 99)}
-                              aria-label={`Increase quantity for ${item.name}`}
-                              data-testid="cart-qty-increase"
-                              className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-30 sm:min-h-[48px] sm:min-w-[48px]"
-                            >
-                              <Plus size={12} weight="bold" />
-                            </button>
+                          {/* Meta & Controls */}
+                          <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch">
+                            <div>
+                              <h3 className="font-heading truncate text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
+                                {item.name}
+                              </h3>
+                              <p className="mt-0.5 font-mono text-[11px] tracking-wide text-[var(--text-secondary)] uppercase">
+                                {item.color} / {item.size}
+                              </p>
+                              <div className="mt-1">
+                                <PriceDisplay
+                                  price={item.price}
+                                  regularPrice={item.regularPrice}
+                                  mrp={item.compareAt}
+                                  badgeLabel={item.discountBadgeLabel}
+                                  size="sm"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Quantity Stepper & Remove Action */}
+                            <div className="mt-3 flex items-center justify-between">
+                              <div className="inline-flex items-center border border-[var(--border)] bg-[var(--bg-surface)]">
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                  aria-label={`Decrease quantity for ${item.name}`}
+                                  data-testid="cart-qty-decrease"
+                                  className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97] sm:min-h-[48px] sm:min-w-[48px]"
+                                >
+                                  <Minus size={12} weight="bold" />
+                                </button>
+                                <span
+                                  className="w-8 text-center font-mono text-xs font-bold text-[var(--text-primary)]"
+                                  data-testid="cart-item-quantity"
+                                >
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                  disabled={item.quantity >= (item.maxStock ?? 99)}
+                                  aria-label={`Increase quantity for ${item.name}`}
+                                  data-testid="cart-qty-increase"
+                                  className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-30 sm:min-h-[48px] sm:min-w-[48px]"
+                                >
+                                  <Plus size={12} weight="bold" />
+                                </button>
+                              </div>
+
+                              <button
+                                onClick={() => removeItem(item.id)}
+                                aria-label={`Remove ${item.name} from bag`}
+                                data-testid="cart-item-remove"
+                                className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center p-2.5 text-[var(--text-muted)] transition-colors hover:text-[#ff3b3b] active:scale-[0.97] sm:min-h-[48px] sm:min-w-[48px]"
+                              >
+                                <Trash size={16} />
+                              </button>
+                            </div>
                           </div>
-
-                          <button
-                            onClick={() => removeItem(item.id)}
-                            aria-label={`Remove ${item.name} from bag`}
-                            data-testid="cart-item-remove"
-                            className="touch-target btn-tactile flex min-h-[44px] min-w-[44px] items-center justify-center p-2.5 text-[var(--text-muted)] transition-colors hover:text-[#ff3b3b] active:scale-[0.97] sm:min-h-[48px] sm:min-w-[48px]"
-                          >
-                            <Trash size={16} />
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              )}
-            </div>
-
-            {/* Footer Order Summary & Razorpay Trigger */}
-            {items.length > 0 && (
-              <div className="space-y-4 border-t border-[var(--border)] bg-[var(--bg-surface)] p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-                {/* Shipping Address Form Section */}
-                <div className="space-y-3 border border-[var(--border)] bg-[var(--bg-elevated)] p-3.5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="flex items-center gap-1.5 font-mono text-[10px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
-                        <MapPin size={12} weight="bold" />
-                        <span>DISPATCH DESTINATION</span>
-                      </span>
-                      <h4 className="font-heading mt-0.5 text-xs font-bold text-[var(--text-primary)] uppercase">
-                        SHIPPING ADDRESS
-                      </h4>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowAddressForm(!showAddressForm)}
-                      className="inline-flex min-h-[44px] min-w-[44px] items-center px-1 font-mono text-[11px] font-bold text-[var(--text-primary)] underline hover:text-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none"
-                    >
-                      {showAddressForm ? 'CLOSE' : shippingAddress.line1 ? 'EDIT' : '+ ADD ADDRESS'}
-                    </button>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
                   </div>
 
-                  {!showAddressForm && shippingAddress.line1 ? (
-                    <div className="space-y-0.5 border border-[var(--border)] bg-[var(--bg)] p-2.5 font-mono text-xs text-[var(--text-secondary)]">
-                      <p className="font-bold text-[var(--text-primary)]">
-                        {shippingAddress.fullName}
-                      </p>
-                      <p>
-                        {shippingAddress.line1}
-                        {shippingAddress.line2 ? `, ${shippingAddress.line2}` : ''}
-                      </p>
-                      <p>
-                        {shippingAddress.city}, {shippingAddress.state} {shippingAddress.postalCode}
-                      </p>
-                      <p className="text-[10px] text-[var(--text-muted)]">
-                        PHONE: {shippingAddress.phone}
-                      </p>
-                    </div>
-                  ) : null}
-
-                  {showAddressForm && (
-                    <div className="space-y-2.5 border-t border-[var(--border)] pt-1">
-                      {addressError && (
-                        <div
-                          role="alert"
-                          className="border border-red-500/30 bg-red-500/10 p-2 font-mono text-[11px] text-red-500"
-                        >
-                          {addressError}
-                        </div>
-                      )}
-                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {/* Shipping Address Form Section */}
+                  <div className="pt-4 pb-2">
+                    <div className="space-y-3 border border-[var(--border)] bg-[var(--bg-elevated)] p-3.5">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <label
-                            htmlFor="shipping-fullName"
-                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
-                          >
-                            FULL NAME *
-                          </label>
-                          <input
-                            id="shipping-fullName"
-                            type="text"
-                            required
-                            placeholder="Recipient name"
-                            value={shippingAddress.fullName}
-                            onChange={(e) => {
-                              setAddressError(null);
-                              setShippingAddress({ ...shippingAddress, fullName: e.target.value });
-                            }}
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                          />
+                          <span className="flex items-center gap-1.5 font-mono text-[10px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
+                            <MapPin size={12} weight="bold" />
+                            <span>DISPATCH DESTINATION</span>
+                          </span>
+                          <h4 className="font-heading mt-0.5 text-xs font-bold text-[var(--text-primary)] uppercase">
+                            SHIPPING ADDRESS
+                          </h4>
                         </div>
-                        <div>
-                          <label
-                            htmlFor="shipping-phone"
-                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
-                          >
-                            PHONE NUMBER *
-                          </label>
-                          <input
-                            id="shipping-phone"
-                            type="tel"
-                            required
-                            placeholder="+91 98765 43210"
-                            value={shippingAddress.phone}
-                            onChange={(e) => {
-                              setAddressError(null);
-                              setShippingAddress({ ...shippingAddress, phone: e.target.value });
-                            }}
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label
-                          htmlFor="shipping-line1"
-                          className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                        <button
+                          type="button"
+                          onClick={() => setShowAddressForm(!showAddressForm)}
+                          className="inline-flex min-h-[44px] min-w-[44px] items-center px-1 font-mono text-[11px] font-bold text-[var(--text-primary)] underline hover:text-[var(--accent)] focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:outline-none"
                         >
-                          STREET ADDRESS *
-                        </label>
-                        <input
-                          id="shipping-line1"
-                          type="text"
-                          required
-                          placeholder="House, building, street"
-                          value={shippingAddress.line1}
-                          onChange={(e) => {
-                            setAddressError(null);
-                            setShippingAddress({ ...shippingAddress, line1: e.target.value });
-                          }}
-                          className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                        />
+                          {showAddressForm ? 'CLOSE' : shippingAddress.line1 ? 'EDIT' : '+ ADD ADDRESS'}
+                        </button>
                       </div>
 
-                      <div>
-                        <label
-                          htmlFor="shipping-line2"
-                          className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
-                        >
-                          APARTMENT, SUITE, ETC. (OPTIONAL)
-                        </label>
-                        <input
-                          id="shipping-line2"
-                          type="text"
-                          placeholder="Apartment, unit, floor"
-                          value={shippingAddress.line2}
-                          onChange={(e) =>
-                            setShippingAddress({ ...shippingAddress, line2: e.target.value })
-                          }
-                          className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="col-span-1">
-                          <label
-                            htmlFor="shipping-city"
-                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
-                          >
-                            CITY *
-                          </label>
-                          <input
-                            id="shipping-city"
-                            type="text"
-                            required
-                            placeholder="City"
-                            value={shippingAddress.city}
-                            onChange={(e) => {
-                              setAddressError(null);
-                              setShippingAddress({ ...shippingAddress, city: e.target.value });
-                            }}
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                          />
-                        </div>
-                        <div className="col-span-1">
-                          <label
-                            htmlFor="shipping-state"
-                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
-                          >
-                            STATE
-                          </label>
-                          <input
-                            id="shipping-state"
-                            type="text"
-                            placeholder="State"
-                            value={shippingAddress.state}
-                            onChange={(e) =>
-                              setShippingAddress({ ...shippingAddress, state: e.target.value })
-                            }
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                          />
-                        </div>
-                        <div className="col-span-1">
-                          <label
-                            htmlFor="shipping-postalCode"
-                            className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
-                          >
-                            PIN CODE *
-                          </label>
-                          <input
-                            id="shipping-postalCode"
-                            type="text"
-                            required
-                            placeholder="PIN code"
-                            value={shippingAddress.postalCode}
-                            onChange={(e) => {
-                              setAddressError(null);
-                              setShippingAddress({
-                                ...shippingAddress,
-                                postalCode: e.target.value,
-                              });
-                            }}
-                            className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Promo Code Section */}
-                <div className="border border-[var(--border)] bg-[var(--bg)] p-3">
-                  {appliedCoupon ? (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center border border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent)] dark:border-[#E8FF00]/40 dark:bg-[#E8FF00]/10 dark:text-[#E8FF00]">
-                          <Tag size={14} weight="bold" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] dark:text-[#E8FF00]">
-                              {appliedCoupon.code}
-                            </span>
-                            <Badge variant="success" size="sm">
-                              {appliedCoupon.discountType === 'percentage'
-                                ? `${appliedCoupon.discountValue}% OFF`
-                                : `₹${appliedCoupon.discountAmountRupees} OFF`}
-                            </Badge>
-                          </div>
-                          <p className="font-sans text-[10px] text-[var(--text-secondary)]">
-                            Saved ₹{appliedCoupon.discountAmountRupees.toLocaleString('en-IN')}
-                            {appliedCoupon.maxDiscountCap && (
-                              <span className="text-[var(--text-muted)]">
-                                {' '}(capped at ₹{(appliedCoupon.maxDiscountCap / 100).toLocaleString('en-IN')})
-                              </span>
-                            )}
+                      {!showAddressForm && shippingAddress.line1 ? (
+                        <div className="space-y-0.5 border border-[var(--border)] bg-[var(--bg)] p-2.5 font-mono text-xs text-[var(--text-secondary)]">
+                          <p className="font-bold text-[var(--text-primary)]">
+                            {shippingAddress.fullName}
+                          </p>
+                          <p>
+                            {shippingAddress.line1}
+                            {shippingAddress.line2 ? `, ${shippingAddress.line2}` : ''}
+                          </p>
+                          <p>
+                            {shippingAddress.city}, {shippingAddress.state} {shippingAddress.postalCode}
+                          </p>
+                          <p className="text-[10px] text-[var(--text-muted)]">
+                            PHONE: {shippingAddress.phone}
                           </p>
                         </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleRemoveCoupon}
-                        className="min-h-[44px] min-w-[44px] px-2.5 inline-flex items-center justify-center font-mono text-[10px] font-semibold tracking-wider text-[var(--text-muted)] uppercase hover:text-[#b91c1c] active:scale-[0.97]"
-                        aria-label="Remove coupon"
-                      >
-                        REMOVE
-                      </button>
-                    </div>
-                  ) : (
-                    <div>
-                      <button
-                        type="button"
-                        onClick={() => setShowPromoAccordion((v) => !v)}
-                        className="flex w-full items-center justify-between font-mono text-xs font-semibold tracking-wider text-[var(--text-secondary)] uppercase hover:text-[var(--text-primary)]"
-                        aria-expanded={showPromoAccordion}
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <Tag size={14} />
-                          <span>HAVE A PROMO CODE?</span>
-                        </span>
-                        <span className="font-mono text-xs">{showPromoAccordion ? '—' : '+'}</span>
-                      </button>
+                      ) : null}
 
-                      {showPromoAccordion && (
-                        <div className="mt-3 space-y-2">
-                          <div className="flex gap-2">
-                            <input
-                              id="cart-coupon-input"
-                              name="couponCode"
-                              type="text"
-                              aria-label="Promotional coupon code"
-                              placeholder="ENTER CODE"
-                              value={promoCodeInput}
-                              onChange={(e) => {
-                                setPromoCodeInput(e.target.value.toUpperCase());
-                                setCouponError(null);
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  handleApplyCoupon();
-                                }
-                              }}
-                              className="min-h-[44px] flex-1 border border-[var(--border)] bg-[var(--bg-surface)] px-3 font-mono text-base sm:text-xs text-[var(--text-primary)] uppercase placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                            />
-                            <button
-                              type="button"
-                              onClick={handleApplyCoupon}
-                              disabled={isValidatingCoupon || !promoCodeInput.trim()}
-                              className="btn-tactile min-h-[44px] border border-[var(--text-primary)] bg-[var(--text-primary)] px-4 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-colors hover:opacity-90 disabled:opacity-40 active:scale-[0.97] dark:border-[#E8FF00] dark:bg-[#E8FF00] dark:text-[#0A0A0A]"
+                      {showAddressForm && (
+                        <div className="space-y-2.5 border-t border-[var(--border)] pt-1">
+                          {addressError && (
+                            <div
+                              role="alert"
+                              className="border border-red-500/30 bg-red-500/10 p-2 font-mono text-[11px] text-red-500"
                             >
-                              {isValidatingCoupon ? 'APPLYING...' : 'APPLY'}
-                            </button>
+                              {addressError}
+                            </div>
+                          )}
+                          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            <div>
+                              <label
+                                htmlFor="shipping-fullName"
+                                className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                              >
+                                FULL NAME *
+                              </label>
+                              <input
+                                id="shipping-fullName"
+                                type="text"
+                                required
+                                placeholder="Recipient name"
+                                value={shippingAddress.fullName}
+                                onChange={(e) => {
+                                  setAddressError(null);
+                                  setShippingAddress({ ...shippingAddress, fullName: e.target.value });
+                                }}
+                                className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                              />
+                            </div>
+                            <div>
+                              <label
+                                htmlFor="shipping-phone"
+                                className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                              >
+                                PHONE NUMBER *
+                              </label>
+                              <input
+                                id="shipping-phone"
+                                type="tel"
+                                required
+                                placeholder="+91 98765 43210"
+                                value={shippingAddress.phone}
+                                onChange={(e) => {
+                                  setAddressError(null);
+                                  setShippingAddress({ ...shippingAddress, phone: e.target.value });
+                                }}
+                                className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                              />
+                            </div>
                           </div>
-                          {couponError && (
-                            <p className="font-sans text-[11px] text-[#b91c1c] dark:text-[#ff6b6b]">
-                              {couponError}
-                            </p>
+
+                          <div>
+                            <label
+                              htmlFor="shipping-line1"
+                              className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                            >
+                              STREET ADDRESS *
+                            </label>
+                            <input
+                              id="shipping-line1"
+                              type="text"
+                              required
+                              placeholder="House, building, street"
+                              value={shippingAddress.line1}
+                              onChange={(e) => {
+                                setAddressError(null);
+                                setShippingAddress({ ...shippingAddress, line1: e.target.value });
+                              }}
+                              className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                            />
+                          </div>
+
+                          <div>
+                            <label
+                              htmlFor="shipping-line2"
+                              className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                            >
+                              APARTMENT, SUITE, ETC. (OPTIONAL)
+                            </label>
+                            <input
+                              id="shipping-line2"
+                              type="text"
+                              placeholder="Apartment, unit, floor"
+                              value={shippingAddress.line2}
+                              onChange={(e) =>
+                                setShippingAddress({ ...shippingAddress, line2: e.target.value })
+                              }
+                              className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-2">
+                            <div className="col-span-1">
+                              <label
+                                htmlFor="shipping-city"
+                                className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                              >
+                                CITY *
+                              </label>
+                              <input
+                                id="shipping-city"
+                                type="text"
+                                required
+                                placeholder="City"
+                                value={shippingAddress.city}
+                                onChange={(e) => {
+                                  setAddressError(null);
+                                  setShippingAddress({ ...shippingAddress, city: e.target.value });
+                                }}
+                                className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                              />
+                            </div>
+                            <div className="col-span-1">
+                              <label
+                                htmlFor="shipping-state"
+                                className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                              >
+                                STATE
+                              </label>
+                              <input
+                                id="shipping-state"
+                                type="text"
+                                placeholder="State"
+                                value={shippingAddress.state}
+                                onChange={(e) =>
+                                  setShippingAddress({ ...shippingAddress, state: e.target.value })
+                                }
+                                className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                              />
+                            </div>
+                            <div className="col-span-1">
+                              <label
+                                htmlFor="shipping-postalCode"
+                                className="mb-1 block font-mono text-[10px] text-[var(--text-muted)] uppercase"
+                              >
+                                PIN CODE *
+                              </label>
+                              <input
+                                id="shipping-postalCode"
+                                type="text"
+                                required
+                                placeholder="PIN code"
+                                value={shippingAddress.postalCode}
+                                onChange={(e) => {
+                                  setAddressError(null);
+                                  setShippingAddress({
+                                    ...shippingAddress,
+                                    postalCode: e.target.value,
+                                  });
+                                }}
+                                className="min-h-[44px] w-full border border-[var(--border)] bg-[var(--bg)] p-2 font-mono text-base sm:text-xs text-[var(--text-primary)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Promo Code Section */}
+                  <div className="pt-4 pb-2">
+                    <div className="border border-[var(--border)] bg-[var(--bg)] p-3">
+                      {appliedCoupon ? (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-7 w-7 items-center justify-center border border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent)] dark:border-[#E8FF00]/40 dark:bg-[#E8FF00]/10 dark:text-[#E8FF00]">
+                              <Tag size={14} weight="bold" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] dark:text-[#E8FF00]">
+                                  {appliedCoupon.code}
+                                </span>
+                                <Badge variant="success" size="sm">
+                                  {appliedCoupon.discountType === 'percentage'
+                                    ? `${appliedCoupon.discountValue}% OFF`
+                                    : `₹${appliedCoupon.discountAmountRupees} OFF`}
+                                </Badge>
+                              </div>
+                              <p className="font-sans text-[10px] text-[var(--text-secondary)]">
+                                Saved ₹{appliedCoupon.discountAmountRupees.toLocaleString('en-IN')}
+                                {appliedCoupon.maxDiscountCap && (
+                                  <span className="text-[var(--text-muted)]">
+                                    {' '}(capped at ₹{(appliedCoupon.maxDiscountCap / 100).toLocaleString('en-IN')})
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleRemoveCoupon}
+                            className="min-h-[44px] min-w-[44px] px-2.5 inline-flex items-center justify-center font-mono text-[10px] font-semibold tracking-wider text-[var(--text-muted)] uppercase hover:text-[#b91c1c] active:scale-[0.97]"
+                            aria-label="Remove coupon"
+                          >
+                            REMOVE
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <button
+                            type="button"
+                            onClick={() => setShowPromoAccordion((v) => !v)}
+                            className="flex w-full items-center justify-between font-mono text-xs font-semibold tracking-wider text-[var(--text-secondary)] uppercase hover:text-[var(--text-primary)]"
+                            aria-expanded={showPromoAccordion}
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <Tag size={14} />
+                              <span>HAVE A PROMO CODE?</span>
+                            </span>
+                            <span className="font-mono text-xs">{showPromoAccordion ? '—' : '+'}</span>
+                          </button>
+
+                          {showPromoAccordion && (
+                            <div className="mt-3 space-y-2">
+                              <div className="flex gap-2">
+                                <input
+                                  id="cart-coupon-input"
+                                  name="couponCode"
+                                  type="text"
+                                  aria-label="Promotional coupon code"
+                                  placeholder="ENTER CODE"
+                                  value={promoCodeInput}
+                                  onChange={(e) => {
+                                    setPromoCodeInput(e.target.value.toUpperCase());
+                                    setCouponError(null);
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.preventDefault();
+                                      handleApplyCoupon();
+                                    }
+                                  }}
+                                  className="min-h-[44px] flex-1 border border-[var(--border)] bg-[var(--bg-surface)] px-3 font-mono text-base sm:text-xs text-[var(--text-primary)] uppercase placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={handleApplyCoupon}
+                                  disabled={isValidatingCoupon || !promoCodeInput.trim()}
+                                  className="btn-tactile min-h-[44px] border border-[var(--text-primary)] bg-[var(--text-primary)] px-4 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-colors hover:opacity-90 disabled:opacity-40 active:scale-[0.97] dark:border-[#E8FF00] dark:bg-[#E8FF00] dark:text-[#0A0A0A]"
+                                >
+                                  {isValidatingCoupon ? 'APPLYING...' : 'APPLY'}
+                                </button>
+                              </div>
+                              {couponError && (
+                                <p className="font-sans text-[11px] text-[#b91c1c] dark:text-[#ff6b6b]">
+                                  {couponError}
+                                </p>
+                              )}
+                            </div>
                           )}
                         </div>
                       )}
                     </div>
-                  )}
-                </div>
-
-                <div className="space-y-1.5 font-mono text-xs">
-                  <div className="flex justify-between text-[var(--text-secondary)]">
-                    <span>SUBTOTAL</span>
-                    <span className="font-bold text-[var(--text-primary)]">
-                      {formatPrice(metrics.subtotal)}
-                    </span>
                   </div>
-                  {metrics.discount > 0 && (
-                    <div className="flex justify-between text-[#15803d] dark:text-[#E8FF00]">
-                      <span className="flex items-center gap-1">
-                        <Tag size={12} weight="bold" />
-                        <span>PROMO DISCOUNT ({appliedCoupon?.code})</span>
+
+                  {/* Price Breakdown Details */}
+                  <div className="pt-4 pb-2 space-y-1.5 font-mono text-xs">
+                    <div className="flex justify-between text-[var(--text-secondary)]">
+                      <span>SUBTOTAL</span>
+                      <span className="font-bold text-[var(--text-primary)]">
+                        {formatPrice(metrics.subtotal)}
                       </span>
-                      <span className="font-bold">-{formatPrice(metrics.discount)}</span>
                     </div>
-                  )}
-                  <div className="flex justify-between text-[var(--text-secondary)]">
-                    <span>ESTIMATED TAX ({Math.round(storeSettings.taxRate * 100)}%)</span>
-                    <span>{formatPrice(metrics.tax)}</span>
+                    {metrics.discount > 0 && (
+                      <div className="flex justify-between text-[#15803d] dark:text-[#E8FF00]">
+                        <span className="flex items-center gap-1">
+                          <Tag size={12} weight="bold" />
+                          <span>PROMO DISCOUNT ({appliedCoupon?.code})</span>
+                        </span>
+                        <span className="font-bold">-{formatPrice(metrics.discount)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-[var(--text-secondary)]">
+                      <span>ESTIMATED TAX ({Math.round(storeSettings.taxRate * 100)}%)</span>
+                      <span>{formatPrice(metrics.tax)}</span>
+                    </div>
+                    <div className="flex justify-between text-[var(--text-secondary)]">
+                      <span>SHIPPING</span>
+                      <span>{metrics.shipping === 0 ? 'FREE' : formatPrice(metrics.shipping)}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-[var(--text-secondary)]">
-                    <span>SHIPPING</span>
-                    <span>{metrics.shipping === 0 ? 'FREE' : formatPrice(metrics.shipping)}</span>
-                  </div>
-                  <div className="flex justify-between border-t border-[var(--border)] pt-2 text-sm font-bold text-[var(--text-primary)]">
-                    <span>ESTIMATED TOTAL</span>
-                    <span className="text-[var(--text-primary)] dark:text-[var(--accent)]">
-                      {formatPrice(metrics.total)}
-                    </span>
-                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Pinned Sticky Bottom Checkout Bar */}
+            {items.length > 0 && (
+              <div className="shrink-0 space-y-3 border-t border-[var(--border)] bg-[var(--bg-surface)] p-4 sm:p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-xl">
+                <div className="flex items-center justify-between font-mono">
+                  <span className="text-xs font-bold tracking-wider text-[var(--text-secondary)] uppercase">
+                    ESTIMATED TOTAL
+                  </span>
+                  <span className="text-base font-bold text-[var(--text-primary)] dark:text-[var(--accent)]">
+                    {formatPrice(metrics.total)}
+                  </span>
                 </div>
 
-                {/* Payment Button */}
+                {/* Prominent Payment Error Alert directly above CTA */}
+                {paymentError && (
+                  <div
+                    role="alert"
+                    className="flex items-start justify-between gap-2 border border-red-500/40 bg-red-500/10 p-2.5 font-mono text-xs text-red-500"
+                  >
+                    <span className="leading-tight">{paymentError}</span>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentError(null)}
+                      className="p-1 text-red-500 hover:text-red-400 shrink-0"
+                      aria-label="Dismiss payment error"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                )}
+
+                {/* Payment CTA Button */}
                 <Button
                   onClick={handleRazorpayCheckout}
                   disabled={isProcessing}

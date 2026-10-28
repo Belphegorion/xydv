@@ -20,7 +20,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://xydv-performance.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://xydv.duckdns.org'),
   title: {
     default: 'XYDV — Premium Performance Fashion',
     template: '%s | XYDV',
@@ -43,10 +43,11 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: '/brand/xydv-logo.png', sizes: '180x180', type: 'image/png' }],
   },
+  manifest: '/manifest.json',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://xydv-performance.com',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://xydv.duckdns.org',
     siteName: 'XYDV',
     title: 'XYDV — Premium Performance Fashion',
     description: 'Premium performance fashion engineered for the relentless.',

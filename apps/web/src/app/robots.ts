@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin', '/admin/*'],
       },
     ],
-    sitemap: 'https://xydv-performance.com/sitemap.xml',
+    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://xydv.duckdns.org'}/sitemap.xml`,
   };
 }

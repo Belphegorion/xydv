@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
       <div className="mb-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase transition-colors hover:text-[var(--text-primary)]"
+          className="inline-flex min-h-[44px] items-center gap-2 py-2 px-1 font-mono text-xs tracking-wider text-[var(--text-muted)] uppercase transition-colors hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
         >
           <ArrowLeft size={14} />
           <span>Return to Storefront</span>

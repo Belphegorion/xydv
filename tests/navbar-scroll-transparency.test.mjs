@@ -96,13 +96,13 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
   it('5. Navigation links and actions use high-contrast white text when transparent', () => {
     assert.match(
       primaryContent,
-      /isElevated\s*\?\s*['"]text-\[var\(--text-secondary\)\] hover:text-\[var\(--text-primary\)\]['"]\s*:\s*['"]text-zinc-300 hover:text-white['"]/,
-      'Nav links must resolve to text-zinc-300 hover:text-white when not elevated',
+      /isElevated\s*\?\s*['"]text-\[var\(--text-secondary\)\] hover:text-\[var\(--text-primary\)\]['"]\s*:\s*['"]text-zinc-900 dark:text-zinc-300 hover:text-black dark:hover:text-white['"]/,
+      'Nav links must resolve to high-contrast tokens in light and dark mode when not elevated',
     );
     assert.match(
       primaryContent,
-      /isElevated\s*\?\s*['"]text-\[var\(--text-primary\)\]['"]\s*:\s*['"]text-white['"]/,
-      'Mobile hamburger button must resolve to text-white when not elevated',
+      /isElevated\s*\?\s*['"]text-\[var\(--text-primary\)\]['"]\s*:\s*['"]text-zinc-900 dark:text-white['"]/,
+      'Mobile hamburger button must resolve to text-zinc-900 dark:text-white when not elevated',
     );
   });
 
@@ -168,8 +168,8 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
         const forceWhite = !isElevated;
         const linkClass = isElevated
           ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-          : 'text-zinc-300 hover:text-white';
-        const hamburgerClass = isElevated ? 'text-[var(--text-primary)]' : 'text-white';
+          : 'text-zinc-900 dark:text-zinc-300 hover:text-black dark:hover:text-white';
+        const hamburgerClass = isElevated ? 'text-[var(--text-primary)]' : 'text-zinc-900 dark:text-white';
         return { isElevated, bgClass, forceWhite, linkClass, hamburgerClass, heroActive };
       }
 
@@ -185,8 +185,8 @@ describe('Navbar Hero Scroll Transparency & Visibility Contract', () => {
     assert.equal(s.isElevated, false);
     assert.equal(s.bgClass, 'bg-transparent border-b border-transparent');
     assert.equal(s.forceWhite, true);
-    assert.equal(s.linkClass, 'text-zinc-300 hover:text-white');
-    assert.equal(s.hamburgerClass, 'text-white');
+    assert.equal(s.linkClass, 'text-zinc-900 dark:text-zinc-300 hover:text-black dark:hover:text-white');
+    assert.equal(s.hamburgerClass, 'text-zinc-900 dark:text-white');
 
     // Scrubbing at progress 0.20 (scrollY = 450)
     sim.onScroll(450);

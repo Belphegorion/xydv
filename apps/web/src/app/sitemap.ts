@@ -2,7 +2,10 @@ import type { MetadataRoute } from 'next';
 import { CATALOG_PRODUCTS } from '@/lib/catalog';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://xydv-performance.com';
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    'https://xydv.duckdns.org';
 
   const staticRoutes = [
     '',

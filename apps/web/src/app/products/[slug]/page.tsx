@@ -633,6 +633,8 @@ export default function ProductDetailPage({ params }: PageProps) {
                     key={img + tIdx}
                     type="button"
                     onClick={() => setActiveImageIdx(tIdx)}
+                    aria-label={`View photo ${tIdx + 1} of ${product.name}`}
+                    aria-current={tIdx === activeImageIdx ? 'true' : undefined}
                     className={`relative aspect-[3/4] overflow-hidden border transition-[border-color,opacity] duration-150 ${
                       tIdx === activeImageIdx
                         ? 'border-[var(--text-primary)] ring-1 ring-[var(--text-primary)]'
@@ -778,6 +780,8 @@ export default function ProductDetailPage({ params }: PageProps) {
                       type="button"
                       disabled={disabled}
                       onClick={() => setSelectedSize(s)}
+                      aria-pressed={selectedSize === s}
+                      aria-label={`Select size ${s}${selectedSize === s ? ', selected' : ''}${disabled ? ', out of stock' : ''}`}
                       className={`flex h-11 items-center justify-center font-mono text-xs font-bold uppercase transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] ${
                         selectedSize === s
                           ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] shadow-sm'
