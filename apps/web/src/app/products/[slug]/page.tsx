@@ -670,7 +670,7 @@ export default function ProductDetailPage({ params }: PageProps) {
               <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                 {`${product.gender.toUpperCase()}'S DIVISION // ${product.specsSummary}`}
               </span>
-              <h1 className="font-heading mt-1 text-2xl font-black tracking-tight text-[var(--text-primary)] uppercase sm:text-3xl lg:text-4xl">
+              <h1 className="font-heading mt-1 text-2xl font-black tracking-tight text-balance text-[var(--text-primary)] uppercase sm:text-3xl md:text-4xl">
                 {product.name}
               </h1>
 
@@ -771,7 +771,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                 </Link>
               </div>
 
-              <div className={`grid ${sizes.length === 1 ? 'grid-cols-1' : 'grid-cols-6'} gap-1.5`}>
+              <div className={`grid ${sizes.length === 1 ? 'grid-cols-1' : 'grid-cols-3 sm:grid-cols-6'} gap-1.5`}>
                 {sizes.map((s) => {
                   const disabled = isSizeDisabled(s);
                   return (
@@ -890,15 +890,15 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <button
                   type="button"
                   onClick={() => toggleAccordion('materials')}
-                  className="touch-target flex w-full items-center justify-between py-4 text-left focus:outline-none"
+                  className="touch-target flex w-full items-center justify-between gap-2 py-4 text-left focus:outline-none"
                 >
-                  <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
+                  <span className="flex-1 min-w-0 font-mono text-[11px] sm:text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                     01 // TEXTILE & MATERIAL ENGINEERING
                   </span>
                   <CaretDown
                     size={14}
                     weight="bold"
-                    className={`text-[var(--text-secondary)] transition-transform duration-200 ${
+                    className={`shrink-0 text-[var(--text-secondary)] transition-transform duration-200 ${
                       openAccordion === 'materials' ? 'rotate-180' : ''
                     }`}
                   />
@@ -940,15 +940,15 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <button
                   type="button"
                   onClick={() => toggleAccordion('biomechanics')}
-                  className="touch-target flex w-full items-center justify-between py-4 text-left focus:outline-none"
+                  className="touch-target flex w-full items-center justify-between gap-2 py-4 text-left focus:outline-none"
                 >
-                  <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
+                  <span className="flex-1 min-w-0 font-mono text-[11px] sm:text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                     02 // ATHLETIC BIOMECHANICS & FIT
                   </span>
                   <CaretDown
                     size={14}
                     weight="bold"
-                    className={`text-[var(--text-secondary)] transition-transform duration-200 ${
+                    className={`shrink-0 text-[var(--text-secondary)] transition-transform duration-200 ${
                       openAccordion === 'biomechanics' ? 'rotate-180' : ''
                     }`}
                   />
@@ -973,15 +973,15 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <button
                   type="button"
                   onClick={() => toggleAccordion('care')}
-                  className="touch-target flex w-full items-center justify-between py-4 text-left focus:outline-none"
+                  className="touch-target flex w-full items-center justify-between gap-2 py-4 text-left focus:outline-none"
                 >
-                  <span className="font-mono text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
+                  <span className="flex-1 min-w-0 font-mono text-[11px] sm:text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
                     03 // CARE & LONGEVITY PROTOCOL
                   </span>
                   <CaretDown
                     size={14}
                     weight="bold"
-                    className={`text-[var(--text-secondary)] transition-transform duration-200 ${
+                    className={`shrink-0 text-[var(--text-secondary)] transition-transform duration-200 ${
                       openAccordion === 'care' ? 'rotate-180' : ''
                     }`}
                   />

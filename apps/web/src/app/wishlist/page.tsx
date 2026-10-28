@@ -134,7 +134,7 @@ export default function WishlistPage() {
                 SAVED HARDWARE ARCHIVE
               </span>
             </div>
-            <h1 className="font-heading text-3xl font-black tracking-tight text-[var(--text-primary)] uppercase sm:text-4xl">
+            <h1 className="font-heading text-2xl font-black tracking-tight text-balance text-[var(--text-primary)] uppercase sm:text-3xl md:text-4xl">
               PERSONAL LOCKER
             </h1>
             <p className="mt-2 font-sans text-xs text-[var(--text-secondary)] sm:text-sm">

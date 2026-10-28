@@ -283,7 +283,7 @@ export function Navbar() {
           {/* ============================================================ */}
           <div className="flex items-center">
             {/* Mobile Hamburger Toggle */}
-            <div className="md:hidden flex items-center">
+            <div className="lg:hidden flex items-center">
               <button
                 ref={triggerRef}
                 onClick={toggleMobileOpen}
@@ -301,7 +301,7 @@ export function Navbar() {
             {/* Desktop Navigation Links */}
             <nav
               aria-label="Main navigation"
-              className="hidden md:flex items-center gap-1.5 md:gap-2 lg:gap-6 relative"
+              className="hidden lg:flex items-center gap-1.5 md:gap-2 lg:gap-6 relative"
               onMouseLeave={() => setHoveredLink(null)}
             >
               {navLinks.map((link) => (

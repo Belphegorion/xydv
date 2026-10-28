@@ -498,7 +498,7 @@ export function HeroSection() {
                   }}
                   className="flex items-baseline gap-3"
                 >
-                  <span className="block text-[clamp(1.8rem,5vw,4.25rem)] leading-[0.92] font-extrabold tracking-tight text-white uppercase [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]">
+                  <span className="block text-[clamp(1.4rem,4.5vw,4.25rem)] leading-[0.92] font-extrabold tracking-tight text-white uppercase [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]">
                     SWEATSHIELD+
                   </span>
                   <span className="font-mono text-xs font-bold tracking-widest text-[#E8FF00] sm:text-sm">
@@ -518,7 +518,7 @@ export function HeroSection() {
                     className="h-[2px] w-6 shrink-0 bg-[#E8FF00] shadow-[0_0_8px_rgba(232,255,0,0.6)] sm:w-10"
                     aria-hidden="true"
                   />
-                  <span className="font-mono text-[clamp(1.1rem,3vw,2.5rem)] leading-none font-bold tracking-wider text-[#E8FF00] uppercase [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
+                  <span className="font-mono text-[clamp(1rem,2.8vw,2.5rem)] leading-none font-bold tracking-wider text-[#E8FF00] uppercase [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
                     4-WAY REBOUND
                   </span>
                   <span className="font-mono text-[10px] tracking-widest text-zinc-400 uppercase sm:text-xs">
@@ -532,9 +532,9 @@ export function HeroSection() {
                     x: shouldReduceMotion ? 0 : stage1Rung3X,
                     y: shouldReduceMotion ? 0 : stage1Rung3Y,
                   }}
-                  className="pl-8 sm:pl-16 md:pl-24"
+                  className="pl-4 sm:pl-16 md:pl-24"
                 >
-                  <span className="block text-[clamp(1.5rem,4.5vw,3.75rem)] leading-[0.92] font-black tracking-tight text-white uppercase [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
+                  <span className="block text-[clamp(1.3rem,4vw,3.75rem)] leading-[0.92] font-black tracking-tight text-white uppercase [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
                     ZERO SATURATION
                   </span>
                 </motion.div>
@@ -667,7 +667,7 @@ export function HeroSection() {
                     x: shouldReduceMotion ? 0 : climaxRung1X,
                     y: shouldReduceMotion ? 0 : climaxRung1Y,
                   }}
-                  className="block text-[clamp(2rem,5.5vw,5rem)] leading-[0.92] font-extrabold tracking-tight text-white uppercase [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]"
+                  className="block text-[clamp(1.5rem,5vw,5rem)] leading-[0.92] font-extrabold tracking-tight text-white uppercase [text-shadow:_0_2px_20px_rgb(0_0_0_/_90%)]"
                 >
                   ENGINEERED
                 </motion.span>
@@ -684,7 +684,7 @@ export function HeroSection() {
                     className="h-[2px] w-6 shrink-0 bg-[#E8FF00] shadow-[0_0_8px_rgba(232,255,0,0.6)] sm:w-10"
                     aria-hidden="true"
                   />
-                  <span className="font-mono text-[clamp(1.2rem,3.2vw,2.75rem)] leading-none font-bold tracking-wider text-[#E8FF00] uppercase [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
+                  <span className="font-mono text-[clamp(1.1rem,3vw,2.75rem)] leading-none font-bold tracking-wider text-[#E8FF00] uppercase [text-shadow:_0_2px_14px_rgb(0_0_0_/_80%)]">
                     FOR THE
                   </span>
                   <span className="font-mono text-[10px] tracking-widest text-zinc-400 uppercase sm:text-xs">
@@ -698,9 +698,9 @@ export function HeroSection() {
                     x: shouldReduceMotion ? 0 : climaxRung3X,
                     y: shouldReduceMotion ? 0 : climaxRung3Y,
                   }}
-                  className="pl-8 sm:pl-16 md:pl-24"
+                  className="pl-4 sm:pl-16 md:pl-24"
                 >
-                  <span className="block text-[clamp(2.2rem,6.2vw,5.5rem)] leading-[0.92] font-black tracking-tight text-white uppercase [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
+                  <span className="block text-[clamp(1.6rem,5.5vw,5.5rem)] leading-[0.92] font-black tracking-tight text-white uppercase [text-shadow:_0_2px_24px_rgb(0_0_0_/_95%)]">
                     RELENTLESS
                   </span>
                 </motion.div>
