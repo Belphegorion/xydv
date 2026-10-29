@@ -1580,7 +1580,7 @@ export class AdminService {
       ip: data.ip
         ? crypto
             .createHash('sha256')
-            .update(data.ip + (process.env.IP_SALT || 'xydv-telemetry-salt'))
+            .update(data.ip + (process.env.IP_SALT || env.IP_SALT || 'xydv-telemetry-salt'))
             .digest('hex')
             .substring(0, 16)
         : undefined,

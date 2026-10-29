@@ -2,6 +2,20 @@
  * PM2 Process Management Configuration for XYDV Platform
  * Target: AWS EC2 / Containerised Linux Environments
  */
+const path = require('path');
+const fs = require('fs');
+
+const webDir = path.resolve(__dirname, 'apps/web');
+const rootNextBin = path.resolve(__dirname, 'node_modules/next/dist/bin/next');
+const webNextBin = path.resolve(webDir, 'node_modules/next/dist/bin/next');
+
+// Dynamically resolve Next.js CLI binary across hoisted monorepo node_modules
+const nextScript = fs.existsSync(webNextBin)
+  ? 'node_modules/next/dist/bin/next'
+  : fs.existsSync(rootNextBin)
+  ? '../../node_modules/next/dist/bin/next'
+  : 'node_modules/next/dist/bin/next';
+
 module.exports = {
   apps: [
     {
@@ -30,7 +44,7 @@ module.exports = {
     {
       name: 'xydv-web',
       cwd: './apps/web',
-      script: 'node_modules/next/dist/bin/next',
+      script: nextScript,
       args: 'start -p 3000',
       instances: 1,
       exec_mode: 'fork',

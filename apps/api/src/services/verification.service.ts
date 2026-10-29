@@ -10,6 +10,7 @@ import type {
   VerificationPurpose,
   VerificationSendResponse,
 } from '@vertex/types';
+import env from '../config/env';
 
 export { type IVerificationChallenge };
 
@@ -47,7 +48,7 @@ export class VerificationService {
   }
 
   private static getPepper(): string {
-    return process.env.OTP_PEPPER || 'xydv-default-secure-otp-pepper-2026';
+    return process.env.OTP_PEPPER || env.OTP_PEPPER || 'xydv-default-secure-otp-pepper-2026';
   }
 
   public static generateOtp(digits = 6): string {

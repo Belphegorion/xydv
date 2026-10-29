@@ -143,6 +143,12 @@ JWT_REFRESH_SECRET=ANOTHER_64_CHARACTER_RANDOM_HEX_SECRET_STRING_HERE
 JWT_EXPIRE=15m
 JWT_REFRESH_EXPIRE=30d
 
+# Account Verification HMAC Pepper (Workstream B - generate with: openssl rand -hex 32)
+OTP_PEPPER=YOUR_64_CHARACTER_RANDOM_HEX_PEPPER_STRING_HERE
+
+# Telemetry IP Pseudonymization Salt (Workstream A - generate with: openssl rand -hex 16)
+IP_SALT=YOUR_32_CHARACTER_RANDOM_HEX_SALT_STRING_HERE
+
 # Storefront Client Origin
 CLIENT_URL=https://yourdomain.com
 
@@ -150,6 +156,12 @@ CLIENT_URL=https://yourdomain.com
 RAZORPAY_KEY_ID=rzp_live_XXXXXXXXXXXXXX
 RAZORPAY_KEY_SECRET=YOUR_RAZORPAY_KEY_SECRET
 RAZORPAY_WEBHOOK_SECRET=YOUR_RAZORPAY_WEBHOOK_SECRET
+
+# AWS SES / SNS Transactional Notifications (Workstream B & C)
+AWS_REGION=ap-south-1
+SES_FROM_EMAIL=orders@yourdomain.com
+DLT_ENTITY_ID=
+DLT_TEMPLATE_ID=
 
 # Cloudinary CDN Storage (Free Tier)
 CLOUDINARY_CLOUD_NAME=your_cloud_name
@@ -166,6 +178,8 @@ Paste:
 ```env
 NEXT_PUBLIC_API_URL=/api
 NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_live_XXXXXXXXXXXXXX
+# NextAuth Authentication Secret (generate with: openssl rand -hex 32)
+AUTH_SECRET=YOUR_64_CHARACTER_RANDOM_HEX_SECRET_STRING_HERE
 ```
 
 ---
@@ -215,6 +229,9 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
+> [!NOTE]
+> **Real-Time Order Tracking (SSE)**: The Nginx configuration automatically provisions dedicated `/api/orders/` and `/api/tracking/` location blocks with `proxy_buffering off;`, `X-Accel-Buffering no;`, `proxy_read_timeout 1h;`, and `gzip off;` to support persistent Server-Sent Events (SSE) connections for live shipment progress updates.
+
 4. Run Certbot to generate and install free automated SSL certificates:
 ```bash
 sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
@@ -253,6 +270,33 @@ pm2 logs xydv-web
 sudo tail -f /var/log/nginx/access.log
 sudo tail -f /var/log/nginx/error.log
 ```
+
+### Post-Deployment Verification Checklist
+Run these commands to verify that all systems are healthy:
+
+1. **Verify Backend API Health & Database Connectivity:**
+   ```bash
+   curl -i http://localhost:5000/api/health
+   # Expected: HTTP/1.1 200 OK {"status":"ok","db":"connected",...}
+   ```
+
+2. **Verify Frontend Storefront:**
+   ```bash
+   curl -i http://localhost:3000/
+   # Expected: HTTP/1.1 200 OK
+   ```
+
+3. **Verify Public HTTPS & Security Headers:**
+   ```bash
+   curl -i https://yourdomain.com/api/health
+   # Verify Strict-Transport-Security, X-Frame-Options, X-Content-Type-Options: nosniff
+   ```
+
+4. **Verify Real-Time SSE Stream Headers:**
+   ```bash
+   curl -N -i https://yourdomain.com/api/orders/000000000000000000000000/stream
+   # Verify: Content-Type: text/event-stream, X-Accel-Buffering: no, Cache-Control: no-cache
+   ```
 
 ### Performing Zero-Downtime Updates
 When you push code changes to GitHub, deploy them to the EC2 server in one command:

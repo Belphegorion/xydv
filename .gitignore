@@ -12,6 +12,7 @@
 .roo/
 .roomodes
 .clinerules
+skills-lock.json
 
 # ------------------------------------------------------------------------------
 # Documentation & Markdown Files (except project README)

@@ -27,6 +27,12 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
+  OTP_PEPPER: z.string().default('xydv-default-secure-otp-pepper-2026'),
+  IP_SALT: z.string().default('xydv-telemetry-salt'),
+  AWS_REGION: z.string().default('ap-south-1'),
+  SES_FROM_EMAIL: z.string().optional(),
+  DLT_ENTITY_ID: z.string().optional(),
+  DLT_TEMPLATE_ID: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -48,10 +54,18 @@ if (process.env.NODE_ENV === 'production') {
 
   if (
     isTemplatePlaceholder(process.env.JWT_SECRET) ||
-    isTemplatePlaceholder(process.env.JWT_REFRESH_SECRET)
+    isTemplatePlaceholder(process.env.JWT_REFRESH_SECRET) ||
+    isTemplatePlaceholder(process.env.OTP_PEPPER) ||
+    isTemplatePlaceholder(process.env.IP_SALT)
   ) {
     throw new Error(
       'Fatal: Default placeholder secrets detected in production. You must configure secure values.',
+    );
+  }
+
+  if (!process.env.OTP_PEPPER || process.env.OTP_PEPPER === 'xydv-default-secure-otp-pepper-2026') {
+    console.warn(
+      '⚠️ [SECURITY NOTICE] OTP_PEPPER is unset or using default pepper. Configure a high-entropy secret in production.',
     );
   }
 
