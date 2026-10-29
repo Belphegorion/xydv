@@ -3,10 +3,18 @@
  */
 
 export type OrderStatus =
-  'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  | 'pending'
+  | 'placed'
+  | 'confirmed'
+  | 'processing'
+  | 'packed'
+  | 'shipped'
+  | 'out_for_delivery'
+  | 'delivered'
+  | 'cancelled';
 
 export type PaymentStatus =
-  'pending' | 'captured' | 'failed' | 'refunded' | 'refunding' | 'partially_refunded';
+  | 'pending' | 'captured' | 'failed' | 'refunded' | 'refunding' | 'partially_refunded';
 
 export interface OrderItem {
   productId: string;
@@ -48,6 +56,47 @@ export interface OrderUserRef {
   email?: string;
 }
 
+export interface OrderStatusEvent {
+  _id?: string;
+  id?: string;
+  orderId: string;
+  status: OrderStatus;
+  previousStatus?: string;
+  note?: string;
+  visibility: 'customer' | 'internal';
+  actor?: {
+    userId?: string;
+    name: string;
+    role: string;
+  };
+  carrier?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  etaDate?: string | Date;
+  estimatedDelivery?: string;
+  idempotencyKey?: string;
+  createdAt: string | Date;
+}
+
+export interface ShipmentDetails {
+  carrier?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  estimatedDelivery?: string | Date;
+}
+
+export interface OrderTimelineResponse {
+  orderId: string;
+  currentStatus: OrderStatus;
+  carrier?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  estimatedDelivery?: string | Date;
+  shipment?: ShipmentDetails;
+  events?: OrderStatusEvent[];
+  timeline: OrderStatusEvent[];
+}
+
 export interface Order {
   _id: string;
   userId?: string | OrderUserRef | null;
@@ -64,7 +113,10 @@ export interface Order {
   razorpayPaymentId?: string;
   razorpaySignature?: string;
   paymentIntentId?: string; // backward-compat optional
+  carrier?: string;
   trackingNumber?: string;
+  trackingUrl?: string;
+  estimatedDelivery?: string;
   notes?: string;
   refundAmount?: number;
   refundReason?: string;

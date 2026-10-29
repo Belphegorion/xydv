@@ -22,6 +22,11 @@ export interface User {
   name: string;
   email: string;
   role: 'customer' | 'admin';
+  phone?: string;
+  isPhoneVerified: boolean;
+  isEmailVerified: boolean;
+  phoneVerifiedAt?: string;
+  emailVerifiedAt?: string;
   avatar?: string;
   loyaltyPoints: number;
   isBlocked?: boolean;

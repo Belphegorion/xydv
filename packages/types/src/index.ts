@@ -10,3 +10,4 @@ export * from './common';
 export * from './notification';
 export * from './coupon';
 export * from './discount';
+export * from './verification';

@@ -53,3 +53,16 @@ export const couponLimiter = rateLimit({
   },
 });
 
+export const verificationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  skip: () => isTest(),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: 'Too many verification attempts from this IP. Please try again later.',
+    message: 'Too many verification attempts from this IP. Please try again later.',
+  },
+});
+

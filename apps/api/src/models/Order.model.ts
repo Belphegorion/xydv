@@ -55,7 +55,10 @@ export interface IOrder extends Document {
   razorpayPaymentId?: string;
   razorpaySignature?: string;
   paymentIntentId?: string;
+  carrier?: string;
   trackingNumber?: string;
+  trackingUrl?: string;
+  estimatedDelivery?: Date;
   notes?: string;
   refundAmount?: number;
   refundReason?: string;
@@ -101,7 +104,17 @@ const orderSchema = new mongoose.Schema<IOrder>(
     total: { type: Number, required: true, min: 0 },
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
+      enum: [
+        'pending',
+        'placed',
+        'confirmed',
+        'processing',
+        'packed',
+        'shipped',
+        'out_for_delivery',
+        'delivered',
+        'cancelled',
+      ],
       default: 'pending',
     },
     paymentStatus: {
@@ -124,7 +137,10 @@ const orderSchema = new mongoose.Schema<IOrder>(
     razorpayPaymentId: String,
     razorpaySignature: { type: String, select: false },
     paymentIntentId: String,
+    carrier: String,
     trackingNumber: String,
+    trackingUrl: String,
+    estimatedDelivery: Date,
     notes: String,
     refundAmount: Number,
     refundReason: String,

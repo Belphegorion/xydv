@@ -24,6 +24,9 @@ import { invalidateStoreSettingsCache } from './order.service';
 import { UPLOADS_DIR } from '../middleware/upload';
 import { logger } from '../config/logger';
 import { couponService } from './coupon.service';
+import { OrderStatusEvent } from '../models/OrderStatusEvent.model';
+import { orderTrackingEmitter } from './orderTracking.service';
+import type { OrderStatusEvent as OrderStatusEventType } from '@vertex/types';
 
 export interface AdminProductInput extends Partial<Omit<IProduct, 'variants' | 'images'>> {
   variants?: Array<Partial<IProductVariant>>;
@@ -625,6 +628,10 @@ export class AdminService {
     trackingNumber?: string,
     adminId?: string,
     ip?: string,
+    carrier?: string,
+    trackingUrl?: string,
+    estimatedDelivery?: Date | string,
+    note?: string,
   ) {
     if (!mongoose.isValidObjectId(id)) {
       throw new AppError('Order not found', 404);
@@ -632,15 +639,18 @@ export class AdminService {
 
     const validStatuses = [
       'pending',
+      'placed',
       'confirmed',
       'processing',
+      'packed',
       'shipped',
+      'out_for_delivery',
       'delivered',
       'cancelled',
     ];
     if (!status || !validStatuses.includes(status)) {
       throw new AppError(
-        'Invalid order status. Must be pending, confirmed, processing, shipped, delivered, or cancelled.',
+        'Invalid order status. Must be pending, placed, confirmed, processing, packed, shipped, out_for_delivery, delivered, or cancelled.',
         400,
       );
     }
@@ -651,9 +661,12 @@ export class AdminService {
     const previousStatus = order.status;
     const ALLOWED_TRANSITIONS: Record<string, string[]> = {
       pending: ['confirmed', 'cancelled'],
-      confirmed: ['processing', 'cancelled'],
-      processing: ['shipped', 'cancelled'],
-      shipped: ['delivered', 'cancelled'],
+      placed: ['confirmed', 'cancelled'],
+      confirmed: ['processing', 'packed', 'cancelled'],
+      processing: ['packed', 'shipped', 'cancelled'],
+      packed: ['shipped', 'cancelled'],
+      shipped: ['out_for_delivery', 'delivered', 'cancelled'],
+      out_for_delivery: ['delivered', 'cancelled'],
       delivered: [], // Terminal
       cancelled: [], // Terminal
     };
@@ -674,6 +687,16 @@ export class AdminService {
     order.status = status as OrderStatus;
     if (trackingNumber !== undefined) {
       order.trackingNumber = trackingNumber;
+    }
+    if (carrier !== undefined) {
+      order.carrier = carrier;
+    }
+    if (trackingUrl !== undefined) {
+      order.trackingUrl = trackingUrl;
+    }
+    if (estimatedDelivery !== undefined) {
+      order.estimatedDelivery =
+        typeof estimatedDelivery === 'string' ? new Date(estimatedDelivery) : estimatedDelivery;
     }
 
     // When transitioning to cancelled from a confirmed/processing/shipped state:
@@ -742,6 +765,54 @@ export class AdminService {
       details: { fromStatus: previousStatus, toStatus: status, trackingNumber },
       ip,
     });
+
+    try {
+      const statusEvent = await OrderStatusEvent.create({
+        orderId: order._id,
+        status: order.status,
+        previousStatus: previousStatus as OrderStatus,
+        note,
+        visibility: 'customer',
+        actor: {
+          userId:
+            adminId && mongoose.isValidObjectId(adminId)
+              ? new mongoose.Types.ObjectId(adminId)
+              : undefined,
+          name: 'Admin',
+          role: 'admin',
+        },
+        carrier: order.carrier,
+        trackingNumber: order.trackingNumber,
+        trackingUrl: order.trackingUrl,
+        estimatedDelivery: order.estimatedDelivery,
+        idempotencyKey: `evt_${id}_${status}_${Date.now()}`,
+      });
+
+      const ssePayload: OrderStatusEventType = {
+        _id: statusEvent._id.toString(),
+        orderId: order._id.toString(),
+        status: statusEvent.status,
+        previousStatus: statusEvent.previousStatus,
+        note: statusEvent.note,
+        visibility: statusEvent.visibility,
+        carrier: statusEvent.carrier,
+        trackingNumber: statusEvent.trackingNumber,
+        trackingUrl: statusEvent.trackingUrl,
+        estimatedDelivery: statusEvent.estimatedDelivery
+          ? statusEvent.estimatedDelivery.toISOString()
+          : undefined,
+        etaDate: statusEvent.estimatedDelivery
+          ? statusEvent.estimatedDelivery.toISOString()
+          : undefined,
+        createdAt: statusEvent.createdAt.toISOString(),
+      };
+
+      orderTrackingEmitter.emit(`order_update:${id}`, ssePayload);
+    } catch (emitErr) {
+      logger.warn('Failed to emit live order tracking event from admin.service', {
+        error: emitErr instanceof Error ? emitErr.message : String(emitErr),
+      });
+    }
 
     return order;
   }

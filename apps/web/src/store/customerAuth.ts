@@ -9,6 +9,10 @@ export interface CustomerUser {
   email: string;
   role?: string;
   phone?: string;
+  isPhoneVerified?: boolean;
+  isEmailVerified?: boolean;
+  phoneVerifiedAt?: string;
+  emailVerifiedAt?: string;
   avatar?: string;
 }
 

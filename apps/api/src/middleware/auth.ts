@@ -106,3 +106,55 @@ export function requireAdmin(req: Request, _res: Response, next: NextFunction): 
     next();
   });
 }
+
+export async function optionalAuth(req: Request, _res: Response, next: NextFunction): Promise<void> {
+  const header = req.headers.authorization;
+  const token = header?.startsWith('Bearer ')
+    ? header.split(' ')[1]
+    : (req.query?.token as string | undefined);
+
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const payload = verifyToken(token);
+    req.user = payload;
+    next();
+  } catch {
+    // If token invalid in optionalAuth, continue as unauthenticated guest
+    next();
+  }
+}
+
+export function requireVerified(options: { email?: boolean; phone?: boolean }) {
+  return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+    if (!req.user?._id) {
+      return next(new AppError('Authentication required', 401));
+    }
+
+    try {
+      const user = await User.findById(req.user._id).select('isEmailVerified isPhoneVerified role').lean();
+      if (!user) {
+        return next(new AppError('User not found', 404));
+      }
+
+      // Admins bypass customer verification requirements
+      if (user.role === 'admin') {
+        return next();
+      }
+
+      if (options.email && !user.isEmailVerified) {
+        return next(new AppError('Email verification required to access this resource.', 403));
+      }
+
+      if (options.phone && !user.isPhoneVerified) {
+        return next(new AppError('Phone verification required to access this resource.', 403));
+      }
+
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+}

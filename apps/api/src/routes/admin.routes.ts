@@ -18,6 +18,8 @@ import {
   idParamSchema,
 } from '../validators/admin.schema';
 import { updateOrderStatusSchema } from '../validators/order.schema';
+import { OrderTrackingController } from '../controllers/orderTracking.controller';
+import { updateOrderStatusTrackingSchema } from '../validators/orderTracking.schema';
 import { notificationController } from '../controllers/notification.controller';
 import { couponController } from '../controllers/coupon.controller';
 import { discountController } from '../controllers/discount.controller';
@@ -105,6 +107,16 @@ router.patch(
   '/orders/:id/status',
   validateRequest(updateOrderStatusSchema),
   adminController.updateOrderStatus.bind(adminController),
+);
+router.post(
+  '/orders/:id/status',
+  validateRequest(updateOrderStatusTrackingSchema),
+  OrderTrackingController.updateStatus,
+);
+router.post(
+  '/orders/:orderId/status',
+  validateRequest(updateOrderStatusTrackingSchema),
+  OrderTrackingController.updateStatus,
 );
 router.post(
   '/orders/:id/refund',

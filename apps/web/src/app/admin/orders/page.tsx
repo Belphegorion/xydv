@@ -45,6 +45,8 @@ function AdminOrdersContent() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [newStatus, setNewStatus] = useState<OrderStatus>('processing');
   const [trackingNumber, setTrackingNumber] = useState('');
+  const [carrier, setCarrier] = useState('');
+  const [trackingUrl, setTrackingUrl] = useState('');
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   // Refund dialog state
@@ -104,6 +106,8 @@ function AdminOrdersContent() {
     setSelectedOrder(order);
     setNewStatus(order.status);
     setTrackingNumber(order.trackingNumber || '');
+    setCarrier(order.carrier || '');
+    setTrackingUrl(order.trackingUrl || '');
   };
 
   const handleUpdateStatus = async (e: React.FormEvent) => {
@@ -116,6 +120,8 @@ function AdminOrdersContent() {
       const res = await api.patch<{ data: Order }>(`/admin/orders/${selectedOrder._id}/status`, {
         status: newStatus,
         trackingNumber: trackingNumber.trim() || undefined,
+        carrier: carrier.trim() || undefined,
+        trackingUrl: trackingUrl.trim() || undefined,
       });
 
       setSelectedOrder(res.data);
@@ -678,7 +684,7 @@ function AdminOrdersContent() {
 
                 <form
                   onSubmit={handleUpdateStatus}
-                  className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+                  className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
                 >
                   <div>
                     <label className="mb-1 block font-mono text-[10px] text-[var(--text-secondary)] uppercase">
@@ -686,10 +692,13 @@ function AdminOrdersContent() {
                     </label>
                     {(() => {
                       const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+                        placed: ['confirmed', 'cancelled'],
                         pending: ['confirmed', 'cancelled'],
-                        confirmed: ['processing', 'cancelled'],
+                        confirmed: ['packed', 'processing', 'cancelled'],
+                        packed: ['shipped', 'cancelled'],
                         processing: ['shipped', 'cancelled'],
-                        shipped: ['delivered', 'cancelled'],
+                        shipped: ['out_for_delivery'],
+                        out_for_delivery: ['delivered'],
                         delivered: [],
                         cancelled: [],
                       };
@@ -719,18 +728,44 @@ function AdminOrdersContent() {
 
                   <div>
                     <label className="mb-1 block font-mono text-[10px] text-[var(--text-secondary)] uppercase">
+                      Carrier Partner
+                    </label>
+                    <input
+                      type="text"
+                      value={carrier}
+                      onChange={(e) => setCarrier(e.target.value)}
+                      placeholder="e.g. Blue Dart, Delhivery"
+                      className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block font-mono text-[10px] text-[var(--text-secondary)] uppercase">
                       Tracking Number
                     </label>
                     <input
                       type="text"
                       value={trackingNumber}
                       onChange={(e) => setTrackingNumber(e.target.value)}
-                      placeholder="e.g. FEDEX-98124018"
+                      placeholder="e.g. BD-98124018"
                       className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                     />
                   </div>
 
-                  <div className="flex items-end">
+                  <div>
+                    <label className="mb-1 block font-mono text-[10px] text-[var(--text-secondary)] uppercase">
+                      Tracking URL
+                    </label>
+                    <input
+                      type="url"
+                      value={trackingUrl}
+                      onChange={(e) => setTrackingUrl(e.target.value)}
+                      placeholder="https://track.bluedart.com/..."
+                      className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                    />
+                  </div>
+
+                  <div className="flex items-end sm:col-span-2 lg:col-span-4">
                     <button
                       type="submit"
                       disabled={

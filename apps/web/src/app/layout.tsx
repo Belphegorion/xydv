@@ -9,6 +9,7 @@ import { NotificationManager } from '@/components/store/NotificationManager';
 import { RouteTelemetry } from '@/components/telemetry/RouteTelemetry';
 import { SmoothCursor } from '@/components/ui/SmoothCursor';
 import { InitialLoadingScreen } from '@/components/ui/InitialLoadingScreen';
+import { VerificationBanner } from '@/components/layout/VerificationBanner';
 import { Providers } from './providers';
 
 const dmSans = DM_Sans({
@@ -103,6 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Skip to main content
           </a>
           <SmoothCursor />
+          <VerificationBanner />
           <Navbar />
           <main id="main-content">{children}</main>
           <Footer />

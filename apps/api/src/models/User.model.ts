@@ -4,6 +4,11 @@ import bcrypt from 'bcryptjs';
 export interface IUser extends Document {
   name: string;
   email: string;
+  phone?: string;
+  isEmailVerified: boolean;
+  emailVerifiedAt?: Date;
+  isPhoneVerified: boolean;
+  phoneVerifiedAt?: Date;
   password?: string;
   role: 'customer' | 'admin';
   avatar?: string;
@@ -56,6 +61,11 @@ const userSchema = new mongoose.Schema<IUser>(
       lowercase: true,
       match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     },
+    phone: { type: String, trim: true, sparse: true },
+    isEmailVerified: { type: Boolean, default: false },
+    emailVerifiedAt: { type: Date },
+    isPhoneVerified: { type: Boolean, default: false },
+    phoneVerifiedAt: { type: Date },
     password: { type: String, select: false, minlength: 8 },
     role: { type: String, enum: ['customer', 'admin'], default: 'customer' },
     avatar: String,

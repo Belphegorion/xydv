@@ -10,3 +10,5 @@ export * from './NewsletterSection';
 export * from './CartDrawer';
 export * from './CustomerAuthModal';
 export * from './NotificationManager';
+export * from './VerificationModal';
+export * from './OTPInput';
