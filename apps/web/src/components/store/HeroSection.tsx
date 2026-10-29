@@ -482,7 +482,7 @@ export function HeroSection() {
             >
               <div className="mb-3 sm:mb-4">
                 <Badge variant="volt" size="md" dot>
-                  ENGINEERED MATERIAL SPECS // PHASE 01
+                  MATERIAL INNOVATION // PHASE 01
                 </Badge>
               </div>
 
@@ -567,7 +567,7 @@ export function HeroSection() {
             >
               <div className="mb-3 sm:mb-4">
                 <Badge variant="volt" size="md" dot>
-                  ENGINEERED MATERIAL SPECS // PHASE 02
+                  MATERIAL INNOVATION // PHASE 02
                 </Badge>
               </div>
 

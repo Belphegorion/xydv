@@ -18,14 +18,22 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['@phosphor-icons/react', 'motion'],
   },
   async headers() {
+    let configuredApiOrigin = '';
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      try {
+        configuredApiOrigin = new URL(process.env.NEXT_PUBLIC_API_URL).origin;
+      } catch {}
+    }
+
     const connectOrigins = [
       "'self'",
       'https://xydv.duckdns.org',
+      ...(configuredApiOrigin && configuredApiOrigin !== 'null' ? [configuredApiOrigin] : []),
       ...(isDev ? ['http://localhost:*', 'http://127.0.0.1:*'] : []),
       'https://*.razorpay.com',
       'https://api.razorpay.com',
       'https://lumberjack.razorpay.com',
-    ].join(' ');
+    ].filter(Boolean).join(' ');
 
     return [
       {
