@@ -153,7 +153,7 @@ export default function WishlistPage() {
                 className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-rose-500 uppercase transition-colors hover:text-rose-600"
               >
                 <Trash size={14} weight="bold" />
-                <span>PURGE ARCHIVE</span>
+                <span>Purge archive</span>
               </button>
             )}
           </div>
@@ -174,9 +174,9 @@ export default function WishlistPage() {
             </p>
             <Link
               href="/products"
-              className="mt-6 inline-flex items-center gap-2 bg-[var(--text-primary)] px-6 py-3 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-[background-color,border-color,opacity,transform] duration-150 hover:opacity-90 active:scale-[0.97]"
+              className="mt-6 inline-flex items-center gap-2 bg-[var(--text-primary)] px-6 py-3 font-mono text-xs font-bold tracking-wider text-[var(--bg)] transition-[background-color,border-color,opacity,transform] duration-150 hover:opacity-90 active:scale-[0.97]"
             >
-              <span>EXPLORE ALL GEAR</span>
+              <span>Explore all gear</span>
               <ArrowRight size={14} weight="bold" />
             </Link>
           </div>

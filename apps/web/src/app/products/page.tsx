@@ -982,15 +982,15 @@ function CatalogContent() {
                   required
                   value={earlyAccessEmail}
                   onChange={(e) => setEarlyAccessEmail(e.target.value)}
-                  placeholder="ENTER ATHLETE EMAIL..."
+                  placeholder="Enter athlete email..."
                   className="min-h-[44px] flex-1 border border-[var(--border)] bg-[var(--bg-elevated)] px-4 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none"
                   aria-label="Early access email"
                 />
                 <button
                   type="submit"
-                  className="min-h-[44px] bg-[var(--text-primary)] px-6 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-opacity hover:opacity-90 active:scale-[0.97]"
+                  className="min-h-[44px] bg-[var(--text-primary)] px-6 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--bg)] transition-opacity hover:opacity-90 active:scale-[0.97]"
                 >
-                  REQUEST ACCESS
+                  Request access
                 </button>
               </form>
             )}
@@ -1001,7 +1001,7 @@ function CatalogContent() {
                 onClick={() => setGender('all')}
                 className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
               >
-                <span>← RETURN TO ALL GEAR</span>
+                <span>← Return to all gear</span>
               </button>
             </div>
           </div>
@@ -1022,9 +1022,9 @@ function CatalogContent() {
             <button
               type="button"
               onClick={resetFilters}
-              className="mt-6 bg-[var(--text-primary)] px-6 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase hover:opacity-90 active:scale-[0.97]"
+              className="mt-6 bg-[var(--text-primary)] px-6 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--bg)] hover:opacity-90 active:scale-[0.97]"
             >
-              CLEAR ALL FILTERS
+              Clear all filters
             </button>
           </div>
         ) : (
