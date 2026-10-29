@@ -195,17 +195,125 @@ describe('Workstream B: Anti-Enumeration & Response Safety Contract', () => {
 });
 
 describe('Workstream B: requireVerified Guard Middleware', () => {
-  it('allows verified user through', async () => {
-    // Mock user model with verified status
+  it('rejects unauthenticated requests with 401', async () => {
+    const req = {};
+    const res = {};
+    let errorPassed = null;
+    const guard = requireVerified({ email: true, phone: true });
+
+    await guard(req, res, (err) => {
+      errorPassed = err;
+    });
+
+    assert.ok(errorPassed, 'Unauthenticated user must be rejected');
+    assert.equal(errorPassed.statusCode, 401);
+  });
+
+  it('allows admins to bypass email and phone verification requirements', async () => {
     const req = {
-      user: { _id: '507f191e810c19729de860ea', role: 'customer' },
+      user: { _id: '507f191e810c19729de860ea', role: 'admin', isEmailVerified: false, isPhoneVerified: false },
+    };
+    const res = {};
+    let nextCalled = false;
+    const guard = requireVerified({ email: true, phone: true });
+
+    await guard(req, res, (err) => {
+      if (!err) nextCalled = true;
+    });
+
+    assert.equal(nextCalled, true, 'Admin must bypass customer verification');
+  });
+
+  it('rejects customer with unverified email with 403', async () => {
+    const req = {
+      user: {
+        _id: '507f191e810c19729de860ea',
+        role: 'customer',
+        isEmailVerified: false,
+        isPhoneVerified: true,
+      },
+    };
+    const res = {};
+    let errorPassed = null;
+    const guard = requireVerified({ email: true });
+
+    await guard(req, res, (err) => {
+      errorPassed = err;
+    });
+
+    assert.ok(errorPassed, 'Unverified email must produce 403 error');
+    assert.equal(errorPassed.statusCode, 403);
+    assert.match(errorPassed.message, /Email verification required/);
+  });
+
+  it('rejects customer with unverified phone with 403', async () => {
+    const req = {
+      user: {
+        _id: '507f191e810c19729de860ea',
+        role: 'customer',
+        isEmailVerified: true,
+        isPhoneVerified: false,
+      },
+    };
+    const res = {};
+    let errorPassed = null;
+    const guard = requireVerified({ phone: true });
+
+    await guard(req, res, (err) => {
+      errorPassed = err;
+    });
+
+    assert.ok(errorPassed, 'Unverified phone must produce 403 error');
+    assert.equal(errorPassed.statusCode, 403);
+    assert.match(errorPassed.message, /Phone verification required/);
+  });
+
+  it('allows verified customer through with next()', async () => {
+    const req = {
+      user: {
+        _id: '507f191e810c19729de860ea',
+        role: 'customer',
+        isEmailVerified: true,
+        isPhoneVerified: true,
+      },
     };
     const res = {};
     let nextCalled = false;
     let errorPassed = null;
-
-    // We test the guard's logic directly
     const guard = requireVerified({ email: true, phone: true });
-    assert.equal(typeof guard, 'function', 'requireVerified must return middleware handler');
+
+    await guard(req, res, (err) => {
+      if (err) errorPassed = err;
+      else nextCalled = true;
+    });
+
+    assert.equal(errorPassed, null, 'No error must be thrown for verified user');
+    assert.equal(nextCalled, true, 'next() must be called for verified user');
+  });
+});
+
+describe('Workstream B: Concurrency, Token Timing Safety & Security Contracts', () => {
+  it('VerificationService implements atomic concurrency increment and replay prevention', () => {
+    const servicePath = path.join(apiDir, 'src', 'services', 'verification.service.ts');
+    const content = fs.readFileSync(servicePath, 'utf-8');
+
+    // Concurrency atomic operations
+    assert.match(content, /\$inc:\s*\{\s*attempts:\s*1\s*\}/, 'Must atomically increment attempts under concurrency');
+    assert.match(content, /status:\s*'pending'[\s\S]*?status:\s*'verified'/, 'Must atomically consume pending challenge');
+    // Timing-safe email link token comparison
+    assert.match(content, /timingSafeEqual\(candidateBuf,\s*storedBuf\)/, 'Must use timing-safe comparison for email link tokens');
+    // Cross-user ownership verification
+    assert.match(content, /challenge\.userId\.toString\(\)\s*!==\s*userId/, 'Must verify challenge ownership for authenticated users');
+  });
+
+  it('Frontend verification components dispatch authenticated requests', () => {
+    const modalPath = path.join(rootDir, 'apps', 'web', 'src', 'components', 'store', 'VerificationModal.tsx');
+    const modalContent = fs.readFileSync(modalPath, 'utf-8');
+    assert.match(modalContent, /api\.post[\s\S]*?'\/verification\/send'/, 'VerificationModal must use api.post with auth headers');
+    assert.match(modalContent, /api\.post[\s\S]*?'\/verification\/verify'/, 'VerificationModal must use api.post for verification');
+
+    const emailPath = path.join(rootDir, 'apps', 'web', 'src', 'app', 'verify-email', 'page.tsx');
+    const emailContent = fs.readFileSync(emailPath, 'utf-8');
+    assert.match(emailContent, /api\.post[\s\S]*?'\/verification\/verify'/, 'VerifyEmail page must use api.post for verification');
   });
 });

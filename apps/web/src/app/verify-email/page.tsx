@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, WarningCircle, SpinnerGap, ArrowRight } from '@phosphor-icons/react';
 import { useCustomerAuthStore } from '@/store/customerAuth';
+import { api } from '@/lib/api';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -26,19 +27,13 @@ function VerifyEmailContent() {
 
     const verify = async () => {
       try {
-        const res = await fetch('/api/verification/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ challengeId, token }),
-        });
-
-        const json = await res.json();
-        if (!res.ok || !json.success) {
-          throw new Error(json.message || 'Verification link expired or already used.');
-        }
+        const json = await api.post<{
+          success: boolean;
+          message?: string;
+        }>('/verification/verify', { challengeId, token });
 
         setStatus('success');
-        setMessage('Your email has been successfully verified.');
+        setMessage(json.message || 'Your email has been successfully verified.');
         await checkAuth();
       } catch (err: unknown) {
         setStatus('error');

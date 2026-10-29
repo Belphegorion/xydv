@@ -13,6 +13,7 @@ import {
   Pulse,
 } from '@phosphor-icons/react';
 import type { OrderStatus, OrderTimelineResponse, OrderStatusEvent } from '@vertex/types';
+import { api, getAccessToken } from '@/lib/api';
 
 const STEPS: {
   status: OrderStatus;
@@ -57,12 +58,12 @@ export default function OrderTrackPage({ params }: { params: Promise<{ id: strin
     // Initial REST fetch for immediate hydration
     const fetchInitial = async () => {
       try {
-        const res = await fetch(`/api/orders/${orderId}/timeline`);
-        const json = await res.json();
-        if (!res.ok || !json.success) {
-          throw new Error(json.message || 'Failed to load tracking details.');
-        }
-        if (isMounted) {
+        const json = await api.get<{
+          success: boolean;
+          data: OrderTimelineResponse;
+        }>(`/orders/${orderId}/timeline`);
+
+        if (isMounted && json.data) {
           setTimelineData(json.data);
           setIsLoading(false);
           setLastAnnouncement(`Order status is ${json.data.currentStatus}.`);
@@ -78,9 +79,14 @@ export default function OrderTrackPage({ params }: { params: Promise<{ id: strin
 
     fetchInitial();
 
-    // Establish Server-Sent Events stream
+    // Establish Server-Sent Events stream with auth token query param
     try {
-      eventSource = new EventSource(`/api/orders/${orderId}/stream`);
+      const token = getAccessToken();
+      const sseUrl = new URL(`/api/orders/${orderId}/stream`, window.location.origin);
+      if (token) {
+        sseUrl.searchParams.set('token', token);
+      }
+      eventSource = new EventSource(`${sseUrl.toString()}`);
 
       eventSource.onopen = () => {
         if (isMounted) setIsConnected(true);
@@ -273,7 +279,7 @@ export default function OrderTrackPage({ params }: { params: Promise<{ id: strin
                           href={timelineData.trackingUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-zinc-400 hover:text-white transition-colors"
+                          className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
                           aria-label="Open tracking on carrier website"
                         >
                           <ArrowSquareOut size={16} />

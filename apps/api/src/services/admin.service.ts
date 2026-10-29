@@ -25,6 +25,7 @@ import { UPLOADS_DIR } from '../middleware/upload';
 import { logger } from '../config/logger';
 import { couponService } from './coupon.service';
 import { OrderStatusEvent } from '../models/OrderStatusEvent.model';
+import { NotificationOutbox } from '../models/NotificationOutbox.model';
 import { orderTrackingEmitter } from './orderTracking.service';
 import type { OrderStatusEvent as OrderStatusEventType } from '@vertex/types';
 
@@ -665,8 +666,8 @@ export class AdminService {
       confirmed: ['processing', 'packed', 'cancelled'],
       processing: ['packed', 'shipped', 'cancelled'],
       packed: ['shipped', 'cancelled'],
-      shipped: ['out_for_delivery', 'delivered', 'cancelled'],
-      out_for_delivery: ['delivered', 'cancelled'],
+      shipped: ['out_for_delivery'],
+      out_for_delivery: ['delivered'],
       delivered: [], // Terminal
       cancelled: [], // Terminal
     };
@@ -808,8 +809,46 @@ export class AdminService {
       };
 
       orderTrackingEmitter.emit(`order_update:${id}`, ssePayload);
+
+      // Enqueue transactional outbox notifications
+      const recipientEmail = order.shippingAddress?.email;
+      const recipientPhone = order.shippingAddress?.phone;
+
+      if (recipientEmail) {
+        await NotificationOutbox.create({
+          orderId: order._id,
+          channel: 'email',
+          template: `order_${order.status}`,
+          recipient: recipientEmail,
+          payload: {
+            orderId: order._id.toString(),
+            status: order.status,
+            carrier: order.carrier,
+            trackingNumber: order.trackingNumber,
+            trackingUrl: order.trackingUrl,
+            total: order.total,
+          },
+          idempotencyKey: `notif_email_${id}_${order.status}_${Date.now()}`,
+        });
+      }
+
+      if (recipientPhone && ['shipped', 'out_for_delivery', 'delivered'].includes(order.status)) {
+        await NotificationOutbox.create({
+          orderId: order._id,
+          channel: 'sms',
+          template: `sms_order_${order.status}`,
+          recipient: recipientPhone,
+          payload: {
+            orderId: order._id.toString(),
+            status: order.status,
+            carrier: order.carrier,
+            trackingNumber: order.trackingNumber,
+          },
+          idempotencyKey: `notif_sms_${id}_${order.status}_${Date.now()}`,
+        });
+      }
     } catch (emitErr) {
-      logger.warn('Failed to emit live order tracking event from admin.service', {
+      logger.warn('Failed to emit live order tracking event or outbox from admin.service', {
         error: emitErr instanceof Error ? emitErr.message : String(emitErr),
       });
     }

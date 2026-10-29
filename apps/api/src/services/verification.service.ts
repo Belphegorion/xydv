@@ -198,6 +198,22 @@ export class VerificationService {
       { $set: { status: 'expired' } },
     );
 
+    // Resolve user ID if unauthenticated request matches an existing customer account
+    let resolvedUserId = userId;
+    if (!resolvedUserId && mongoose.connection.readyState === 1) {
+      if (channel === 'email') {
+        const existing = await User.findOne({ email: normalizedTarget }).select('_id');
+        if (existing) {
+          resolvedUserId = existing._id.toString();
+        }
+      } else if (channel === 'sms') {
+        const existing = await User.findOne({ phone: normalizedTarget }).select('_id');
+        if (existing) {
+          resolvedUserId = existing._id.toString();
+        }
+      }
+    }
+
     // Generate challenge ID and Code
     const challengeId = new mongoose.Types.ObjectId();
     const otpCode = VerificationService.generateOtp(6);
@@ -209,7 +225,7 @@ export class VerificationService {
 
     const challenge = await VerificationChallenge.create({
       _id: challengeId,
-      userId: userId ? new mongoose.Types.ObjectId(userId) : undefined,
+      userId: resolvedUserId ? new mongoose.Types.ObjectId(resolvedUserId) : undefined,
       channel,
       purpose,
       targetHash,
@@ -300,7 +316,11 @@ export class VerificationService {
 
     if (token && challenge.tokenHash) {
       const candidateHash = crypto.createHash('sha256').update(token).digest('hex');
-      isValid = candidateHash === challenge.tokenHash;
+      const candidateBuf = Buffer.from(candidateHash, 'hex');
+      const storedBuf = Buffer.from(challenge.tokenHash, 'hex');
+      isValid =
+        candidateBuf.length === storedBuf.length &&
+        crypto.timingSafeEqual(candidateBuf, storedBuf);
     } else if (code) {
       isValid = VerificationService.verifyOtp(code, challenge._id.toString(), challenge.codeHash);
     } else {
@@ -308,12 +328,20 @@ export class VerificationService {
     }
 
     if (!isValid) {
-      challenge.attempts += 1;
-      const remaining = challenge.maxAttempts - challenge.attempts;
-      if (challenge.attempts >= challenge.maxAttempts) {
-        challenge.status = 'exhausted';
+      // Atomic increment under database concurrency
+      const updated = await VerificationChallenge.findOneAndUpdate(
+        { _id: challenge._id, status: 'pending' },
+        { $inc: { attempts: 1 } },
+        { new: true },
+      );
+      const currentAttempts = updated ? updated.attempts : challenge.attempts + 1;
+      const maxAttempts = challenge.maxAttempts || 5;
+      const remaining = Math.max(0, maxAttempts - currentAttempts);
+      if (currentAttempts >= maxAttempts) {
+        await VerificationChallenge.findByIdAndUpdate(challenge._id, {
+          $set: { status: 'exhausted' },
+        });
       }
-      await challenge.save();
       throw new Error(
         remaining > 0
           ? `Invalid verification code. ${remaining} attempts remaining.`
@@ -321,10 +349,31 @@ export class VerificationService {
       );
     }
 
-    // Success
-    challenge.status = 'verified';
-    challenge.consumedAt = new Date();
-    await challenge.save();
+    // Atomic consumption to eliminate concurrent replay race conditions
+    const consumed = await VerificationChallenge.findOneAndUpdate(
+      {
+        _id: challenge._id,
+        status: 'pending',
+        attempts: { $lt: challenge.maxAttempts },
+        expiresAt: { $gt: new Date() },
+      },
+      {
+        $set: {
+          status: 'verified',
+          consumedAt: new Date(),
+        },
+      },
+      { new: true },
+    );
+
+    if (!consumed) {
+      throw new Error('Verification challenge has already been verified or expired.');
+    }
+
+    // Security check: If authenticated user calls verify on a challenge bound to another user
+    if (userId && challenge.userId && challenge.userId.toString() !== userId) {
+      throw new Error('Verification challenge does not belong to the current authenticated user.');
+    }
 
     // If userId provided or bound to challenge, update User model
     const targetUserId = userId || (challenge.userId ? challenge.userId.toString() : undefined);

@@ -210,5 +210,22 @@ describe('Workstream C: SSE Stream Formatting & Event Emitter Contracts', () => 
     assert.match(content, /'shipped'/);
     assert.match(content, /'out_for_delivery'/);
     assert.match(content, /'delivered'/);
+
+    // Auth token integration & accessible tap targets
+    assert.match(content, /api\.get[\s\S]*?\/orders\/.*\/timeline/, 'Must fetch timeline with auth header');
+    assert.match(content, /sseUrl\.searchParams\.set\('token',\s*token\)/, 'Must pass token to EventSource');
+    assert.match(content, /min-h-\[44px\]\s*min-w-\[44px\]/, 'Carrier link must satisfy 44x44px touch target');
+  });
+
+  it('admin.service.ts enforces strict cancellation boundaries and outbox queuing', () => {
+    const adminServicePath = path.join(apiDir, 'src', 'services', 'admin.service.ts');
+    const content = fs.readFileSync(adminServicePath, 'utf-8');
+
+    // Cancellation boundaries
+    assert.match(content, /shipped:\s*\['out_for_delivery'\]/, 'Shipped cannot be cancelled in admin.service');
+    assert.match(content, /out_for_delivery:\s*\['delivered'\]/, 'Out for delivery cannot be cancelled in admin.service');
+
+    // NotificationOutbox queueing
+    assert.match(content, /NotificationOutbox\.create/, 'admin.service must enqueue notifications on status update');
   });
 });

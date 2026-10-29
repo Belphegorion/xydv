@@ -23,9 +23,13 @@ export class OrderTrackingController {
       }
 
       // Authorization: Must be order owner, matching guest email, or admin
-      const isOwner = Boolean(
-        user?._id && order.userId && order.userId.toString() === user._id,
-      );
+      const orderUserId =
+        order.userId && typeof order.userId === 'object' && '_id' in order.userId
+          ? String((order.userId as { _id?: unknown })._id)
+          : order.userId
+          ? String(order.userId)
+          : undefined;
+      const isOwner = Boolean(user?._id && orderUserId && orderUserId === user._id);
       const isAdmin = user?.role === 'admin';
       const guestEmail =
         typeof req.query.email === 'string' ? req.query.email.trim().toLowerCase() : undefined;
@@ -70,9 +74,13 @@ export class OrderTrackingController {
         return;
       }
 
-      const isOwner = Boolean(
-        user?._id && order.userId && order.userId.toString() === user._id,
-      );
+      const orderUserId =
+        order.userId && typeof order.userId === 'object' && '_id' in order.userId
+          ? String((order.userId as { _id?: unknown })._id)
+          : order.userId
+          ? String(order.userId)
+          : undefined;
+      const isOwner = Boolean(user?._id && orderUserId && orderUserId === user._id);
       const isAdmin = user?.role === 'admin';
       const guestEmail =
         typeof req.query.email === 'string' ? req.query.email.trim().toLowerCase() : undefined;

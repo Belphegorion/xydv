@@ -9,13 +9,27 @@ import env from '../config/env';
 declare global {
   namespace Express {
     interface Request {
-      user?: { _id: string; email: string; role: string; isBlocked?: boolean };
+      user?: {
+        _id: string;
+        email: string;
+        role: string;
+        isBlocked?: boolean;
+        isEmailVerified?: boolean;
+        isPhoneVerified?: boolean;
+      };
     }
   }
 }
 
 export interface AuthRequest extends Request {
-  user?: { _id: string; email: string; role: string; isBlocked?: boolean };
+  user?: {
+    _id: string;
+    email: string;
+    role: string;
+    isBlocked?: boolean;
+    isEmailVerified?: boolean;
+    isPhoneVerified?: boolean;
+  };
 }
 
 export function getAuthenticatedUser(req: Request): {
@@ -134,21 +148,37 @@ export function requireVerified(options: { email?: boolean; phone?: boolean }) {
     }
 
     try {
-      const user = await User.findById(req.user._id).select('isEmailVerified isPhoneVerified role').lean();
-      if (!user) {
-        return next(new AppError('User not found', 404));
-      }
-
       // Admins bypass customer verification requirements
-      if (user.role === 'admin') {
+      if (req.user.role === 'admin') {
         return next();
       }
 
-      if (options.email && !user.isEmailVerified) {
+      let isEmailVerified = Boolean(req.user.isEmailVerified);
+      let isPhoneVerified = Boolean(req.user.isPhoneVerified);
+
+      if (
+        mongoose.connection.readyState === 1 &&
+        req.user._id &&
+        mongoose.isValidObjectId(req.user._id)
+      ) {
+        const user = await User.findById(req.user._id)
+          .select('isEmailVerified isPhoneVerified role')
+          .lean();
+        if (!user) {
+          return next(new AppError('User not found', 404));
+        }
+        if (user.role === 'admin') {
+          return next();
+        }
+        isEmailVerified = Boolean(user.isEmailVerified);
+        isPhoneVerified = Boolean(user.isPhoneVerified);
+      }
+
+      if (options.email && !isEmailVerified) {
         return next(new AppError('Email verification required to access this resource.', 403));
       }
 
-      if (options.phone && !user.isPhoneVerified) {
+      if (options.phone && !isPhoneVerified) {
         return next(new AppError('Phone verification required to access this resource.', 403));
       }
 

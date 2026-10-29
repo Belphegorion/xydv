@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { X, DeviceMobile, Envelope, ArrowRight, SpinnerGap, CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import { useCustomerAuthStore } from '@/store/customerAuth';
+import { api } from '@/lib/api';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 
 interface VerificationModalProps {
@@ -92,26 +93,30 @@ export function VerificationModal({
     setStatusMessage('');
 
     try {
-      const res = await fetch('/api/verification/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          channel,
-          target: target.trim(),
-          purpose: 'checkout',
-        }),
+      const json = await api.post<{
+        success: boolean;
+        challengeId?: string;
+        targetMasked?: string;
+        cooldownSeconds?: number;
+        data?: {
+          challengeId: string;
+          targetMasked: string;
+          cooldownSeconds: number;
+        };
+      }>('/verification/send', {
+        channel,
+        target: target.trim(),
+        purpose: 'checkout',
       });
 
-      const json = await res.json();
-      if (!res.ok || !json.success) {
-        throw new Error(json.message || 'Failed to dispatch verification code.');
-      }
-
-      setChallengeId(json.data?.challengeId || json.challengeId || '');
-      setTargetMasked(json.data?.targetMasked || json.targetMasked || '');
-      setCooldown(json.data?.cooldownSeconds || json.cooldownSeconds || 60);
-      setStep('verify');
+      const cid = json.data?.challengeId || json.challengeId || '';
       const masked = json.data?.targetMasked || json.targetMasked || target;
+      const cd = json.data?.cooldownSeconds || json.cooldownSeconds || 60;
+
+      setChallengeId(cid);
+      setTargetMasked(masked);
+      setCooldown(cd);
+      setStep('verify');
       setStatusMessage(`Verification code sent to ${masked}. Valid for 10 minutes.`);
       setTimeout(() => inputRefs.current[0]?.focus(), 100);
     } catch (err: unknown) {
@@ -169,19 +174,13 @@ export function VerificationModal({
     setStatusMessage('');
 
     try {
-      const res = await fetch('/api/verification/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          challengeId,
-          code,
-        }),
+      await api.post<{
+        success: boolean;
+        message?: string;
+      }>('/verification/verify', {
+        challengeId,
+        code,
       });
-
-      const json = await res.json();
-      if (!res.ok || !json.success) {
-        throw new Error(json.message || 'Invalid verification code.');
-      }
 
       setStep('success');
       setStatusMessage('Verification successful. Account status updated.');
