@@ -1,33 +1,42 @@
 import { Router } from 'express';
+import crypto from 'node:crypto';
+import { z } from 'zod';
 import { Ticket } from '../models/Ticket.model';
 import { Setting } from '../models/Setting.model';
 import { logger } from '../config/logger';
+import { validateRequest } from '../middleware/validateRequest';
+import { authLimiter } from '../middleware/rateLimiter';
+
+export const createTicketSchema = z.object({
+  body: z.object({
+    name: z.string().trim().min(1, 'Name is required').max(100, 'Name cannot exceed 100 characters'),
+    email: z.string().trim().email('Invalid email address').toLowerCase(),
+    subject: z.string().trim().nullable().optional(),
+    topic: z.string().trim().nullable().optional(),
+    orderId: z.string().trim().nullable().optional(),
+    message: z.string().trim().min(1, 'Message is required').max(5000, 'Message cannot exceed 5000 characters'),
+  }),
+});
 
 const router = Router();
 
-router.post('/', async (req, res, next) => {
+router.post('/', authLimiter, validateRequest(createTicketSchema), async (req, res, next) => {
   try {
-    const { name, email, topic, orderId, message } = req.body || {};
+    const { name, email, subject, topic, orderId, message } = req.body;
 
-    const trimmedName = typeof name === 'string' ? name.trim() : '';
-    const trimmedEmail = typeof email === 'string' ? email.trim() : '';
-    const trimmedMessage = typeof message === 'string' ? message.trim() : '';
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim().toLowerCase();
+    const trimmedMessage = message.trim();
+    const ticketTopic = (topic || subject || 'General Inquiry').trim();
 
-    if (!trimmedName || !trimmedEmail || !trimmedMessage) {
-      res.status(400).json({
-        success: false,
-        error: 'Name, email, and message are required fields.',
-      });
-      return;
-    }
-
-    const ticketId = `XYDV-TK-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    const randomSuffix = crypto.randomBytes(4).toString('hex').toUpperCase();
+    const ticketId = `XYDV-TK-${Date.now().toString(36).toUpperCase()}-${randomSuffix}`;
 
     const ticket = await Ticket.create({
       ticketId,
       name: trimmedName,
       email: trimmedEmail,
-      topic: topic ? String(topic).trim() : 'General Inquiry',
+      topic: ticketTopic,
       orderId: orderId ? String(orderId).trim() : undefined,
       message: trimmedMessage,
       status: 'open',

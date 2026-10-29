@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   transpilePackages: ['@vertex/types'],
   images: {
     remotePatterns: [
@@ -15,6 +18,15 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['@phosphor-icons/react', 'motion'],
   },
   async headers() {
+    const connectOrigins = [
+      "'self'",
+      'https://xydv.duckdns.org',
+      ...(isDev ? ['http://localhost:*', 'http://127.0.0.1:*'] : []),
+      'https://*.razorpay.com',
+      'https://api.razorpay.com',
+      'https://lumberjack.razorpay.com',
+    ].join(' ');
+
     return [
       {
         source: '/(.*)',
@@ -28,12 +40,12 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com",
+              "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://api.razorpay.com https://cdn.razorpay.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://res.cloudinary.com https://picsum.photos https://images.unsplash.com",
               "font-src 'self' data:",
               "media-src 'self' https://assets.mixkit.co data: blob:",
-              "connect-src 'self' https://xydv.duckdns.org http://localhost:* http://127.0.0.1:* https://*.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com",
+              `connect-src ${connectOrigins}`,
               "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
               "object-src 'none'",
               "base-uri 'self'",

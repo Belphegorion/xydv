@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import mongoose from 'mongoose';
 import slugify from 'slugify';
 import {
@@ -1466,10 +1467,20 @@ export class AdminService {
     return PageView.create({
       path: data.path,
       date: today,
-      ip: data.ip,
+      ip: data.ip
+        ? crypto
+            .createHash('sha256')
+            .update(data.ip + (process.env.IP_SALT || 'xydv-telemetry-salt'))
+            .digest('hex')
+            .substring(0, 16)
+        : undefined,
       userAgent: data.userAgent,
       referrer: data.referrer,
     });
+  }
+
+  async recordPageView(data: { path: string; ip?: string; userAgent?: string; referrer?: string }) {
+    return this.trackPageView(data);
   }
 
   // ==========================================================================

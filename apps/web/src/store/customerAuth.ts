@@ -32,9 +32,21 @@ interface CustomerAuthState {
   ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   initialize: () => Promise<void>;
+  checkAuth: () => Promise<void>;
 }
 
-export const useCustomerAuthStore = create<CustomerAuthState>((set) => ({
+// Security Refactor Finding A-4: Migrated access token storage to in-memory only (matching adminAuth.ts).
+// Access tokens are NEVER stored in localStorage to prevent credential exfiltration via XSS.
+// Session rehydration is performed via the httpOnly xydv_refresh_token cookie using checkAuth() / initialize().
+//
+// Legacy compatibility notes:
+// Previously executed: localStorage.setItem('xydv_auth_token', token);
+// Previously executed: localStorage.setItem('xydv_customer_user', JSON.stringify(user));
+// In initialize(): setAccessToken(storedToken);
+
+let customerInitializePromise: Promise<void> | null = null;
+
+export const useCustomerAuthStore = create<CustomerAuthState>((set, get) => ({
   token: null,
   user: null,
   isAuthenticated: false,
@@ -48,19 +60,55 @@ export const useCustomerAuthStore = create<CustomerAuthState>((set) => ({
   setAuthMode: (mode) => set({ authMode: mode, error: null }),
   clearError: () => set({ error: null }),
 
-  initialize: async () => {
+  checkAuth: async (): Promise<void> => {
     if (typeof window === 'undefined') return;
-    try {
-      const storedUser = localStorage.getItem('xydv_customer_user');
-      const storedToken = localStorage.getItem('xydv_auth_token');
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-        if (storedToken) {
-          setAccessToken(storedToken);
+    if (get().isAuthenticated && get().token && get().user) return;
+    if (customerInitializePromise) return customerInitializePromise;
+
+    customerInitializePromise = (async () => {
+      // Clean up any legacy plain tokens from localStorage for security compliance (Finding A-4)
+      try {
+        localStorage.removeItem('xydv_auth_token');
+        localStorage.removeItem('xydv_customer_user');
+      } catch {}
+
+      set({ isLoading: true });
+      try {
+        const res = await api.post<{
+          token: string;
+          data?: CustomerUser;
+          user?: CustomerUser;
+        }>('/auth/refresh', {});
+
+        const user = res.data ?? res.user;
+        const token = res.token;
+
+        if (token && user) {
+          setAccessToken(token);
+          set({
+            token,
+            user,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+          return;
         }
-        set({ user, token: storedToken || null, isAuthenticated: true });
+      } catch {
+        // Session expired, unavailable, or unauthenticated
       }
-    } catch {}
+
+      setAccessToken(null);
+      set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+    })().finally(() => {
+      customerInitializePromise = null;
+    });
+
+    return customerInitializePromise;
+  },
+
+  initialize: async (): Promise<void> => {
+    await get().checkAuth();
   },
 
   login: async (email: string, password: string) => {
@@ -84,8 +132,9 @@ export const useCustomerAuthStore = create<CustomerAuthState>((set) => ({
       setAccessToken(token);
       if (typeof window !== 'undefined') {
         try {
-          localStorage.setItem('xydv_auth_token', token);
-          localStorage.setItem('xydv_customer_user', JSON.stringify(user));
+          // Clean up legacy localStorage tokens (Finding A-4)
+          localStorage.removeItem('xydv_auth_token');
+          localStorage.removeItem('xydv_customer_user');
         } catch {}
       }
 
@@ -131,8 +180,9 @@ export const useCustomerAuthStore = create<CustomerAuthState>((set) => ({
       setAccessToken(token);
       if (typeof window !== 'undefined') {
         try {
-          localStorage.setItem('xydv_auth_token', token);
-          localStorage.setItem('xydv_customer_user', JSON.stringify(user));
+          // Clean up legacy localStorage tokens (Finding A-4)
+          localStorage.removeItem('xydv_auth_token');
+          localStorage.removeItem('xydv_customer_user');
         } catch {}
       }
 

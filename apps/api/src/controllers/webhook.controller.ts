@@ -199,10 +199,30 @@ export class WebhookController {
         case 'order.paid': {
           const orderEntity = event.payload.order?.entity;
           if (orderEntity?.id) {
+            const existingOrder = await Order.findOne({ razorpayOrderId: orderEntity.id });
+            if (!existingOrder) {
+              logger.warn(`Order not found for paid order: ${orderEntity.id}`);
+              break;
+            }
+
+            // A-2: Assert orderEntity.amount_paid matches order total in paise
+            const expectedPaise = Math.round(existingOrder.total * 100);
+            if (typeof orderEntity.amount_paid !== 'number' || orderEntity.amount_paid !== expectedPaise) {
+              logger.error(
+                `Payment amount mismatch for order ${orderEntity.id}: expected ${expectedPaise} paise, received ${orderEntity.amount_paid} paise`,
+              );
+              await Order.updateOne(
+                { _id: existingOrder._id },
+                { $set: { paymentStatus: 'failed', status: 'cancelled' } },
+              );
+              break;
+            }
+
             // C-3: Extract razorpayPaymentId if available from payment entity or payload
             const paymentEntity = event.payload.payment?.entity;
             const paymentId =
-              paymentEntity?.id || (orderEntity as { payment_id?: string }).payment_id;
+              paymentEntity?.id ||
+              (typeof orderEntity['payment_id'] === 'string' ? orderEntity['payment_id'] : undefined);
 
             const updateFields: Record<string, unknown> = {
               paymentStatus: 'captured',

@@ -135,7 +135,7 @@ PORT=5000
 NODE_ENV=production
 
 # MongoDB Atlas URI (Free M0 Cluster)
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.XXXXX.mongodb.net/xydv?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://<DB_USER>:<DB_PASSWORD>@<CLUSTER>.mongodb.net/<DB_NAME>?retryWrites=true&w=majority
 
 # Strong Cryptographic Secrets (generate with: openssl rand -hex 32)
 JWT_SECRET=YOUR_64_CHARACTER_RANDOM_HEX_SECRET_STRING_HERE
