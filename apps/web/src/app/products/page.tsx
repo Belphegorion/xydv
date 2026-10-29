@@ -20,8 +20,9 @@ import { CATALOG_PRODUCTS, CatalogProduct, ProductVariant } from '@/lib/catalog'
 import { useCartStore } from '@/store/cart';
 import { useWishlistStore } from '@/store/wishlist';
 import { Badge } from '@/components/ui/Badge';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { formatPrice, getAvailableSizes } from '@/lib/utils';
+import { formatPrice, getAvailableSizes, formatCardTitle } from '@/lib/utils';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 import { api } from '@/lib/api';
 
@@ -205,32 +206,32 @@ function mapApiProductToCatalog(
 }
 
 const CATEGORIES = [
-  { label: 'ALL GEAR', value: 'all' },
-  { label: 'TOPS', value: 'tops' },
-  { label: 'BOTTOMS', value: 'bottoms' },
-  { label: 'OUTERWEAR', value: 'outerwear' },
-  { label: 'ACCESSORIES', value: 'accessories' },
+  { label: 'All gear', value: 'all' },
+  { label: 'Tops', value: 'tops' },
+  { label: 'Bottoms', value: 'bottoms' },
+  { label: 'Outerwear', value: 'outerwear' },
+  { label: 'Accessories', value: 'accessories' },
 ];
 
 const DISCIPLINES = [
-  { label: 'ALL DISCIPLINES', value: 'all' },
-  { label: 'RUN (DIV.01)', value: 'run' },
-  { label: 'TRAIN (DIV.02)', value: 'train' },
-  { label: 'REC (DIV.03)', value: 'rec' },
+  { label: 'All disciplines', value: 'all' },
+  { label: 'Run (Div.01)', value: 'run' },
+  { label: 'Train (Div.02)', value: 'train' },
+  { label: 'Rec (Div.03)', value: 'rec' },
 ];
 
 const GENDERS = [
-  { label: 'ALL DIVISIONS', value: 'all' },
-  { label: "MEN'S", value: 'men' },
-  { label: "WOMEN'S", value: 'women' },
+  { label: 'All divisions', value: 'all' },
+  { label: "Men's", value: 'men' },
+  { label: "Women's", value: 'women' },
 ];
 
 const SORT_OPTIONS = [
-  { label: 'FEATURED', value: 'featured' },
-  { label: 'BESTSELLER', value: 'bestseller' },
-  { label: 'PRICE: LOW TO HIGH', value: 'price-asc' },
-  { label: 'PRICE: HIGH TO LOW', value: 'price-desc' },
-  { label: 'NEWEST', value: 'newest' },
+  { label: 'Featured', value: 'featured' },
+  { label: 'Bestseller', value: 'bestseller' },
+  { label: 'Price: Low to High', value: 'price-asc' },
+  { label: 'Price: High to Low', value: 'price-desc' },
+  { label: 'Newest', value: 'newest' },
 ];
 
 function CatalogCard({
@@ -501,7 +502,10 @@ function CatalogCard({
               <button
                 key={v.id}
                 type="button"
-                onClick={() => setActiveVariantIdx(vIdx)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveVariantIdx(vIdx);
+                }}
                 aria-label={`Select ${v.colorName}`}
                 className="touch-target relative -m-1.5 flex-shrink-0 p-1.5 focus:outline-none"
               >
@@ -525,8 +529,8 @@ function CatalogCard({
             href={`/products/${product.slug}`}
             className="transition-colors hover:text-[var(--text-secondary)] dark:hover:text-zinc-300"
           >
-            <h3 className="font-heading line-clamp-1 text-xs font-bold tracking-tight text-[var(--text-primary)] uppercase sm:text-sm">
-              {product.name}
+            <h3 className="font-heading line-clamp-1 text-xs font-bold tracking-tight text-[var(--text-primary)] sm:text-sm">
+              {formatCardTitle(product.name)}
             </h3>
           </Link>
 
@@ -554,7 +558,10 @@ function CatalogCard({
           <div className="sm:hidden">
             <button
               type="button"
-              onClick={() => onSelectSize(product, activeVariant, activeVariant.size)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectSize(product, activeVariant, activeVariant.size);
+              }}
               className="touch-target flex min-h-[40px] min-w-[40px] items-center justify-center bg-[var(--text-primary)] px-2.5 py-1 font-mono text-[10px] font-bold tracking-wider text-[var(--bg)] uppercase active:scale-[0.97]"
               aria-label={`Add ${product.name} to bag`}
             >
@@ -583,6 +590,8 @@ function CatalogContent() {
   const [sort, setSort] = useState('featured');
   const [inStockOnly, setInStockOnly] = useState(false);
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
+  const [earlyAccessEmail, setEarlyAccessEmail] = useState('');
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
 
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
   const [catalogProducts, setCatalogProducts] = useState<CatalogProduct[]>([]);
@@ -665,18 +674,21 @@ function CatalogContent() {
   const filteredProducts = useMemo(() => {
     let list = [...catalogProducts];
 
+    // Exclude women's clothing from active general catalog listings
+    if (gender === 'all') {
+      list = list.filter((p) => p.gender !== 'women');
+    } else if (gender === 'men') {
+      list = list.filter((p) => p.gender === 'men' || p.gender === 'unisex');
+    } else if (gender === 'women') {
+      list = list.filter((p) => p.gender === 'women');
+    }
+
     if (category !== 'all') {
       list = list.filter((p) => p.category.toLowerCase() === category.toLowerCase());
     }
 
     if (discipline !== 'all') {
       list = list.filter((p) => p.discipline.toLowerCase() === discipline.toLowerCase());
-    }
-
-    if (gender !== 'all') {
-      list = list.filter(
-        (p) => p.gender.toLowerCase() === gender.toLowerCase() || p.gender === 'unisex',
-      );
     }
 
     if (search.trim()) {
@@ -735,6 +747,8 @@ function CatalogContent() {
     setSearch('');
     setInStockOnly(false);
     setSort('featured');
+    setEarlyAccessEmail('');
+    setEmailSubmitted(false);
     router.push('/products');
   };
 
@@ -780,7 +794,7 @@ function CatalogContent() {
                 role="tab"
                 aria-selected={category === cat.value}
                 onClick={() => setCategory(cat.value)}
-                className={`touch-target px-3.5 py-2 font-mono text-xs font-bold tracking-wider whitespace-nowrap uppercase transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] ${
+                className={`touch-target px-3.5 py-2 font-mono text-xs font-bold tracking-wider whitespace-nowrap transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] ${
                   category === cat.value
                     ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] shadow-sm'
                     : 'border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
@@ -836,7 +850,7 @@ function CatalogContent() {
                 name="discipline"
                 value={discipline}
                 onChange={(e) => setDiscipline(e.target.value)}
-                className="min-h-[44px] h-10 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
+                className="min-h-[44px] h-10 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
                 aria-label="Filter by discipline"
               >
                 {DISCIPLINES.map((d) => (
@@ -860,7 +874,7 @@ function CatalogContent() {
                 name="gender"
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="min-h-[44px] h-10 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
+                className="min-h-[44px] h-10 cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
                 aria-label="Filter by gender division"
               >
                 {GENDERS.map((g) => (
@@ -896,7 +910,7 @@ function CatalogContent() {
                 name="sort"
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="min-h-[44px] h-10 w-full sm:w-auto min-w-0 max-w-full cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] uppercase focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
+                className="min-h-[44px] h-10 w-full sm:w-auto min-w-0 max-w-full cursor-pointer border border-[var(--border)] bg-[var(--bg-elevated)] px-3 font-mono text-base sm:text-[11px] text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none sm:min-h-0 sm:h-8"
                 aria-label="Sort products"
               >
                 {SORT_OPTIONS.map((opt) => (
@@ -921,9 +935,77 @@ function CatalogContent() {
           </div>
         </div>
 
-        {/* Product Grid */}
+        {/* Product Grid or Dedicated Women's Division Coming Soon */}
         <h2 className="sr-only">Catalog Inventory</h2>
-        {isLoading && catalogProducts.length === 0 ? (
+        {gender === 'women' ? (
+          <div className="my-8 mx-auto max-w-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-8 text-center shadow-xl sm:p-14">
+            <div className="mb-6 flex justify-center">
+              <BrandLogo size="lg" showWordmark={true} />
+            </div>
+            <div className="mb-3 inline-flex items-center gap-2">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--accent)]" />
+              <span className="font-mono text-xs font-bold tracking-[0.25em] text-[var(--accent)] uppercase">
+                DIVISION 04 · IN PROTOTYPING
+              </span>
+            </div>
+            <h3 className="font-heading text-2xl font-black tracking-tight text-[var(--text-primary)] uppercase sm:text-4xl md:text-5xl">
+              WOMEN&apos;S ARCHIVE
+            </h3>
+            <p className="mt-2 font-mono text-xs font-semibold tracking-widest text-[var(--text-muted)] uppercase">
+              COMING SOON · SPRING / SUMMER
+            </p>
+            <p className="mx-auto mt-4 max-w-lg font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm">
+              Our women&apos;s technical activewear division is currently undergoing intensive biomechanical motion study and field wear testing with elite athletes. Register below for early allocation and priority access to drop 01.
+            </p>
+
+            {emailSubmitted ? (
+              <div className="mt-8 border border-emerald-500/30 bg-emerald-500/10 p-5 text-center">
+                <p className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  ✓ EARLY ACCESS REQUEST RECORDED
+                </p>
+                <p className="mt-1 font-mono text-[11px] text-[var(--text-secondary)]">
+                  Your credentials have been added to the priority dispatch registry.
+                </p>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (earlyAccessEmail.trim()) {
+                    setEmailSubmitted(true);
+                  }
+                }}
+                className="mx-auto mt-8 flex max-w-md flex-col gap-2 sm:flex-row"
+              >
+                <input
+                  type="email"
+                  required
+                  value={earlyAccessEmail}
+                  onChange={(e) => setEarlyAccessEmail(e.target.value)}
+                  placeholder="ENTER ATHLETE EMAIL..."
+                  className="min-h-[44px] flex-1 border border-[var(--border)] bg-[var(--bg-elevated)] px-4 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none"
+                  aria-label="Early access email"
+                />
+                <button
+                  type="submit"
+                  className="min-h-[44px] bg-[var(--text-primary)] px-6 py-2.5 font-mono text-xs font-bold tracking-wider text-[var(--bg)] uppercase transition-opacity hover:opacity-90 active:scale-[0.97]"
+                >
+                  REQUEST ACCESS
+                </button>
+              </form>
+            )}
+
+            <div className="mt-8 border-t border-[var(--border)] pt-6">
+              <button
+                type="button"
+                onClick={() => setGender('all')}
+                className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+              >
+                <span>← RETURN TO ALL GEAR</span>
+              </button>
+            </div>
+          </div>
+        ) : isLoading && catalogProducts.length === 0 ? (
           <div className="py-24 text-center">
             <p className="animate-pulse font-mono text-xs tracking-widest text-[var(--text-muted)] uppercase">
               [ SYNCHRONIZING REAL-TIME INVENTORY STREAM... ]

@@ -30,7 +30,7 @@ export interface PriceDisplayProps {
   /**
    * Visual size variant
    */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   /**
    * Whether to show the savings text ("Save ₹...")
    */
@@ -89,10 +89,16 @@ export function PriceDisplay({
       savings: 'text-xs',
     },
     lg: {
-      payable: 'text-2xl font-black font-mono tracking-tight',
-      struck: 'text-base font-mono',
-      badge: 'text-xs px-2 py-0.5 font-bold',
-      savings: 'text-sm',
+      payable: 'text-2xl md:text-3xl lg:text-4xl font-black font-mono tracking-tight',
+      struck: 'text-base md:text-lg font-mono',
+      badge: 'text-xs md:text-sm px-2 py-0.5 font-bold',
+      savings: 'text-sm md:text-base',
+    },
+    xl: {
+      payable: 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black font-mono tracking-tight',
+      struck: 'text-base md:text-xl font-mono',
+      badge: 'text-xs md:text-sm px-2.5 py-1 font-bold',
+      savings: 'text-sm md:text-base',
     },
   }[size];
 

@@ -16,18 +16,18 @@ import { BrandLogo } from '@/components/ui/BrandLogo';
 import { useCustomerAuthStore } from '@/store/customerAuth';
 
 const NAV_LINKS = [
-  { label: 'ALL GEAR', href: '/products' },
-  { label: 'TOPS', href: '/products?category=tops' },
-  { label: 'BOTTOMS', href: '/products?category=bottoms' },
-  { label: 'OUTERWEAR', href: '/products?category=outerwear' },
-  { label: 'ACCESSORIES', href: '/products?category=accessories' },
+  { label: 'All gear', href: '/products' },
+  { label: 'Tops', href: '/products?category=tops' },
+  { label: 'Bottoms', href: '/products?category=bottoms' },
+  { label: 'Outerwear', href: '/products?category=outerwear' },
+  { label: 'Accessories', href: '/products?category=accessories' },
 ];
 
 const CANONICAL_LABELS: Record<string, string> = {
-  tops: 'TOPS',
-  bottoms: 'BOTTOMS',
-  outerwear: 'OUTERWEAR',
-  accessories: 'ACCESSORIES',
+  tops: 'Tops',
+  bottoms: 'Bottoms',
+  outerwear: 'Outerwear',
+  accessories: 'Accessories',
 };
 const CATEGORY_ORDER = ['tops', 'bottoms', 'outerwear', 'accessories'];
 
@@ -67,7 +67,7 @@ export function Navbar() {
         const categories = json.data || json.categories || (Array.isArray(json) ? json : []);
         if (Array.isArray(categories) && categories.length > 0) {
           const dynamicLinks = [
-            { label: 'ALL GEAR', href: '/products' },
+            { label: 'All gear', href: '/products' },
             ...categories
               .sort((a: string | { name?: string; slug?: string }, b: string | { name?: string; slug?: string }) => {
                 const slugA = (typeof a === 'string' ? a : (a.slug || a.name || '')).toLowerCase();
@@ -80,7 +80,8 @@ export function Navbar() {
                 const slug = typeof c === 'string' ? c : (c.slug || c.name || '');
                 const slugKey = slug.toLowerCase();
                 const rawName = typeof c === 'string' ? c : (c.name || c.slug || '');
-                const label = CANONICAL_LABELS[slugKey] || rawName.toUpperCase().split(/ [&/]/)[0];
+                const formattedName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase() : '';
+                const label = CANONICAL_LABELS[slugKey] || formattedName.split(/ [&/]/)[0];
                 return {
                   label,
                   href: `/products?category=${slug}`,
@@ -274,7 +275,7 @@ export function Navbar() {
 
         <nav
           aria-label="Main Navigation"
-          className="relative z-50 max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-20 flex items-center justify-between"
+          className="relative z-50 w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 h-16 md:h-20 flex items-center justify-between"
         >
           {/* ============================================================ */}
           {/* LEFT CONTAINER:                                              */}
@@ -309,7 +310,7 @@ export function Navbar() {
                   key={link.label}
                   href={link.href}
                   onMouseEnter={() => setHoveredLink(link.label)}
-                  className={`text-[10px] md:text-[10.5px] lg:text-xs font-mono font-semibold uppercase tracking-[0.08em] md:tracking-[0.10em] lg:tracking-[0.18em] transition-colors relative py-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${
+                  className={`text-[10px] md:text-[10.5px] lg:text-xs font-mono font-semibold tracking-[0.08em] md:tracking-[0.10em] lg:tracking-[0.18em] transition-colors relative py-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${
                     isElevated
                       ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                       : 'text-zinc-300 hover:text-white'
@@ -409,7 +410,7 @@ export function Navbar() {
 
             {/* Light / Dark Mode Toggle - hidden on mobile header, visible on desktop */}
             <div className="hidden md:flex items-center">
-              <ThemeToggle />
+              <ThemeToggle isElevated={isElevated} />
             </div>
 
             {/* Cart Trigger with Spring Bounce Badge - visible on all viewports */}

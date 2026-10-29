@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ShoppingBag, Trash, ArrowRight, Check } from '@phosphor-icons/react';
 import { useWishlistStore } from '@/store/wishlist';
 import { useCartStore } from '@/store/cart';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, formatCardTitle } from '@/lib/utils';
 import { getProductById } from '@/lib/catalog';
 import { EMIL_EASE } from '@/lib/motion';
 import { api } from '@/lib/api';
@@ -251,8 +251,8 @@ export default function WishlistPage() {
                     <div className="flex flex-1 flex-col justify-between p-4">
                       <div>
                         <Link href={`/products/${item.slug}`}>
-                          <h3 className="font-heading truncate text-xs font-bold tracking-tight text-[var(--text-primary)] uppercase transition-colors hover:text-[var(--text-secondary)] sm:text-sm">
-                            {item.name}
+                          <h3 className="font-heading truncate text-xs font-bold tracking-tight text-[var(--text-primary)] transition-colors hover:text-[var(--text-secondary)] sm:text-sm">
+                            {formatCardTitle(item.name)}
                           </h3>
                         </Link>
                         <span className="mt-1 block font-mono text-xs font-bold text-[var(--text-primary)]">

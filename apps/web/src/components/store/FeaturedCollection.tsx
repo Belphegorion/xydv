@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'motion/react';
 import { useCartStore } from '@/store/cart';
-import { formatPrice, getAvailableSizes, type SizeOption } from '@/lib/utils';
+import { formatPrice, getAvailableSizes, formatCardTitle, type SizeOption } from '@/lib/utils';
 import { ArrowRight, ShoppingBag, Check, CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/Badge';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
@@ -151,86 +151,53 @@ const FEATURED_PRODUCTS = [
     ],
   },
   {
-    id: 'prod_juni_wrap_top_005',
-    name: 'Juni Wrap-Neck Top',
-    slug: 'juni-wrap-neck-top',
-    category: 'tops',
-    price: 64.0,
-    specs: 'Crossover Wrap Neckline / Asymmetric Split Hem',
+    id: 'prod_storm_shell_003',
+    name: 'Storm-Shield Ripstop Shell',
+    slug: 'storm-shield-ripstop-shell',
+    category: 'outerwear',
+    price: 148.0,
+    specs: 'Cordura® 500D / 20k Waterproof / Sealed Seams',
     variants: [
       {
-        id: 'var_jwt_blk_s',
-        sku: 'JWT-BLK-S',
+        id: 'var_sss_blk_m',
+        sku: 'SSS-BLK-M',
         colorName: 'Void Obsidian',
         colorHex: '#0A0A0A',
-        size: 'S',
-        primaryImage: '/products/image-25-1.jpg',
-        secondaryImage: '/products/image-25-2.jpg',
+        size: 'M',
+        primaryImage: '/products/image-9-1.jpg',
+        secondaryImage: '/products/image-13-1.jpg',
         gallery: [
-          '/products/image-25-1.jpg',
-          '/products/image-25-2.jpg',
-          '/products/image-24-1.jpg',
-          '/products/image-22-1.jpg',
-        ],
-        stock: 45,
-      },
-      {
-        id: 'var_jwt_slv_s',
-        sku: 'JWT-SLV-S',
-        colorName: 'Muted Silver',
-        colorHex: '#B0B0B0',
-        size: 'S',
-        primaryImage: '/products/image-22-1.jpg',
-        secondaryImage: '/products/image-23-1.jpg',
-        gallery: [
-          '/products/image-22-1.jpg',
-          '/products/image-23-1.jpg',
-          '/products/image-24-1.jpg',
-          '/products/image-25-1.jpg',
+          '/products/image-9-1.jpg',
+          '/products/image-13-1.jpg',
+          '/products/image-13-2.jpg',
+          '/products/image-16-1.jpg',
         ],
         stock: 30,
       },
     ],
   },
   {
-    id: 'prod_activewear_set_006',
-    name: 'AeroFlex Women Activewear Set',
-    slug: 'aeroflex-women-activewear-set',
-    category: 'sets',
-    price: 118.0,
-    specs: 'Cropped Zip Jacket & High-Waisted Shorts / Compression Fit',
+    id: 'prod_tactical_sling_011',
+    name: 'Ballistic Modular Sling Pack',
+    slug: 'ballistic-modular-sling-pack',
+    category: 'accessories',
+    price: 68.0,
+    specs: 'Cordura® 1000D / YKK Aquaguard / Fidlock Strap',
     variants: [
       {
-        id: 'var_was_olv_s',
-        sku: 'WAS-OLV-S',
-        colorName: 'Tactical Olive',
-        colorHex: '#4A5340',
-        size: 'S',
-        primaryImage: '/products/image-30-1.jpg',
-        secondaryImage: '/products/image-31-1.jpg',
-        gallery: [
-          '/products/image-30-1.jpg',
-          '/products/image-31-1.jpg',
-          '/products/image-29-1.jpg',
-          '/products/image-32-1.jpg',
-        ],
-        stock: 35,
-      },
-      {
-        id: 'var_was_blk_s',
-        sku: 'WAS-BLK-S',
+        id: 'var_bms_blk_os',
+        sku: 'BMS-BLK-OS',
         colorName: 'Void Obsidian',
         colorHex: '#0A0A0A',
-        size: 'S',
-        primaryImage: '/products/image-29-1.jpg',
-        secondaryImage: '/products/image-32-1.jpg',
+        size: 'OS',
+        primaryImage: '/products/image-12-2.jpg',
+        secondaryImage: '/products/image-12-1.jpg',
         gallery: [
-          '/products/image-29-1.jpg',
-          '/products/image-32-1.jpg',
-          '/products/image-30-1.jpg',
-          '/products/image-31-1.jpg',
+          '/products/image-12-2.jpg',
+          '/products/image-12-1.jpg',
+          '/products/image-12-3.jpg',
         ],
-        stock: 28,
+        stock: 50,
       },
     ],
   },
@@ -352,14 +319,20 @@ function ProductCardMedia({
             key={imgIdx}
             className="relative h-full w-full flex-shrink-0 snap-center overflow-hidden"
           >
-            <Image
-              src={imgUrl}
-              alt={`${product.name} ${activeVariant.colorName} view ${imgIdx + 1}`}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="object-cover object-center transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105"
-              priority={imgIdx === 0}
-            />
+            <Link
+              href={`/products/${product.slug}`}
+              className="relative block h-full w-full"
+              aria-label={`View ${product.name}`}
+            >
+              <Image
+                src={imgUrl}
+                alt={`${product.name} ${activeVariant.colorName} view ${imgIdx + 1}`}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                className="object-cover object-center transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105"
+                priority={imgIdx === 0}
+              />
+            </Link>
           </div>
         ))}
       </div>
@@ -528,7 +501,10 @@ export function FeaturedCollection() {
       .get<{ data?: Product[]; products?: Product[] }>('/products?featured=true')
       .then((res) => {
         if (!isMounted) return;
-        const raw = res?.data ?? res?.products;
+        const allRaw = res?.data ?? res?.products;
+        const raw = Array.isArray(allRaw)
+          ? allRaw.filter((item) => (item as Product & { gender?: string }).gender !== 'women')
+          : [];
         if (Array.isArray(raw) && raw.length > 0) {
           const staticMap = new Map(FEATURED_PRODUCTS.map((p) => [p.slug, p]));
           const mapped: FeaturedItem[] = raw.slice(0, 6).map((item) => {
@@ -638,8 +614,8 @@ export function FeaturedCollection() {
     prod_apex_shorts_002: 0,
     prod_stealth_hoodie_003: 0,
     prod_tactical_cap_004: 0,
-    prod_juni_wrap_top_005: 0,
-    prod_activewear_set_006: 0,
+    prod_storm_shell_003: 0,
+    prod_tactical_sling_011: 0,
   });
 
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
@@ -749,9 +725,10 @@ export function FeaturedCollection() {
                       <button
                         key={v.id}
                         type="button"
-                        onClick={() =>
-                          setActiveVariants((prev) => ({ ...prev, [product.id]: sIdx }))
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveVariants((prev) => ({ ...prev, [product.id]: sIdx }));
+                        }}
                         aria-label={`Select ${v.colorName}`}
                         className="touch-target relative -m-2 flex-shrink-0 p-2 focus:outline-none"
                       >
@@ -775,8 +752,8 @@ export function FeaturedCollection() {
                     href={`/products/${product.slug}`}
                     className="transition-colors hover:text-[var(--text-secondary)] dark:hover:text-zinc-300"
                   >
-                    <h3 className="font-heading line-clamp-1 text-xs font-bold tracking-tight text-[var(--text-primary)] uppercase sm:text-sm">
-                      {product.name}
+                    <h3 className="font-heading line-clamp-1 text-xs font-bold tracking-tight text-[var(--text-primary)] sm:text-sm">
+                      {formatCardTitle(product.name)}
                     </h3>
                   </Link>
 
@@ -802,7 +779,10 @@ export function FeaturedCollection() {
                     {/* Compact mobile quick add button */}
                     <button
                       type="button"
-                      onClick={() => handleQuickAdd(product)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleQuickAdd(product);
+                      }}
                       aria-label={`Quick add ${product.name} to bag`}
                       className="touch-target flex min-h-[48px] min-w-[48px] items-center justify-center bg-[var(--accent)] text-white transition-colors hover:bg-[var(--accent-hover)] active:scale-[0.97] sm:hidden dark:text-[#0a0a0a]"
                     >

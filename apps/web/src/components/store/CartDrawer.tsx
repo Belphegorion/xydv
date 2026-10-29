@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useCartStore } from '@/store/cart';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, formatCardTitle } from '@/lib/utils';
 import { calculateCartMetrics } from '@vertex/types';
 import {
   X,
@@ -644,8 +644,8 @@ export function CartDrawer() {
                           {/* Meta & Controls */}
                           <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch">
                             <div>
-                              <h3 className="font-heading truncate text-xs font-bold tracking-wider text-[var(--text-primary)] uppercase">
-                                {item.name}
+                              <h3 className="font-heading truncate text-xs font-bold tracking-wider text-[var(--text-primary)]">
+                                {formatCardTitle(item.name)}
                               </h3>
                               <p className="mt-0.5 font-mono text-[11px] tracking-wide text-[var(--text-secondary)] uppercase">
                                 {item.color} / {item.size}

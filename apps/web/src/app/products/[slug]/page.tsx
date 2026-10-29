@@ -30,7 +30,7 @@ import { useCartStore } from '@/store/cart';
 import { useWishlistStore } from '@/store/wishlist';
 import { Badge } from '@/components/ui/Badge';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, formatCardTitle } from '@/lib/utils';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 import { api } from '@/lib/api';
 import { useCustomerAuthStore } from '@/store/customerAuth';
@@ -674,8 +674,13 @@ export default function ProductDetailPage({ params }: PageProps) {
                 {product.name}
               </h1>
 
+              {/* Description/Headline below product name */}
+              <p className="mt-2.5 font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm md:text-base lg:text-lg">
+                {product.headline}
+              </p>
+
               {/* Price & Rating Row */}
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <PriceDisplay
                     price={
@@ -687,16 +692,16 @@ export default function ProductDetailPage({ params }: PageProps) {
                     mrp={product.compareAtPrice}
                     discountPercent={product.discountPercentRounded}
                     badgeLabel={product.discountBadgeLabel}
-                    size="lg"
+                    size="xl"
                     showSavings={true}
                   />
-                  <p className="mt-1 font-mono text-[10px] text-[var(--text-muted)]">
+                  <p className="mt-1 font-mono text-[10px] md:text-xs text-[var(--text-muted)]">
                     MRP inclusive of all taxes
                   </p>
                 </div>
 
                 {product.reviewCount > 0 ? (
-                  <div className="flex items-center gap-1.5 font-mono text-xs text-[var(--text-secondary)]">
+                  <div className="flex items-center gap-1.5 font-mono text-xs md:text-sm text-[var(--text-secondary)]">
                     <div className="flex items-center text-amber-500">
                       <Star size={14} weight="fill" />
                     </div>
@@ -712,9 +717,13 @@ export default function ProductDetailPage({ params }: PageProps) {
                 )}
               </div>
 
-              <p className="mt-4 font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm">
-                {product.headline}
-              </p>
+              {/* IN STOCK Availability Indicator */}
+              <div className="mt-3.5 flex items-center gap-2">
+                <span className="inline-flex items-center gap-2 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-xs md:text-base lg:text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="h-2 w-2 md:h-2.5 md:w-2.5 animate-pulse rounded-full bg-emerald-500" />
+                  IN STOCK · READY FOR DISPATCH
+                </span>
+              </div>
             </div>
 
             {/* Colorway Selection */}
@@ -1292,8 +1301,8 @@ export default function ProductDetailPage({ params }: PageProps) {
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
-                  <h3 className="font-heading truncate text-xs font-bold text-[var(--text-primary)] uppercase">
-                    {item.name}
+                  <h3 className="font-heading truncate text-xs font-bold text-[var(--text-primary)]">
+                    {formatCardTitle(item.name)}
                   </h3>
                   <span className="mt-1 font-mono text-[11px] text-[var(--text-secondary)]">
                     {formatPrice(item.price)}

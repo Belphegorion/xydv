@@ -6,6 +6,7 @@ export * from './CollectionShowcase';
 export * from './BestsellerGrid';
 export * from './TechFeatures';
 export * from './SocialProof';
+export * from './SocialLinksSection';
 export * from './NewsletterSection';
 export * from './CartDrawer';
 export * from './CustomerAuthModal';

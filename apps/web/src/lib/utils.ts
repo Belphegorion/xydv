@@ -72,3 +72,9 @@ export function getAvailableSizes(
 
   return [{ size: 'OS', inStock: true }];
 }
+
+export function formatCardTitle(name: string): string {
+  if (!name) return '';
+  const formatted = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  return formatted.replace(/\bxydv\b/gi, 'XYDV');
+}
