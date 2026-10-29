@@ -75,6 +75,8 @@ export function getAvailableSizes(
 
 export function formatCardTitle(name: string): string {
   if (!name) return '';
-  const formatted = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  const trimmed = name.trim();
+  if (!trimmed) return '';
+  const formatted = trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
   return formatted.replace(/\bxydv\b/gi, 'XYDV');
 }

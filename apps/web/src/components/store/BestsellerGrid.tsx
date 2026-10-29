@@ -752,17 +752,16 @@ export function BestsellerGrid() {
                   {/* Title & Link */}
                   <Link
                     href={`/products/${product.slug}`}
-                    className="transition-colors hover:text-[var(--text-secondary)] dark:hover:text-zinc-300"
+                    className="group/title block transition-colors hover:text-[var(--text-secondary)] dark:hover:text-zinc-300"
                   >
                     <h3 className="font-heading line-clamp-1 text-xs font-bold tracking-tight text-[var(--text-primary)] sm:text-base">
                       {formatCardTitle(product.name)}
                     </h3>
+                    {/* Rating string */}
+                    <p className="mt-1 font-mono text-[10px] text-[var(--text-secondary)] sm:text-xs">
+                      {product.rating}
+                    </p>
                   </Link>
-
-                  {/* Rating string */}
-                  <p className="mt-1 font-mono text-[10px] text-[var(--text-secondary)] sm:text-xs">
-                    {product.rating}
-                  </p>
                 </div>
 
                 {/* Price & Stock Hairline Divider */}

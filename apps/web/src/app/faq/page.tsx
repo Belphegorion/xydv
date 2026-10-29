@@ -134,8 +134,8 @@ export default function FAQPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="SEARCH KNOWLEDGE BASE BY KEYWORD..."
-              className="h-11 w-full border border-[var(--border)] bg-[var(--bg-elevated)] pr-9 pl-10 font-mono text-xs text-[var(--text-primary)] uppercase placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:outline-none"
+              placeholder="Search knowledge base by keyword..."
+              className="h-11 w-full border border-[var(--border)] bg-[var(--bg-elevated)] pr-9 pl-10 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:outline-none"
             />
             {search && (
               <button
@@ -153,18 +153,18 @@ export default function FAQPage() {
         {/* Filter Pills */}
         <div className="mb-8 flex no-scrollbar items-center gap-2 overflow-x-auto pb-2">
           {[
-            { id: 'all', label: 'ALL INQUIRIES' },
-            { id: 'materials', label: 'TEXTILE SCIENCE' },
-            { id: 'sizing', label: 'SIZING & FIT' },
-            { id: 'orders', label: 'PAYMENTS' },
-            { id: 'dispatch', label: 'GLOBAL DISPATCH' },
-            { id: 'warranty', label: 'WARRANTY' },
+            { id: 'all', label: 'All inquiries' },
+            { id: 'materials', label: 'Textile science' },
+            { id: 'sizing', label: 'Sizing & fit' },
+            { id: 'orders', label: 'Payments' },
+            { id: 'dispatch', label: 'Global dispatch' },
+            { id: 'warranty', label: 'Warranty' },
           ].map((cat) => (
             <button
               key={cat.id}
               type="button"
               onClick={() => setActiveCategory(cat.id)}
-              className={`touch-target px-3.5 py-2 font-mono text-xs font-bold tracking-wider whitespace-nowrap uppercase transition-colors active:scale-[0.97] ${
+              className={`touch-target px-3.5 py-2 font-mono text-xs font-bold tracking-wider whitespace-nowrap transition-colors active:scale-[0.97] ${
                 activeCategory === cat.id
                   ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)]'
                   : 'border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)]'

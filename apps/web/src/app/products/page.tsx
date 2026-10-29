@@ -215,9 +215,9 @@ const CATEGORIES = [
 
 const DISCIPLINES = [
   { label: 'All disciplines', value: 'all' },
-  { label: 'Run (Div.01)', value: 'run' },
-  { label: 'Train (Div.02)', value: 'train' },
-  { label: 'Rec (Div.03)', value: 'rec' },
+  { label: 'Run (div.01)', value: 'run' },
+  { label: 'Train (div.02)', value: 'train' },
+  { label: 'Rec (div.03)', value: 'rec' },
 ];
 
 const GENDERS = [
@@ -229,8 +229,8 @@ const GENDERS = [
 const SORT_OPTIONS = [
   { label: 'Featured', value: 'featured' },
   { label: 'Bestseller', value: 'bestseller' },
-  { label: 'Price: Low to High', value: 'price-asc' },
-  { label: 'Price: High to Low', value: 'price-desc' },
+  { label: 'Price: low to high', value: 'price-asc' },
+  { label: 'Price: high to low', value: 'price-desc' },
   { label: 'Newest', value: 'newest' },
 ];
 
@@ -818,7 +818,7 @@ function CatalogContent() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="SEARCH HARDWARE..."
+              placeholder="Search hardware..."
               className="min-h-[44px] h-11 w-full border border-[var(--border)] bg-[var(--bg-elevated)] pr-9 pl-10 font-mono text-base sm:text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-colors focus:border-[var(--text-primary)] focus:ring-1 focus:ring-[var(--text-primary)] focus:outline-none"
             />
             {search && (
@@ -841,9 +841,9 @@ function CatalogContent() {
             <div className="flex items-center gap-1.5">
               <label
                 htmlFor="filter-discipline"
-                className="hidden font-mono text-[10px] text-[var(--text-muted)] uppercase sm:inline"
+                className="hidden font-mono text-[10px] text-[var(--text-muted)] sm:inline"
               >
-                DISCIPLINE:
+                Discipline:
               </label>
               <select
                 id="filter-discipline"
@@ -865,9 +865,9 @@ function CatalogContent() {
             <div className="flex items-center gap-1.5">
               <label
                 htmlFor="filter-gender"
-                className="hidden font-mono text-[10px] text-[var(--text-muted)] uppercase sm:inline"
+                className="hidden font-mono text-[10px] text-[var(--text-muted)] sm:inline"
               >
-                DIVISION:
+                Division:
               </label>
               <select
                 id="filter-gender"
@@ -895,8 +895,8 @@ function CatalogContent() {
                 onChange={(e) => setInStockOnly(e.target.checked)}
                 className="h-4 w-4 cursor-pointer rounded-none border-[var(--border)] accent-[var(--accent)]"
               />
-              <span className="font-mono text-[11px] text-[var(--text-secondary)] uppercase">
-                IN STOCK ONLY
+              <span className="font-mono text-[11px] text-[var(--text-secondary)]">
+                In stock only
               </span>
             </label>
           </div>
@@ -926,10 +926,10 @@ function CatalogContent() {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="touch-target flex min-h-[44px] h-10 shrink-0 items-center gap-1 border border-rose-500/30 px-3 font-mono text-xs font-bold tracking-wider text-rose-600 uppercase transition-colors hover:bg-rose-500/10 sm:min-h-0 sm:h-8 dark:text-rose-400"
+                className="touch-target flex min-h-[44px] h-10 shrink-0 items-center gap-1 border border-rose-500/30 px-3 font-mono text-xs font-bold tracking-wider text-rose-600 transition-colors hover:bg-rose-500/10 sm:min-h-0 sm:h-8 dark:text-rose-400"
               >
                 <X size={12} weight="bold" />
-                <span>RESET</span>
+                <span>Reset</span>
               </button>
             )}
           </div>

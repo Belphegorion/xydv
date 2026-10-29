@@ -275,7 +275,7 @@ export function Navbar() {
 
         <nav
           aria-label="Main Navigation"
-          className="relative z-50 w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 h-16 md:h-20 flex items-center justify-between"
+          className="relative z-50 w-full max-w-[1920px] mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 h-16 md:h-20 flex items-center justify-between"
         >
           {/* ============================================================ */}
           {/* LEFT CONTAINER:                                              */}

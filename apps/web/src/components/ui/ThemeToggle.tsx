@@ -77,7 +77,7 @@ export function ThemeToggle({
       role="switch"
       aria-checked={isDark}
       aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-      className={`touch-target btn-tactile relative flex h-9 w-9 items-center justify-center transition-colors ${
+      className={`touch-target btn-tactile relative flex h-9 w-9 items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white ${
         isElevated
           ? 'border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:border-[var(--accent)] dark:hover:text-[var(--accent)]'
           : 'border border-transparent bg-transparent text-zinc-300 hover:text-white'

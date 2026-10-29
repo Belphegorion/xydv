@@ -750,17 +750,16 @@ export function FeaturedCollection() {
                   {/* Title & Link */}
                   <Link
                     href={`/products/${product.slug}`}
-                    className="transition-colors hover:text-[var(--text-secondary)] dark:hover:text-zinc-300"
+                    className="group/title block transition-colors hover:text-[var(--text-secondary)] dark:hover:text-zinc-300"
                   >
                     <h3 className="font-heading line-clamp-1 text-xs font-bold tracking-tight text-[var(--text-primary)] sm:text-sm">
                       {formatCardTitle(product.name)}
                     </h3>
+                    {/* Micro Specs */}
+                    <p className="mt-0.5 line-clamp-1 font-mono text-[10px] text-[var(--text-muted)] sm:text-[11px]">
+                      {product.specs}
+                    </p>
                   </Link>
-
-                  {/* Micro Specs */}
-                  <p className="mt-0.5 line-clamp-1 font-mono text-[10px] text-[var(--text-muted)] sm:text-[11px]">
-                    {product.specs}
-                  </p>
                 </div>
 
                 {/* Price & Actions */}
