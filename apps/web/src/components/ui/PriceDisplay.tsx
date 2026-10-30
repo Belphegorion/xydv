@@ -30,7 +30,7 @@ export interface PriceDisplayProps {
   /**
    * Visual size variant
    */
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'card';
   /**
    * Whether to show the savings text ("Save ₹...")
    */
@@ -88,6 +88,12 @@ export function PriceDisplay({
       badge: 'text-[10px] px-1.5 py-0.5',
       savings: 'text-xs',
     },
+    card: {
+      payable: 'text-sm sm:text-base md:text-lg lg:text-xl font-black font-mono tracking-tight',
+      struck: 'text-xs sm:text-sm font-mono',
+      badge: 'text-[10px] sm:text-xs px-1.5 py-0.5 font-bold',
+      savings: 'text-xs sm:text-sm font-semibold',
+    },
     lg: {
       payable: 'text-2xl md:text-3xl lg:text-4xl font-black font-mono tracking-tight',
       struck: 'text-base md:text-lg font-mono',
@@ -95,10 +101,10 @@ export function PriceDisplay({
       savings: 'text-sm md:text-base',
     },
     xl: {
-      payable: 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black font-mono tracking-tight',
-      struck: 'text-base md:text-xl lg:text-2xl xl:text-3xl font-mono',
-      badge: 'text-xs md:text-sm lg:text-base xl:text-lg px-2.5 py-1 lg:px-3.5 lg:py-1.5 font-bold',
-      savings: 'text-sm md:text-base lg:text-lg xl:text-xl font-semibold',
+      payable: 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black font-mono tracking-tight',
+      struck: 'text-base md:text-xl font-mono',
+      badge: 'text-xs md:text-sm px-2.5 py-1 font-bold',
+      savings: 'text-sm md:text-base',
     },
   }[size];
 

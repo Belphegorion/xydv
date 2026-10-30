@@ -552,7 +552,7 @@ function CatalogCard({
             mrp={product.compareAtPrice}
             discountPercent={product.discountPercentRounded}
             badgeLabel={product.discountBadgeLabel}
-            size="sm"
+            size="card"
           />
 
           <div className="sm:hidden">

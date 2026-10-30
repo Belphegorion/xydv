@@ -255,7 +255,7 @@ export default function WishlistPage() {
                             {formatCardTitle(item.name)}
                           </h3>
                         </Link>
-                        <span className="mt-1 block font-mono text-xs font-bold text-[var(--text-primary)]">
+                        <span className="mt-1 block font-mono text-sm sm:text-base md:text-lg lg:text-xl font-black tracking-tight text-[var(--text-primary)]">
                           {formatPrice(item.price)}
                         </span>
 

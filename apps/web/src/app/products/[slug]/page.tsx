@@ -677,12 +677,12 @@ export default function ProductDetailPage({ params }: PageProps) {
               </h1>
 
               {/* Description/Headline below product name */}
-              <p className="mt-2.5 lg:mt-3.5 font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm md:text-base lg:text-xl xl:text-2xl lg:font-medium lg:leading-relaxed xl:leading-relaxed dark:text-zinc-300">
-                {product.headline || product.description}
+              <p className="mt-2.5 font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm md:text-base lg:text-lg">
+                {product.headline}
               </p>
 
               {/* Price & Rating Row */}
-              <div className="mt-4 lg:mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <PriceDisplay
                     price={
@@ -697,15 +697,15 @@ export default function ProductDetailPage({ params }: PageProps) {
                     size="xl"
                     showSavings={true}
                   />
-                  <p className="mt-1 lg:mt-1.5 font-mono text-[10px] md:text-xs lg:text-sm text-[var(--text-muted)]">
+                  <p className="mt-1 font-mono text-[10px] md:text-xs text-[var(--text-muted)]">
                     MRP inclusive of all taxes
                   </p>
                 </div>
 
                 {product.reviewCount > 0 ? (
-                  <div className="flex items-center gap-1.5 font-mono text-xs md:text-sm lg:text-base text-[var(--text-secondary)]">
+                  <div className="flex items-center gap-1.5 font-mono text-xs md:text-sm text-[var(--text-secondary)]">
                     <div className="flex items-center text-amber-500">
-                      <Star size={14} weight="fill" className="lg:w-4 lg:h-4" />
+                      <Star size={14} weight="fill" />
                     </div>
                     <span className="font-bold text-[var(--text-primary)]">
                       {typeof product.rating === 'number'
@@ -715,14 +715,14 @@ export default function ProductDetailPage({ params }: PageProps) {
                     <span className="text-[var(--text-muted)]">({product.reviewCount})</span>
                   </div>
                 ) : (
-                  <span className="font-mono text-xs lg:text-sm text-[var(--text-muted)]">No reviews yet</span>
+                  <span className="font-mono text-xs text-[var(--text-muted)]">No reviews yet</span>
                 )}
               </div>
 
               {/* IN STOCK Availability Indicator */}
-              <div className="mt-3.5 lg:mt-5 flex items-center gap-2">
-                <span className="inline-flex items-center gap-2 lg:gap-3 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 lg:px-4 lg:py-2 xl:px-5 xl:py-2.5 font-mono text-xs md:text-sm lg:text-xl xl:text-2xl font-bold lg:font-extrabold tracking-wide text-emerald-600 dark:text-emerald-400">
-                  <span className="h-2 w-2 md:h-2.5 md:w-2.5 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 shrink-0 animate-pulse rounded-full bg-emerald-500" />
+              <div className="mt-3.5 flex items-center gap-2">
+                <span className="inline-flex items-center gap-2 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-xs md:text-base lg:text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="h-2 w-2 md:h-2.5 md:w-2.5 animate-pulse rounded-full bg-emerald-500" />
                   IN STOCK · READY FOR DISPATCH
                 </span>
               </div>

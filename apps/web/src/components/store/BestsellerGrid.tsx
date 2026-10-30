@@ -774,7 +774,7 @@ export function BestsellerGrid() {
                     mrp={product.compareAt}
                     discountPercent={product.discountPercentRounded}
                     badgeLabel={product.discountBadgeLabel}
-                    size="md"
+                    size="card"
                   />
                   <div className="flex items-center gap-1.5">
                     {/* Compact mobile quick add button */}
