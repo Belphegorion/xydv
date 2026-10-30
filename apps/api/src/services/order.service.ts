@@ -192,6 +192,20 @@ export class OrderService {
       if (user?.isBlocked) {
         throw new AppError('Your account has been suspended. Please contact support.', 403);
       }
+      if (user && user.role !== 'admin') {
+        if (!user.isEmailVerified) {
+          throw new AppError(
+            'Email verification required prior to checkout. Please verify your email.',
+            403,
+          );
+        }
+        if (!user.isPhoneVerified) {
+          throw new AppError(
+            'Phone verification required prior to checkout. Please verify your mobile number.',
+            403,
+          );
+        }
+      }
     }
 
     const guestEmail = shippingAddress?.email || shippingAddress?.customerEmail;

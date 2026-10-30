@@ -80,7 +80,7 @@ export function OTPInput({
       </div>
 
       <div
-        className="flex justify-between gap-1.5 sm:gap-2"
+        className="flex justify-between gap-1 sm:gap-2"
         onPaste={handlePaste}
         role="group"
         aria-label="One-Time Verification Code"
@@ -99,10 +99,10 @@ export function OTPInput({
             value={value[i] || ''}
             onChange={(e) => handleChange(i, e.target.value)}
             onKeyDown={(e) => handleKeyDown(i, e)}
-            className={`w-11 h-12 sm:w-12 sm:h-14 text-center text-lg font-mono font-bold bg-[#111111] border transition-colors ${
+            className={`flex-1 min-w-0 max-w-[48px] h-12 sm:h-14 text-center text-base sm:text-lg font-mono font-bold bg-[#111111] border transition-colors ${
               hasError
                 ? 'border-red-600 text-red-400'
-                : 'border-[#1F1F1F] text-[#E8FF00] focus:border-[#E8FF00]'
+                : 'border-[#1F1F1F] text-[#E8FF00] focus:border-[#E8FF00] focus-visible:ring-1 focus-visible:ring-[#E8FF00]'
             } focus:outline-none disabled:opacity-40`}
             aria-label={`Digit ${i + 1} of verification code`}
           />

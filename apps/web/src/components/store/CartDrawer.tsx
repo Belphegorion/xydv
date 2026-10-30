@@ -24,6 +24,7 @@ import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { EMIL_EASE } from '@/lib/motion';
 import { api } from '@/lib/api';
 import { useCustomerAuthStore } from '@/store/customerAuth';
+import { VerificationModal } from './VerificationModal';
 import type { ICouponValidationResult } from '@vertex/types';
 
 export function CartDrawer() {
@@ -35,6 +36,11 @@ export function CartDrawer() {
   const shouldReduceMotion = useReducedMotion();
 
   const customerUser = useCustomerAuthStore((s) => s.user);
+  const openAuthModal = useCustomerAuthStore((s) => s.openModal);
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [verificationChannel, setVerificationChannel] = useState<'email' | 'sms'>('sms');
+  const [verificationTarget, setVerificationTarget] = useState('');
+
   const [shippingAddress, setShippingAddress] = useState({
     fullName: '',
     line1: '',
@@ -48,6 +54,19 @@ export function CartDrawer() {
   });
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addressError, setAddressError] = useState<string | null>(null);
+
+  const handleOpenVerification = useCallback(
+    (channelToOpen: 'email' | 'sms') => {
+      setVerificationChannel(channelToOpen);
+      const target =
+        channelToOpen === 'sms'
+          ? customerUser?.phone || shippingAddress.phone || ''
+          : customerUser?.email || shippingAddress.email || '';
+      setVerificationTarget(target);
+      setIsVerificationModalOpen(true);
+    },
+    [customerUser, shippingAddress.phone, shippingAddress.email],
+  );
 
   useEffect(() => {
     if (customerUser) {
@@ -315,6 +334,25 @@ export function CartDrawer() {
       return;
     }
 
+    // Prerequisite: Email and phone verification for logged-in users
+    if (customerUser) {
+      const needsPhone = !customerUser.isPhoneVerified;
+      const needsEmail = !customerUser.isEmailVerified;
+
+      if (needsPhone || needsEmail) {
+        const targetChannel = needsPhone ? 'sms' : 'email';
+        handleOpenVerification(targetChannel);
+        setPaymentError(
+          needsPhone && needsEmail
+            ? 'Account verification required: Please verify your mobile number and email before proceeding.'
+            : needsPhone
+            ? 'Mobile verification required: Please verify your mobile phone number before proceeding.'
+            : 'Email verification required: Please verify your email address before proceeding.',
+        );
+        return;
+      }
+    }
+
     setIsProcessing(true);
 
     try {
@@ -484,7 +522,7 @@ export function CartDrawer() {
       setPaymentError(errMsg);
       setIsProcessing(false);
     }
-  }, [items, metrics, storeSettings, clearCart, closeCart, shippingAddress, customerUser, appliedCoupon?.code]);
+  }, [items, metrics, storeSettings, clearCart, closeCart, shippingAddress, customerUser, appliedCoupon?.code, handleOpenVerification]);
 
   const pathname = usePathname();
   if (pathname?.startsWith('/admin')) {
@@ -703,6 +741,147 @@ export function CartDrawer() {
                       ))}
                     </AnimatePresence>
                   </div>
+
+                  {/* Account Verification Section (for already logged-in users) */}
+                  {customerUser ? (
+                    <div className="pt-4 pb-2">
+                      {customerUser.isPhoneVerified && customerUser.isEmailVerified ? (
+                        <div className="space-y-2 border border-[var(--border)] bg-[var(--bg-elevated)] p-3.5">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="flex items-center gap-1.5 font-mono text-[10px] font-bold tracking-[0.2em] text-[#22c55e] uppercase">
+                                <ShieldCheck size={12} weight="bold" />
+                                <span>SECURITY PROTOCOL</span>
+                              </span>
+                              <h4 className="font-heading mt-0.5 text-xs font-bold text-[var(--text-primary)] uppercase">
+                                CREDENTIALS VERIFIED
+                              </h4>
+                            </div>
+                            <Badge variant="volt" size="sm">
+                              ALL CLEAR
+                            </Badge>
+                          </div>
+                          <div className="space-y-1.5 border border-[var(--border)] bg-[var(--bg)] p-2.5 font-mono text-xs text-[var(--text-secondary)]">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] uppercase text-[var(--text-muted)]">MOBILE:</span>
+                              <span className="flex items-center gap-1 font-bold text-[#22c55e]">
+                                <CheckCircle size={12} weight="fill" />
+                                {customerUser.phone || shippingAddress.phone || 'VERIFIED'}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] uppercase text-[var(--text-muted)]">EMAIL:</span>
+                              <span className="flex items-center gap-1 font-bold text-[#22c55e]">
+                                <CheckCircle size={12} weight="fill" />
+                                {customerUser.email}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3 border border-[#E8FF00]/40 bg-[#E8FF00]/5 p-3.5 dark:border-[#E8FF00]/30 dark:bg-[#E8FF00]/5">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="flex items-center gap-1.5 font-mono text-[10px] font-bold tracking-[0.2em] text-[#E8FF00] uppercase">
+                                <ShieldCheck size={12} weight="bold" />
+                                <span>SECURITY PREREQUISITE</span>
+                              </span>
+                              <h4 className="font-heading mt-0.5 text-xs font-bold text-[var(--text-primary)] uppercase">
+                                ACCOUNT VERIFICATION
+                              </h4>
+                            </div>
+                            <Badge variant="volt" size="sm">
+                              REQUIRED
+                            </Badge>
+                          </div>
+
+                          <p className="font-sans text-[11px] text-[var(--text-secondary)]">
+                            Mobile and email verification are required prior to dispatch to ensure real-time delivery notifications and courier authentication.
+                          </p>
+
+                          <div className="space-y-2 border border-[var(--border)] bg-[var(--bg)] p-2.5 font-mono text-xs">
+                            {/* Phone row */}
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="min-w-0 flex-1">
+                                <span className="block text-[10px] uppercase text-[var(--text-muted)]">
+                                  MOBILE NUMBER
+                                </span>
+                                <span className="block truncate text-[11px] font-bold text-[var(--text-primary)]">
+                                  {customerUser.phone || shippingAddress.phone || 'NOT SET'}
+                                </span>
+                              </div>
+                              {customerUser.isPhoneVerified ? (
+                                <span className="flex shrink-0 items-center gap-1 text-[11px] font-bold text-[#22c55e]">
+                                  <CheckCircle size={12} weight="fill" /> VERIFIED
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenVerification('sms')}
+                                  className="btn-tactile inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center border border-[#E8FF00] bg-[#E8FF00] px-3 font-mono text-[10px] font-bold uppercase tracking-wider text-black transition-colors hover:opacity-90 active:scale-[0.97]"
+                                  aria-label="Verify mobile number"
+                                >
+                                  VERIFY MOBILE
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Email row */}
+                            <div className="flex items-center justify-between gap-2 border-t border-[var(--border)] pt-2">
+                              <div className="min-w-0 flex-1">
+                                <span className="block text-[10px] uppercase text-[var(--text-muted)]">
+                                  EMAIL ADDRESS
+                                </span>
+                                <span className="block truncate text-[11px] font-bold text-[var(--text-primary)]">
+                                  {customerUser.email}
+                                </span>
+                              </div>
+                              {customerUser.isEmailVerified ? (
+                                <span className="flex shrink-0 items-center gap-1 text-[11px] font-bold text-[#22c55e]">
+                                  <CheckCircle size={12} weight="fill" /> VERIFIED
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenVerification('email')}
+                                  className="btn-tactile inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center border border-[#E8FF00] bg-[#E8FF00] px-3 font-mono text-[10px] font-bold uppercase tracking-wider text-black transition-colors hover:opacity-90 active:scale-[0.97]"
+                                  aria-label="Verify email address"
+                                >
+                                  VERIFY EMAIL
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="pt-4 pb-2">
+                      <div className="space-y-2 border border-[var(--border)] bg-[var(--bg-elevated)] p-3.5">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="flex items-center gap-1.5 font-mono text-[10px] font-bold tracking-[0.2em] text-[var(--text-muted)] uppercase">
+                              <ShieldCheck size={12} weight="bold" />
+                              <span>ACCOUNT & DISPATCH</span>
+                            </span>
+                            <h4 className="font-heading mt-0.5 text-xs font-bold text-[var(--text-primary)] uppercase">
+                              CUSTOMER ACCOUNT
+                            </h4>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => openAuthModal('login')}
+                            className="btn-tactile inline-flex min-h-[44px] min-w-[44px] items-center justify-center border border-[var(--border)] bg-[var(--bg)] px-3 font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--text-primary)] hover:border-[var(--accent)] active:scale-[0.97]"
+                          >
+                            SIGN IN
+                          </button>
+                        </div>
+                        <p className="font-sans text-[11px] text-[var(--text-secondary)]">
+                          Sign in to access saved addresses and verified dispatch credentials across your devices.
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Shipping Address Form Section */}
                   <div className="pt-4 pb-2">
@@ -1085,6 +1264,17 @@ export function CartDrawer() {
           </motion.div>
         </div>
       )}
+
+      {/* Verification Pop-up Modal (Responsive across all screen sizes for already logged-in users) */}
+      <VerificationModal
+        isOpen={isOpen && isVerificationModalOpen}
+        onClose={() => setIsVerificationModalOpen(false)}
+        initialChannel={verificationChannel}
+        initialTarget={verificationTarget}
+        onVerified={() => {
+          setPaymentError(null);
+        }}
+      />
     </AnimatePresence>
   );
 }

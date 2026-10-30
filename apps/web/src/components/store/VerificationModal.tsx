@@ -22,7 +22,7 @@ export function VerificationModal({
   initialTarget = '',
   onVerified,
 }: VerificationModalProps) {
-  const { user, checkAuth } = useCustomerAuthStore();
+  const { user, checkAuth, refreshUser, updateUser } = useCustomerAuthStore();
   const shouldReduceMotion = useReducedMotion();
 
   const [channel, setChannel] = useState<'email' | 'sms'>(initialChannel);
@@ -70,15 +70,16 @@ export function VerificationModal({
     return () => clearInterval(timer);
   }, [cooldown]);
 
-  // Trap Escape key
+  // Trap Escape key without leaking to parent overlay drawers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
+        e.stopPropagation();
         onClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [isOpen, onClose]);
 
   const handleSendCode = async (e?: React.FormEvent) => {
@@ -184,7 +185,14 @@ export function VerificationModal({
 
       setStep('success');
       setStatusMessage('Verification successful. Account status updated.');
-      await checkAuth();
+
+      const channelUpdate = channel === 'sms' ? { isPhoneVerified: true } : { isEmailVerified: true };
+      updateUser(channelUpdate);
+      try {
+        await refreshUser();
+      } catch {}
+      await checkAuth(true);
+
       if (onVerified) onVerified();
       setTimeout(() => {
         onClose();
@@ -201,21 +209,25 @@ export function VerificationModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: EMIL_EASE }}
-          className="relative w-full max-w-md bg-[#0A0A0A] border border-[#1F1F1F] p-6 sm:p-8 shadow-2xl"
+          className="relative w-full max-w-md max-h-[min(90dvh,640px)] overflow-y-auto overscroll-contain bg-[#0A0A0A] border border-[#1F1F1F] p-4 sm:p-7 shadow-2xl"
           role="dialog"
           aria-modal="true"
           aria-labelledby="verification-modal-title"
         >
           {/* Close button */}
           <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 min-w-[44px] min-h-[44px] flex items-center justify-center text-zinc-400 hover:text-white transition-colors focus-visible:ring-1 focus-visible:ring-[#E8FF00] focus-visible:outline-none"
             aria-label="Close verification modal"
           >
             <X size={20} />
@@ -297,7 +309,7 @@ export function VerificationModal({
                   value={target}
                   onChange={(e) => setTarget(e.target.value)}
                   placeholder={channel === 'sms' ? '+91 98765 43210' : 'athlete@xydv.com'}
-                  className="w-full px-3.5 py-2.5 bg-[#111111] border border-[#1F1F1F] text-white text-sm focus:outline-none focus:border-[#E8FF00] transition-colors"
+                  className="min-h-[44px] w-full px-3.5 py-2.5 bg-[#111111] border border-[#1F1F1F] text-white text-base sm:text-sm focus:outline-none focus:border-[#E8FF00] focus-visible:ring-1 focus-visible:ring-[#E8FF00] transition-colors"
                   required
                 />
               </div>
@@ -329,7 +341,7 @@ export function VerificationModal({
                 <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-300 mb-2">
                   6-Digit One-Time Code
                 </label>
-                <div className="flex justify-between gap-1.5 sm:gap-2" onPaste={handleOtpPaste}>
+                <div className="flex justify-between gap-1 sm:gap-2" onPaste={handleOtpPaste}>
                   {otp.map((digit, i) => (
                     <input
                       key={i}
@@ -343,7 +355,7 @@ export function VerificationModal({
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      className="w-11 h-12 sm:w-12 sm:h-14 text-center text-lg font-mono font-bold bg-[#111111] border border-[#1F1F1F] text-[#E8FF00] focus:outline-none focus:border-[#E8FF00] transition-colors"
+                      className="flex-1 min-w-0 max-w-[48px] h-12 sm:h-14 text-center text-base sm:text-lg font-mono font-bold bg-[#111111] border border-[#1F1F1F] text-[#E8FF00] focus:outline-none focus:border-[#E8FF00] focus-visible:ring-1 focus-visible:ring-[#E8FF00] transition-colors"
                       aria-label={`Digit ${i + 1} of verification code`}
                     />
                   ))}

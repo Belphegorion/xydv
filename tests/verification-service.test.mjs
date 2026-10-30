@@ -316,4 +316,55 @@ describe('Workstream B: Concurrency, Token Timing Safety & Security Contracts', 
     const emailContent = fs.readFileSync(emailPath, 'utf-8');
     assert.match(emailContent, /api\.post[\s\S]*?'\/verification\/verify'/, 'VerifyEmail page must use api.post for verification');
   });
+
+  it('VerificationModal is responsive across all screen sizes with zero clipping and high z-index', () => {
+    const modalPath = path.join(rootDir, 'apps', 'web', 'src', 'components', 'store', 'VerificationModal.tsx');
+    const modalContent = fs.readFileSync(modalPath, 'utf-8');
+
+    // z-[70] layering over CartDrawer (z-50)
+    assert.match(modalContent, /z-\[70\]/, 'VerificationModal must declare z-[70] to overlay cleanly above CartDrawer');
+    // Mobile landscape overflow protection
+    assert.match(modalContent, /max-h-\[min\(90dvh,\s*640px\)\]/, 'VerificationModal must declare responsive max-height');
+    assert.match(modalContent, /overflow-y-auto/, 'VerificationModal dialog must be scrollable on small screens');
+    // Flexible OTP inputs preventing horizontal clipping on 320px
+    assert.match(modalContent, /flex-1\s+min-w-0\s+max-w-\[48px\]/, 'OTP inputs must flex fluidly to eliminate clipping on mobile');
+    // Escape key propagation isolation
+    assert.match(modalContent, /e\.stopPropagation\(\)/, 'Escape listener must stop propagation to preserve drawer state');
+    // Reactive store update upon verification
+    assert.match(modalContent, /updateUser\(/, 'submitVerification must update auth store user record immediately');
+    assert.match(modalContent, /refreshUser\(\)/, 'submitVerification must rehydrate user profile from /auth/me');
+  });
+
+  it('CartDrawer integrates responsive VerificationModal and enforces verification as checkout prerequisite', () => {
+    const cartPath = path.join(rootDir, 'apps', 'web', 'src', 'components', 'store', 'CartDrawer.tsx');
+    const cartContent = fs.readFileSync(cartPath, 'utf-8');
+
+    // Imports & mounts VerificationModal
+    assert.match(cartContent, /import\s*\{\s*VerificationModal\s*\}\s*from\s*['"]\.\/VerificationModal['"]/, 'CartDrawer must import VerificationModal');
+    assert.match(cartContent, /<VerificationModal[\s\S]*?isOpen=\{isOpen\s*&&\s*isVerificationModalOpen\}/, 'CartDrawer must render VerificationModal pop-up');
+
+    // Renders verification status card for already logged-in users
+    assert.match(cartContent, /\{customerUser\s*\?/, 'CartDrawer must render verification area for logged-in users');
+    assert.match(cartContent, /ACCOUNT VERIFICATION/, 'CartDrawer must display Account Verification card');
+    assert.match(cartContent, /handleOpenVerification\(['"]sms['"]\)/, 'CartDrawer must have trigger for SMS verification pop-up');
+    assert.match(cartContent, /handleOpenVerification\(['"]email['"]\)/, 'CartDrawer must have trigger for Email verification pop-up');
+
+    // Checkout prerequisite: blocks Razorpay checkout if phone or email unverified
+    assert.match(cartContent, /const\s+needsPhone\s*=\s*!customerUser\.isPhoneVerified/, 'Checkout must check isPhoneVerified');
+    assert.match(cartContent, /const\s+needsEmail\s*=\s*!customerUser\.isEmailVerified/, 'Checkout must check isEmailVerified');
+    assert.match(cartContent, /handleOpenVerification\(targetChannel\)/, 'Checkout must trigger verification pop-up when unverified');
+  });
+
+  it('Backend orderService enforces email and phone verification on createRazorpayOrder for logged-in customers', () => {
+    const orderServicePath = path.join(apiDir, 'src', 'services', 'order.service.ts');
+    const orderContent = fs.readFileSync(orderServicePath, 'utf-8');
+
+    assert.match(orderContent, /!user\.isEmailVerified/, 'orderService must check isEmailVerified on authenticated customers');
+    assert.match(orderContent, /!user\.isPhoneVerified/, 'orderService must check isPhoneVerified on authenticated customers');
+
+    const authServicePath = path.join(apiDir, 'src', 'services', 'auth.service.ts');
+    const authContent = fs.readFileSync(authServicePath, 'utf-8');
+    assert.match(authContent, /isEmailVerified:\s*Boolean\(user\.isEmailVerified\)/, 'authService must return isEmailVerified');
+    assert.match(authContent, /isPhoneVerified:\s*Boolean\(user\.isPhoneVerified\)/, 'authService must return isPhoneVerified');
+  });
 });

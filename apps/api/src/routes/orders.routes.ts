@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { orderController } from '../controllers/order.controller';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, optionalAuth } from '../middleware/auth';
 import { validateRequest } from '../middleware/validateRequest';
 import { orderLimiter } from '../middleware/rateLimiter';
 import {
@@ -15,6 +15,7 @@ const router = Router();
 router.post(
   '/razorpay/create-order',
   orderLimiter,
+  optionalAuth,
   validateRequest(createOrderSchema),
   orderController.createRazorpayOrder.bind(orderController),
 );
@@ -23,12 +24,14 @@ router.post(
 router.post(
   '/create-order',
   orderLimiter,
+  optionalAuth,
   validateRequest(createOrderSchema),
   orderController.createRazorpayOrder.bind(orderController),
 );
 router.post(
   '/create-payment-intent',
   orderLimiter,
+  optionalAuth,
   validateRequest(createOrderSchema),
   orderController.createRazorpayOrder.bind(orderController),
 );

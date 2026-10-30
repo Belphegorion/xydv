@@ -49,7 +49,7 @@ export function VerificationBanner() {
           {needsPhone && (
             <button
               onClick={() => handleOpen('sms')}
-              className="text-[#E8FF00] hover:underline font-mono uppercase text-[11px] font-bold min-h-[32px] flex items-center gap-1"
+              className="text-[#E8FF00] hover:underline font-mono uppercase text-[11px] font-bold min-h-[44px] min-w-[44px] flex items-center gap-1 focus-visible:ring-1 focus-visible:ring-[#E8FF00] focus-visible:outline-none"
             >
               <DeviceMobile size={14} />
               <span>Verify Mobile</span>
@@ -59,7 +59,7 @@ export function VerificationBanner() {
           {needsEmail && (
             <button
               onClick={() => handleOpen('email')}
-              className="text-[#E8FF00] hover:underline font-mono uppercase text-[11px] font-bold min-h-[32px] flex items-center gap-1"
+              className="text-[#E8FF00] hover:underline font-mono uppercase text-[11px] font-bold min-h-[44px] min-w-[44px] flex items-center gap-1 focus-visible:ring-1 focus-visible:ring-[#E8FF00] focus-visible:outline-none"
             >
               <Envelope size={14} />
               <span>Verify Email</span>
@@ -68,7 +68,7 @@ export function VerificationBanner() {
 
           <button
             onClick={() => setIsDismissed(true)}
-            className="text-zinc-500 hover:text-white p-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
+            className="text-zinc-500 hover:text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:ring-1 focus-visible:ring-[#E8FF00] focus-visible:outline-none"
             aria-label="Dismiss verification banner"
           >
             <X size={14} />

@@ -36,7 +36,9 @@ interface CustomerAuthState {
   ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   initialize: () => Promise<void>;
-  checkAuth: () => Promise<void>;
+  checkAuth: (force?: boolean) => Promise<void>;
+  refreshUser: () => Promise<void>;
+  updateUser: (updates: Partial<CustomerUser>) => void;
 }
 
 // Security Refactor Finding A-4: Migrated access token storage to in-memory only (matching adminAuth.ts).
@@ -64,9 +66,31 @@ export const useCustomerAuthStore = create<CustomerAuthState>((set, get) => ({
   setAuthMode: (mode) => set({ authMode: mode, error: null }),
   clearError: () => set({ error: null }),
 
-  checkAuth: async (): Promise<void> => {
+  updateUser: (updates: Partial<CustomerUser>) => {
+    const currentUser = get().user;
+    if (currentUser) {
+      set({ user: { ...currentUser, ...updates } });
+    }
+  },
+
+  refreshUser: async (): Promise<void> => {
     if (typeof window === 'undefined') return;
-    if (get().isAuthenticated && get().token && get().user) return;
+    try {
+      const res = await api.get<{ data?: CustomerUser; user?: CustomerUser }>('/auth/me');
+      const updatedUser = res.data ?? res.user;
+      if (updatedUser) {
+        set({ user: updatedUser, isAuthenticated: true });
+        return;
+      }
+    } catch {
+      // Fallback: trigger forced session refresh
+      await get().checkAuth(true);
+    }
+  },
+
+  checkAuth: async (force = false): Promise<void> => {
+    if (typeof window === 'undefined') return;
+    if (!force && get().isAuthenticated && get().token && get().user) return;
     if (customerInitializePromise) return customerInitializePromise;
 
     customerInitializePromise = (async () => {
