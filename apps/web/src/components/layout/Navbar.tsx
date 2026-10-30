@@ -16,18 +16,18 @@ import { BrandLogo } from '@/components/ui/BrandLogo';
 import { useCustomerAuthStore } from '@/store/customerAuth';
 
 const NAV_LINKS = [
-  { label: 'All gear', href: '/products' },
-  { label: 'Tops', href: '/products?category=tops' },
-  { label: 'Bottoms', href: '/products?category=bottoms' },
-  { label: 'Outerwear', href: '/products?category=outerwear' },
-  { label: 'Accessories', href: '/products?category=accessories' },
+  { label: 'ALL GEAR', href: '/products' },
+  { label: 'TOPS', href: '/products?category=tops' },
+  { label: 'BOTTOMS', href: '/products?category=bottoms' },
+  { label: 'OUTERWEAR', href: '/products?category=outerwear' },
+  { label: 'ACCESSORIES', href: '/products?category=accessories' },
 ];
 
 const CANONICAL_LABELS: Record<string, string> = {
-  tops: 'Tops',
-  bottoms: 'Bottoms',
-  outerwear: 'Outerwear',
-  accessories: 'Accessories',
+  tops: 'TOPS',
+  bottoms: 'BOTTOMS',
+  outerwear: 'OUTERWEAR',
+  accessories: 'ACCESSORIES',
 };
 const CATEGORY_ORDER = ['tops', 'bottoms', 'outerwear', 'accessories'];
 
@@ -67,7 +67,7 @@ export function Navbar() {
         const categories = json.data || json.categories || (Array.isArray(json) ? json : []);
         if (Array.isArray(categories) && categories.length > 0) {
           const dynamicLinks = [
-            { label: 'All gear', href: '/products' },
+            { label: 'ALL GEAR', href: '/products' },
             ...categories
               .sort((a: string | { name?: string; slug?: string }, b: string | { name?: string; slug?: string }) => {
                 const slugA = (typeof a === 'string' ? a : (a.slug || a.name || '')).toLowerCase();
@@ -80,7 +80,7 @@ export function Navbar() {
                 const slug = typeof c === 'string' ? c : (c.slug || c.name || '');
                 const slugKey = slug.toLowerCase();
                 const rawName = typeof c === 'string' ? c : (c.name || c.slug || '');
-                const formattedName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase() : '';
+                const formattedName = rawName ? rawName.toUpperCase() : '';
                 const label = CANONICAL_LABELS[slugKey] || formattedName.split(/ [&/]/)[0];
                 return {
                   label,

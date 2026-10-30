@@ -95,10 +95,10 @@ export function PriceDisplay({
       savings: 'text-sm md:text-base',
     },
     xl: {
-      payable: 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black font-mono tracking-tight',
-      struck: 'text-base md:text-xl font-mono',
-      badge: 'text-xs md:text-sm px-2.5 py-1 font-bold',
-      savings: 'text-sm md:text-base',
+      payable: 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black font-mono tracking-tight',
+      struck: 'text-base md:text-xl lg:text-2xl xl:text-3xl font-mono',
+      badge: 'text-xs md:text-sm lg:text-base xl:text-lg px-2.5 py-1 lg:px-3.5 lg:py-1.5 font-bold',
+      savings: 'text-sm md:text-base lg:text-lg xl:text-xl font-semibold',
     },
   }[size];
 
