@@ -762,16 +762,16 @@ export function CartDrawer() {
                             </Badge>
                           </div>
                           <div className="space-y-1.5 border border-[var(--border)] bg-[var(--bg)] p-2.5 font-mono text-xs text-[var(--text-secondary)]">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                               <span className="text-[10px] uppercase text-[var(--text-muted)]">MOBILE:</span>
-                              <span className="flex items-center gap-1 font-bold text-[#22c55e]">
+                              <span className="flex items-center gap-1 font-bold text-[#22c55e] break-all">
                                 <CheckCircle size={12} weight="fill" />
                                 {customerUser.phone || shippingAddress.phone || 'VERIFIED'}
                               </span>
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col gap-1 border-t border-[var(--border)]/40 pt-1.5 sm:border-t-0 sm:pt-0 sm:flex-row sm:items-center sm:justify-between">
                               <span className="text-[10px] uppercase text-[var(--text-muted)]">EMAIL:</span>
-                              <span className="flex items-center gap-1 font-bold text-[#22c55e]">
+                              <span className="flex items-center gap-1 font-bold text-[#22c55e] break-all">
                                 <CheckCircle size={12} weight="fill" />
                                 {customerUser.email}
                               </span>
@@ -801,12 +801,12 @@ export function CartDrawer() {
 
                           <div className="space-y-2 border border-[var(--border)] bg-[var(--bg)] p-2.5 font-mono text-xs">
                             {/* Phone row */}
-                            <div className="flex items-center justify-between gap-2">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                               <div className="min-w-0 flex-1">
                                 <span className="block text-[10px] uppercase text-[var(--text-muted)]">
                                   MOBILE NUMBER
                                 </span>
-                                <span className="block truncate text-[11px] font-bold text-[var(--text-primary)]">
+                                <span className="block break-all text-[11px] font-bold text-[var(--text-primary)]">
                                   {customerUser.phone || shippingAddress.phone || 'NOT SET'}
                                 </span>
                               </div>
@@ -818,7 +818,7 @@ export function CartDrawer() {
                                 <button
                                   type="button"
                                   onClick={() => handleOpenVerification('sms')}
-                                  className="btn-tactile inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center border border-[#E8FF00] bg-[#E8FF00] px-3 font-mono text-[10px] font-bold uppercase tracking-wider text-black transition-colors hover:opacity-90 active:scale-[0.97]"
+                                  className="btn-tactile inline-flex min-h-[44px] min-w-[44px] w-full sm:w-auto shrink-0 items-center justify-center border border-[#E8FF00] bg-[#E8FF00] px-3 font-mono text-[10px] font-bold uppercase tracking-wider text-black transition-colors hover:opacity-90 active:scale-[0.97]"
                                   aria-label="Verify mobile number"
                                 >
                                   VERIFY MOBILE
@@ -827,12 +827,12 @@ export function CartDrawer() {
                             </div>
 
                             {/* Email row */}
-                            <div className="flex items-center justify-between gap-2 border-t border-[var(--border)] pt-2">
+                            <div className="flex flex-col gap-2 border-t border-[var(--border)] pt-2 sm:flex-row sm:items-center sm:justify-between">
                               <div className="min-w-0 flex-1">
                                 <span className="block text-[10px] uppercase text-[var(--text-muted)]">
                                   EMAIL ADDRESS
                                 </span>
-                                <span className="block truncate text-[11px] font-bold text-[var(--text-primary)]">
+                                <span className="block break-all text-[11px] font-bold text-[var(--text-primary)]">
                                   {customerUser.email}
                                 </span>
                               </div>
@@ -844,7 +844,7 @@ export function CartDrawer() {
                                 <button
                                   type="button"
                                   onClick={() => handleOpenVerification('email')}
-                                  className="btn-tactile inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center border border-[#E8FF00] bg-[#E8FF00] px-3 font-mono text-[10px] font-bold uppercase tracking-wider text-black transition-colors hover:opacity-90 active:scale-[0.97]"
+                                  className="btn-tactile inline-flex min-h-[44px] min-w-[44px] w-full sm:w-auto shrink-0 items-center justify-center border border-[#E8FF00] bg-[#E8FF00] px-3 font-mono text-[10px] font-bold uppercase tracking-wider text-black transition-colors hover:opacity-90 active:scale-[0.97]"
                                   aria-label="Verify email address"
                                 >
                                   VERIFY EMAIL

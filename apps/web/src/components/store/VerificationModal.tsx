@@ -38,10 +38,13 @@ export function VerificationModal({
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const wasOpenRef = useRef(false);
 
-  // Sync initial state when modal opens
+  // Sync initial state when modal opens (without resetting when user store updates)
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !wasOpenRef.current) {
+      wasOpenRef.current = true;
       setChannel(initialChannel);
       const defaultTarget =
         initialTarget ||
@@ -53,13 +56,17 @@ export function VerificationModal({
       setStatusMessage('');
       document.body.style.overflow = 'hidden';
       setTimeout(() => firstInputRef.current?.focus(), 50);
-    } else {
+    } else if (!isOpen && wasOpenRef.current) {
+      wasOpenRef.current = false;
       document.body.style.overflow = '';
     }
+  }, [isOpen, initialChannel, initialTarget, user]);
+
+  useEffect(() => {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen, initialChannel, initialTarget, user]);
+  }, []);
 
   // Cooldown timer countdown
   useEffect(() => {
@@ -70,14 +77,44 @@ export function VerificationModal({
     return () => clearInterval(timer);
   }, [cooldown]);
 
-  // Trap Escape key without leaking to parent overlay drawers
+  // Trap Escape key & Focus Trap without leaking to parent overlay drawers
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === 'Escape') {
         e.stopPropagation();
         onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        const focusable = Array.from(focusableElements).filter(
+          (el) => !el.hasAttribute('disabled') && el.offsetParent !== null,
+        );
+
+        if (focusable.length === 0) return;
+
+        const firstElement = focusable[0];
+        const lastElement = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
       }
     };
+
     window.addEventListener('keydown', handleKeyDown, true);
     return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [isOpen, onClose]);
@@ -129,6 +166,31 @@ export function VerificationModal({
   };
 
   const handleOtpChange = (index: number, val: string) => {
+    if (!val) {
+      const newOtp = [...otp];
+      newOtp[index] = '';
+      setOtp(newOtp);
+      return;
+    }
+
+    // Handle SMS autofill / paste of multiple digits into input
+    if (val.length > 1) {
+      const digits = val.replace(/\D/g, '').slice(0, 6).split('');
+      if (digits.length > 0) {
+        const newOtp = [...otp];
+        digits.forEach((d, i) => {
+          if (index + i < 6) newOtp[index + i] = d;
+        });
+        setOtp(newOtp);
+        const nextIdx = Math.min(index + digits.length, 5);
+        inputRefs.current[nextIdx]?.focus();
+        if (newOtp.every((d) => d !== '')) {
+          submitVerification(newOtp.join(''));
+        }
+      }
+      return;
+    }
+
     if (!/^\d*$/.test(val)) return;
 
     const newOtp = [...otp];
@@ -186,7 +248,10 @@ export function VerificationModal({
       setStep('success');
       setStatusMessage('Verification successful. Account status updated.');
 
-      const channelUpdate = channel === 'sms' ? { isPhoneVerified: true } : { isEmailVerified: true };
+      const channelUpdate =
+        channel === 'sms'
+          ? { isPhoneVerified: true, phone: target.trim() }
+          : { isEmailVerified: true, email: target.trim() };
       updateUser(channelUpdate);
       try {
         await refreshUser();
@@ -194,9 +259,37 @@ export function VerificationModal({
       await checkAuth(true);
 
       if (onVerified) onVerified();
-      setTimeout(() => {
-        onClose();
-      }, 1500);
+
+      // Check if second channel also needs verification
+      const otherChannel = channel === 'sms' ? 'email' : 'sms';
+      const currentUser = useCustomerAuthStore.getState().user;
+      const otherVerified =
+        otherChannel === 'email'
+          ? currentUser?.isEmailVerified
+          : currentUser?.isPhoneVerified;
+
+      if (!otherVerified) {
+        setTimeout(() => {
+          setChannel(otherChannel);
+          const nextTarget =
+            otherChannel === 'email'
+              ? currentUser?.email || ''
+              : currentUser?.phone || '';
+          setTarget(nextTarget);
+          setStep('request');
+          setOtp(['', '', '', '', '', '']);
+          setErrorMessage('');
+          setStatusMessage(
+            `${channel === 'sms' ? 'Mobile' : 'Email'} verified. Please complete ${
+              otherChannel === 'email' ? 'email' : 'mobile'
+            } verification before checkout.`,
+          );
+        }, 1600);
+      } else {
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Verification failed. Please check the code and try again.';
       setErrorMessage(msg);
@@ -209,8 +302,17 @@ export function VerificationModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
+      <div
+        className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            e.stopPropagation();
+            onClose();
+          }
+        }}
+      >
         <motion.div
+          ref={modalRef}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
@@ -234,7 +336,7 @@ export function VerificationModal({
           </button>
 
           {/* Header */}
-          <div className="mb-6">
+          <div className="mb-6 pr-10">
             <span className="text-[10px] uppercase font-mono tracking-widest text-[#E8FF00] block mb-1">
               XYDV SECURITY
             </span>
@@ -242,9 +344,14 @@ export function VerificationModal({
               {step === 'success' ? 'Verified' : 'Verify Account'}
             </h2>
             <p className="text-xs text-zinc-400 mt-1">
-              {step === 'verify'
-                ? `Enter the 6-digit code dispatched to ${targetMasked}`
-                : 'Confirm your credentials for order tracking and priority dispatch.'}
+              {step === 'verify' ? (
+                <>
+                  Enter the 6-digit code dispatched to{' '}
+                  <span className="break-all font-mono font-bold text-zinc-200">{targetMasked}</span>
+                </>
+              ) : (
+                'Confirm your credentials for order tracking and priority dispatch.'
+              )}
             </p>
           </div>
 
@@ -282,7 +389,10 @@ export function VerificationModal({
                   }`}
                 >
                   <DeviceMobile size={16} />
-                  SMS Mobile
+                  <span>SMS Mobile</span>
+                  {user?.isPhoneVerified && (
+                    <CheckCircle size={14} weight="fill" className={channel === 'sms' ? 'text-black' : 'text-[#22c55e]'} />
+                  )}
                 </button>
                 <button
                   type="button"
@@ -295,7 +405,10 @@ export function VerificationModal({
                   }`}
                 >
                   <Envelope size={16} />
-                  Email
+                  <span>Email</span>
+                  {user?.isEmailVerified && (
+                    <CheckCircle size={14} weight="fill" className={channel === 'email' ? 'text-black' : 'text-[#22c55e]'} />
+                  )}
                 </button>
               </div>
 
@@ -377,11 +490,11 @@ export function VerificationModal({
                 )}
               </button>
 
-              <div className="flex items-center justify-between pt-2 border-t border-zinc-900 text-xs font-mono">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-zinc-900 text-xs font-mono">
                 <button
                   type="button"
                   onClick={() => setStep('request')}
-                  className="text-zinc-400 hover:text-white transition-colors underline min-h-[44px] flex items-center"
+                  className="text-zinc-400 hover:text-white transition-colors underline min-h-[44px] flex items-center py-2 px-1"
                 >
                   Change {channel === 'sms' ? 'Number' : 'Email'}
                 </button>
@@ -390,7 +503,7 @@ export function VerificationModal({
                   type="button"
                   disabled={cooldown > 0 || isSubmitting}
                   onClick={() => handleSendCode()}
-                  className="text-zinc-400 hover:text-[#E8FF00] disabled:opacity-40 transition-colors min-h-[44px] flex items-center"
+                  className="text-zinc-400 hover:text-[#E8FF00] disabled:opacity-40 transition-colors min-h-[44px] flex items-center py-2 px-1"
                 >
                   {cooldown > 0 ? `Resend code in ${cooldown}s` : 'Resend Code'}
                 </button>
@@ -401,7 +514,7 @@ export function VerificationModal({
           {/* STEP 3: Success Confirmation */}
           {step === 'success' && (
             <div className="py-6 text-center space-y-3">
-              <CheckCircle size={48} className="text-[#E8FF00] mx-auto animate-pulse" />
+              <CheckCircle size={48} className="text-[#22c55e] mx-auto animate-pulse" weight="fill" />
               <p className="text-white font-bold text-sm">Account Verified</p>
               <p className="text-xs text-zinc-400">
                 Your credentials have been securely verified against XYDV protocols.

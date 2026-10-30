@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { orderController } from '../controllers/order.controller';
-import { requireAuth, optionalAuth } from '../middleware/auth';
+import { requireAuth, optionalAuth, requireVerified } from '../middleware/auth';
 import { validateRequest } from '../middleware/validateRequest';
 import { orderLimiter } from '../middleware/rateLimiter';
 import {
@@ -47,6 +47,7 @@ router.post(
 router.post(
   '/',
   requireAuth,
+  requireVerified({ email: true, phone: true }),
   validateRequest(createOrderSchema),
   orderController.createDirectOrder.bind(orderController),
 );

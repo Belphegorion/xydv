@@ -662,6 +662,27 @@ export class OrderService {
   ) {
     const { items, shippingAddress, razorpayOrderId, razorpayPaymentId, razorpaySignature, couponCode } = data;
 
+    if (userId && mongoose.isValidObjectId(userId)) {
+      const user = await User.findById(userId);
+      if (user?.isBlocked) {
+        throw new AppError('Your account has been suspended. Please contact support.', 403);
+      }
+      if (user && user.role !== 'admin') {
+        if (!user.isEmailVerified) {
+          throw new AppError(
+            'Email verification required prior to checkout. Please verify your email.',
+            403,
+          );
+        }
+        if (!user.isPhoneVerified) {
+          throw new AppError(
+            'Phone verification required prior to checkout. Please verify your mobile number.',
+            403,
+          );
+        }
+      }
+    }
+
     if (!items || !Array.isArray(items) || items.length === 0) {
       throw new AppError('Order must contain at least one item', 400);
     }

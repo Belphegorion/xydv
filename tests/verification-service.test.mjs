@@ -355,16 +355,41 @@ describe('Workstream B: Concurrency, Token Timing Safety & Security Contracts', 
     assert.match(cartContent, /handleOpenVerification\(targetChannel\)/, 'Checkout must trigger verification pop-up when unverified');
   });
 
-  it('Backend orderService enforces email and phone verification on createRazorpayOrder for logged-in customers', () => {
+  it('Backend orderService enforces email and phone verification on createRazorpayOrder and createDirectOrder', () => {
     const orderServicePath = path.join(apiDir, 'src', 'services', 'order.service.ts');
     const orderContent = fs.readFileSync(orderServicePath, 'utf-8');
 
     assert.match(orderContent, /!user\.isEmailVerified/, 'orderService must check isEmailVerified on authenticated customers');
     assert.match(orderContent, /!user\.isPhoneVerified/, 'orderService must check isPhoneVerified on authenticated customers');
 
+    const ordersRoutesPath = path.join(apiDir, 'src', 'routes', 'orders.routes.ts');
+    const routesContent = fs.readFileSync(ordersRoutesPath, 'utf-8');
+    assert.match(routesContent, /requireVerified\(\{\s*email:\s*true,\s*phone:\s*true\s*\}\)/, 'Direct order placement route must enforce requireVerified');
+
     const authServicePath = path.join(apiDir, 'src', 'services', 'auth.service.ts');
     const authContent = fs.readFileSync(authServicePath, 'utf-8');
     assert.match(authContent, /isEmailVerified:\s*Boolean\(user\.isEmailVerified\)/, 'authService must return isEmailVerified');
     assert.match(authContent, /isPhoneVerified:\s*Boolean\(user\.isPhoneVerified\)/, 'authService must return isPhoneVerified');
+  });
+
+  it('VerificationModal implements accessible focus trap, backdrop dismissal, and SMS autofill support', () => {
+    const modalPath = path.join(rootDir, 'apps', 'web', 'src', 'components', 'store', 'VerificationModal.tsx');
+    const modalContent = fs.readFileSync(modalPath, 'utf-8');
+
+    // Accessible focus trap (WCAG AA requirement)
+    assert.match(modalContent, /e\.key\s*===\s*['"]Tab['"]/, 'VerificationModal must trap Tab key within dialog');
+    assert.match(modalContent, /e\.target\s*===\s*e\.currentTarget/, 'VerificationModal must support backdrop dismissal');
+    // Prevents in-flight reset when user store re-renders
+    assert.match(modalContent, /wasOpenRef/, 'VerificationModal must track open transitions to prevent state resets');
+    // SMS autofill multi-digit handling
+    assert.match(modalContent, /val\.length\s*>\s*1/, 'VerificationModal must handle SMS one-time-code autofill');
+  });
+
+  it('VerificationService updates isEmailVerified and isPhoneVerified on User model upon successful verification', () => {
+    const verifPath = path.join(apiDir, 'src', 'services', 'verification.service.ts');
+    const verifContent = fs.readFileSync(verifPath, 'utf-8');
+
+    assert.match(verifContent, /updateData\.isPhoneVerified\s*=\s*true/, 'VerificationService must set isPhoneVerified on User record');
+    assert.match(verifContent, /updateData\.isEmailVerified\s*=\s*true/, 'VerificationService must set isEmailVerified on User record');
   });
 });
