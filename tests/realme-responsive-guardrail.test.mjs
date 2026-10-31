@@ -300,7 +300,7 @@ describe('Suite 2: Static Source Code Architectural Guardrails', () => {
     );
   });
 
-  it('2.8: All 10 subpages have normalized display headings (text-2xl sm:text-3xl md:text-4xl)', () => {
+  it('2.8: All 10 subpages have normalized display headings', () => {
     const subpages = [
       'terms/page.tsx',
       'privacy/page.tsx',
@@ -311,7 +311,6 @@ describe('Suite 2: Static Source Code Architectural Guardrails', () => {
       'returns/page.tsx',
       'faq/page.tsx',
       'wishlist/page.tsx',
-      'products/[slug]/page.tsx',
     ];
 
     for (const sub of subpages) {
@@ -325,6 +324,15 @@ describe('Suite 2: Static Source Code Architectural Guardrails', () => {
         `${sub} must have normalized H1 with text-2xl text-balance sm:text-3xl md:text-4xl`,
       );
     }
+
+    // PDP product heading has calibrated font scale to prevent dominating layout
+    const pdpPath = path.join(webSrcDir, 'app', 'products', '[slug]', 'page.tsx');
+    const pdpContent = fs.readFileSync(pdpPath, 'utf-8');
+    assert.match(
+      pdpContent,
+      /<h1[^>]*text-(?:lg|xl)[^>]*font-bold[^>]*text-balance[^>]*>/,
+      'PDP must have calibrated product H1 with responsive scale and text-balance',
+    );
   });
 
   it('2.9: Brand name invariant strictly preserved: XYDV (never XLRV, never Vertex)', () => {

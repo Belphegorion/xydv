@@ -554,8 +554,8 @@ export default function ProductDetailPage({ params }: PageProps) {
             {product.category}
           </Link>
           <span>/</span>
-          <span className="max-w-[200px] truncate text-[var(--text-primary)] uppercase">
-            {product.name}
+          <span className="max-w-[200px] truncate text-[var(--text-primary)]">
+            {formatCardTitle(product.name)}
           </span>
         </nav>
 
@@ -672,12 +672,12 @@ export default function ProductDetailPage({ params }: PageProps) {
               <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase">
                 {`${product.gender.toUpperCase()}'S DIVISION // ${product.specsSummary}`}
               </span>
-              <h1 className="font-heading mt-1 text-2xl font-black tracking-tight text-balance text-[var(--text-primary)] uppercase sm:text-3xl md:text-4xl">
-                {product.name}
+              <h1 className="font-heading mt-1 text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-balance text-[var(--text-primary)]">
+                {formatCardTitle(product.name)}
               </h1>
 
               {/* Description/Headline below product name */}
-              <p className="mt-2.5 font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm md:text-base lg:text-lg">
+              <p className="mt-2 font-sans text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm">
                 {product.headline}
               </p>
 
@@ -694,7 +694,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     mrp={product.compareAtPrice}
                     discountPercent={product.discountPercentRounded}
                     badgeLabel={product.discountBadgeLabel}
-                    size="xl"
+                    size="lg"
                     showSavings={true}
                   />
                   <p className="mt-1 font-mono text-[10px] md:text-xs text-[var(--text-muted)]">
@@ -720,9 +720,9 @@ export default function ProductDetailPage({ params }: PageProps) {
               </div>
 
               {/* IN STOCK Availability Indicator */}
-              <div className="mt-3.5 flex items-center gap-2">
-                <span className="inline-flex items-center gap-2 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-xs md:text-base lg:text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                  <span className="h-2 w-2 md:h-2.5 md:w-2.5 animate-pulse rounded-full bg-emerald-500" />
+              <div className="mt-3 flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                   IN STOCK · READY FOR DISPATCH
                 </span>
               </div>
@@ -1303,12 +1303,23 @@ export default function ProductDetailPage({ params }: PageProps) {
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
-                  <h3 className="font-heading truncate text-xs font-bold text-[var(--text-primary)]">
+                  <h3 className="font-heading truncate text-xs sm:text-sm font-bold text-[var(--text-primary)]">
                     {formatCardTitle(item.name)}
                   </h3>
-                  <span className="mt-1 font-mono text-[11px] text-[var(--text-secondary)]">
-                    {formatPrice(item.price)}
-                  </span>
+                  <div className="mt-1.5 flex items-baseline">
+                    <PriceDisplay
+                      price={
+                        item.effectivePricePaise !== undefined
+                          ? item.effectivePricePaise / 100
+                          : item.price
+                      }
+                      regularPrice={item.price}
+                      mrp={item.compareAtPrice}
+                      discountPercent={item.discountPercentRounded}
+                      badgeLabel={item.discountBadgeLabel}
+                      size="card"
+                    />
+                  </div>
                 </Link>
               ))}
             </div>
