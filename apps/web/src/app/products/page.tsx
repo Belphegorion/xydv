@@ -25,6 +25,7 @@ import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { formatPrice, getAvailableSizes, formatCardTitle } from '@/lib/utils';
 import { EMIL_EASE, SPRING_TACTILE } from '@/lib/motion';
 import { api } from '@/lib/api';
+import type { CategoryItem } from '@vertex/types';
 
 interface ApiProductVariant {
   _id?: string;
@@ -46,6 +47,7 @@ interface ApiProductInput {
   name: string;
   slug: string;
   category?: string;
+  subcategory?: string;
   discipline?: string;
   gender?: string;
   price?: number;
@@ -93,6 +95,7 @@ function mapApiProductToCatalog(
       slug: apiProd.slug || existingStatic.slug,
       description: apiProd.description || existingStatic.description,
       category: parseCategory(apiProd.category || existingStatic.category),
+      subcategory: apiProd.subcategory || existingStatic.subcategory,
       discipline: parseDiscipline(apiProd.discipline || existingStatic.discipline),
       gender: parseGender(apiProd.gender || existingStatic.gender),
       price: typeof apiProd.price === 'number' ? apiProd.price : existingStatic.price,
@@ -149,6 +152,7 @@ function mapApiProductToCatalog(
     name: apiProd.name,
     slug: apiProd.slug,
     category: parseCategory(apiProd.category),
+    subcategory: apiProd.subcategory,
     discipline: parseDiscipline(apiProd.discipline),
     gender: parseGender(apiProd.gender),
     price: typeof apiProd.price === 'number' ? apiProd.price : 50,
@@ -579,11 +583,13 @@ function CatalogContent() {
   const searchParams = useSearchParams();
 
   const urlCategory = searchParams.get('category') || 'all';
+  const urlSubcategory = searchParams.get('subcategory') || 'all';
   const urlDiscipline = searchParams.get('discipline') || 'all';
   const urlGender = searchParams.get('gender') || 'all';
   const urlSearch = searchParams.get('search') || '';
 
   const [category, setCategory] = useState(urlCategory);
+  const [subcategory, setSubcategory] = useState(urlSubcategory);
   const [discipline, setDiscipline] = useState(urlDiscipline);
   const [gender, setGender] = useState(urlGender);
   const [search, setSearch] = useState(urlSearch === 'true' ? '' : urlSearch);
@@ -595,10 +601,29 @@ function CatalogContent() {
 
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
   const [catalogProducts, setCatalogProducts] = useState<CatalogProduct[]>([]);
+  const [categoriesList, setCategoriesList] = useState<CategoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
+
+  // Dynamically load categories from backend API
+  useEffect(() => {
+    let isMounted = true;
+    api
+      .get<{ data?: CategoryItem[]; categories?: CategoryItem[] }>('/categories')
+      .then((res) => {
+        if (!isMounted) return;
+        const cats = res?.data || res?.categories;
+        if (Array.isArray(cats)) {
+          setCategoriesList(cats);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Dynamically load products from backend API
   useEffect(() => {
@@ -637,10 +662,84 @@ function CatalogContent() {
   // Sync state with URL params
   useEffect(() => {
     if (urlCategory) setCategory(urlCategory);
+    if (urlSubcategory) setSubcategory(urlSubcategory);
     if (urlDiscipline) setDiscipline(urlDiscipline);
     if (urlGender) setGender(urlGender);
     if (urlSearch && urlSearch !== 'true') setSearch(urlSearch);
-  }, [urlCategory, urlDiscipline, urlGender, urlSearch]);
+  }, [urlCategory, urlSubcategory, urlDiscipline, urlGender, urlSearch]);
+
+  // Available subcategories for "bottoms" and "all"
+  const availableSubcategories = useMemo(() => {
+    if (category !== 'bottoms' && category !== 'all') {
+      return [];
+    }
+
+    const map = new Map<string, string>(); // slug -> display label
+    const bottomsCategory = categoriesList.find((c) => c.slug.toLowerCase() === 'bottoms');
+
+    // 1. From database categories
+    for (const c of categoriesList) {
+      if (c.parentId || c.parentSlug) {
+        const isChildOfBottoms =
+          (c.parentSlug && c.parentSlug.toLowerCase() === 'bottoms') ||
+          (bottomsCategory?._id && c.parentId === bottomsCategory._id) ||
+          (bottomsCategory?.slug && c.parentSlug === bottomsCategory.slug);
+
+        if (category === 'all' || isChildOfBottoms) {
+          map.set(c.slug.toLowerCase(), c.name);
+        }
+      }
+    }
+
+    // 2. From loaded catalog products
+    for (const p of catalogProducts) {
+      if (p.subcategory && (category === 'all' || p.category === 'bottoms')) {
+        const slug = p.subcategory.toLowerCase().trim();
+        if (!map.has(slug)) {
+          const label = slug.charAt(0).toUpperCase() + slug.slice(1);
+          map.set(slug, label);
+        }
+      }
+    }
+
+    // 3. Fallback standard subcategories for bottoms if none in DB yet
+    if (category === 'bottoms' && map.size === 0) {
+      map.set('shorts', 'Shorts');
+      map.set('pants', 'Pants');
+    }
+
+    return Array.from(map.entries()).map(([value, label]) => ({
+      value,
+      label,
+    }));
+  }, [category, categoriesList, catalogProducts]);
+
+  const handleSubcategoryKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const tabs = Array.from(
+      e.currentTarget.querySelectorAll<HTMLButtonElement>('button[role="tab"]'),
+    );
+    const activeIndex = tabs.findIndex((tab) => tab === document.activeElement);
+    if (activeIndex === -1) return;
+
+    let targetIndex = -1;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      targetIndex = (activeIndex + 1) % tabs.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      targetIndex = (activeIndex - 1 + tabs.length) % tabs.length;
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      targetIndex = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      targetIndex = tabs.length - 1;
+    }
+
+    if (targetIndex !== -1) {
+      tabs[targetIndex].focus();
+    }
+  };
 
   const handleSelectSize = (product: CatalogProduct, variant: ProductVariant, size: string) => {
     const finalPrice =
@@ -687,6 +786,12 @@ function CatalogContent() {
       list = list.filter((p) => p.category.toLowerCase() === category.toLowerCase());
     }
 
+    if (subcategory !== 'all') {
+      list = list.filter(
+        (p) => p.subcategory && p.subcategory.toLowerCase() === subcategory.toLowerCase(),
+      );
+    }
+
     if (discipline !== 'all') {
       list = list.filter((p) => p.discipline.toLowerCase() === discipline.toLowerCase());
     }
@@ -731,10 +836,11 @@ function CatalogContent() {
     }
 
     return list;
-  }, [category, discipline, gender, search, sort, inStockOnly, catalogProducts]);
+  }, [category, subcategory, discipline, gender, search, sort, inStockOnly, catalogProducts]);
 
   const hasActiveFilters =
     category !== 'all' ||
+    subcategory !== 'all' ||
     discipline !== 'all' ||
     gender !== 'all' ||
     search.trim().length > 0 ||
@@ -742,6 +848,7 @@ function CatalogContent() {
 
   const resetFilters = () => {
     setCategory('all');
+    setSubcategory('all');
     setDiscipline('all');
     setGender('all');
     setSearch('');
@@ -793,7 +900,12 @@ function CatalogContent() {
                 type="button"
                 role="tab"
                 aria-selected={category === cat.value}
-                onClick={() => setCategory(cat.value)}
+                onClick={() => {
+                  setCategory(cat.value);
+                  if (cat.value !== 'bottoms' && cat.value !== 'all') {
+                    setSubcategory('all');
+                  }
+                }}
                 className={`touch-target px-3.5 py-2 font-mono text-xs font-bold tracking-wider whitespace-nowrap transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] ${
                   category === cat.value
                     ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] shadow-sm'
@@ -833,6 +945,69 @@ function CatalogContent() {
             )}
           </div>
         </div>
+
+        {/* Dynamic Subcategory Filter Pills */}
+        {(category === 'bottoms' || category === 'all') && availableSubcategories.length > 0 && (
+          <div
+            className="mb-6 border border-[var(--border)] bg-[var(--bg-surface)] p-3 sm:p-4"
+            role="region"
+            aria-label="Subcategory filters"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span className="font-mono text-[10px] font-bold tracking-widest text-[var(--text-muted)] uppercase dark:text-[#e8ff00]">
+                {category === 'bottoms' ? 'BOTTOMS SUB-CATEGORIES' : 'ALL GEAR SUB-CATEGORIES'}
+              </span>
+              {subcategory !== 'all' && (
+                <button
+                  type="button"
+                  onClick={() => setSubcategory('all')}
+                  className="touch-target inline-flex min-h-[44px] items-center px-2 font-mono text-[10px] uppercase text-[var(--text-muted)] hover:text-[var(--text-primary)] underline active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] dark:focus-visible:ring-[#e8ff00]"
+                >
+                  Reset to All
+                </button>
+              )}
+            </div>
+            <div
+              className="flex no-scrollbar items-center gap-2 overflow-x-auto pb-1 scroll-smooth"
+              role="tablist"
+              aria-label="Subcategory filter options"
+              onKeyDown={handleSubcategoryKeyDown}
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={subcategory === 'all'}
+                onClick={() => setSubcategory('all')}
+                className={`touch-target flex min-h-[44px] items-center px-3.5 py-2 font-mono text-xs font-bold tracking-wider whitespace-nowrap transition-colors active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] dark:focus-visible:ring-[#e8ff00] ${
+                  subcategory === 'all'
+                    ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] shadow-sm dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]'
+                    : 'border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
+                }`}
+              >
+                {category === 'bottoms' ? 'All Bottoms' : 'All Gear'}
+              </button>
+              {availableSubcategories.map((sc) => {
+                const isSelected = subcategory.toLowerCase() === sc.value.toLowerCase();
+                return (
+                  <button
+                    key={sc.value}
+                    type="button"
+                    role="tab"
+                    aria-selected={isSelected}
+                    onClick={() => setSubcategory(isSelected ? 'all' : sc.value)}
+                    className={`touch-target flex min-h-[44px] items-center px-3.5 py-2 font-mono text-xs font-bold tracking-wider whitespace-nowrap transition-colors active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] dark:focus-visible:ring-[#e8ff00] ${
+                      isSelected
+                        ? 'border border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg)] shadow-sm dark:border-[#e8ff00] dark:bg-[#e8ff00] dark:text-[#0a0a0a]'
+                        : 'border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    {sc.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Secondary Filter Row: Disciplines, Genders, Sort, and In-Stock */}
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border border-[var(--border)] bg-[var(--bg-surface)] p-3 sm:p-4">

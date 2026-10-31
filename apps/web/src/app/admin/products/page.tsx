@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -48,6 +48,7 @@ function AdminProductsContent() {
   const [brand, setBrand] = useState('XYDV');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
+  const [subcategory, setSubcategory] = useState('');
   const [price, setPrice] = useState<number>(148);
   const [compareAt, setCompareAt] = useState<number | undefined>(undefined);
   const [tagsInput, setTagsInput] = useState('');
@@ -61,6 +62,24 @@ function AdminProductsContent() {
   const [featuresInput, setFeaturesInput] = useState<string>('');
   const [discipline, setDiscipline] = useState<string>('all');
   const [gender, setGender] = useState<string>('unisex');
+
+  const parentCategories = useMemo(() => {
+    const list = categories.filter((c) => !c.parentId && !c.parentSlug);
+    return list.length > 0 ? list : categories;
+  }, [categories]);
+
+  const availableSubcategories = useMemo(() => {
+    if (!category) return [];
+    const catLower = category.toLowerCase().trim();
+    const parent = categories.find((c) => c.slug.toLowerCase() === catLower);
+    return categories.filter((c) => {
+      if (!c.parentId && !c.parentSlug) return false;
+      if (c.parentSlug && c.parentSlug.toLowerCase() === catLower) return true;
+      if (parent?._id && c.parentId === parent._id) return true;
+      return false;
+    });
+  }, [categories, category]);
+
   const [variants, setVariants] = useState<ProductVariant[]>([
     {
       sku: 'XYDV-001-BLK-M',
@@ -133,7 +152,8 @@ function AdminProductsContent() {
       const res = await api.get<{ data: CategoryItem[] }>('/admin/categories');
       setCategories(res.data);
       if (res.data.length > 0 && !category) {
-        setCategory(res.data[0].slug);
+        const firstParent = res.data.find((c) => !c.parentId && !c.parentSlug) || res.data[0];
+        setCategory(firstParent.slug);
       }
     } catch {
       // Ignore
@@ -308,7 +328,8 @@ function AdminProductsContent() {
     setName('');
     setBrand('XYDV');
     setDescription('');
-    setCategory(categories[0]?.slug || 'tops');
+    setCategory(parentCategories[0]?.slug || categories[0]?.slug || 'tops');
+    setSubcategory('');
     setPrice(2999);
     setCompareAt(undefined);
     setTagsInput('tactical, waterproof');
@@ -352,6 +373,7 @@ function AdminProductsContent() {
     setBrand(p.brand || 'XYDV');
     setDescription(p.description || '');
     setCategory(p.category || 'tops');
+    setSubcategory(p.subcategory || '');
     setPrice(p.price);
     const validCompareAt =
       p.compareAt && p.compareAt > p.price
@@ -473,6 +495,7 @@ function AdminProductsContent() {
         brand: brand.trim(),
         description: description.trim(),
         category: category.trim().toLowerCase(),
+        subcategory: subcategory ? subcategory.trim().toLowerCase() : null,
         price: Number(price),
         compareAt: compareAt && Number(compareAt) > Number(price) ? Number(compareAt) : undefined,
         tags,
@@ -754,7 +777,12 @@ function AdminProductsContent() {
                       </td>
 
                       <td className="px-4 py-3 font-mono text-[var(--text-secondary)] uppercase">
-                        {p.category}
+                        <div>{p.category}</div>
+                        {p.subcategory && (
+                          <span className="mt-0.5 inline-block rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-1.5 py-0.5 font-mono text-[9px] lowercase text-[var(--text-muted)]">
+                            /{p.subcategory}
+                          </span>
+                        )}
                       </td>
 
                       <td className="px-4 py-3 font-mono">
@@ -978,13 +1006,50 @@ function AdminProductsContent() {
                     value={category}
                     onChange={(e) => {
                       setIsDirty(true);
-                      setCategory(e.target.value);
+                      const newCat = e.target.value;
+                      setCategory(newCat);
+                      const newCatLower = newCat.toLowerCase().trim();
+                      const parent = categories.find((c) => c.slug.toLowerCase() === newCatLower);
+                      const validSubs = categories.filter((c) => {
+                        if (c.parentSlug && c.parentSlug.toLowerCase() === newCatLower) return true;
+                        if (parent?._id && c.parentId === parent._id) return true;
+                        return false;
+                      });
+                      if (!validSubs.some((s) => s.slug.toLowerCase() === subcategory.toLowerCase())) {
+                        setSubcategory('');
+                      }
                     }}
                     className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
                   >
-                    {categories.map((c) => (
+                    {parentCategories.map((c) => (
                       <option key={c.slug} value={c.slug}>
                         {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+                    Sub-Category (Optional)
+                  </label>
+                  <select
+                    value={subcategory}
+                    disabled={availableSubcategories.length === 0}
+                    onChange={(e) => {
+                      setIsDirty(true);
+                      setSubcategory(e.target.value);
+                    }}
+                    className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none disabled:opacity-40 dark:focus:border-[#e8ff00]"
+                  >
+                    <option value="">
+                      {availableSubcategories.length === 0
+                        ? '— No sub-categories available —'
+                        : '— None (General Category) —'}
+                    </option>
+                    {availableSubcategories.map((sc) => (
+                      <option key={sc._id || sc.slug} value={sc.slug}>
+                        {sc.name} (/{sc.slug})
                       </option>
                     ))}
                   </select>

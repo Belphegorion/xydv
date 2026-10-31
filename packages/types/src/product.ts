@@ -61,6 +61,7 @@ export interface Product {
   originalPrice?: number;
   compareAt?: number;
   category: Category;
+  subcategory?: string | null;
   tags: string[];
   mrpPaise?: number;
   sellingPricePaise?: number;
@@ -96,6 +97,7 @@ export interface Product {
 
 export interface ProductFilters {
   category?: string;
+  subcategory?: string;
   sizes?: string[];
   colors?: string[];
   minPrice?: number;
@@ -113,6 +115,9 @@ export interface CategoryItem {
   description?: string;
   image?: string;
   productCount?: number;
+  parentId?: string | null;
+  parentSlug?: string | null;
+  parentCategory?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }

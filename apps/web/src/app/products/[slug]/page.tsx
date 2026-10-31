@@ -56,6 +56,7 @@ interface ApiProductInput {
   name: string;
   slug: string;
   category?: string;
+  subcategory?: string;
   discipline?: string;
   gender?: string;
   price?: number;
@@ -104,6 +105,7 @@ function mapApiProductToCatalog(
       slug: apiProd.slug || existingStatic.slug,
       description: apiProd.description || existingStatic.description,
       category: parseCategory(apiProd.category || existingStatic.category),
+      subcategory: apiProd.subcategory || existingStatic.subcategory,
       discipline: parseDiscipline(apiProd.discipline || existingStatic.discipline),
       gender: parseGender(apiProd.gender || existingStatic.gender),
       price: typeof apiProd.price === 'number' ? apiProd.price : existingStatic.price,
@@ -161,6 +163,7 @@ function mapApiProductToCatalog(
     name: apiProd.name,
     slug: apiProd.slug,
     category: parseCategory(apiProd.category),
+    subcategory: apiProd.subcategory,
     discipline: parseDiscipline(apiProd.discipline),
     gender: parseGender(apiProd.gender),
     price: typeof apiProd.price === 'number' ? apiProd.price : 50,
@@ -553,6 +556,17 @@ export default function ProductDetailPage({ params }: PageProps) {
           >
             {product.category}
           </Link>
+          {product.subcategory && (
+            <>
+              <span>/</span>
+              <Link
+                href={`/products?category=${product.category}&subcategory=${product.subcategory}`}
+                className="uppercase transition-colors hover:text-[var(--text-primary)]"
+              >
+                {product.subcategory}
+              </Link>
+            </>
+          )}
           <span>/</span>
           <span className="max-w-[200px] truncate text-[var(--text-primary)]">
             {formatCardTitle(product.name)}

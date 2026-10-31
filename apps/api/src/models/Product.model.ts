@@ -52,6 +52,7 @@ export interface IProduct extends Document {
   isDiscountExcluded?: boolean;
   effectivePriceUpdatedAt?: Date;
   category: string;
+  subcategory?: string | null;
   tags: string[];
   specs: IProductSpec[];
   variants: IProductVariant[];
@@ -146,6 +147,12 @@ const productSchema = new mongoose.Schema<IProduct>(
       required: true,
       trim: true,
       lowercase: true,
+    },
+    subcategory: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: null,
     },
     tags: [{ type: String, lowercase: true }],
     specs: [specSchema],
@@ -243,6 +250,8 @@ productSchema.pre('validate', function (next) {
 // Indexes for common queries
 productSchema.index({ isPublished: 1, createdAt: -1 });
 productSchema.index({ category: 1, isPublished: 1 });
+productSchema.index({ category: 1, subcategory: 1, isPublished: 1 });
+productSchema.index({ subcategory: 1, isPublished: 1 });
 productSchema.index({ category: 1, isPublished: 1, price: 1 });
 productSchema.index({ category: 1, isPublished: 1, createdAt: -1 });
 productSchema.index({ isFeatured: 1, isPublished: 1 });

@@ -6,6 +6,7 @@ import { AppError } from '../middleware/errorHandler';
 
 export interface ProductQueryFilters {
   category?: string;
+  subcategory?: string;
   search?: string;
   featured?: string;
   bestseller?: string;
@@ -22,12 +23,25 @@ export class ProductService {
    * Aggregate catalog categories dynamically from DB (Category & Product collections).
    */
   async getCategories() {
-    const [rawCategories, dbCategories] = await Promise.all([
+    const [rawCategories, rawSubcategories, dbCategories] = await Promise.all([
       Product.aggregate([
         { $match: { isPublished: true } },
         {
           $group: {
             _id: { $toLower: '$category' },
+            count: { $sum: 1 },
+            minPrice: { $min: { $ifNull: ['$price', { $min: '$variants.price' }] } },
+            maxPrice: { $max: { $ifNull: ['$price', { $max: '$variants.price' }] } },
+            featuredProduct: { $first: '$$ROOT' },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]),
+      Product.aggregate([
+        { $match: { isPublished: true, subcategory: { $exists: true, $ne: null } } },
+        {
+          $group: {
+            _id: { $toLower: '$subcategory' },
             count: { $sum: 1 },
             minPrice: { $min: { $ifNull: ['$price', { $min: '$variants.price' }] } },
             maxPrice: { $max: { $ifNull: ['$price', { $max: '$variants.price' }] } },
@@ -64,6 +78,9 @@ export class ProductService {
     const categoriesMap = new Map(
       rawCategories.map((c) => [c._id ? String(c._id).toLowerCase() : '', c]),
     );
+    const subcategoriesMap = new Map(
+      rawSubcategories.map((c) => [c._id ? String(c._id).toLowerCase() : '', c]),
+    );
     const dbCategoriesMap = new Map(
       dbCategories.map((c) => [c.slug ? String(c.slug).toLowerCase() : '', c]),
     );
@@ -83,8 +100,11 @@ export class ProductService {
     }
 
     return Array.from(slugSet).map((slug) => {
-      const cat = categoriesMap.get(slug);
       const dbCat = dbCategoriesMap.get(slug);
+      const isSub = Boolean(dbCat?.parentId || dbCat?.parentSlug);
+      const cat = isSub
+        ? subcategoriesMap.get(slug) || categoriesMap.get(slug)
+        : categoriesMap.get(slug);
       const meta = categoryMetadata[slug] ?? {
         name: dbCat?.name || slug.charAt(0).toUpperCase() + slug.slice(1),
         description: dbCat?.description || `${slug} collection`,
@@ -99,6 +119,7 @@ export class ProductService {
         '';
 
       return {
+        _id: dbCat?._id ? String(dbCat._id) : undefined,
         id: slug,
         slug,
         name: dbCat?.name || meta.name,
@@ -107,6 +128,8 @@ export class ProductService {
         minPrice: cat ? cat.minPrice : 0,
         maxPrice: cat ? cat.maxPrice : 0,
         imageUrl,
+        parentId: dbCat?.parentId ? String(dbCat.parentId) : null,
+        parentSlug: dbCat?.parentSlug || null,
       };
     });
   }
@@ -117,6 +140,7 @@ export class ProductService {
   async getProducts(filters: ProductQueryFilters) {
     const {
       category,
+      subcategory,
       search,
       featured,
       bestseller,
@@ -134,6 +158,11 @@ export class ProductService {
     // 1. category
     if (category && category.toLowerCase() !== 'all') {
       filter.category = category.toLowerCase().trim();
+    }
+
+    // 1b. subcategory
+    if (subcategory && subcategory.toLowerCase() !== 'all') {
+      filter.subcategory = subcategory.toLowerCase().trim();
     }
 
     // 2. search (regex across name, description, tags, brand, colorName)

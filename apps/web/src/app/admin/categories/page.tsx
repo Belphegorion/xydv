@@ -1,7 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, PencilSimple, Trash, X, CheckCircle, Warning } from '@phosphor-icons/react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  Plus,
+  PencilSimple,
+  Trash,
+  X,
+  CheckCircle,
+  Warning,
+  ArrowElbowDownRight,
+} from '@phosphor-icons/react';
 import { api } from '../../../lib/api';
 import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
 import type { CategoryItem } from '@vertex/types';
@@ -21,6 +29,8 @@ export default function AdminCategoriesPage() {
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
+  const [isSubcategory, setIsSubcategory] = useState(false);
+  const [parentId, setParentId] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   // Delete state
@@ -44,6 +54,79 @@ export default function AdminCategoriesPage() {
     fetchCategories();
   }, [fetchCategories]);
 
+  // Available candidates for parent categories
+  const parentCandidates = useMemo(() => {
+    return categories.filter((c) => {
+      // Must not already be a subcategory
+      if (c.parentId || c.parentSlug) return false;
+      // Cannot be itself if editing
+      if (isEditing && (c._id === editId || c.slug === slug)) return false;
+      return true;
+    });
+  }, [categories, isEditing, editId, slug]);
+
+  // Organize categories into hierarchical tree
+  const hierarchicalCategories = useMemo(() => {
+    const parentMap = new Map<string, CategoryItem>();
+    const childrenMap = new Map<string, CategoryItem[]>();
+    const topLevel: CategoryItem[] = [];
+
+    for (const cat of categories) {
+      if (cat._id) parentMap.set(cat._id, cat);
+      if (cat.slug) parentMap.set(cat.slug.toLowerCase(), cat);
+    }
+
+    for (const cat of categories) {
+      const pKey = cat.parentId || (cat.parentSlug ? cat.parentSlug.toLowerCase() : null);
+      if (pKey) {
+        const list = childrenMap.get(pKey) || [];
+        list.push(cat);
+        childrenMap.set(pKey, list);
+      } else {
+        topLevel.push(cat);
+      }
+    }
+
+    const result: Array<{ item: CategoryItem; isSub: boolean; parentName?: string }> = [];
+    for (const parent of topLevel) {
+      result.push({ item: parent, isSub: false });
+      const children = [
+        ...(parent._id ? childrenMap.get(parent._id) || [] : []),
+        ...(parent.slug ? childrenMap.get(parent.slug.toLowerCase()) || [] : []),
+      ];
+      const seen = new Set<string>();
+      for (const child of children) {
+        const id = child._id || child.slug;
+        if (!seen.has(id)) {
+          seen.add(id);
+          result.push({ item: child, isSub: true, parentName: parent.name });
+        }
+      }
+    }
+
+    // Capture any orphaned subcategories whose parents were not in topLevel
+    for (const cat of categories) {
+      if (cat.parentId || cat.parentSlug) {
+        const alreadyInResult = result.some(
+          (r) => (r.item._id && r.item._id === cat._id) || r.item.slug === cat.slug,
+        );
+        if (!alreadyInResult) {
+          result.push({ item: cat, isSub: true, parentName: cat.parentSlug || 'Parent' });
+        }
+      }
+    }
+
+    return result;
+  }, [categories]);
+
+  // Check if currently edited category has child subcategories
+  const hasActiveChildren = useMemo(() => {
+    if (!isEditing) return false;
+    return categories.some(
+      (c) => (editId && c.parentId === editId) || (slug && c.parentSlug === slug),
+    );
+  }, [isEditing, categories, editId, slug]);
+
   const handleOpenCreate = () => {
     setIsEditing(false);
     setEditId(null);
@@ -51,6 +134,8 @@ export default function AdminCategoriesPage() {
     setSlug('');
     setDescription('');
     setImage('');
+    setIsSubcategory(false);
+    setParentId('');
     setIsModalOpen(true);
   };
 
@@ -61,6 +146,14 @@ export default function AdminCategoriesPage() {
     setSlug(cat.slug);
     setDescription(cat.description || '');
     setImage(cat.image || '');
+    const isSub = Boolean(cat.parentId || cat.parentSlug);
+    setIsSubcategory(isSub);
+    const resolvedParent = categories.find(
+      (c) =>
+        (cat.parentId && c._id === cat.parentId) ||
+        (cat.parentSlug && c.slug.toLowerCase() === cat.parentSlug.toLowerCase()),
+    );
+    setParentId(resolvedParent?._id || cat.parentId || '');
     setIsModalOpen(true);
   };
 
@@ -69,21 +162,32 @@ export default function AdminCategoriesPage() {
     if (isSaving) return;
     if (!name.trim()) return;
 
+    if (isSubcategory && !parentId) {
+      setFeedback({ type: 'error', message: 'Please select a parent category for the sub-category.' });
+      return;
+    }
+
     setIsSaving(true);
     try {
+      const parentCat =
+        isSubcategory && parentId
+          ? categories.find((c) => c._id === parentId || c.slug === parentId)
+          : null;
+      const payload = {
+        name: name.trim(),
+        description: description.trim(),
+        image: image.trim(),
+        parentId: isSubcategory && parentId ? (parentCat?._id || parentId) : null,
+        parentSlug: parentCat?.slug || null,
+      };
+
       if (isEditing && editId) {
-        await api.patch(`/admin/categories/${editId}`, {
-          name: name.trim(),
-          description: description.trim(),
-          image: image.trim(),
-        });
+        await api.patch(`/admin/categories/${editId}`, payload);
         setFeedback({ type: 'success', message: `Category "${name}" updated successfully.` });
       } else {
         await api.post('/admin/categories', {
-          name: name.trim(),
+          ...payload,
           slug: slug.trim() || undefined,
-          description: description.trim(),
-          image: image.trim(),
         });
         setFeedback({ type: 'success', message: `Category "${name}" created successfully.` });
       }
@@ -198,13 +302,36 @@ export default function AdminCategoriesPage() {
                   </td>
                 </tr>
               ) : (
-                categories.map((c) => (
+                hierarchicalCategories.map(({ item: c, isSub, parentName }) => (
                   <tr
                     key={c._id || c.slug}
-                    className="transition-colors hover:bg-[var(--bg-elevated)]"
+                    className={`transition-colors hover:bg-[var(--bg-elevated)] ${
+                      isSub ? 'bg-[var(--bg)]/40' : ''
+                    }`}
                   >
-                    <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)]">
-                      {c.name}
+                    <td className="px-4 py-3 font-mono">
+                      {isSub ? (
+                        <div className="flex items-center gap-2 pl-4 sm:pl-6">
+                          <ArrowElbowDownRight
+                            size={14}
+                            weight="bold"
+                            className="text-[var(--text-muted)] dark:text-[#e8ff00]"
+                          />
+                          <div>
+                            <span className="font-bold text-[var(--text-primary)]">{c.name}</span>
+                            <span className="ml-2 inline-block rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] px-1.5 py-0.5 font-mono text-[9px] uppercase text-[var(--text-muted)]">
+                              Sub of {parentName}
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-[var(--text-primary)]">{c.name}</span>
+                          <span className="rounded-none border border-[var(--text-primary)]/20 bg-[var(--text-primary)]/5 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[var(--text-secondary)] dark:border-[#e8ff00]/30 dark:bg-[#e8ff00]/10 dark:text-[#e8ff00]">
+                            Parent
+                          </span>
+                        </div>
+                      )}
                     </td>
 
                     <td className="px-4 py-3 font-mono text-[var(--text-primary)] dark:text-[#e8ff00]">
@@ -301,6 +428,62 @@ export default function AdminCategoriesPage() {
                   />
                 </div>
               )}
+
+              {/* Option to make it a sub-category */}
+              <div className="rounded-none border border-[var(--border)] bg-[var(--bg-elevated)] p-3 space-y-2.5">
+                <label className={`flex items-start gap-2.5 select-none ${hasActiveChildren ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}>
+                  <input
+                    type="checkbox"
+                    checked={isSubcategory}
+                    disabled={hasActiveChildren}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setIsSubcategory(checked);
+                      if (checked && !parentId && parentCandidates.length > 0) {
+                        setParentId(parentCandidates[0]._id || '');
+                      }
+                    }}
+                    className="mt-0.5 h-4 w-4 cursor-pointer rounded-none border-[var(--border)] accent-[var(--accent)] dark:accent-[#e8ff00]"
+                  />
+                  <div>
+                    <span className="font-mono text-xs font-bold text-[var(--text-primary)] uppercase">
+                      Make this a sub-category
+                    </span>
+                    <p className="font-mono text-[10px] text-[var(--text-muted)]">
+                      {hasActiveChildren
+                        ? 'Cannot convert this category because it currently has active sub-categories assigned to it.'
+                        : 'Nest this category under an existing parent category (e.g. Shorts under Bottoms)'}
+                    </p>
+                  </div>
+                </label>
+
+                {isSubcategory && (
+                  <div className="pt-2 border-t border-[var(--border)]">
+                    <label className="mb-1 block font-mono text-xs text-[var(--text-secondary)] uppercase">
+                      Parent Category *
+                    </label>
+                    {parentCandidates.length === 0 ? (
+                      <p className="font-mono text-[11px] text-[#b91c1c] dark:text-[#ff3b3b]">
+                        No parent categories available. You need at least one top-level category to create a subcategory.
+                      </p>
+                    ) : (
+                      <select
+                        value={parentId}
+                        onChange={(e) => setParentId(e.target.value)}
+                        required={isSubcategory}
+                        className="w-full rounded-none border border-[var(--border)] bg-[var(--bg-surface)] p-2.5 font-mono text-xs text-[var(--text-primary)] focus:border-[var(--text-primary)] focus:outline-none dark:focus:border-[#e8ff00]"
+                      >
+                        <option value="" disabled>Select parent category...</option>
+                        {parentCandidates.map((p) => (
+                          <option key={p._id || p.slug} value={p._id}>
+                            {p.name} (/{p.slug})
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                )}
+              </div>
 
               <div>
                 <label className="mb-1 block font-mono text-xs text-[var(--text-secondary)] uppercase">

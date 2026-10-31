@@ -195,11 +195,17 @@ export class AdminService {
       ? rest.images.map((img) => (typeof img === 'string' ? { url: img, alt: '' } : img))
       : rest.images;
 
+    const normalizedSubcategory =
+      typeof rest.subcategory === 'string' && rest.subcategory.trim()
+        ? rest.subcategory.trim().toLowerCase()
+        : null;
+
     const product = await Product.create({
       name,
       slug,
       inStock,
       ...rest,
+      subcategory: normalizedSubcategory,
       images: normalizedImages,
     });
 
@@ -286,6 +292,13 @@ export class AdminService {
       data.images = data.images.map((img) =>
         typeof img === 'string' ? { url: img, alt: '' } : img,
       );
+    }
+
+    if (data.subcategory !== undefined) {
+      data.subcategory =
+        typeof data.subcategory === 'string' && data.subcategory.trim()
+          ? data.subcategory.trim().toLowerCase()
+          : null;
     }
 
     const product = await Product.findByIdAndUpdate(id, data, {
@@ -389,29 +402,56 @@ export class AdminService {
       slug: string;
       description?: string;
       image?: string;
+      parentId?: string | null;
+      parentSlug?: string | null;
       productCount: number;
       createdAt?: Date;
       updatedAt?: Date;
     }>
   > {
-    const [categories, productCounts] = await Promise.all([
+    const [categories, categoryCounts, subcategoryCounts] = await Promise.all([
       Category.find().sort({ name: 1 }).lean(),
       Product.aggregate([{ $group: { _id: { $toLower: '$category' }, count: { $sum: 1 } } }]),
+      Product.aggregate([
+        { $match: { subcategory: { $exists: true, $ne: null } } },
+        { $group: { _id: { $toLower: '$subcategory' }, count: { $sum: 1 } } },
+      ]),
     ]);
 
-    const countMap = new Map<string, number>();
-    for (const pc of productCounts) {
-      if (pc._id) countMap.set(pc._id, pc.count);
+    const catCountMap = new Map<string, number>();
+    for (const pc of categoryCounts) {
+      if (pc._id) catCountMap.set(pc._id, pc.count);
     }
 
-    return categories.map((cat) => ({
-      ...cat,
-      productCount: countMap.get(cat.slug.toLowerCase()) ?? 0,
-    }));
+    const subCountMap = new Map<string, number>();
+    for (const sc of subcategoryCounts) {
+      if (sc._id) subCountMap.set(sc._id, sc.count);
+    }
+
+    return categories.map((cat) => {
+      const isSub = Boolean(cat.parentId || cat.parentSlug);
+      const productCount = isSub
+        ? (subCountMap.get(cat.slug.toLowerCase()) ?? catCountMap.get(cat.slug.toLowerCase()) ?? 0)
+        : (catCountMap.get(cat.slug.toLowerCase()) ?? 0);
+
+      return {
+        ...cat,
+        parentId: cat.parentId ? String(cat.parentId) : null,
+        parentSlug: cat.parentSlug || null,
+        productCount,
+      };
+    });
   }
 
   async createCategory(
-    data: { name: string; slug?: string; description?: string; image?: string },
+    data: {
+      name: string;
+      slug?: string;
+      description?: string;
+      image?: string;
+      parentId?: string | null;
+      parentSlug?: string | null;
+    },
     adminId?: string,
     ip?: string,
   ) {
@@ -427,11 +467,38 @@ export class AdminService {
       throw new AppError('Category with this name or slug already exists', 409);
     }
 
+    let parentId: mongoose.Types.ObjectId | null = null;
+    let parentSlug: string | null = null;
+
+    if (data.parentId && mongoose.isValidObjectId(data.parentId)) {
+      const parent = await Category.findById(data.parentId);
+      if (!parent) {
+        throw new AppError('Parent category not found', 404);
+      }
+      if (parent.parentId || parent.parentSlug) {
+        throw new AppError('Cannot nest a sub-category under another sub-category', 400);
+      }
+      parentId = parent._id as mongoose.Types.ObjectId;
+      parentSlug = parent.slug;
+    } else if (data.parentSlug) {
+      const parent = await Category.findOne({ slug: data.parentSlug.toLowerCase().trim() });
+      if (!parent) {
+        throw new AppError('Parent category not found', 404);
+      }
+      if (parent.parentId || parent.parentSlug) {
+        throw new AppError('Cannot nest a sub-category under another sub-category', 400);
+      }
+      parentId = parent._id as mongoose.Types.ObjectId;
+      parentSlug = parent.slug;
+    }
+
     const cat = await Category.create({
       name: data.name.trim(),
       slug,
       description: data.description ?? '',
       image: data.image ?? '',
+      parentId,
+      parentSlug,
     });
 
     await logAdminAction({
@@ -439,7 +506,12 @@ export class AdminService {
       action: 'CREATE_CATEGORY',
       targetType: 'Category',
       targetId: String(cat._id),
-      details: { name: cat.name, slug: cat.slug },
+      details: {
+        name: cat.name,
+        slug: cat.slug,
+        parentId: parentId ? String(parentId) : null,
+        parentSlug,
+      },
       ip,
     });
 
@@ -448,7 +520,13 @@ export class AdminService {
 
   async updateCategory(
     id: string,
-    data: { name?: string; description?: string; image?: string },
+    data: {
+      name?: string;
+      description?: string;
+      image?: string;
+      parentId?: string | null;
+      parentSlug?: string | null;
+    },
     adminId?: string,
     ip?: string,
   ) {
@@ -468,6 +546,64 @@ export class AdminService {
     if (data.description !== undefined) update.description = data.description;
     if (data.image !== undefined) update.image = data.image;
 
+    if (data.parentId !== undefined) {
+      if (data.parentId === null || data.parentId === '') {
+        update.parentId = null;
+        update.parentSlug = null;
+      } else {
+        if (!mongoose.isValidObjectId(data.parentId)) {
+          throw new AppError('Invalid parent category ID', 400);
+        }
+        if (data.parentId === id) {
+          throw new AppError('Category cannot be its own parent', 400);
+        }
+        const existingChildren = await Category.countDocuments({
+          $or: [{ parentId: oldCat._id }, { parentSlug: oldSlug }],
+        });
+        if (existingChildren > 0) {
+          throw new AppError(
+            'Cannot convert a category that has active sub-categories into a sub-category',
+            400,
+          );
+        }
+        const parent = await Category.findById(data.parentId);
+        if (!parent) throw new AppError('Parent category not found', 404);
+        if (String(parent._id) === id || parent.slug === oldSlug) {
+          throw new AppError('Category cannot be its own parent', 400);
+        }
+        if (parent.parentId || parent.parentSlug) {
+          throw new AppError('Cannot nest a sub-category under another sub-category', 400);
+        }
+        update.parentId = parent._id;
+        update.parentSlug = parent.slug;
+      }
+    } else if (data.parentSlug !== undefined) {
+      if (data.parentSlug === null || data.parentSlug === '') {
+        update.parentId = null;
+        update.parentSlug = null;
+      } else {
+        const parent = await Category.findOne({ slug: data.parentSlug.toLowerCase().trim() });
+        if (!parent) throw new AppError('Parent category not found', 404);
+        if (String(parent._id) === id || parent.slug === oldSlug) {
+          throw new AppError('Category cannot be its own parent', 400);
+        }
+        const existingChildren = await Category.countDocuments({
+          $or: [{ parentId: oldCat._id }, { parentSlug: oldSlug }],
+        });
+        if (existingChildren > 0) {
+          throw new AppError(
+            'Cannot convert a category that has active sub-categories into a sub-category',
+            400,
+          );
+        }
+        if (parent.parentId || parent.parentSlug) {
+          throw new AppError('Cannot nest a sub-category under another sub-category', 400);
+        }
+        update.parentId = parent._id;
+        update.parentSlug = parent.slug;
+      }
+    }
+
     const cat = await Category.findByIdAndUpdate(id, update, { new: true, runValidators: true });
     if (!cat) throw new AppError('Category not found', 404);
 
@@ -476,6 +612,14 @@ export class AdminService {
       await Product.updateMany(
         { category: { $in: [oldSlug, oldSlug.toLowerCase(), oldSlug.toUpperCase()] } },
         { $set: { category: update.slug } },
+      );
+      await Product.updateMany(
+        { subcategory: { $in: [oldSlug, oldSlug.toLowerCase(), oldSlug.toUpperCase()] } },
+        { $set: { subcategory: update.slug } },
+      );
+      await Category.updateMany(
+        { $or: [{ parentId: cat._id }, { parentSlug: oldSlug }] },
+        { $set: { parentSlug: update.slug, parentId: cat._id } },
       );
     }
 
@@ -498,10 +642,22 @@ export class AdminService {
     const cat = await Category.findById(id);
     if (!cat) throw new AppError('Category not found', 404);
 
-    const productCount = await Product.countDocuments({ category: cat.slug });
+    const productCount = await Product.countDocuments({
+      $or: [{ category: cat.slug }, { subcategory: cat.slug }],
+    });
     if (productCount > 0) {
       throw new AppError(
         `Cannot delete category "${cat.name}": ${productCount} active products are currently assigned to it. Reassign these products first.`,
+        400,
+      );
+    }
+
+    const childCount = await Category.countDocuments({
+      $or: [{ parentId: cat._id }, { parentSlug: cat.slug }],
+    });
+    if (childCount > 0) {
+      throw new AppError(
+        `Cannot delete category "${cat.name}": it has ${childCount} active subcategories assigned to it. Reassign or delete those subcategories first.`,
         400,
       );
     }

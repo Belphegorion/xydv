@@ -4,6 +4,7 @@ export const productQuerySchema = z.object({
   query: z
     .object({
       category: z.string().optional(),
+      subcategory: z.string().optional(),
       search: z.string().optional(),
       featured: z.string().optional(),
       bestseller: z.string().optional(),
@@ -49,6 +50,7 @@ export const adminCreateProductSchema = z.object({
     name: z.string().min(1, 'Product name is required').max(200),
     description: z.string().min(1, 'Description is required'),
     category: z.string().min(1, 'Category is required'),
+    subcategory: z.string().nullable().optional(),
     price: z.number().min(0),
     brand: z.string().default('XYDV'),
     tags: z.array(z.string()).optional(),

@@ -18,6 +18,7 @@ export const adminCreateProductSchema = z.object({
           message: 'Description cannot contain script tags',
         }),
       category: z.string().min(1, 'Category is required'),
+      subcategory: z.string().nullable().optional(),
       price: z.number().positive('Price must be greater than 0'),
       compareAt: z.number().positive('Compare price must be greater than 0').optional().nullable(),
       brand: z.string().default('XYDV'),
@@ -95,6 +96,7 @@ export const adminUpdateProductSchema = z.object({
         })
         .optional(),
       category: z.string().min(1).optional(),
+      subcategory: z.string().nullable().optional(),
       price: z.number().positive('Price must be greater than 0').optional(),
       compareAt: z.number().positive('Compare price must be greater than 0').optional().nullable(),
       brand: z.string().optional(),
@@ -159,6 +161,8 @@ export const createCategorySchema = z.object({
     slug: z.string().optional(),
     description: z.string().max(500).optional(),
     image: z.string().optional(),
+    parentId: z.string().nullable().optional(),
+    parentSlug: z.string().nullable().optional(),
   }),
 });
 
@@ -171,6 +175,8 @@ export const updateCategorySchema = z.object({
     slug: z.string().optional(),
     description: z.string().max(500).optional(),
     image: z.string().optional(),
+    parentId: z.string().nullable().optional(),
+    parentSlug: z.string().nullable().optional(),
   }),
 });
 

@@ -31,6 +31,7 @@ export interface CatalogProduct {
   name: string;
   slug: string;
   category: 'tops' | 'bottoms' | 'outerwear' | 'accessories';
+  subcategory?: string;
   discipline: 'run' | 'train' | 'rec';
   gender: 'men' | 'women' | 'unisex';
   price: number;
@@ -180,6 +181,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     name: 'Apex Modular Training Shorts',
     slug: 'apex-modular-training-shorts',
     category: 'bottoms',
+    subcategory: 'shorts',
     discipline: 'train',
     gender: 'men',
     price: 72.0,
@@ -588,6 +590,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
     name: 'Tactical Division Cargo Jogger',
     slug: 'tactical-division-cargo-jogger',
     category: 'bottoms',
+    subcategory: 'pants',
     discipline: 'train',
     gender: 'men',
     price: 88.0,

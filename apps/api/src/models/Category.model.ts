@@ -5,6 +5,8 @@ export interface ICategory extends Document {
   slug: string;
   description?: string;
   image?: string;
+  parentId?: mongoose.Types.ObjectId | null;
+  parentSlug?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,9 +17,14 @@ const categorySchema = new mongoose.Schema<ICategory>(
     slug: { type: String, required: true, trim: true, unique: true, lowercase: true },
     description: { type: String, default: '' },
     image: { type: String, default: '' },
+    parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
+    parentSlug: { type: String, lowercase: true, trim: true, default: null },
   },
   { timestamps: true },
 );
+
+categorySchema.index({ parentId: 1 });
+categorySchema.index({ parentSlug: 1 });
 
 export const Category: Model<ICategory> =
   (mongoose.models.Category as Model<ICategory>) ||
